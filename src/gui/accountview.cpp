@@ -77,6 +77,8 @@ AccountView::AccountView(AccountState *accountState, QWidget *parent)
 
     AccountFoldersController *foldersController = new AccountFoldersController(_accountState, ui->accountFoldersView, this);
     connect(foldersController, &AccountFoldersController::requestShowModalWidget, this, &AccountView::onRequestShowModalWidget);
+    connect(foldersController, &AccountFoldersController::requestAccountModalWidget, this, &AccountView::onRequestAccountModalWidget);
+
 
     //   _model = new FolderStatusModel(_accountState, this);
 
@@ -318,6 +320,11 @@ void AccountView::addModalLegacyDialog(QWidget *widget, ModalWidgetSizePolicy si
     });
     widget->setVisible(true);
     ocApp()->gui()->settingsDialog()->requestModality(_accountState->account());
+}
+
+void AccountView::onRequestAccountModalWidget(OCC::AccountModalWidget *widget)
+{
+    addModalAccountWidget(widget);
 }
 
 void AccountView::addModalAccountWidget(AccountModalWidget *widget)

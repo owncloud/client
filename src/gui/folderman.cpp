@@ -588,7 +588,7 @@ void FolderMan::removeFolderSettings(Folder *folder, QSettings &settings)
         return;
     }
     disconnectAutoSave(folder);
-    QString id = QString::fromUtf8(folder->definition().id());
+    QString id = QString::fromUtf8(folder->id());
     if (id.isEmpty())
         return;
     settings.remove(QStringLiteral("Folders/%1").arg(id));
@@ -682,7 +682,7 @@ Folder *FolderMan::addFolder(AccountState *accountState, const FolderDefinition 
     auto folder = new Folder(folderDefinition, accountState, std::move(vfs), _ignoreHiddenFiles, this);
 
     qCInfo(lcFolderMan) << "Adding folder to Folder Map " << folder << folder->path();
-    QString spaceId = folder->definition().spaceId();
+    QString spaceId = folder->spaceId();
     // always add the folder even if it had a setup error - future add special handling for incomplete folders if possible
     _folders[accountId].insert(spaceId, folder);
 
@@ -747,7 +747,7 @@ void FolderMan::saveFolder(Folder *folder, QSettings &settings)
 {
     Q_ASSERT(settings.group() == QStringLiteral("Accounts"));
 
-    auto strId = QString::fromUtf8(folder->definition().id());
+    auto strId = QString::fromUtf8(folder->id());
     QString targetGroup = QStringLiteral("%1/Folders/%2").arg(folder->accountState()->account()->groupIndex(), strId);
     settings.beginGroup(targetGroup);
     FolderDefinition::save(settings, folder->definition());
@@ -790,7 +790,7 @@ void FolderMan::removeFolderFromGui(Folder *f)
     emit folderRemoved(accountId, f);
     if (f->isAvailable())
     {
-        _unsyncedSpaces[accountId].insert(f->definition().spaceId(), f->space());
+        _unsyncedSpaces[accountId].insert(f->spaceId(), f->space());
         emit unsyncedSpaceCountChanged(accountId, _unsyncedSpaces[accountId].count(), f->accountState()->account()->spacesManager()->spacesCount());
     }
     removeFolderSettings(f);
@@ -849,7 +849,7 @@ void FolderMan::deleteFolderSync(Folder *f)
     // this function includes the stuff to remove the database files.
     f->wipeForRemoval();
 
-    _folders[f->accountState()->account()->uuid()].remove(f->definition().spaceId());
+    _folders[f->accountState()->account()->uuid()].remove(f->spaceId());
 
     disconnectFolder(f);
 
@@ -1186,9 +1186,8 @@ void FolderMan::addFolderFromGui(AccountState *accountState, const SyncConnectio
         saveFolder(f);
         emit folderAdded(accountId, f);
 
-        if (_unsyncedSpaces.contains(accountId) && _unsyncedSpaces[accountId].contains(f->definition().spaceId()))
+        if (_unsyncedSpaces.contains(accountId) && _unsyncedSpaces[accountId].contains(f->spaceId()))
         {
-            _unsyncedSpaces[accountId].remove(f->definition().spaceId());
             emit unsyncedSpaceCountChanged(accountId, _unsyncedSpaces[accountId].count(), accountState->account()->spacesManager()->spacesCount());
         }
 

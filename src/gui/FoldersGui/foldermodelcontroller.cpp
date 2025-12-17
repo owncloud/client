@@ -18,6 +18,7 @@
 #include "folderitem.h"
 #include "folderman.h"
 
+#include <QItemSelectionModel>
 #include <QStandardItemModel>
 
 namespace OCC {
@@ -28,6 +29,22 @@ FolderModelController::FolderModelController(const QUuid &accountId, QObject *pa
     , _accountId(accountId)
 {
     _model = new QStandardItemModel(this);
+    _selectionModel = new QItemSelectionModel(_model, this);
+    connect(_selectionModel, &QItemSelectionModel::currentChanged, this, &FolderModelController::onCurrentChanged);
+}
+
+void FolderModelController::onCurrentChanged(const QModelIndex &current, const QModelIndex &previous)
+{
+    Q_UNUSED(previous);
+
+    QStandardItem *item = _model->itemFromIndex(current);
+    FolderItem *folderItem = dynamic_cast<FolderItem *>(item);
+    if (folderItem)
+        emit currentFolderChanged(folderItem->folder());
+    else
+        // at the moment we won't support a "current folder" value if a child error is current/focused -> this will ensure no context menu can pop outside of a
+        // normal folder row. revisit if we need to expand this concept
+        emit currentFolderChanged(nullptr);
 }
 
 void FolderModelController::onFolderListChanged(const QUuid &accountId, const QList<Folder *> folders)
@@ -55,7 +72,7 @@ void FolderModelController::onFolderAdded(const QUuid &accountId, Folder *folder
 
     FolderItem *item = new FolderItem(folder);
     _model->appendRow(item);
-    _items.insert(folder->id(), item);
+    _items.insert(folder->spaceId(), item);
 }
 
 void FolderModelController::onFolderRemoved(const QUuid &accountId, Folder *folder)
@@ -63,18 +80,17 @@ void FolderModelController::onFolderRemoved(const QUuid &accountId, Folder *fold
     if (!folder || accountId != _accountId)
         return;
 
-    QByteArray id = folder->id();
+    QString id = folder->spaceId();
     if (id.isEmpty())
         return;
 
     if (_items.contains(id)) {
-        QStandardItem *it = _items.value(folder->id());
+        QStandardItem *it = _items.value(folder->spaceId());
         QModelIndex index = it->index();
         if (index.isValid())
             _model->removeRow(it->index().row());
         _items.remove(id);
     }
-    // _folders.remove(id);
 }
 
 void FolderModelController::connectSignals(FolderMan *folderMan)
@@ -82,6 +98,7 @@ void FolderModelController::connectSignals(FolderMan *folderMan)
     connect(folderMan, &FolderMan::folderListChanged, this, &FolderModelController::onFolderListChanged);
     connect(folderMan, &FolderMan::folderAdded, this, &FolderModelController::onFolderAdded);
     connect(folderMan, &FolderMan::folderRemoved, this, &FolderModelController::onFolderRemoved);
+
     onFolderListChanged(_accountId, folderMan->foldersForAccount(_accountId));
 
     // connect(folderMan, &FolderMan::folderSyncStateChange, _model, &FolderStatusModel::slotFolderSyncStateChange);

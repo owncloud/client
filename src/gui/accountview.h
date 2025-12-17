@@ -77,7 +77,6 @@ Q_SIGNALS:
 
 public Q_SLOTS:
     void slotAccountStateChanged(AccountState::State state);
-    void onRequestShowModalWidget(QWidget *widget) { addModalLegacyDialog(widget, ModalWidgetSizePolicy::Expanding); }
 
 protected Q_SLOTS:
     void slotDeleteAccount();
@@ -86,6 +85,10 @@ protected Q_SLOTS:
 
 protected:
     void accountSettingUpChanged(bool settingUp);
+
+private slots:
+    void onRequestShowModalWidget(QWidget *widget) { addModalLegacyDialog(widget, ModalWidgetSizePolicy::Expanding); }
+    void onRequestAccountModalWidget(OCC::AccountModalWidget *widget);
 
 private:
     void showSelectiveSyncDialog(Folder *folder);

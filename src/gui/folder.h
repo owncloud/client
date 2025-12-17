@@ -188,17 +188,32 @@ public:
 
     const FolderDefinition &definition() const { return _definition; }
 
+    /**
+     * id is the id used to identify a folder/space in the config file
+     *
+     * this id is "legacy" from the days when not all supported servers (eg oc10) supported spaces. Ideally we should remove this in favor of always using
+     the space id but it would require changes to the config.
+    */
     QByteArray id() const { return _definition.id(); }
+
+    /**
+     * @brief spaceId is the primary identifier for a folder, and it is guaranteed to be unique *within an account*.
+     *
+     * It is not universally unique because "shares" space has a hard coded spaceId which is always used regardless of where it lives.
+     *
+     * @return the space id for the folder
+     */
+    QString spaceId() const { return _definition.spaceId(); }
 
     /**
      * remote folder path, usually without trailing /, exception "/"
      */
     QString remotePath() const { return _definition.targetPath(); }
 
-    // may come from the definition, may come from the space. Lisa todo: review this as it appears questionable
+    // Normally this value comes from the space, but may come from the definition when the space is not available
     QString displayName() const;
 
-    // may come from definition, may come from space - Lisa todo: check this out
+    // Normally this value comes from the space, but may come from the definition when the space is not available
     QUrl webDavUrl() const;
 
     /**

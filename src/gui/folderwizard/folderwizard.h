@@ -50,7 +50,7 @@ public:
     Q_DECLARE_PRIVATE(FolderWizard)
 
 signals:
-    void folderWizardAccepted(FolderMan::SyncConnectionDescription result);
+    void folderWizardAccepted(OCC::FolderMan::SyncConnectionDescription result);
 
 private:
     void sendResult();

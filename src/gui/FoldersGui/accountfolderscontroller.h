@@ -14,17 +14,21 @@
 
 #pragma once
 
+#include "folder.h"
 #include "folderman.h"
 
 #include <QObject>
+#include <QPointer>
 #include <QUuid>
+
+class QAction;
 
 namespace OCC {
 
 class AccountFoldersView;
 class AccountState;
 class FolderModelController;
-class Folder;
+class AccountModalWidget;
 
 class AccountFoldersController : public QObject
 {
@@ -38,15 +42,37 @@ public:
 signals:
     void removeFolderFromGui(OCC::Folder *f);
     void requestShowModalWidget(QWidget *widget);
+    void requestAccountModalWidget(OCC::AccountModalWidget *widget);
 
 protected slots:
     void slotAddFolder();
-    void slotFolderWizardAccepted(FolderMan::SyncConnectionDescription result);
+    void slotFolderWizardAccepted(OCC::FolderMan::SyncConnectionDescription result);
 
 private:
     AccountState *_accountState = nullptr;
     QUuid _accountId;
+    QPointer<Folder> _currentFolder = nullptr;
     AccountFoldersView *_view = nullptr;
     FolderModelController *_modelController = nullptr;
+    void buildMenuActions();
+
+    // menu actions:
+    QAction *_showInSystemFolder = nullptr;
+    QAction *_showInBrowser = nullptr;
+    QAction *_forceSync = nullptr;
+    QAction *_pauseSync = nullptr;
+    QAction *_removeSync = nullptr;
+    QAction *_chooseSync = nullptr;
+    QAction *_enableVfs = nullptr;
+
+    void onFolderChanged(OCC::Folder *folder);
+
+    void onShowInSystemFolder();
+    void onShowInBrowser();
+    void onForceSync();
+    void onTogglePauseSync();
+    void onRemoveSync();
+    void onChooseSync();
+    void updateActions();
 };
 }

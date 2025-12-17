@@ -22,6 +22,7 @@
 
 class QStandardItem;
 class QStandardItemModel;
+class QItemSelectionModel;
 
 
 namespace OCC {
@@ -32,6 +33,8 @@ class FolderItem;
 
 class FolderModelController : public QObject
 {
+    Q_OBJECT
+
 public:
    explicit FolderModelController(const QUuid &accountId, QObject *parent);
 
@@ -42,15 +45,19 @@ public:
    // and this separate connect function makes more sense it that respect
    void connectSignals(FolderMan *folderman);
 
+   signals:
+   void currentFolderChanged(OCC::Folder *folder);
+
    protected slots:
    void onFolderListChanged(const QUuid &accountId, const QList<OCC::Folder *> folders);
    void onFolderAdded(const QUuid &accountId, OCC::Folder *folder);
    void onFolderRemoved(const QUuid &accountId, OCC::Folder *folder);
+   void onCurrentChanged(const QModelIndex &current, const QModelIndex &previous);
 
    private:
    QUuid _accountId;
-   // QHash<QByteArray, QPointer<Folder>> _folders;
-    QHash<QByteArray, QStandardItem *> _items;
-    QStandardItemModel *_model;
+   QHash<QString, QStandardItem *> _items;
+   QStandardItemModel *_model = nullptr;
+   QItemSelectionModel *_selectionModel = nullptr;
 };
 }

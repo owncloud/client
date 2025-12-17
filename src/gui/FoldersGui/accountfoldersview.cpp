@@ -59,6 +59,7 @@ void AccountFoldersView::buildView()
     _treeView->setLineWidth(2);
     mainLayout->addWidget(_treeView);
 
+
     _syncedFolderCountLabel = new QLabel("placeholder for sync count", this);
     _syncedFolderCountLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     mainLayout->addWidget(_syncedFolderCountLabel, 0, Qt::AlignLeft);
