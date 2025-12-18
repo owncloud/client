@@ -7,9 +7,11 @@ target_sources(owncloudGui PRIVATE
     foldermodelcontroller.h
     folderstatusupdater.cpp
     folderstatusupdater.h
-    accountfolderview.cpp
-    accountfolderview.h
+    accountfoldersview.cpp
+    accountfoldersview.h
     folderitemupdater.cpp
     folderitemupdater.h
+    accountfolderscontroller.cpp
+    accountfolderscontroller.h
 )
 

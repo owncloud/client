@@ -60,6 +60,8 @@ QString Utility::enumToDisplayName(SyncResult::Status status)
         return QStringLiteral("Sync paused");
     case SyncResult::Status::Offline:
         return QStringLiteral("Offline");
+    case SyncResult::Status::Unavailable:
+        return "Unavailable";
     }
     Q_UNREACHABLE();
 }

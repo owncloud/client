@@ -52,14 +52,11 @@ class LocalDiscoveryTracker;
 class OWNCLOUDGUI_EXPORT FolderDefinition
 {
 public:
+    // use for reading from config
     FolderDefinition(const QByteArray &id, const QUrl &davUrl, const QString &spaceId, const QString &displayName);
 
-    // Lisa todo: just make this a normal public ctr. there is no reason to have this static create method, but it's used in several places so keeping it for
-    // now
-    static auto createNewFolderDefinition(const QUrl &davUrl, const QString &spaceId, const QString &displayName = {})
-    {
-        return FolderDefinition(QUuid::createUuid().toByteArray(QUuid::WithoutBraces), davUrl, spaceId, displayName);
-    }
+    // use when creating folder from scratch for the very first time
+    FolderDefinition(const QUrl &davUrl, const QString &spaceId, const QString &displayName = {});
 
 
     /// Saves the folder definition into the given settings (group should be preconfigured)
@@ -116,7 +113,8 @@ public:
      * The folder is deployed by an admin
      * We will hide the remove option and the disable/enable vfs option.
      */
-    bool isDeployed() const { return _deployed; }
+    // todo #52 Release 8.0 = eliminate this OC10 property and remove prop from settings
+    [[deprecated("deployed concept is no longer supported and will be removed in client 8.0")]] bool isDeployed() const { return _deployed; }
 
     /**
      * Higher values mean more important
@@ -190,17 +188,32 @@ public:
 
     const FolderDefinition &definition() const { return _definition; }
 
+    /**
+     * id is the id used to identify a folder/space in the config file
+     *
+     * this id is "legacy" from the days when not all supported servers (eg oc10) supported spaces. Ideally we should remove this in favor of always using
+     the space id but it would require changes to the config.
+    */
     QByteArray id() const { return _definition.id(); }
+
+    /**
+     * @brief spaceId is the primary identifier for a folder, and it is guaranteed to be unique *within an account*.
+     *
+     * It is not universally unique because "shares" space has a hard coded spaceId which is always used regardless of where it lives.
+     *
+     * @return the space id for the folder
+     */
+    QString spaceId() const { return _definition.spaceId(); }
 
     /**
      * remote folder path, usually without trailing /, exception "/"
      */
     QString remotePath() const { return _definition.targetPath(); }
 
-    // may come from the definition, may come from the space. Lisa todo: review this as it appears questionable
+    // Normally this value comes from the space, but may come from the definition when the space is not available
     QString displayName() const;
 
-    // may come from definition, may come from space - Lisa todo: check this out
+    // Normally this value comes from the space, but may come from the definition when the space is not available
     QUrl webDavUrl() const;
 
     /**
@@ -238,6 +251,14 @@ public:
     void setSyncPaused(bool);
 
     bool syncPaused() const { return _definition.paused(); }
+
+    /** a folder is unavailable if its space is missing from the spaces manager
+     *  this happens when a folder has been added for an existing space, then that space is disabled
+     *  or deleted on the server.
+     *  we should not try to sync unavailable spaces!
+     */
+    bool isAvailable() const { return _available; }
+    void setAvailable(bool available);
 
     /**
      * Returns true when the folder may sync.
@@ -507,6 +528,9 @@ private:
      * Setting up vfs is an async operation
      */
     bool _vfsIsReady = false;
+
+    // does the folder have a corresponding space on the server? folderman will update the value if not
+    bool _available = true;
 
     /**
      * Watches this folder's local directory for changes.
