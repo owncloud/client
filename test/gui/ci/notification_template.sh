@@ -11,8 +11,6 @@ TEST_LOGS=""
 BRANCH_NAME="${GITHUB_REF_NAME}"
 ROOMID="!rnWsCVUmDHDJbiSPMM:matrix.org"
 
-COMMIT_AUTHOR=$(git log -1 --pretty=format:'%an' 2>/dev/null)
-
 if [ "${GITHUB_BUILD_STATUS}" == "failure" ]; then
     BUILD_STATUS="❌️ Failure"
 fi
@@ -70,7 +68,10 @@ log_success() {
 
 GITHUB_BUILD_LINK="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
 
-message_html='<b>'$BUILD_STATUS'</b> <a href="'${GITHUB_BUILD_LINK}'">'${GITHUB_REPOSITORY}'#'$COMMIT_SHA_SHORT'</a> ('${BRANCH_NAME}') by <b>'${COMMIT_AUTHOR}'</b> <br> <b>'"${TEST_LOGS}"'</b>'
+AUTHOR_NAME=""
+[ "$GITHUB_EVENT_NAME" != "schedule" ] && AUTHOR_NAME=" by <b>$COMMIT_AUTHOR</b>"
+
+message_html='<b>'$BUILD_STATUS'</b> <a href="'${GITHUB_BUILD_LINK}'">'${GITHUB_REPOSITORY}'#'$COMMIT_SHA_SHORT'</a> ('${BRANCH_NAME}')'${AUTHOR_NAME}' <br> <b>'"${TEST_LOGS}"'</b>'
 message_html=$(echo "$message_html" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g')
 
 log_info "Sending report to the element chat..."
