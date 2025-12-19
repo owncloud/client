@@ -22,7 +22,7 @@
 #include <QMainWindow>
 #include <QStyledItemDelegate>
 
-#define USE_NEW_FOLDER_LIST
+// #define USE_NEW_FOLDER_LIST
 
 namespace OCC {
 
