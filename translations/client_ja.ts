@@ -416,18 +416,18 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="135"/>
         <source>Force sync now</source>
-        <translation type="unfinished"/>
+        <translation>今すぐ強制的に同期</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="141"/>
         <source>Remove folder sync connection</source>
-        <translation type="unfinished"/>
+        <translation>同期フォルダー接続を削除</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="147"/>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="462"/>
         <source>Choose what to sync</source>
-        <translation type="unfinished"/>
+        <translation>同期フォルダーを選択</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="350"/>
@@ -437,17 +437,17 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="350"/>
         <source>Pause sync</source>
-        <translation type="unfinished"/>
+        <translation>一時停止</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="383"/>
         <source>Internet connection is metered</source>
-        <translation type="unfinished"/>
+        <translation>インターネット接続は従量制です</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="384"/>
         <source>Synchronization is paused because the Internet connection is a metered connection&lt;p&gt;Do you really want to force a Synchronization now?</source>
-        <translation type="unfinished"/>
+        <translation>インターネット接続が従量制プランのため、&lt;p&gt;同期は一時停止中です。強制的に同期を開始しますか？ </translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="405"/>
@@ -462,17 +462,17 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="411"/>
         <source>Sync paused by user</source>
-        <translation type="unfinished"/>
+        <translation>ユーザーにより同期が一時停止されました</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="429"/>
         <source>Confirm Folder Sync Connection Removal</source>
-        <translation type="unfinished"/>
+        <translation>同期フォルダー接続の削除を確認</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="430"/>
         <source>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;p&gt;フォルダー&lt;i&gt;%1&lt;/i&gt;の同期を本当に止めますか？&lt;/p&gt;&lt;p&gt;&lt;b&gt;注:&lt;/b&gt; これによりファイルが一切削除されることはありません。&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="434"/>
@@ -482,7 +482,7 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="435"/>
         <source>Cancel</source>
-        <translation type="unfinished"/>
+        <translation>キャンセル</translation>
     </message>
 </context>
 <context>

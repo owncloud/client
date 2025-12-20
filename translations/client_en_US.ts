@@ -416,73 +416,73 @@ File synchronisation desktop utility.</translation>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="135"/>
         <source>Force sync now</source>
-        <translation type="unfinished"/>
+        <translation>Force sync now</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="141"/>
         <source>Remove folder sync connection</source>
-        <translation type="unfinished"/>
+        <translation>Remove folder sync connection</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="147"/>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="462"/>
         <source>Choose what to sync</source>
-        <translation type="unfinished"/>
+        <translation>Choose what to sync</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="350"/>
         <source>Resume sync</source>
-        <translation type="unfinished"/>
+        <translation>Resume sync</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="350"/>
         <source>Pause sync</source>
-        <translation type="unfinished"/>
+        <translation>Pause sync</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="383"/>
         <source>Internet connection is metered</source>
-        <translation type="unfinished"/>
+        <translation>Internet connection is metered</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="384"/>
         <source>Synchronization is paused because the Internet connection is a metered connection&lt;p&gt;Do you really want to force a Synchronization now?</source>
-        <translation type="unfinished"/>
+        <translation>Synchronisation is paused because the Internet connection is a metered connection&lt;p&gt;Do you really want to force a Synchronisation now?</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="405"/>
         <source>Sync Running</source>
-        <translation type="unfinished"/>
+        <translation>Sync Running</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="405"/>
         <source>The sync operation is running.&lt;br/&gt;Do you want to stop it?</source>
-        <translation type="unfinished"/>
+        <translation>The sync operation is running.&lt;br/&gt;Do you want to stop it?</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="411"/>
         <source>Sync paused by user</source>
-        <translation type="unfinished"/>
+        <translation>Sync paused by user</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="429"/>
         <source>Confirm Folder Sync Connection Removal</source>
-        <translation type="unfinished"/>
+        <translation>Confirm Folder Sync Connection Removal</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="430"/>
         <source>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="434"/>
         <source>Remove Folder Sync Connection</source>
-        <translation type="unfinished"/>
+        <translation>Remove Folder Sync Connection</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="435"/>
         <source>Cancel</source>
-        <translation type="unfinished"/>
+        <translation>Cancel</translation>
     </message>
 </context>
 <context>

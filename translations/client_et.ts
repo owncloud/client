@@ -416,18 +416,18 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="135"/>
         <source>Force sync now</source>
-        <translation type="unfinished"/>
+        <translation>Sünkroniseeri jõuga kohe</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="141"/>
         <source>Remove folder sync connection</source>
-        <translation type="unfinished"/>
+        <translation>Eemalda kaustade sünkroniseerimise ühendus</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="147"/>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="462"/>
         <source>Choose what to sync</source>
-        <translation type="unfinished"/>
+        <translation>Vali, mida sünkroniseerida</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="350"/>
@@ -437,17 +437,17 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="350"/>
         <source>Pause sync</source>
-        <translation type="unfinished"/>
+        <translation>Peata sünkroniseerimine</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="383"/>
         <source>Internet connection is metered</source>
-        <translation type="unfinished"/>
+        <translation>Internetiühendus on mahupõhine</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="384"/>
         <source>Synchronization is paused because the Internet connection is a metered connection&lt;p&gt;Do you really want to force a Synchronization now?</source>
-        <translation type="unfinished"/>
+        <translation>Sünkroniseerimine on peatatud, kuna interneti-ühendus on mahupõhine&lt;p&gt;Kas soovite tõesti sünkroniseerida?</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="405"/>
@@ -462,17 +462,17 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="411"/>
         <source>Sync paused by user</source>
-        <translation type="unfinished"/>
+        <translation>Sünkroniseerimine peatati kasutaja poolt</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="429"/>
         <source>Confirm Folder Sync Connection Removal</source>
-        <translation type="unfinished"/>
+        <translation>Kinnita kaustade sünkroniseerimise ühenduse kustutamine</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="430"/>
         <source>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;p&gt;Kas soovid tõesti katkestada kataloogi &lt;i&gt;%1&lt;/i&gt; sünkroniseerimist?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Märkus:&lt;/b&gt; See &lt;b&gt;ei&lt;/b&gt; kustuta ühtegi faili.&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="434"/>
@@ -482,7 +482,7 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="435"/>
         <source>Cancel</source>
-        <translation type="unfinished"/>
+        <translation>Loobu</translation>
     </message>
 </context>
 <context>

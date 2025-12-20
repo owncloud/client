@@ -416,73 +416,73 @@ Cliente de escritorio para la sincronización de archivos.</translation>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="135"/>
         <source>Force sync now</source>
-        <translation type="unfinished"/>
+        <translation>Forzar la sincronización ahora</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="141"/>
         <source>Remove folder sync connection</source>
-        <translation type="unfinished"/>
+        <translation>Eliminar la sincronización de carpetas conectadas</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="147"/>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="462"/>
         <source>Choose what to sync</source>
-        <translation type="unfinished"/>
+        <translation>Elija qué sincronizar</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="350"/>
         <source>Resume sync</source>
-        <translation type="unfinished"/>
+        <translation>Continuar sincronización</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="350"/>
         <source>Pause sync</source>
-        <translation type="unfinished"/>
+        <translation>Pausar sincronización</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="383"/>
         <source>Internet connection is metered</source>
-        <translation type="unfinished"/>
+        <translation>Die Internetverbindung wird für den Durchsatz überwacht</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="384"/>
         <source>Synchronization is paused because the Internet connection is a metered connection&lt;p&gt;Do you really want to force a Synchronization now?</source>
-        <translation type="unfinished"/>
+        <translation>Die Synchronisation wurde pausiert, da die Internetverbindung für den Durchsatz überwacht wird&lt;p&gt;Wollen Sie die Synchronisation trotzdem durchführen?</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="405"/>
         <source>Sync Running</source>
-        <translation type="unfinished"/>
+        <translation>Sincronización en curso</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="405"/>
         <source>The sync operation is running.&lt;br/&gt;Do you want to stop it?</source>
-        <translation type="unfinished"/>
+        <translation>Die sync Operation läuft gerade.&lt;br/&gt;Wollen Sie sie stoppen?</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="411"/>
         <source>Sync paused by user</source>
-        <translation type="unfinished"/>
+        <translation>Synchronisation durch den Benutzer pausiert</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="429"/>
         <source>Confirm Folder Sync Connection Removal</source>
-        <translation type="unfinished"/>
+        <translation>Confirme eliminación de la Conexión a la carpeta sincronizada</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="430"/>
         <source>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;p&gt;¿De verdad quiere dejar de sincronizar la carpeta &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Nota:&lt;/b&gt; Esto &lt;b&gt;no&lt;/b&gt; eliminará los archivos.&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="434"/>
         <source>Remove Folder Sync Connection</source>
-        <translation type="unfinished"/>
+        <translation>Eliminar carpeta de sincronización conectada</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="435"/>
         <source>Cancel</source>
-        <translation type="unfinished"/>
+        <translation>Cancelar</translation>
     </message>
 </context>
 <context>
@@ -495,12 +495,12 @@ Cliente de escritorio para la sincronización de archivos.</translation>
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="42"/>
         <source>Manage your synced folders</source>
-        <translation type="unfinished"/>
+        <translation>Gestiona sus carpetas sincronizadas</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="46"/>
         <source>Add new folder sync…</source>
-        <translation type="unfinished"/>
+        <translation>Añadir nueva sincronización de carpetas...</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="77"/>

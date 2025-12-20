@@ -428,7 +428,7 @@ Utilitário de sincronização de arquivos na área de trabalho. </translation>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="147"/>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="462"/>
         <source>Choose what to sync</source>
-        <translation type="unfinished"/>
+        <translation>Escolha o que sincronizar</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="350"/>
@@ -438,7 +438,7 @@ Utilitário de sincronização de arquivos na área de trabalho. </translation>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="350"/>
         <source>Pause sync</source>
-        <translation type="unfinished"/>
+        <translation>Pausar sincronização</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="383"/>
@@ -448,7 +448,7 @@ Utilitário de sincronização de arquivos na área de trabalho. </translation>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="384"/>
         <source>Synchronization is paused because the Internet connection is a metered connection&lt;p&gt;Do you really want to force a Synchronization now?</source>
-        <translation type="unfinished"/>
+        <translation>A sincronização está pausada porque a conexão com a Internet é limitada.&lt;p&gt;Tem mesmo vontade de forçar uma sincronização agora?</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="405"/>
@@ -463,17 +463,17 @@ Utilitário de sincronização de arquivos na área de trabalho. </translation>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="411"/>
         <source>Sync paused by user</source>
-        <translation type="unfinished"/>
+        <translation>Sincronização pausada pelo usuário</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="429"/>
         <source>Confirm Folder Sync Connection Removal</source>
-        <translation type="unfinished"/>
+        <translation>Confirmar remoção da conexão de sincronização de pastas</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="430"/>
         <source>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;p&gt;Você realmente deseja interromper a sincronização da pasta? &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Nota:&lt;/b&gt;Isto  &lt;b&gt;não&lt;/b&gt; irá remover nenhum arquivo.&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="434"/>
@@ -483,7 +483,7 @@ Utilitário de sincronização de arquivos na área de trabalho. </translation>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="435"/>
         <source>Cancel</source>
-        <translation type="unfinished"/>
+        <translation>Cancelar</translation>
     </message>
 </context>
 <context>
@@ -501,7 +501,7 @@ Utilitário de sincronização de arquivos na área de trabalho. </translation>
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="46"/>
         <source>Add new folder sync…</source>
-        <translation type="unfinished"/>
+        <translation>Adicionar nova sincronização de pastas…</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="77"/>

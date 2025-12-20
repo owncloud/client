@@ -416,18 +416,18 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="135"/>
         <source>Force sync now</source>
-        <translation type="unfinished"/>
+        <translation>ບັງຄັບຊິງຕອນນີ້</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="141"/>
         <source>Remove folder sync connection</source>
-        <translation type="unfinished"/>
+        <translation>ລຶບການເຊື່ອມຕໍ່ການຊິງໂຟນເດີ</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="147"/>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="462"/>
         <source>Choose what to sync</source>
-        <translation type="unfinished"/>
+        <translation>ເລືອກສິ່ງທີ່ຈະຊິງ</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="350"/>
@@ -437,17 +437,17 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="350"/>
         <source>Pause sync</source>
-        <translation type="unfinished"/>
+        <translation>ຢຸດການຊິງຊົ່ວຄາວ</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="383"/>
         <source>Internet connection is metered</source>
-        <translation type="unfinished"/>
+        <translation>ການເຊື່ອມຕໍ່ອິນເຕີເນັດມີການຈຳກັດຂໍ້ມູນ</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="384"/>
         <source>Synchronization is paused because the Internet connection is a metered connection&lt;p&gt;Do you really want to force a Synchronization now?</source>
-        <translation type="unfinished"/>
+        <translation>ການຊິງໂຄໄນຖືກຢຸດຊົ່ວຄາວ ເພາະການເຊື່ອມຕໍ່ອິນເຕີເນັດມີການຈຳກັດຂໍ້ມູນ&lt;p&gt;ທ່ານຕ້ອງການບັງຄັບໃຫ້ຊິງໂຄໄນຕອນນີ້ແທ້ບໍ່?</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="405"/>
@@ -462,17 +462,17 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="411"/>
         <source>Sync paused by user</source>
-        <translation type="unfinished"/>
+        <translation>ການຊິງຖືກຢຸດຊົ່ວຄາວໂດຍຜູ້ໃຊ້</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="429"/>
         <source>Confirm Folder Sync Connection Removal</source>
-        <translation type="unfinished"/>
+        <translation>ຢືນຢັນການລຶບການເຊື່ອມຕໍ່ການຊິງໂຟນເດີ</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="430"/>
         <source>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;p&gt;ທ່ານຕ້ອງການຢຸດການຊິງໂຟນເດີ &lt;i&gt;%1&lt;/i&gt; ແທ້ບໍ່?&lt;/p&gt;&lt;p&gt;&lt;b&gt;ໝາຍເຫດ:&lt;/b&gt; ການກະທຳນີ້ຈະ&lt;b&gt;ບໍ່&lt;/b&gt;ລຶບໄຟລ໌ໃດໆ.&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="434"/>
@@ -482,7 +482,7 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="435"/>
         <source>Cancel</source>
-        <translation type="unfinished"/>
+        <translation>ຍົກເລີກ</translation>
     </message>
 </context>
 <context>

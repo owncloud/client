@@ -427,7 +427,7 @@ Mjet njëkohësimi kartelash për desktop.</translation>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="147"/>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="462"/>
         <source>Choose what to sync</source>
-        <translation type="unfinished"/>
+        <translation>Zgjidhni çfarë të njëkohësohet</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="350"/>
@@ -437,7 +437,7 @@ Mjet njëkohësimi kartelash për desktop.</translation>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="350"/>
         <source>Pause sync</source>
-        <translation type="unfinished"/>
+        <translation>Ndale njëkohësimin</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="383"/>
@@ -447,7 +447,7 @@ Mjet njëkohësimi kartelash për desktop.</translation>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="384"/>
         <source>Synchronization is paused because the Internet connection is a metered connection&lt;p&gt;Do you really want to force a Synchronization now?</source>
-        <translation type="unfinished"/>
+        <translation>Njëkohësimi është ndalur, ngaqë lidhja Internet është një lidhje me racion&lt;p&gt;Doni vërtet të detyrohet Njëkohësimi tani?</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="405"/>
@@ -462,17 +462,17 @@ Mjet njëkohësimi kartelash për desktop.</translation>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="411"/>
         <source>Sync paused by user</source>
-        <translation type="unfinished"/>
+        <translation>Njëkohësim i ndalur nga përdoruesi</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="429"/>
         <source>Confirm Folder Sync Connection Removal</source>
-        <translation type="unfinished"/>
+        <translation>Ripohoni Heqje Lidhjeje Njëkohësimi Dosjeje</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="430"/>
         <source>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;p&gt;Doni vërtet të ndalet njëkohësimi i dosjes &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Shënim:&lt;/b&gt; Kjo &lt;b&gt;nuk&lt;/b&gt; do të fshijë ndonjë kartelë.&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="434"/>
@@ -482,7 +482,7 @@ Mjet njëkohësimi kartelash për desktop.</translation>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="435"/>
         <source>Cancel</source>
-        <translation type="unfinished"/>
+        <translation>Anuloje</translation>
     </message>
 </context>
 <context>
@@ -505,7 +505,7 @@ Mjet njëkohësimi kartelash për desktop.</translation>
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="77"/>
         <source>Syncing %1 out of %2 spaces</source>
-        <translation type="unfinished"/>
+        <translation>Po njëkohësohet %1 nga %2 hapësira gjithsej</translation>
     </message>
 </context>
 <context>
@@ -1223,7 +1223,7 @@ Përditësimi do të kryhet në prapaskenë dhe do të mbishkruajë kartelën e 
     <message>
         <location filename="../src/gui/folder.cpp" line="391"/>
         <source>The folder has been disabled or removed from the server</source>
-        <translation type="unfinished"/>
+        <translation>Dosja është çaktivizuar, ose hequr nga shërbyesi</translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="460"/>

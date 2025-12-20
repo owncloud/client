@@ -1,30 +1,30 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS version="2.1" language="nl">
+<?xml version="1.0" ?><!DOCTYPE TS><TS version="2.1" language="ru">
 <context>
     <name>AccountBar</name>
     <message>
         <location filename="../src/gui/qml/AccountBar.qml" line="27"/>
         <source>Navigation bar</source>
-        <translation>Navigatiebalk</translation>
+        <translation>Панель навигации</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/AccountBar.qml" line="114"/>
         <source>Add Account</source>
-        <translation>Voeg account toe</translation>
+        <translation>Добавить аккаунт</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/AccountBar.qml" line="141"/>
         <source>Activity</source>
-        <translation>Activiteit</translation>
+        <translation>События</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/AccountBar.qml" line="155"/>
         <source>Settings</source>
-        <translation>Instellingen</translation>
+        <translation>Настройки</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/AccountBar.qml" line="184"/>
         <source>Quit</source>
-        <translation>Afsluiten</translation>
+        <translation>Выход</translation>
     </message>
 </context>
 <context>
@@ -32,7 +32,7 @@
     <message>
         <location filename="../src/gui/updater/appimageupdateavailablewidget.ui" line="123"/>
         <source>Skip this version</source>
-        <translation>Deze versie overslaan</translation>
+        <translation>Пропустить эту версию</translation>
     </message>
 </context>
 <context>
@@ -40,7 +40,7 @@
     <message>
         <location filename="../src/libsync/appprovider.cpp" line="92"/>
         <source>Failed to open %1 in web. Error: %2.</source>
-        <translation>Kon %1 niet openen in browser. Foutmelding: %2.</translation>
+        <translation>Ошибка просмотра %1папки. Ошибка: %2</translation>
     </message>
 </context>
 <context>
@@ -48,12 +48,12 @@
     <message>
         <location filename="../src/common/checksums.cpp" line="124"/>
         <source>The checksum header is malformed: %1</source>
-        <translation>De checksum header is verkeerd geformatteerd: %1</translation>
+        <translation>Некорректная контрольная сумма заголовка:%1</translation>
     </message>
     <message>
         <location filename="../src/common/checksums.cpp" line="128"/>
         <source>The checksum header contained an unknown checksum type &apos;%1&apos;</source>
-        <translation>Het header controlegetal bevat een onbekend controlegetal type &apos;%1&apos;</translation>
+        <translation>Заголовок контрольной суммы содержал неизвестный тип &apos;%1&apos; контрольной суммы</translation>
     </message>
 </context>
 <context>
@@ -62,59 +62,59 @@
         <location filename="../src/gui/main.cpp" line="97"/>
         <source>%1 version %2<byte value="xd"/>
 File synchronization desktop utility.</source>
-        <translation>%1 versie %2&lt;byte value=&quot;xd&quot;/&gt;
-Bestandssynchronisatie desktop software tool.</translation>
+        <translation>%1 версии %2&lt;byte value=&quot;xd&quot;/&gt;
+Средство синхронизации файлов для настольных систем.</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="105"/>
         <source>For more information, see %1</source>
         <comment>link to homepage</comment>
-        <translation>Voor moor informatie, zie %1</translation>
+        <translation>Для получения дополнительной информации смотрите% 1</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="124"/>
         <source>Start with the main window visible, or if it is already running, bring it to the front. By default, the client launches in the background.</source>
-        <translation>Start met het zichtbaar maken van het hoofdvenster, of als het al actief is, breng het naar voren. Standaard wordt de client op de achtergrond gestart.</translation>
+        <translation>Запустите клиент с видимым главным окном или, если он уже запущен, выведите его на передний план. По умолчанию клиент работает в фоновом режиме.</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="126"/>
         <source>Quit the running instance.</source>
-        <translation>Stop het lopende programma.</translation>
+        <translation>Завершить запущенный экземпляр.</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="128"/>
         <source>Write log to file (use - to write to stdout).</source>
-        <translation>Schrijf log naar bestand (gebruik - om naar stdout te schrijven).</translation>
+        <translation>Писать журнал в файл (используйте «-» для записи на стандартный выход).</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="130"/>
         <source>Write each sync log output in a new file in folder.</source>
-        <translation>Schrijf elk synchronisatie log naar een nieuw bestand in de map.</translation>
+        <translation>Писать вывод журнала каждой синхронизации в новый файл в каталоге.</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="131"/>
         <source>Flush the log file after every write.</source>
-        <translation>Schrijf naar logbestand bij elke regel.</translation>
+        <translation>Сбрасывать журнал на диск после каждой записи.</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="132"/>
         <source>Output debug-level messages in the log.</source>
-        <translation>Schrijf debug-level berichten naar het logboek.</translation>
+        <translation>Выводить в журнал сообщения отладочного уровня.</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="133"/>
         <source>Enable debug mode.</source>
-        <translation>Zet debug modus aan.</translation>
+        <translation>Разрешить отладочный режим.</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="134"/>
         <source>Forward all arguments to the cmd client. This argument must be the first.</source>
-        <translation>Alle argumenten doorsturen naar de cmd-client. Dit argument moet het eerste zijn.</translation>
+        <translation>Перешлите все аргументы клиенту cmd. Этот аргумент должен быть первым.</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="150"/>
         <source>--logfile and --logdir are mutually exclusive</source>
-        <translation>--logfile en --logdir kunnen niet tegelijkertijd gebruikt worden</translation>
+        <translation>--logfile  и --logdir являются взаимоисключающими</translation>
     </message>
 </context>
 <context>
@@ -122,27 +122,27 @@ Bestandssynchronisatie desktop software tool.</translation>
     <message>
         <location filename="../src/gui/commonstrings.cpp" line="27"/>
         <source>file manager</source>
-        <translation>bestandsbeheer</translation>
+        <translation>файловый менеджер</translation>
     </message>
     <message>
         <location filename="../src/gui/commonstrings.cpp" line="33"/>
         <source>Show in %1</source>
-        <translation>Toon in %1</translation>
+        <translation>Показать в %1</translation>
     </message>
     <message>
         <location filename="../src/gui/commonstrings.cpp" line="38"/>
         <source>Show in web browser</source>
-        <translation>Toon in browser</translation>
+        <translation>Показать в веб-барузере</translation>
     </message>
     <message>
         <location filename="../src/gui/commonstrings.cpp" line="43"/>
         <source>Copy</source>
-        <translation>Kopiëren</translation>
+        <translation>Копировать</translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/commonstrings.cpp" line="48"/>
         <source>%n Filter(s)</source>
-        <translation><numerusform>%n Filter</numerusform><numerusform>%n Filters</numerusform></translation>
+        <translation><numerusform>%n Фильтр</numerusform><numerusform>%n Фильтра</numerusform><numerusform>%n Фильтров</numerusform><numerusform>%n Фильтр</numerusform></translation>
     </message>
 </context>
 <context>
@@ -150,7 +150,7 @@ Bestandssynchronisatie desktop software tool.</translation>
     <message>
         <location filename="../src/libsync/networkjobs/fetchuserinfojobfactory.cpp" line="63"/>
         <source>Failed to retrieve user info</source>
-        <translation>Kon gebruiker informatie niet ophalen</translation>
+        <translation>Не удалось получить информацию о пользователе</translation>
     </message>
 </context>
 <context>
@@ -161,12 +161,12 @@ Bestandssynchronisatie desktop software tool.</translation>
         <location filename="../src/common/filesystembase.cpp" line="237"/>
         <location filename="../src/common/filesystembase.cpp" line="242"/>
         <source>Can&apos;t rename %1, the file is currently in use</source>
-        <translation>Kan %1 niet verplaatsen, het bestand is in gebruik</translation>
+        <translation>Невозможно переименовать %1, файл сейчас используется</translation>
     </message>
     <message>
         <location filename="../src/libsync/filesystem.cpp" line="192"/>
         <source>Could not remove folder</source>
-        <translation>Map kan niet verwijderd worden</translation>
+        <translation>Не удалось удалить каталог</translation>
     </message>
 </context>
 <context>
@@ -174,27 +174,27 @@ Bestandssynchronisatie desktop software tool.</translation>
     <message>
         <location filename="../src/gui/qml/FolderDelegate.qml" line="30"/>
         <source>Folder Sync</source>
-        <translation>Mappen sync</translation>
+        <translation>Синхронизация каталогов</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/FolderDelegate.qml" line="234"/>
         <source>Add Space</source>
-        <translation>Space toevoegen</translation>
+        <translation>Добавить пространство</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/FolderDelegate.qml" line="234"/>
         <source>Add Folder</source>
-        <translation>Voeg map toe</translation>
+        <translation>Добавить каталог</translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
         <source>You are synchronizing %1 out of %n folder(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
         <source>You are synchronizing %1 out of %n space(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
 </context>
 <context>
@@ -202,12 +202,12 @@ Bestandssynchronisatie desktop software tool.</translation>
     <message>
         <location filename="../src/gui/qml/FolderError.qml" line="58"/>
         <source>Show less</source>
-        <translation>Toon minder</translation>
+        <translation>Показать меньше</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/FolderError.qml" line="77"/>
         <source>Show more</source>
-        <translation>Toon meer</translation>
+        <translation>Показать больше</translation>
     </message>
 </context>
 <context>
@@ -221,7 +221,7 @@ Bestandssynchronisatie desktop software tool.</translation>
         <location filename="../src/gui/folderstatusmodel.cpp" line="120"/>
         <source>Syncing %1</source>
         <extracomment>Example text: &quot;Syncing 'foo.txt', 'bar.txt'&quot;</extracomment>
-        <translation>Synchroniseren %1</translation>
+        <translation>Синхронизация %1</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="122"/>
@@ -237,7 +237,7 @@ Bestandssynchronisatie desktop software tool.</translation>
         <location filename="../src/gui/folderstatusmodel.cpp" line="129"/>
         <source>%1 %2 (%3 of %4)</source>
         <extracomment>Example text: &quot;uploading foobar.png (2MB of 2MB)&quot;</extracomment>
-        <translation>%1 %2 (%3 van %4)</translation>
+        <translation>%1 %2 (%3 из %4)</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="134"/>
@@ -249,18 +249,18 @@ Bestandssynchronisatie desktop software tool.</translation>
         <location filename="../src/gui/folderstatusmodel.cpp" line="151"/>
         <source>%5 left, %1 of %2, file %3 of %4</source>
         <extracomment>Example text: &quot;5 minutes left, 12 MB of 345 MB, file 6 of 7&quot;</extracomment>
-        <translation>%5 over, %1 van %2, bestand %3 van %4</translation>
+        <translation>Осталось %5, %1 из %2, файл %3 из %4</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="159"/>
         <source>%1 of %2, file %3 of %4</source>
         <extracomment>Example text: &quot;12 MB of 345 MB, file 6 of 7&quot;</extracomment>
-        <translation>%1 van %2, bestand %3 van %4</translation>
+        <translation>%1 из %2, файл %3 из %4</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="163"/>
         <source>file %1 of %2</source>
-        <translation>bestand %1 van %2</translation>
+        <translation>файл %1 из %2</translation>
     </message>
 </context>
 <context>
@@ -268,22 +268,22 @@ Bestandssynchronisatie desktop software tool.</translation>
     <message>
         <location filename="../src/gui/folderwizard/folderwizard.cpp" line="49"/>
         <source>&lt;b&gt;Error:&lt;/b&gt; %1</source>
-        <translation>&lt;b&gt;Foutmelding:&lt;/b&gt; %1</translation>
+        <translation>&lt;b&gt;Ошибка:&lt;/b&gt; %1</translation>
     </message>
     <message>
         <location filename="../src/gui/folderwizard/folderwizard.cpp" line="49"/>
         <source>&lt;b&gt;Warning:&lt;/b&gt; %1</source>
-        <translation>&lt;b&gt;Waarschuwing:&lt;/b&gt;  %1</translation>
+        <translation>&lt;b&gt;Предупреждение:&lt;/b&gt; %1</translation>
     </message>
     <message>
         <location filename="../src/gui/folderwizard/folderwizard.cpp" line="55"/>
         <source>&lt;b&gt;Error:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</source>
-        <translation>&lt;b&gt;Foutmelding:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</translation>
+        <translation>&lt;b&gt;Ошибка:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/folderwizard/folderwizard.cpp" line="56"/>
         <source>&lt;b&gt;Warning:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</source>
-        <translation>&lt;b&gt;Waarschuwing:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</translation>
+        <translation>&lt;b&gt;Предупреждение:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</translation>
     </message>
 </context>
 <context>
@@ -291,12 +291,12 @@ Bestandssynchronisatie desktop software tool.</translation>
     <message>
         <location filename="../src/gui/folderwizard/folderwizardsourcepage.ui" line="14"/>
         <source>Form</source>
-        <translation>Formulier</translation>
+        <translation>Форма</translation>
     </message>
     <message>
         <location filename="../src/gui/folderwizard/folderwizardsourcepage.ui" line="20"/>
         <source>Pick a local folder on your computer to sync</source>
-        <translation>Kies een map op uw computer om te synchroniseren</translation>
+        <translation>Выберите локальный каталог на вашем компьютере для синхронизации</translation>
     </message>
     <message>
         <location filename="../src/gui/folderwizard/folderwizardsourcepage.ui" line="32"/>
@@ -309,27 +309,27 @@ Bestandssynchronisatie desktop software tool.</translation>
     <message>
         <location filename="../src/gui/folderwizard/folderwizardtargetpage.ui" line="14"/>
         <source>Form</source>
-        <translation>Formulier</translation>
+        <translation>Форма</translation>
     </message>
     <message>
         <location filename="../src/gui/folderwizard/folderwizardtargetpage.ui" line="20"/>
         <source>Select a remote destination folder</source>
-        <translation>Kies een externe doelmap</translation>
+        <translation>Выберите удалённый каталог назначения</translation>
     </message>
     <message>
         <location filename="../src/gui/folderwizard/folderwizardtargetpage.ui" line="49"/>
         <source>Create Folder</source>
-        <translation>Map aanmaken</translation>
+        <translation>Создать каталог</translation>
     </message>
     <message>
         <location filename="../src/gui/folderwizard/folderwizardtargetpage.ui" line="56"/>
         <source>Refresh</source>
-        <translation>Vernieuwen</translation>
+        <translation>Обновить</translation>
     </message>
     <message>
         <location filename="../src/gui/folderwizard/folderwizardtargetpage.ui" line="39"/>
         <source>Folders</source>
-        <translation>Mappen</translation>
+        <translation>Каталоги</translation>
     </message>
 </context>
 <context>
@@ -337,32 +337,32 @@ Bestandssynchronisatie desktop software tool.</translation>
     <message>
         <location filename="../src/gui/aboutdialog.ui" line="24"/>
         <source>About</source>
-        <translation>Over</translation>
+        <translation>О программе</translation>
     </message>
     <message>
         <location filename="../src/gui/aboutdialog.ui" line="108"/>
         <source>&amp;Update Channel</source>
-        <translation>&amp;Update Kanaal</translation>
+        <translation>Канал обновлений:</translation>
     </message>
     <message>
         <location filename="../src/gui/aboutdialog.ui" line="137"/>
         <source>&amp;Restart &amp;&amp; Update</source>
-        <translation>&amp;Herstarten en &amp;Bijwerken</translation>
+        <translation>&amp;Перезапуск и обновление</translation>
     </message>
     <message>
         <location filename="../src/gui/aboutdialog.ui" line="148"/>
         <source>Versions</source>
-        <translation>Versies</translation>
+        <translation>Версии</translation>
     </message>
     <message>
         <location filename="../src/gui/aboutdialog.cpp" line="93"/>
         <source>beta</source>
-        <translation>beta</translation>
+        <translation>бета</translation>
     </message>
     <message>
         <location filename="../src/gui/aboutdialog.cpp" line="161"/>
         <source>Change update channel?</source>
-        <translation>Updatekanaal veranderen?</translation>
+        <translation>Изменить канал обновлений?</translation>
     </message>
     <message>
         <location filename="../src/gui/aboutdialog.cpp" line="162"/>
@@ -377,12 +377,12 @@ Bestandssynchronisatie desktop software tool.</translation>
     <message>
         <location filename="../src/gui/aboutdialog.cpp" line="171"/>
         <source>Change update channel</source>
-        <translation>Verander updatekanaal</translation>
+        <translation>Изменить канал обновлений</translation>
     </message>
     <message>
         <location filename="../src/gui/aboutdialog.cpp" line="172"/>
         <source>Cancel</source>
-        <translation>Annuleer</translation>
+        <translation>Отмена</translation>
     </message>
 </context>
 <context>
@@ -390,17 +390,17 @@ Bestandssynchronisatie desktop software tool.</translation>
     <message>
         <location filename="../src/libsync/abstractnetworkjob.cpp" line="255"/>
         <source>Connection timed out</source>
-        <translation>Time-out verbinding</translation>
+        <translation>Время ожидания соединения превышено</translation>
     </message>
     <message>
         <location filename="../src/libsync/abstractnetworkjob.cpp" line="257"/>
         <source>Unknown error: network reply was deleted</source>
-        <translation>Onbekende fout: antwoord van het netwerk is verwijderd</translation>
+        <translation>Неизвестная ошибка: сетевой ответ был удален</translation>
     </message>
     <message>
         <location filename="../src/libsync/abstractnetworkjob.cpp" line="358"/>
         <source>Server replied &quot;%1 %2&quot; to &quot;%3 %4&quot;</source>
-        <translation>Server antwoordde &quot;%1 %2&quot; naar &quot;%3 %4&quot;</translation>
+        <translation>Сервер ответил от &quot;%1 %2&quot; до &quot;%3 %4&quot;</translation>
     </message>
 </context>
 <context>
@@ -416,73 +416,73 @@ Bestandssynchronisatie desktop software tool.</translation>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="135"/>
         <source>Force sync now</source>
-        <translation>Forceer sync nu</translation>
+        <translation>Принудительно синхронизовать сейчас</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="141"/>
         <source>Remove folder sync connection</source>
-        <translation>Verwijder map-synchronisatie verbinding</translation>
+        <translation>Удалить подключение синхронизации каталога</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="147"/>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="462"/>
         <source>Choose what to sync</source>
-        <translation>Selectieve synchronisatie</translation>
+        <translation>Выбрать объекты для синхронизации</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="350"/>
         <source>Resume sync</source>
-        <translation>Hervatten sync</translation>
+        <translation>Возобновить синхронизацию</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="350"/>
         <source>Pause sync</source>
-        <translation>Pauzeren sync</translation>
+        <translation>Приостановить синхронизацию</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="383"/>
         <source>Internet connection is metered</source>
-        <translation>Internetverbinding heeft een datalimiet</translation>
+        <translation>лимитное подключение к Интернету</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="384"/>
         <source>Synchronization is paused because the Internet connection is a metered connection&lt;p&gt;Do you really want to force a Synchronization now?</source>
-        <translation>Synchronisatie is gepauzeerd omdat de internetverbinding  een verbinding met een datalimiet is.&lt;p&gt;Wilt u nu echt een synchronisatie forceren?</translation>
+        <translation>Синхронизация приостановлена, потому что подключение к Интернету является дозированным подключением Вы действительно хотите принудительно выполнить синхронизацию сейчас?</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="405"/>
         <source>Sync Running</source>
-        <translation>Bezig met synchroniseren</translation>
+        <translation>Синхронизация запущена</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="405"/>
         <source>The sync operation is running.&lt;br/&gt;Do you want to stop it?</source>
-        <translation>Bezig met synchroniseren.&lt;br/&gt;Wilt u stoppen met synchroniseren?</translation>
+        <translation>Выполняется синхронизация.&lt;br/&gt;Вы хотите её остановить?</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="411"/>
         <source>Sync paused by user</source>
-        <translation>Synchronisatie gepauzeerd door gebruiker</translation>
+        <translation>Синхронизация приостановлена пользователем</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="429"/>
         <source>Confirm Folder Sync Connection Removal</source>
-        <translation>Bevestig verwijderen map-synchronisatie verbinding</translation>
+        <translation>Подтвердите удаление подключения синхронизации каталога</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="430"/>
         <source>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Weet u zeker dat u de synchronisatie van map &lt;i&gt;%1&lt;/i&gt; wilt stoppen?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Opmerking:&lt;/b&gt; Dit zal &lt;b&gt;geen&lt;/b&gt; bestanden verwijderen.&lt;/p&gt;</translation>
+        <translation>&lt;p&gt;Вы действительно желаете остановить синхронизацию папки &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Примечание:&lt;/b&gt; Это действие &lt;b&gt;НЕ&lt;/b&gt; удалит ваши файлы.&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="434"/>
         <source>Remove Folder Sync Connection</source>
-        <translation>Verwijder map-synchronisatie verbinding</translation>
+        <translation>Удалить подключение синхронизации каталога</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="435"/>
         <source>Cancel</source>
-        <translation>Annuleer</translation>
+        <translation>Отмена</translation>
     </message>
 </context>
 <context>
@@ -513,7 +513,7 @@ Bestandssynchronisatie desktop software tool.</translation>
     <message>
         <location filename="../src/gui/accountmodalwidget.ui" line="14"/>
         <source>Form</source>
-        <translation>Formulier</translation>
+        <translation>Форма</translation>
     </message>
 </context>
 <context>
@@ -521,55 +521,55 @@ Bestandssynchronisatie desktop software tool.</translation>
     <message>
         <location filename="../src/gui/accountsettings.ui" line="14"/>
         <source>Form</source>
-        <translation>Formulier</translation>
+        <translation>Форма</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.ui" line="73"/>
         <source>Manage Account</source>
-        <translation>Beheer account</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.ui" line="109"/>
         <source>Preparing the account</source>
-        <translation>Het account wordt voorbereid</translation>
+        <translation>Создать учётную запись</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.ui" line="137"/>
         <source>Sync connections</source>
-        <translation>Sync verbindingen</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="340"/>
         <location filename="../src/gui/accountsettings.cpp" line="381"/>
         <location filename="../src/gui/accountsettings.cpp" line="744"/>
         <source>Cancel</source>
-        <translation>Annuleren</translation>
+        <translation>Отмена</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="513"/>
         <source>Remove</source>
-        <translation>Verwijder</translation>
+        <translation>Удалить</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="252"/>
         <location filename="../src/gui/accountsettings.cpp" line="275"/>
         <source>Choose what to sync</source>
-        <translation>Selectieve synchronisatie</translation>
+        <translation>Выбрать объекты для синхронизации</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="210"/>
         <source>Force sync now</source>
-        <translation>Forceer sync nu</translation>
+        <translation>Принудительно синхронизовать сейчас</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="212"/>
         <source>Restart sync</source>
-        <translation>Herstarten sync</translation>
+        <translation>Перезапустить синхронизацию</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="159"/>
         <source>Remove folder sync connection</source>
-        <translation>Verwijder map-synchronisatie verbinding</translation>
+        <translation>Удалить подключение синхронизации каталога</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="502"/>
@@ -579,7 +579,7 @@ Bestandssynchronisatie desktop software tool.</translation>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="505"/>
         <source>Reconnect</source>
-        <translation>Opnieuw verbinden</translation>
+        <translation>Повторно подключиться</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="164"/>
@@ -594,17 +594,17 @@ Bestandssynchronisatie desktop software tool.</translation>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="331"/>
         <source>Confirm Folder Sync Connection Removal</source>
-        <translation>Bevestig verwijderen map-synchronisatie verbinding</translation>
+        <translation>Подтвердите удаление подключения синхронизации каталога</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="338"/>
         <source>Remove Folder Sync Connection</source>
-        <translation>Verwijder map-synchronisatie verbinding</translation>
+        <translation>Удалить подключение синхронизации каталога</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="370"/>
         <source>Disable virtual file support?</source>
-        <translation>Ondersteuning voor virtuele bestanden uitschakelen?</translation>
+        <translation>Отключить поддержку виртуальных файлов?</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="371"/>
@@ -613,67 +613,67 @@ Bestandssynchronisatie desktop software tool.</translation>
 The only advantage of disabling virtual file support is that the selective sync feature will become available again.
 
 This action will abort any currently running synchronization.</source>
-        <translation>Deze actie zal virtuele bestanden ondersteuning uitschakelen. Als gevolg zal de inhoud van mappen die momenteel zijn gemarkeerd met &apos;alleen online beschikbaar&apos; worden gedownload.
+        <translation>Это действие отключит поддержку виртуальных файлов. Из-за этого содержимое каталогов, которые сейчас помечены, как &apos;доступные только при сети&apos;, придётся скачать.
 
-Het enige voordeel van het uitschakelen van virtuele bestanden ondersteuning is dat selectieve synchronisatie weer beschikbaar wordt.
+Единственное преимущество от отключения поддержки виртуальных файлов состоит в том, что станет снова доступной возможность выборочной синхронизации.
 
-Deze actie annuleert alle huidig lopende synchronisatie.</translation>
+Это действие прервёт любую работающую сейчас синхронизацию.</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="379"/>
         <source>Disable support</source>
-        <translation>Ondersteuning uitschakelen</translation>
+        <translation>Отключить поддержку</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="445"/>
         <source>Sync Running</source>
-        <translation>Bezig met synchroniseren</translation>
+        <translation>Синхронизация запущена</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="445"/>
         <source>The sync operation is running.&lt;br/&gt;Do you want to stop it?</source>
-        <translation>Bezig met synchroniseren.&lt;br/&gt;Wilt u stoppen met synchroniseren?</translation>
+        <translation>Выполняется синхронизация.&lt;br/&gt;Вы хотите её остановить?</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="245"/>
         <source>Disable virtual file support</source>
-        <translation>Schakel virtuele bestanden ondersteuning uit</translation>
+        <translation>Отключить поддержку виртуальных файлов?</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="231"/>
         <source>Enable virtual file support</source>
-        <translation>Schakel ondersteuning voor virtuele bestanden in</translation>
+        <translation>Включите поддержку виртуальных файлов</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="462"/>
         <source>Sync paused by user</source>
-        <translation>Synchronisatie gepauzeerd door gebruiker</translation>
+        <translation>Синхронизация приостановлена пользователем</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="477"/>
         <source>Internet connection is metered</source>
-        <translation>Internetverbinding heeft een datalimiet</translation>
+        <translation>лимитное подключение к Интернету</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="478"/>
         <source>Synchronization is paused because the Internet connection is a metered connection&lt;p&gt;Do you really want to force a Synchronization now?</source>
-        <translation>Synchronisatie is gepauzeerd omdat de internetverbinding  een verbinding met een datalimiet is.&lt;p&gt;Wilt u nu echt een synchronisatie forceren?</translation>
+        <translation>Синхронизация приостановлена, потому что подключение к Интернету является дозированным подключением Вы действительно хотите принудительно выполнить синхронизацию сейчас?</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="504"/>
         <location filename="../src/gui/accountsettings.cpp" line="508"/>
         <source>Log in</source>
-        <translation>Meld u aan</translation>
+        <translation>Войти</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="541"/>
         <source>Connected</source>
-        <translation>Verbonden</translation>
+        <translation>Подключено</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="550"/>
         <source>Server is temporarily unavailable</source>
-        <translation>Server is tijdelijk niet beschikbaar</translation>
+        <translation>Сервер временно недоступен</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="553"/>
@@ -683,7 +683,7 @@ Deze actie annuleert alle huidig lopende synchronisatie.</translation>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="556"/>
         <source>Signed out</source>
-        <translation>Afgemeld</translation>
+        <translation>Вышли из аккаунта</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="559"/>
@@ -693,7 +693,7 @@ Deze actie annuleert alle huidig lopende synchronisatie.</translation>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="568"/>
         <source>Connecting…</source>
-        <translation>Verbinden...</translation>
+        <translation>Соединение…</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="564"/>
@@ -713,47 +713,47 @@ Deze actie annuleert alle huidig lopende synchronisatie.</translation>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="578"/>
         <source>Disconnected</source>
-        <translation>Niet verbonden</translation>
+        <translation>Отключено</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="737"/>
         <source>Confirm Account Removal</source>
-        <translation>Bevestig verwijderen account</translation>
+        <translation>Подтверждение удаления учетной записи</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="738"/>
         <source>&lt;p&gt;Do you really want to remove the connection to the account &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Wilt u echt de verbinding met het account &lt;i&gt;%1&lt;/i&gt; verbreken?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Let op:&lt;/b&gt; Hierdoor verwijdert u &lt;b&gt;geen&lt;/b&gt; bestanden.&lt;/p&gt;</translation>
+        <translation>&lt;p&gt;Вы действительно желаете удалить подключение к учетной записи &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Примечание:&lt;/b&gt; Это действие &lt;b&gt;НЕ&lt;/b&gt; удалит ваши файлы.&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="742"/>
         <source>Remove connection</source>
-        <translation>Verwijderen verbinding</translation>
+        <translation>Удалить подключение</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="508"/>
         <source>Log out</source>
-        <translation>Afmelden</translation>
+        <translation>Выйти</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="218"/>
         <source>Resume sync</source>
-        <translation>Hervatten sync</translation>
+        <translation>Возобновить синхронизацию</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="218"/>
         <source>Pause sync</source>
-        <translation>Pauzeren sync</translation>
+        <translation>Приостановить синхронизацию</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="332"/>
         <source>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Weet u zeker dat u de synchronisatie van map &lt;i&gt;%1&lt;/i&gt; wilt stoppen?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Opmerking:&lt;/b&gt; Dit zal &lt;b&gt;geen&lt;/b&gt; bestanden verwijderen.&lt;/p&gt;</translation>
+        <translation>&lt;p&gt;Вы действительно желаете остановить синхронизацию папки &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Примечание:&lt;/b&gt; Это действие &lt;b&gt;НЕ&lt;/b&gt; удалит ваши файлы.&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="538"/>
         <source>The server version %1 is unsupported! Proceed at your own risk.</source>
-        <translation>De server versie %1 is niet ondersteund! Ga door op eigen risico.</translation>
+        <translation>Версия сервера %1 не поддерживается! Продолжайте на свой страх и риск.</translation>
     </message>
 </context>
 <context>
@@ -761,27 +761,27 @@ Deze actie annuleert alle huidig lopende synchronisatie.</translation>
     <message>
         <location filename="../src/gui/accountview.ui" line="14"/>
         <source>Form</source>
-        <translation>Formulier</translation>
+        <translation>Форма</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.ui" line="73"/>
         <source>Manage Account</source>
-        <translation>Beheer account</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/accountview.ui" line="109"/>
         <source>Preparing the account</source>
-        <translation>Het account wordt voorbereid</translation>
+        <translation>Создать учётную запись</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.ui" line="137"/>
         <source>Sync connections</source>
-        <translation>Sync verbindingen</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="361"/>
         <source>Cancel</source>
-        <translation>Annuleer</translation>
+        <translation>Отмена</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="183"/>
@@ -792,37 +792,37 @@ Deze actie annuleert alle huidig lopende synchronisatie.</translation>
         <location filename="../src/gui/accountview.cpp" line="185"/>
         <location filename="../src/gui/accountview.cpp" line="189"/>
         <source>Log in</source>
-        <translation>Aanmelden</translation>
+        <translation>Войти</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="186"/>
         <source>Reconnect</source>
-        <translation>Opnieuw verbinden</translation>
+        <translation>Повторно подключиться</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="189"/>
         <source>Log out</source>
-        <translation>Afmelden</translation>
+        <translation>Выйти</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="194"/>
         <source>Remove</source>
-        <translation>Verwijder</translation>
+        <translation>Удалить</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="221"/>
         <source>The server version %1 is unsupported! Proceed at your own risk.</source>
-        <translation>De server versie %1 is niet ondersteund! Ga door op eigen risico.</translation>
+        <translation>Версия сервера %1 не поддерживается! Продолжайте на свой страх и риск.</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="224"/>
         <source>Connected</source>
-        <translation>Verbonden</translation>
+        <translation>Подключено</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="234"/>
         <source>Server is temporarily unavailable</source>
-        <translation>Server is tijdelijk niet beschikbaar</translation>
+        <translation>Сервер временно недоступен</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="237"/>
@@ -832,7 +832,7 @@ Deze actie annuleert alle huidig lopende synchronisatie.</translation>
     <message>
         <location filename="../src/gui/accountview.cpp" line="240"/>
         <source>Signed out</source>
-        <translation>Afgemeld</translation>
+        <translation>Вышли из аккаунта</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="243"/>
@@ -842,7 +842,7 @@ Deze actie annuleert alle huidig lopende synchronisatie.</translation>
     <message>
         <location filename="../src/gui/accountview.cpp" line="252"/>
         <source>Connecting…</source>
-        <translation>Verbinden...</translation>
+        <translation>Соединение…</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="248"/>
@@ -862,22 +862,22 @@ Deze actie annuleert alle huidig lopende synchronisatie.</translation>
     <message>
         <location filename="../src/gui/accountview.cpp" line="262"/>
         <source>Disconnected</source>
-        <translation>Niet verbonden</translation>
+        <translation>Отключено</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="355"/>
         <source>Confirm Account Removal</source>
-        <translation>Bevestig verwijderen account</translation>
+        <translation>Подтверждение удаления учетной записи</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="356"/>
         <source>&lt;p&gt;Do you really want to remove the connection to the account &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Wilt u echt de verbinding met het account &lt;i&gt;%1&lt;/i&gt; verbreken?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Let op:&lt;/b&gt; Hierdoor verwijdert u &lt;b&gt;geen&lt;/b&gt; bestanden.&lt;/p&gt;</translation>
+        <translation>&lt;p&gt;Вы действительно желаете удалить подключение к учетной записи &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Примечание:&lt;/b&gt; Это действие &lt;b&gt;НЕ&lt;/b&gt; удалит ваши файлы.&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="360"/>
         <source>Remove connection</source>
-        <translation>Verwijderen verbinding</translation>
+        <translation>Удалить подключение</translation>
     </message>
 </context>
 <context>
@@ -890,13 +890,13 @@ Deze actie annuleert alle huidig lopende synchronisatie.</translation>
     <message>
         <location filename="../src/gui/activitysettings.cpp" line="54"/>
         <source>Not Synced</source>
-        <translation>Niet gesynchroniseerd</translation>
+        <translation>Не синхронизировано</translation>
     </message>
     <message>
         <location filename="../src/gui/activitysettings.cpp" line="57"/>
         <source>Not Synced (%1)</source>
         <extracomment>%1 is the number of not synced files.</extracomment>
-        <translation>Niet gesynchroniseerd (%1)</translation>
+        <translation>Не синхронизировано (%1)</translation>
     </message>
 </context>
 <context>
@@ -904,7 +904,7 @@ Deze actie annuleert alle huidig lopende synchronisatie.</translation>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="48"/>
         <source>Advanced settings</source>
-        <translation>Geavanceerde instellingen</translation>
+        <translation>Расширенные настройки</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="55"/>
@@ -982,21 +982,19 @@ Deze actie annuleert alle huidig lopende synchronisatie.</translation>
     <message>
         <location filename="../src/gui/updater/appimageupdateavailablewidget.cpp" line="35"/>
         <source>Installed version: %1</source>
-        <translation>Geïnstalleerde versie: %1</translation>
+        <translation>Установленная версия %1</translation>
     </message>
     <message>
         <location filename="../src/gui/updater/appimageupdateavailablewidget.cpp" line="36"/>
         <source>Available update: %1</source>
-        <translation>Beschikbare update: %1</translation>
+        <translation>Доступное обновление: %1</translation>
     </message>
     <message>
         <location filename="../src/gui/updater/appimageupdateavailablewidget.cpp" line="37"/>
         <source>An update is available for this AppImage of %1. Do you want to install this update?
 
 The update will be performed in the background, and overwrite the current AppImage file. You need to restart the app to complete the update.</source>
-        <translation>Een update is beschikbaar voor deze AppImage van %1. Wilt u deze update installeren?
-
-De update wordt uitgevoerd op de achtergrond en zal het bestaande AppImage bestand overschrijven. U zult de applicatie moeten herstarten om de update te voltooien.</translation>
+        <translation>Для этого AppImage доступно обновление %1. Хотите ли вы установить это обновление? Обновление будет запущено в фоновом режиме и перезапишет текущий файл AppImage. Для завершения обновления необходимо перезапустить приложение.</translation>
     </message>
 </context>
 <context>
@@ -1004,7 +1002,7 @@ De update wordt uitgevoerd op de achtergrond en zal het bestaande AppImage besta
     <message>
         <location filename="../src/gui/main.cpp" line="175"/>
         <source>Quit</source>
-        <translation>Afsluiten</translation>
+        <translation>Выход</translation>
     </message>
 </context>
 <context>
@@ -1030,22 +1028,22 @@ De update wordt uitgevoerd op de achtergrond en zal het bestaande AppImage besta
     <message>
         <location filename="../src/gui/connectionvalidator.cpp" line="74"/>
         <source>No ownCloud account configured</source>
-        <translation>Geen ownCloud-account geconfigureerd</translation>
+        <translation>Учётная запись OwnCloud не настроена</translation>
     </message>
     <message>
         <location filename="../src/gui/connectionvalidator.cpp" line="290"/>
         <source>Please update to the latest server and restart the client.</source>
-        <translation>Werk de server bij naar de nieuwste versie en herstart het programma.</translation>
+        <translation>Обновите сервер до последней версии и перезапустите клиент.</translation>
     </message>
     <message>
         <location filename="../src/gui/connectionvalidator.cpp" line="171"/>
         <source>Authentication error: Either username or password are wrong.</source>
-        <translation>Authenticatiefout: Gebruikersnaam of wachtwoord onjuist.</translation>
+        <translation>Ошибка авторизации: Имя пользователя или пароль не верны.</translation>
     </message>
     <message>
         <location filename="../src/gui/connectionvalidator.cpp" line="153"/>
         <source>timeout</source>
-        <translation>time-out</translation>
+        <translation>тайм-аут</translation>
     </message>
     <message>
         <location filename="../src/gui/connectionvalidator.cpp" line="226"/>
@@ -1055,12 +1053,12 @@ De update wordt uitgevoerd op de achtergrond en zal het bestaande AppImage besta
     <message>
         <location filename="../src/gui/connectionvalidator.cpp" line="261"/>
         <source>The provided credentials are not correct</source>
-        <translation>De verstrekte inloggegevens zijn niet juist</translation>
+        <translation>Введённые учётные данные не верны</translation>
     </message>
     <message>
         <location filename="../src/gui/connectionvalidator.cpp" line="290"/>
         <source>The configured server for this client is too old.</source>
-        <translation>De voor dit programma ingestelde server is te oud</translation>
+        <translation>Сервер, настроенный для этого клиента, слишком старый.</translation>
     </message>
 </context>
 <context>
@@ -1068,7 +1066,7 @@ De update wordt uitgevoerd op de achtergrond en zal het bestaande AppImage besta
     <message>
         <location filename="../src/libsync/creds/credentialmanager.cpp" line="218"/>
         <source>Failed to parse credentials %1</source>
-        <translation>Kon inloggegevens niet verwerken %1</translation>
+        <translation>Не удалось разобрать учётные данные %1</translation>
     </message>
 </context>
 <context>
@@ -1081,7 +1079,7 @@ De update wordt uitgevoerd op de achtergrond en zal het bestaande AppImage besta
     <message>
         <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="71"/>
         <source>Server did not ask for authorization</source>
-        <translation>Server vroeg niet naar autorisatie</translation>
+        <translation>Сервер не запрашивал авторизацию</translation>
     </message>
     <message>
         <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="73"/>
@@ -1108,7 +1106,7 @@ De update wordt uitgevoerd op de achtergrond en zal het bestaande AppImage besta
         <location filename="../src/libsync/discoveryphase.cpp" line="309"/>
         <location filename="../src/libsync/discoveryphase.cpp" line="421"/>
         <source>Server error: PROPFIND reply is not XML formatted!</source>
-        <translation>Serverfout: PROPFIND reactie is niet XML-geformatteerd!</translation>
+        <translation>Ошибка сервера: Ответ на PROPFIND не в формате XML!</translation>
     </message>
 </context>
 <context>
@@ -1116,22 +1114,22 @@ De update wordt uitgevoerd op de achtergrond en zal het bestaande AppImage besta
     <message>
         <location filename="../src/libsync/discoveryphase.cpp" line="208"/>
         <source>Error while opening directory %1</source>
-        <translation>Fout bij het lezen van de map %1</translation>
+        <translation>Ошибка при открытии каталога %1</translation>
     </message>
     <message>
         <location filename="../src/libsync/discoveryphase.cpp" line="210"/>
         <source>Directory not accessible on client, permission denied</source>
-        <translation>Map niet toegankelijk met de applicatie, toegang gewijgerd</translation>
+        <translation>Каталог не доступен на клиенте, доступ запрещён</translation>
     </message>
     <message>
         <location filename="../src/libsync/discoveryphase.cpp" line="214"/>
         <source>Directory not found: %1</source>
-        <translation>Map niet gevonden: %1</translation>
+        <translation>Каталог не найден: %1</translation>
     </message>
     <message>
         <location filename="../src/libsync/discoveryphase.cpp" line="249"/>
         <source>Error while reading directory %1</source>
-        <translation>Fout bij het lezen van de map %1</translation>
+        <translation>Ошибка при чтении каталога %1</translation>
     </message>
 </context>
 <context>
@@ -1139,7 +1137,7 @@ De update wordt uitgevoerd op de achtergrond en zal het bestaande AppImage besta
     <message>
         <location filename="../src/gui/models/expandingheaderview.cpp" line="102"/>
         <source>Reset column sizes</source>
-        <translation>Kolom grootes terugzetten</translation>
+        <translation>Сбросить размеры колонок</translation>
     </message>
 </context>
 <context>
@@ -1165,60 +1163,60 @@ De update wordt uitgevoerd op de achtergrond en zal het bestaande AppImage besta
     <message>
         <location filename="../src/gui/folder.cpp" line="227"/>
         <source>Local folder %1 does not exist.</source>
-        <translation>Lokale map %1 bestaat niet.</translation>
+        <translation>Локальный каталог %1 не существует.</translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="229"/>
         <source>%1 should be a folder but is not.</source>
-        <translation>%1 zou een map moeten zijn, maar is dat niet.</translation>
+        <translation>%1 должен быть папкой, но ей не является.</translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="231"/>
         <source>%1 is not readable.</source>
-        <translation>%1 is niet leesbaar.</translation>
+        <translation>%1 не может быть прочитан.</translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="455"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
-        <translation>%1 is verwijderd.</translation>
+        <translation>&apos;%1&apos; был удалён.</translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="469"/>
         <source>%1 has been updated.</source>
         <comment>%1 names a file.</comment>
-        <translation>%1 is bijgewerkt.</translation>
+        <translation>%1 был обновлён.</translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="476"/>
         <source>%1 has been renamed to %2.</source>
         <comment>%1 and %2 name files.</comment>
-        <translation>%1 is hernoemd naar %2.</translation>
+        <translation>%1 был переименован в %2.</translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="483"/>
         <source>%1 has been moved to %2.</source>
-        <translation>%1 is verplaatst naar %2.</translation>
+        <translation>%1 был перемещён в %2.</translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="453"/>
         <source>%1 and %n other file(s) have been removed.</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="176"/>
         <source>The path &apos;%1&apos; is too long. Please enable long paths in the Windows settings or choose a different folder.</source>
-        <translation>Het pad &apos;%1&apos; is te lang. Schakel ondersteuning voor lange paden aan in de Windows instellingen, of kies een andere folder.</translation>
+        <translation>Путь &apos;%1&apos; слишком длинный. Пожалуйста, включите длинные пути в настройках Windows или выберите другую папку.</translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="221"/>
         <source>%1 failed to open the database.</source>
-        <translation>%1 kon database niet openen.</translation>
+        <translation>%1 не удалось открыть базу данных.</translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="233"/>
         <source>%1 is not writable.</source>
-        <translation>%1 is niet schrijfbaar.</translation>
+        <translation>%1 не доступно для записи.</translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="391"/>
@@ -1228,73 +1226,73 @@ De update wordt uitgevoerd op de achtergrond en zal het bestaande AppImage besta
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="460"/>
         <source>%1 and %n other file(s) have been added.</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="462"/>
         <source>%1 has been added.</source>
         <comment>%1 names a file.</comment>
-        <translation>%1 is toegevoegd.</translation>
+        <translation>Добавлено %1.</translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="467"/>
         <source>%1 and %n other file(s) have been updated.</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="474"/>
         <source>%1 has been renamed to %2 and %n other file(s) have been renamed.</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="481"/>
         <source>%1 has been moved to %2 and %n other file(s) have been moved.</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="488"/>
         <source>%1 and %n other file(s) have sync conflicts.</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="490"/>
         <source>%1 has a sync conflict. Please check the conflict file!</source>
-        <translation>%1 heeft een sync conflict. Controleer het conflict bestand!</translation>
+        <translation>У %1 есть конфликт синхронизации. Пожалуйста, проверьте конфликтный файл!</translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="495"/>
         <source>%1 and %n other file(s) could not be synced due to errors. See the log for details.</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="497"/>
         <source>%1 could not be synced due to an error. See the log for details.</source>
-        <translation>%1 kon niet worden gesynchroniseerd door een fout. Bekijk het log voor details.</translation>
+        <translation>%1 не может быть синхронизирован из-за ошибки. Подробности смотрите в журнале.</translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="503"/>
         <source>Sync Activity</source>
-        <translation>Synchronisatie-activiteit</translation>
+        <translation>Журнал синхронизации</translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="701"/>
         <source>Switching VFS mode on folder &apos;%1&apos;</source>
-        <translation>VFS-modus inschakelen in map &apos;%1&apos;</translation>
+        <translation>Переключение режима VFS для папки &apos;%1&apos;</translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="895"/>
         <source>Could not read system exclude file</source>
-        <translation>Kon het systeem-uitsluitingsbestand niet lezen</translation>
+        <translation>Невозможно прочесть системный файл исключений</translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="1090"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
-        <translation>De map %1 werd aangemaakt maar eerder ook uitgesloten van synchronisatie. Data erin zullen niet worden gesynchroniseerd.</translation>
+        <translation>Каталог %1 был создан, но ранее исключён из синхронизации. Данные внутри него не буду синхронизироваться.</translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="1093"/>
         <source>The file %1 was created but was excluded from synchronization previously. It will not be synchronized.</source>
-        <translation>Het bestand %1 is aangemaakt maar was eerder uitgesloten van synchronisatie. Dit bestand zal niet gesynchroniseerd worden.</translation>
+        <translation>Файл %1 был создан, но был ранее исключён из синхронизации. Он не будет синхронизироваться.</translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="1105"/>
@@ -1303,9 +1301,9 @@ De update wordt uitgevoerd op de achtergrond en zal het bestaande AppImage besta
 This means that the synchronization client might not upload local changes immediately and will instead only scan for local changes and upload them occasionally (every two hours by default).
 
 %1</source>
-        <translation>Wijzigingen in gesynchroniseerde mappen konden niet betrouwbaar worden bijgehouden.
+        <translation>Невозможно надёжно отслеживать изменения в синхронизируемых каталогах.
 
-Dit betekent dat de synchronisatie-applicatie lokale wijzigingen mogelijk niet direct uploadt en in plaats daarvan alleen zoekt naar lokale wijzigingen en deze af en toe uploadt (standaard is dit elke twee uur).
+Это означает, что клиент синхронизации возможно не сможет сразу закачать локальные изменения, и вместо этого будет периодически проверять локальные изменения и закачивать их по мере возможности (по умолчанию каждые два часа).
 
 %1</translation>
     </message>
@@ -1315,12 +1313,12 @@ Dit betekent dat de synchronisatie-applicatie lokale wijzigingen mogelijk niet d
     <message>
         <location filename="../src/gui/folderman.cpp" line="427"/>
         <source>Could not reset folder state</source>
-        <translation>Kan de beginstaat van de map niet terugzetten</translation>
+        <translation>Невозможно сбросить состояние каталога</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="428"/>
         <source>An old sync journal &apos;%1&apos; was found, but could not be removed. Please make sure that no application is currently using it.</source>
-        <translation>Een oud synchronisatieverslag  &apos;%1&apos; is gevonden maar kan niet worden verwijderd. Zorg ervoor dat geen applicatie dit bestand gebruikt.</translation>
+        <translation>Найден старый журнал синхронизации &apos;%1&apos;, и он не может быть удалён. Убедитесь что он не открыт в другом приложении.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="445"/>
@@ -1330,32 +1328,32 @@ Dit betekent dat de synchronisatie-applicatie lokale wijzigingen mogelijk niet d
     <message>
         <location filename="../src/gui/folderman.cpp" line="539"/>
         <source>Account disconnected or paused</source>
-        <translation>Account losgekoppeld of gepauzeerd</translation>
+        <translation>Аккаунт отключен или приостановлен</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="813"/>
         <source>User triggered force sync</source>
-        <translation>Door de gebruiker geactiveerde geforceerde synchronisatie</translation>
+        <translation>Принудительная синхронизация, инициированная пользователем</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="844"/>
         <source>Folder is about to be removed</source>
-        <translation>Map wordt zometeen verwijderd</translation>
+        <translation>Папка собирается быть удалена</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="867"/>
         <source> (backup)</source>
-        <translation>(backup)</translation>
+        <translation>(резервная копия)</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="872"/>
         <source> (backup %1)</source>
-        <translation>(backup %1)</translation>
+        <translation>(резервная копия %1)</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="919"/>
         <source>Folder &apos;%1&apos; is already in use by application %2!</source>
-        <translation>Map &apos;%1&apos; is al in gebruik door toepassing %2!</translation>
+        <translation>Папка &apos;%1&apos; уже используется приложением %2!</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="934"/>
@@ -1365,12 +1363,12 @@ Dit betekent dat de synchronisatie-applicatie lokale wijzigingen mogelijk niet d
     <message>
         <location filename="../src/gui/folderman.cpp" line="949"/>
         <source>No valid folder selected!</source>
-        <translation>Geen geldige map geselecteerd!</translation>
+        <translation>Не выбран валидный каталог!</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="971"/>
         <source>The folder %1 is used in a folder sync connection!</source>
-        <translation>Map %1 wordt al gebruikt voor synchronisatie!</translation>
+        <translation>Каталог %1 используется в соединении синхронизации каталогов!</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="1013"/>
@@ -1390,7 +1388,7 @@ Dit betekent dat de synchronisatie-applicatie lokale wijzigingen mogelijk niet d
     <message>
         <location filename="../src/gui/folderman.cpp" line="967"/>
         <source>The selected path does not exist!</source>
-        <translation>Het geselecteerde pad bestaat niet!</translation>
+        <translation>Выбранный путь не существует!</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="445"/>
@@ -1400,26 +1398,26 @@ Dit betekent dat de synchronisatie-applicatie lokale wijzigingen mogelijk niet d
     <message>
         <location filename="../src/gui/folderman.cpp" line="977"/>
         <source>The selected path is not a folder!</source>
-        <translation>Het geselecteerde pad is geen map!</translation>
+        <translation>Выбранный путь не является каталогом!</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="981"/>
         <source>You have no permission to write to the selected folder!</source>
-        <translation>U heeft geen permissie om te schrijven naar de geselecteerde map!</translation>
+        <translation>У вас недостаточно прав для записи в выбранный каталог!</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="1009"/>
         <source>There is already a sync from the server to this local folder. Please pick another local folder!</source>
-        <translation>Er wordt vanaf de server al naar deze lokale map gesynchroniseerd. Kies een andere lokale map!</translation>
+        <translation>Уже есть синхронизация с сервера в этот локальный каталог. Пожалуйста, выберите другой локальный каталог!</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="1097"/>
         <source>Multiple accounts are sharing the folder %1.
 This configuration is know to lead to dataloss and is no longer supported.
 Please consider removing this folder from the account and adding it again.</source>
-        <translation>Meerdere accounts delen de map %1.
-Deze configuratie wordt niet langer ondersteund en kan tot dataverlies leiden.
-Overweeg om deze map te verwijderen van dit account en om hem opnieuw toe te voegen.</translation>
+        <translation>Несколько учётных записей дают доступ к каталогу %1.
+Такая конфигурация может приводить к потере данных и более не поддерживается
+Пожалуйста, постарайтесь удалить этот каталог из учётной записи и добавить его заново.</translation>
     </message>
 </context>
 <context>
@@ -1432,32 +1430,32 @@ Overweeg om deze map te verwijderen van dit account en om hem opnieuw toe te voe
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="267"/>
         <source>%1 of %2 used</source>
-        <translation>%1% van %2 gebruikt</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="347"/>
         <source>Checking for changes in remote &apos;%1&apos;</source>
-        <translation>Aan het controleren op wijzigingen in afstandelijke locatie &apos;%1&apos;</translation>
+        <translation>Проверяю измененеия в удалённом &apos;%1&apos;</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="349"/>
         <source>Checking for changes in local &apos;%1&apos;</source>
-        <translation>Aan het controleren op veranderingen in lokale &apos;%1&apos;</translation>
+        <translation>Проверяю изменения в локальном &apos;%1&apos;</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="353"/>
         <source>Reconciling changes</source>
-        <translation>Wijzigingen doorvoeren</translation>
+        <translation>Согласование изменений</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="393"/>
         <source>Queued</source>
-        <translation>Staat in de wachtrij</translation>
+        <translation>поставленный в очередь</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="231"/>
         <source>Local folder: %1</source>
-        <translation>Lokale map: %1</translation>
+        <translation>Локальный каталог: %1</translation>
     </message>
 </context>
 <context>
@@ -1465,17 +1463,17 @@ Overweeg om deze map te verwijderen van dit account en om hem opnieuw toe te voe
     <message>
         <location filename="../src/gui/FoldersGui/folderstatusupdater.cpp" line="64"/>
         <source>Checking for changes in remote &apos;%1&apos;</source>
-        <translation>Aan het controleren op wijzigingen op server &apos;%1&apos;</translation>
+        <translation>Проверяю измененеия в удалённом &apos;%1&apos;</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/folderstatusupdater.cpp" line="66"/>
         <source>Checking for changes in local &apos;%1&apos;</source>
-        <translation>Aan het controleren op veranderingen in lokale &apos;%1&apos;</translation>
+        <translation>Проверяю изменения в локальном &apos;%1&apos;</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/folderstatusupdater.cpp" line="70"/>
         <source>Reconciling changes</source>
-        <translation>Wijzigingen doorvoeren</translation>
+        <translation>Согласование изменений</translation>
     </message>
 </context>
 <context>
@@ -1483,7 +1481,7 @@ Overweeg om deze map te verwijderen van dit account en om hem opnieuw toe te voe
     <message>
         <location filename="../src/gui/folderwatcher.cpp" line="123"/>
         <source>The watcher did not receive a test notification.</source>
-        <translation>De wacht heeft geen testnotificatie ontvangen.</translation>
+        <translation>Наблюдатель не получил тестовое уведомление.</translation>
     </message>
 </context>
 <context>
@@ -1491,7 +1489,7 @@ Overweeg om deze map te verwijderen van dit account en om hem opnieuw toe te voe
     <message>
         <location filename="../src/gui/folderwatcher_linux.cpp" line="81"/>
         <source>This problem usually happens when the inotify watches are exhausted. Check the FAQ for details.</source>
-        <translation>Dit probleem doet zich normaal gesproken voor wanneer de inotify wachten zijn uitgeput. Zie de veelgestelde vragen voor meer informatie.</translation>
+        <translation>Эта проблема обычно связана с механизмом оповещений inotify. Подробнее - см. FAQ.</translation>
     </message>
 </context>
 <context>
@@ -1499,17 +1497,17 @@ Overweeg om deze map te verwijderen van dit account en om hem opnieuw toe te voe
     <message>
         <location filename="../src/gui/folderwizard/folderwizard.cpp" line="140"/>
         <source>Virtual files are not available for the selected folder</source>
-        <translation>Virtuele bestanden zijn niet beschikbaar voor de geselecteerde map</translation>
+        <translation>Виртуальные файлы не доступны для выбранного каталога</translation>
     </message>
     <message>
         <location filename="../src/gui/folderwizard/folderwizard.cpp" line="153"/>
         <source>Add Folder Sync Connection</source>
-        <translation>Voeg map-synchronisatie verbinding toe</translation>
+        <translation>Добавить папку для синхронизации</translation>
     </message>
     <message>
         <location filename="../src/gui/folderwizard/folderwizard.cpp" line="156"/>
         <source>Add Sync Connection</source>
-        <translation>Sync verbinding toevoegen</translation>
+        <translation>Добавить подключение для синхронизации</translation>
     </message>
 </context>
 <context>
@@ -1517,17 +1515,17 @@ Overweeg om deze map te verwijderen van dit account en om hem opnieuw toe te voe
     <message>
         <location filename="../src/gui/folderwizard/folderwizardlocalpath.cpp" line="40"/>
         <source>Click to select a local folder to sync.</source>
-        <translation>Klikken om een lokale map te selecteren voor synchronisatie</translation>
+        <translation>Кликните, чтобы выбрать локальный каталог для синхронизации.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderwizard/folderwizardlocalpath.cpp" line="42"/>
         <source>Enter the path to the local folder.</source>
-        <translation>Geef het pad op naar de lokale map.</translation>
+        <translation>Укажите путь к локальному каталогу.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderwizard/folderwizardlocalpath.cpp" line="102"/>
         <source>Select the local folder</source>
-        <translation>Selecteer de lokale folder</translation>
+        <translation>Выберите локальную папку</translation>
     </message>
 </context>
 <context>
@@ -1535,7 +1533,7 @@ Overweeg om deze map te verwijderen van dit account en om hem opnieuw toe te voe
     <message>
         <location filename="../src/gui/folderwizard/folderwizardselectivesync.cpp" line="45"/>
         <source>Use virtual files instead of downloading content immediately</source>
-        <translation>Gebruik virtuele bestanden in plaats van de inhoud meteen te downloaden</translation>
+        <translation>Используйте виртуальные файлы вместо немедленной загрузки контента</translation>
     </message>
 </context>
 <context>
@@ -1543,27 +1541,27 @@ Overweeg om deze map te verwijderen van dit account en om hem opnieuw toe te voe
     <message>
         <location filename="../src/libsync/propagatedownload.cpp" line="168"/>
         <source>Connection Timeout</source>
-        <translation>Verbindingstime-out</translation>
+        <translation>Время ожидания подключения истекло</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagatedownload.cpp" line="246"/>
         <source>No E-Tag received from server, check Proxy/Gateway</source>
-        <translation>Geen E-Tag ontvangen van de server, controleer Proxy/Gateway</translation>
+        <translation>E-Tag от сервера не получен, проверьте настройки прокси/шлюза.</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagatedownload.cpp" line="253"/>
         <source>We received a different E-Tag for resuming. Retrying next time.</source>
-        <translation>We ontvingen een afwijkende E-Tag om door te gaan. We proberen het later opnieuw.</translation>
+        <translation>Мы получили другой E-Tag для возобновления. Повторите попытку позже.</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagatedownload.cpp" line="264"/>
         <source>We received an unexpected download Content-Length.</source>
-        <translation>We kregen een onverwachte download Content-Lengte.</translation>
+        <translation>Было получено неожиданное значение Content-Length.</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagatedownload.cpp" line="292"/>
         <source>Server returned wrong content-range</source>
-        <translation>Server retourneerde verkeerde content-bandbreedte</translation>
+        <translation>Сервер вернул неверный диапазон содержимого</translation>
     </message>
 </context>
 <context>
@@ -1571,12 +1569,12 @@ Overweeg om deze map te verwijderen van dit account en om hem opnieuw toe te voe
     <message>
         <location filename="../src/gui/generalsettings.ui" line="14"/>
         <source>Form</source>
-        <translation>Formulier</translation>
+        <translation>Форма</translation>
     </message>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="35"/>
         <source>General Settings</source>
-        <translation>Algemene instellingen</translation>
+        <translation>Основные настройки</translation>
     </message>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="41"/>
@@ -1586,87 +1584,87 @@ Overweeg om deze map te verwijderen van dit account en om hem opnieuw toe te voe
     <message>
         <location filename="../src/gui/generalsettings.ui" line="48"/>
         <source>Show Desktop Notifications</source>
-        <translation>Toon desktopberichten</translation>
+        <translation>Показывать уведомления на рабочем столе</translation>
     </message>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="55"/>
         <source>Start on Login</source>
-        <translation>Bij inloggen starten</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="73"/>
         <source>Language</source>
-        <translation>Taal</translation>
+        <translation>Язык</translation>
     </message>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="89"/>
         <source>Language selector</source>
-        <translation>Taal selectie</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="112"/>
         <source>Sync hidden files</source>
-        <translation>Synchroniseer verborgen bestanden</translation>
+        <translation>Синхронизировать скрытые файлы</translation>
     </message>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="125"/>
         <source>Show crash reporter</source>
-        <translation>Toon crash reporter</translation>
+        <translation>Показать отчёты об ошибках</translation>
     </message>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="132"/>
         <source>Move remotely deleted files to the local trash bin instead of deleting them</source>
-        <translation>Verplaats op afstand verwijderde bestanden naar de lokale prullenbak in plaats van ze te verwijderen</translation>
+        <translation>Перемещайте удаленные файлы в локальную корзину вместо их удаления</translation>
     </message>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="141"/>
         <source>Edit Ignored Files</source>
-        <translation>Bewerk genegeerde bestanden</translation>
+        <translation>Игнорируемые файлы</translation>
     </message>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="148"/>
         <source>Log Settings</source>
-        <translation>Loginstellingen</translation>
+        <translation>Настройки журнала</translation>
     </message>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="175"/>
         <source>Network</source>
-        <translation>Netwerk</translation>
+        <translation>Сеть</translation>
     </message>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="249"/>
         <source>About</source>
-        <translation>Over</translation>
+        <translation>О программе</translation>
     </message>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="104"/>
         <source>Advanced</source>
-        <translation>Geavanceerd</translation>
+        <translation>Дополнительно</translation>
     </message>
     <message>
         <location filename="../src/gui/generalsettings.cpp" line="160"/>
         <source>You cannot disable autostart because system-wide autostart is enabled.</source>
-        <translation>Je kunt autostart niet uitschakelen omdat autostart systeembreed is ingeschakeld.</translation>
+        <translation>Нельзя отключить автозапуск, так как включён общесистемный автозапуск.</translation>
     </message>
     <message>
         <location filename="../src/gui/generalsettings.cpp" line="54"/>
         <source>Warning</source>
-        <translation>Waarschuwing</translation>
+        <translation>Предупреждение</translation>
     </message>
     <message>
         <location filename="../src/gui/generalsettings.cpp" line="54"/>
         <source>Language changes require a restart of this application to take effect.</source>
-        <translation>Verandering van taal vereist een herstart om effect te hebben.</translation>
+        <translation>Чтобы изменение языка применилось, данное приложение нужно перезапустить.</translation>
     </message>
     <message>
         <location filename="../src/gui/generalsettings.cpp" line="192"/>
         <source>unknown (%1)</source>
-        <translation>onbekend (%1)</translation>
+        <translation>неизвестно (%1)</translation>
     </message>
     <message>
         <location filename="../src/gui/generalsettings.cpp" line="176"/>
         <source>(use default)</source>
-        <translation>(gebruik standaard)</translation>
+        <translation>(использовать умолчание)</translation>
     </message>
 </context>
 <context>
@@ -1674,12 +1672,12 @@ Overweeg om deze map te verwijderen van dit account en om hem opnieuw toe te voe
     <message>
         <location filename="../src/libsync/graphapi/space.cpp" line="87"/>
         <source>Personal</source>
-        <translation>Persoonlijk</translation>
+        <translation>Личный</translation>
     </message>
     <message>
         <location filename="../src/libsync/graphapi/space.cpp" line="91"/>
         <source>Shares</source>
-        <translation>Gedeeld</translation>
+        <translation>События обмена файлами</translation>
     </message>
 </context>
 <context>
@@ -1687,66 +1685,66 @@ Overweeg om deze map te verwijderen van dit account en om hem opnieuw toe te voe
     <message>
         <location filename="../src/gui/ignorelisteditor.ui" line="14"/>
         <source>Ignored Files Editor</source>
-        <translation>Genegeerde bestanden-editor</translation>
+        <translation>Редактор игнорированных файлов</translation>
     </message>
     <message>
         <location filename="../src/gui/ignorelisteditor.ui" line="20"/>
         <source>Files Ignored by Patterns</source>
-        <translation>Bestanden volgens patroon genegeerd</translation>
+        <translation>Файлы, игнорируемые по шаблонам</translation>
     </message>
     <message>
         <location filename="../src/gui/ignorelisteditor.ui" line="59"/>
         <source>Add</source>
-        <translation>Toevoegen</translation>
+        <translation>Добавить</translation>
     </message>
     <message>
         <location filename="../src/gui/ignorelisteditor.ui" line="41"/>
         <source>Pattern</source>
-        <translation>Patroon</translation>
+        <translation>Шаблон</translation>
     </message>
     <message>
         <location filename="../src/gui/ignorelisteditor.ui" line="46"/>
         <source>Allow Deletion</source>
-        <translation>Verwijderen toestaan</translation>
+        <translation>Разрешить удаление</translation>
     </message>
     <message>
         <location filename="../src/gui/ignorelisteditor.ui" line="69"/>
         <source>Remove</source>
-        <translation>Verwijder</translation>
+        <translation>Удалить</translation>
     </message>
     <message>
         <location filename="../src/gui/ignorelisteditor.ui" line="105"/>
         <source>Files or folders matching a pattern will not be synchronized. Changes take effect the next time folders are synchronized.
 
 Items where deletion is allowed will be deleted if they prevent a directory from being removed. This is useful for meta data.</source>
-        <translation>Bestanden of mappen die overeenkomen met een patroon zullen niet gesynchroniseerd worden. Wijzigingen worden de volgende keer dat mappen worden gesynchroniseerd toegepast.
+        <translation>Соответствующие шаблону папки и файлы синхронизироваться не будут. Изменения вступят в силу в следующий раз, когда папки будут синхронизированы.
 
-Items waar verwijderen is toegestaan zullen gewist worden als ze voorkomen dat een map wordt verwijderd. Dit is nuttig voor metadata.</translation>
+Там, где удаление разрешено, элементы будут удаляться, если они не дают удалить каталог. Это полезно для метаданных.</translation>
     </message>
     <message>
         <location filename="../src/gui/ignorelisteditor.cpp" line="110"/>
         <source>Could not open file</source>
-        <translation>Kon het bestand niet openen</translation>
+        <translation>Невозможно открыть файл</translation>
     </message>
     <message>
         <location filename="../src/gui/ignorelisteditor.cpp" line="111"/>
         <source>Cannot write changes to &apos;%1&apos;.</source>
-        <translation>Er kunnen geen wijzigingen worden geschreven naar %1</translation>
+        <translation>Невозможно записать изменения в &apos;%1&apos;.</translation>
     </message>
     <message>
         <location filename="../src/gui/ignorelisteditor.cpp" line="133"/>
         <source>Add Ignore Pattern</source>
-        <translation>Negeerpatroon toevoegen</translation>
+        <translation>Добавить шаблон игнорирования</translation>
     </message>
     <message>
         <location filename="../src/gui/ignorelisteditor.cpp" line="134"/>
         <source>Add a new ignore pattern:</source>
-        <translation>Voeg nieuw negeerpatroon toe:</translation>
+        <translation>Добавить новый шаблон игнорирования:</translation>
     </message>
     <message>
         <location filename="../src/gui/ignorelisteditor.cpp" line="41"/>
         <source>This entry is provided by the system at &apos;%1&apos; and cannot be modified in this view.</source>
-        <translation>Deze entry is door het systeem geleverd op &apos;%1&apos; en kan niet worden aangepast in deze sessie.</translation>
+        <translation>Эта запись сделана системой в &apos;%1&apos; и не может быть изменена в этом представлении.</translation>
     </message>
 </context>
 <context>
@@ -1754,28 +1752,28 @@ Items waar verwijderen is toegestaan zullen gewist worden als ze voorkomen dat e
     <message>
         <location filename="../src/gui/localactivitywidget.ui" line="32"/>
         <source>Filter</source>
-        <translation>Filter</translation>
+        <translation>Фильтр</translation>
     </message>
     <message>
         <location filename="../src/gui/localactivitywidget.ui" line="44"/>
         <source>Local activity table</source>
-        <translation>Lokale activiteiten tabel</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/localactivitywidget.cpp" line="62"/>
         <location filename="../src/gui/localactivitywidget.cpp" line="68"/>
         <source>Account</source>
-        <translation>Account</translation>
+        <translation>Уч.запись</translation>
     </message>
     <message>
         <location filename="../src/gui/localactivitywidget.cpp" line="105"/>
         <source>Filter menu</source>
-        <translation>Filter menu</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/localactivitywidget.cpp" line="120"/>
         <source>Actions menu</source>
-        <translation>Actie menu</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/localactivitywidget.cpp" line="162"/>
@@ -1790,7 +1788,7 @@ Items waar verwijderen is toegestaan zullen gewist worden als ze voorkomen dat e
     <message>
         <location filename="../src/gui/localactivitywidget.cpp" line="188"/>
         <source>Retry sync</source>
-        <translation>Synchroniseer opnieuw</translation>
+        <translation>Повторить попытку синхронизации</translation>
     </message>
 </context>
 <context>
@@ -1798,29 +1796,29 @@ Items waar verwijderen is toegestaan zullen gewist worden als ze voorkomen dat e
     <message>
         <location filename="../src/gui/logbrowser.ui" line="14"/>
         <source>Log Output</source>
-        <translation>Log output</translation>
+        <translation>Вывод журнала</translation>
     </message>
     <message>
         <location filename="../src/gui/logbrowser.ui" line="53"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;The logs contain sensitive information which you should not make publicly available&lt;/b&gt;&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;De logs bevatten gevoelige informatie die u niet openbaar mag maken&lt;/b&gt;&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;Журналы содержат конфиденциальную информацию, которую не следует публиковать.&lt;/b&gt;&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/logbrowser.ui" line="71"/>
         <source>The client can write debug logs to a temporary folder. These logs are very helpful for diagnosing problems.
 Since log files can get large, the client will start a new one for each sync run and compress older ones.</source>
-        <translation>De client kan debug logs wegschrijven naar een tijdelijke map. Deze logs zijn erg nuttig voor het diagnosticeren van problemen.
-Omdat logbestanden groot kunnen worden, zal de client voor elke synchronisatie een nieuwe starten en oudere logbestanden comprimeren.</translation>
+        <translation>Клиент может записывать журналы отладки во временную папку. Эти журналы очень полезны для диагностики проблем. 
+Поскольку файлы журналов могут быть большими, клиент будет создавать новый для каждого запуска синхронизации и сжимать старые.</translation>
     </message>
     <message>
         <location filename="../src/gui/logbrowser.ui" line="116"/>
         <source>Enable logging to temporary folder</source>
-        <translation>Loggen naar tijdelijke map inschakelen</translation>
+        <translation>Включить протоколирование во временный каталог</translation>
     </message>
     <message>
         <location filename="../src/gui/logbrowser.ui" line="84"/>
         <source>If enabled, logs will be written to:</source>
-        <translation>Indien ingeschakeld, zullen logs worden geschreven naar:</translation>
+        <translation>Если включено, то журналы будут записываться в:</translation>
     </message>
     <message>
         <location filename="../src/gui/logbrowser.ui" line="91"/>
@@ -1830,24 +1828,24 @@ Omdat logbestanden groot kunnen worden, zal de client voor elke synchronisatie e
     <message>
         <location filename="../src/gui/logbrowser.ui" line="123"/>
         <source>Log Http traffic </source>
-        <translation>Log HTTP-verkeer </translation>
+        <translation>Записывать трафик HTTP</translation>
     </message>
     <message>
         <location filename="../src/gui/logbrowser.ui" line="132"/>
         <source>Log files to keep:</source>
-        <translation>Logbestanden die moeten worden behouden:</translation>
+        <translation>Сохраняйте файлы журналов:</translation>
     </message>
     <message>
         <location filename="../src/gui/logbrowser.ui" line="167"/>
         <source>These settings persist across client restarts.
 Note that using any logging command line options will override the settings.</source>
-        <translation>Deze instellingen blijven ook bestaan na het herstarten van de applicatie.
-Let op dat het gebruik van command line logopties deze instelling zullen overschrijven.</translation>
+        <translation>Эти настройки остаются после перезапуска клиента.
+Учтите, что параметры командной строки, задающие протоколирование, перекрывают эти значения.</translation>
     </message>
     <message>
         <location filename="../src/gui/logbrowser.ui" line="178"/>
         <source>Open folder</source>
-        <translation>Map openen</translation>
+        <translation>Открыть папку</translation>
     </message>
 </context>
 <context>
@@ -1855,22 +1853,22 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/models/models.cpp" line="89"/>
         <source>%1 Filter:</source>
-        <translation>%1 Filter:</translation>
+        <translation>%1 Фильтр:</translation>
     </message>
     <message>
         <location filename="../src/gui/models/models.cpp" line="108"/>
         <source>All</source>
-        <translation>Alle</translation>
+        <translation>Все</translation>
     </message>
     <message>
         <location filename="../src/gui/syncerrorwidget.cpp" line="305"/>
         <source>Reset Filters</source>
-        <translation>Reset Filters</translation>
+        <translation>Сбросить фильтры</translation>
     </message>
     <message>
         <location filename="../src/gui/syncerrorwidget.cpp" line="393"/>
         <source>Status Filter:</source>
-        <translation>Status Filter:</translation>
+        <translation>Фильтр состояния:</translation>
     </message>
 </context>
 <context>
@@ -1878,32 +1876,32 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/networksettings.ui" line="14"/>
         <source>Form</source>
-        <translation>Formulier</translation>
+        <translation>Форма</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="20"/>
         <source>Pause synchronization when the Internet connection is metered</source>
-        <translation>Synchronisatie onderbreken wanneer er een datalimiet is voor de internetverbinding</translation>
+        <translation>Приостановите синхронизацию при ограниченном интернет-соединении</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="30"/>
         <source>Proxy Settings</source>
-        <translation>Proxy Instellingen</translation>
+        <translation>Настройки прокси</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="36"/>
         <source>No Proxy</source>
-        <translation>Geen Proxy</translation>
+        <translation>Без прокси</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="49"/>
         <source>Use system proxy</source>
-        <translation>Gebruik systeem proxy</translation>
+        <translation>Использовать системный прокси</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="114"/>
         <source>Host</source>
-        <translation>Server</translation>
+        <translation>Сервер</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="130"/>
@@ -1923,12 +1921,12 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/networksettings.ui" line="174"/>
         <source>Proxy server requires authentication</source>
-        <translation>Proxyserver heeft verificatie nodig</translation>
+        <translation>Прокси-сервер требует авторизации</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="219"/>
         <source>Note: proxy settings have no effects for accounts on localhost</source>
-        <translation>Opmerking: proxy-instellingen hebben geen effect op accounts op localhost</translation>
+        <translation>Замечание: настройки прокси не действуют для учётных записей на localhost</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="59"/>
@@ -1944,29 +1942,29 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
         <location filename="../src/gui/networksettings.cpp" line="49"/>
         <location filename="../src/gui/networksettings.cpp" line="50"/>
         <source>Hostname of proxy server</source>
-        <translation>Hostnaam van proxy server</translation>
+        <translation>Адрес прокси сервера</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.cpp" line="51"/>
         <location filename="../src/gui/networksettings.cpp" line="52"/>
         <source>Username for proxy server</source>
-        <translation>Gebruikersnaam voor proxy server</translation>
+        <translation>Пользователь прокси-сервера</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.cpp" line="53"/>
         <location filename="../src/gui/networksettings.cpp" line="54"/>
         <source>Password for proxy server</source>
-        <translation>Wachtwoord voor proxy server</translation>
+        <translation>Пароль прокси-сервера</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.cpp" line="56"/>
         <source>HTTP(S) proxy</source>
-        <translation>HTTP(S) proxy</translation>
+        <translation>HTTP(S)-прокси</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.cpp" line="57"/>
         <source>SOCKS5 proxy</source>
-        <translation>SOCKS5 proxy</translation>
+        <translation>SOCKS5-прокси</translation>
     </message>
 </context>
 <context>
@@ -1987,12 +1985,12 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizard.cpp" line="52"/>
         <source>Cancel Setup</source>
-        <translation>Annuleer installatie</translation>
+        <translation>отменить настроить</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizard.cpp" line="52"/>
         <source>Do you really want to cancel the account setup?</source>
-        <translation>Weet u zeker dat u het instellen van uw account wilt annuleren?</translation>
+        <translation>Вы действительно хотите отменить настройку своей учетной записи?</translation>
     </message>
 </context>
 <context>
@@ -2005,17 +2003,17 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="63"/>
         <source>Back</source>
-        <translation>Terug</translation>
+        <translation>Назад</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="64"/>
         <source>Advanced</source>
-        <translation>Geavanceerd</translation>
+        <translation>Дополнительно</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="208"/>
         <source>Sign in</source>
-        <translation>Inloggen</translation>
+        <translation>Войти</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="211"/>
@@ -2028,17 +2026,17 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/updater/newversionavailablewidget.cpp" line="33"/>
         <source>Skip this version</source>
-        <translation>Deze versie overslaan</translation>
+        <translation>Пропустить эту версию</translation>
     </message>
     <message>
         <location filename="../src/gui/updater/newversionavailablewidget.cpp" line="34"/>
         <source>Get update</source>
-        <translation>Ophalen update</translation>
+        <translation>Получить обновление</translation>
     </message>
     <message>
         <location filename="../src/gui/updater/newversionavailablewidget.cpp" line="35"/>
         <source>Skip this time</source>
-        <translation>Deze keer overslaan</translation>
+        <translation>Пропустить в этот раз</translation>
     </message>
 </context>
 <context>
@@ -2056,40 +2054,40 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/creds/oauth.cpp" line="268"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
-        <translation>Fout gemeld door de server: &lt;em&gt;%1&lt;/em&gt;</translation>
+        <translation>Сервер вернул ошибку: &lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/oauth.cpp" line="270"/>
         <source>There was an error accessing the &apos;token&apos; endpoint: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</source>
-        <translation>Er heeft zich een fout voorgedaan bij het verkrijgen van de &apos;token&apos; eindpunt: 1 2 %1 2</translation>
+        <translation>При доступе к конечной точке &apos;токена&apos; произошла ошибка: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/oauth.cpp" line="272"/>
         <source>Could not parse the JSON returned from the server: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</source>
-        <translation>Kon de JSON dat teruggekomen is van de server niet ontleden: 1 2 %1 2</translation>
+        <translation>Не удалось разобрать JSON, пришедший с сервера: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/oauth.cpp" line="274"/>
         <source>Unsupported token type: %1</source>
-        <translation>Niet-ondersteund token type: %1</translation>
+        <translation>Неподдерживаемый тип токена: %1</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/oauth.cpp" line="276"/>
         <source>The reply from the server did not contain all expected fields
 :%1</source>
-        <translation>Het antwoord van de server bevat niet alle verwachte velden
+        <translation>Ответ от сервера не содержал в себе все ожидаемые поля
 :%1</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/oauth.cpp" line="278"/>
         <source>Unknown Error</source>
-        <translation>Onbekende fout</translation>
+        <translation>Неизвестная ошибка</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/oauth.cpp" line="281"/>
         <location filename="../src/gui/creds/oauth.cpp" line="304"/>
         <source>Login Error</source>
-        <translation>Inlogfout</translation>
+        <translation>Ошибка входа</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/oauth.cpp" line="310"/>
@@ -2099,7 +2097,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/creds/oauth.cpp" line="313"/>
         <source>Wrong user</source>
-        <translation>Verkeerde gebruiker</translation>
+        <translation>неправильный пользователь</translation>
     </message>
 </context>
 <context>
@@ -2142,7 +2140,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="182"/>
         <source>Copy URL</source>
-        <translation>Kopiëren URL </translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="237"/>
@@ -2195,12 +2193,12 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="154"/>
         <source>Could not download update. Please click &lt;a href=&apos;%1&apos;&gt;here&lt;/a&gt; to download the update manually.</source>
-        <translation>Kon de download niet bijwerken. Klik &lt;a href=&apos;%1&apos;&gt;hier&lt;/a&gt;  om de download handmatig bij te werken.</translation>
+        <translation>Не удалось загрузить обновление. Для скачивания файлов вручную, нажмите &lt;a href=&apos;%1&apos;&gt;здесь&lt;/a&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="156"/>
         <source>Could not check for new updates.</source>
-        <translation>Kon niet controleren op updates.</translation>
+        <translation>Не удалось проверить наличие новых обновлений.</translation>
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="146"/>
@@ -2210,22 +2208,22 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="149"/>
         <source>%1 installed successfully. Restart the application to finish installing the update.</source>
-        <translation>%1 succesvol geïnstalleerd. Start de applicatie opnieuw om de installatie van de update te voltooien.</translation>
+        <translation>%1 успешно установлено. Перезапустите приложение, чтобы завершить установку обновления.</translation>
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="151"/>
         <source>%1 available. Restart application to start the update.</source>
-        <translation>%1 is beschikbaar. Herstart de applicatie om de update te starten.</translation>
+        <translation>Доступно %1. Перезапустите приложение, чтобы начать обновление.</translation>
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="162"/>
         <source>New %1 available. Please click &lt;a href=&apos;%2&apos;&gt;here&lt;/a&gt; to download the new AppImage manually.</source>
-        <translation>Een nieuw(e) %1 is beschikbaar. Klik &lt;a href=&apos;%2&apos;&gt;here&lt;/a&gt; on het nieuwe AppImage handmatig te downloaden.</translation>
+        <translation>Доступно обновление %1. Пожалуйста, нажмите &lt;a href=&apos;%2&apos;&gt;здесь&lt;/a&gt; чтобы скачать вручную новый AppImage.</translation>
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="165"/>
         <source>New %1 available. Please use the system&apos;s update tool to install it.</source>
-        <translation>Nieuwe %1 beschikbaar. Gebruik de systeemupdate tool om te installeren.</translation>
+        <translation>Доступна новая версия %1. Для установки пожалуйста используйте системные средства обновления.</translation>
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="167"/>
@@ -2235,12 +2233,12 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="169"/>
         <source>Update status is unknown: Did not check for new updates.</source>
-        <translation>Update status is onbekend: niet gecontroleerd op nieuwe updates.</translation>
+        <translation>Статус обновления неизвестен: Не удалось проверить наличие обновлений.</translation>
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="173"/>
         <source>No updates available. Your installation is at the latest version.</source>
-        <translation>Geen updates beschikbaar. Uw installatie is al de laatste versie.</translation>
+        <translation>Обновлений в настоящий момент нет. У вас установлена самая последняя версия программы.</translation>
     </message>
 </context>
 <context>
@@ -2248,7 +2246,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/libsync/owncloudpropagator.cpp" line="770"/>
         <source>File %1 is currently in use</source>
-        <translation>Bestand %1 is in gebruik</translation>
+        <translation>Файл %1 сейчас используется</translation>
     </message>
 </context>
 <context>
@@ -2256,72 +2254,72 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/libsync/discovery.cpp" line="185"/>
         <source>Symbolic links are not supported in syncing.</source>
-        <translation>Symbolische links worden niet ondersteund bij het synchroniseren.</translation>
+        <translation>Синхронизация символических ссылок не поддерживается.</translation>
     </message>
     <message>
         <location filename="../src/libsync/discovery.cpp" line="194"/>
         <source>File is listed on the ignore list.</source>
-        <translation>Het bestand is opgenomen op de negeerlijst.</translation>
+        <translation>Файл присутствует в списке игнорируемых.</translation>
     </message>
     <message>
         <location filename="../src/libsync/discovery.cpp" line="199"/>
         <source>File names ending with a period are not supported on this file system.</source>
-        <translation>Bestandsnamen die eindigen met een punt worden niet ondersteund door het bestandssysteem.</translation>
+        <translation>Эта файловая система не поддерживает имена файлов, оканчивающиеся на точку.</translation>
     </message>
     <message>
         <location filename="../src/libsync/discovery.cpp" line="212"/>
         <source>File names containing the character &apos;%1&apos; are not supported on this file system.</source>
-        <translation>Bestandsnamen met een &apos;%1&apos; symbool worden niet ondersteund door het bestandssysteem.</translation>
+        <translation>Эта файловая система не поддерживает имена файлов, содержащие символ &apos;%1&apos;.</translation>
     </message>
     <message>
         <location filename="../src/libsync/discovery.cpp" line="215"/>
         <source>File name contains at least one invalid character</source>
-        <translation>De bestandsnaam bevat ten minste één ongeldig teken</translation>
+        <translation>Имя файла содержит по крайней мере один некорректный символ</translation>
     </message>
     <message>
         <location filename="../src/libsync/discovery.cpp" line="217"/>
         <source>The file name is a reserved name on this file system.</source>
-        <translation>De bestandsnaam is een gereserveerde naam op dit bestandssysteem.</translation>
+        <translation>Данное имя файла зарезервировано в данной файловой системе.</translation>
     </message>
     <message>
         <location filename="../src/libsync/discovery.cpp" line="226"/>
         <source>Filename contains trailing spaces.</source>
-        <translation>De bestandsnaam bevat spaties achteraan.</translation>
+        <translation>Имя файла содержит пробелы на конце.</translation>
     </message>
     <message>
         <location filename="../src/libsync/discovery.cpp" line="229"/>
         <source>Filename is too long.</source>
-        <translation>De bestandsnaam is te lang.</translation>
+        <translation>Имя файла слишком длинное.</translation>
     </message>
     <message>
         <location filename="../src/libsync/discovery.cpp" line="232"/>
         <source>File/Folder is ignored because it&apos;s hidden.</source>
-        <translation>Bestand/Map is genegeerd omdat het verborgen is. </translation>
+        <translation>Файл/папка проигнорированы, так как являются скрытыми.</translation>
     </message>
     <message>
         <location filename="../src/libsync/discovery.cpp" line="236"/>
         <source>Stat failed.</source>
-        <translation>Stat mislukt.</translation>
+        <translation>Не удалось загрузить статистику.</translation>
     </message>
     <message>
         <location filename="../src/libsync/discovery.cpp" line="239"/>
         <source>Conflict: Server version downloaded, local copy renamed and not uploaded.</source>
-        <translation>Conflict: Serverversie gedownload, lokale versie hernoemd en niet geüpload.</translation>
+        <translation>Конфликт: Серверная версия скачана, локальная копия переименована и не закачана.</translation>
     </message>
     <message>
         <location filename="../src/libsync/discovery.cpp" line="243"/>
         <source>The filename cannot be encoded on your file system.</source>
-        <translation>De bestandsnaam kan niet worden gecodeerd op jouw bestandssysteem.</translation>
+        <translation>Невозможно перекодировать имя файла для вашей системы.</translation>
     </message>
     <message>
         <location filename="../src/libsync/discovery.cpp" line="246"/>
         <source>The filename is blacklisted on the server.</source>
-        <translation>De bestandsnaam staat op de zwarte lijst van de server.</translation>
+        <translation>Имя файла находится в чёрном списке сервера.</translation>
     </message>
     <message>
         <location filename="../src/libsync/discovery.cpp" line="372"/>
         <source>server reported no %1</source>
-        <translation>Server vermeldde geen %1</translation>
+        <translation>Сервер вернул отсутствие %1</translation>
     </message>
     <message>
         <location filename="../src/libsync/discovery.cpp" line="554"/>
@@ -2333,52 +2331,52 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/libsync/discovery.cpp" line="1113"/>
         <source>SelectiveSync: Ignored because its path is deselected</source>
-        <translation>SelectiveSync: genegeerd omdat het pad gedeselecteerd is.</translation>
+        <translation>SelectiveSync: Игнорируется, поскольку путь к нему не выбран</translation>
     </message>
     <message>
         <location filename="../src/libsync/discovery.cpp" line="1187"/>
         <source>Moved to invalid target, restoring</source>
-        <translation>Ongeldig doel verplaatst, herstellen</translation>
+        <translation>Перемещение в недопустимое место, восстанавливаем</translation>
     </message>
     <message>
         <location filename="../src/libsync/discovery.cpp" line="1200"/>
         <source>Not allowed to remove, restoring</source>
-        <translation>Niet toegestaan om te verwijderen, herstellen</translation>
+        <translation>Не допускается удаление, восстанавливаем</translation>
     </message>
     <message>
         <location filename="../src/libsync/discovery.cpp" line="1146"/>
         <source>Not allowed because you don&apos;t have permission to add subfolders to that folder</source>
-        <translation>Niet toegestaan, omdat je geen permissies hebt om submappen aan die map toe te voegen</translation>
+        <translation>Не разрешается, так как у вас нет полномочий на добавление подпапок в папку.</translation>
     </message>
     <message>
         <location filename="../src/libsync/discovery.cpp" line="579"/>
         <source>Error while doing a rename, unhandled status code: %1</source>
-        <translation>Er is een fout opgetreden bij het veranderen van de naam, de niet afgehandelde status code is: %1</translation>
+        <translation>Ошибка при выполнении переименования, необработанный код состояния: %1</translation>
     </message>
     <message>
         <location filename="../src/libsync/discovery.cpp" line="1151"/>
         <source>Not allowed because you don&apos;t have permission to add files in that folder</source>
-        <translation>Niet toegestaan omdat u geen rechten hebt om bestanden in die map toe te voegen</translation>
+        <translation>Не разрешается, так как у вас нет полномочий на добавление файлов в эту папку</translation>
     </message>
     <message>
         <location filename="../src/libsync/discovery.cpp" line="1164"/>
         <source>Not allowed to upload this file because it is read-only on the server, restoring</source>
-        <translation>Niet toegestaan om dit bestand te uploaden, omdat het alleen-lezen is op de server, herstellen</translation>
+        <translation>Не допускается загрузка этого файла, так как на сервере он помечен только для чтения, восстанавливаем</translation>
     </message>
     <message>
         <location filename="../src/libsync/discovery.cpp" line="1310"/>
         <source>Error while reading the database</source>
-        <translation>Fout tijdens het uitlezen van de database</translation>
+        <translation>Ошибка при чтении базы данных</translation>
     </message>
     <message>
         <location filename="../src/libsync/discovery.cpp" line="1342"/>
         <source>This Space is currently unavailable</source>
-        <translation>Deze Space is op dit moment niet beschikbaar.</translation>
+        <translation>Это пространство сейчас недоступно</translation>
     </message>
     <message>
         <location filename="../src/libsync/discovery.cpp" line="1363"/>
         <source>Server replied with an error while reading directory &apos;%1&apos; : %2</source>
-        <translation>Server reageerde met een fout tijdens het uitlezen van map &apos;%1&apos; : %2</translation>
+        <translation>Сервер ответил ошибкой при чтении каталога &apos;%1&apos; : %2</translation>
     </message>
 </context>
 <context>
@@ -2386,12 +2384,12 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/libsync/owncloudpropagator.cpp" line="1114"/>
         <source>Error updating metadata: %1</source>
-        <translation>Fout bij het bijwerken van de metadata: %1</translation>
+        <translation>Ошибка обновления метаданных: %1</translation>
     </message>
     <message>
         <location filename="../src/libsync/owncloudpropagator.cpp" line="1117"/>
         <source>%1 the folder is currently in use</source>
-        <translation>%1 de folder is op dit moment in gebruik</translation>
+        <translation>%1 каталог сейчас занят</translation>
     </message>
 </context>
 <context>
@@ -2399,53 +2397,53 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/libsync/propagatedownload.cpp" line="376"/>
         <source>Failed to free up space, the file %1 is currently in use</source>
-        <translation>Er kan geen ruimte gemaakt worden, bestand %1 is in gebuik</translation>
+        <translation>Не удалось освободить место, файл %1 сейчас занят</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagatedownload.cpp" line="401"/>
         <location filename="../src/libsync/propagatedownload.cpp" line="482"/>
         <source>File %1 can not be downloaded because of a local file name clash with %2!</source>
-        <translation>Kon bestand %1 niet downloaden vanwege een lokaal bestandsnaam conflict met %2!</translation>
+        <translation>Нельзя скачать файл %1 из-за пересечения локального имени с %2!</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagatedownload.cpp" line="540"/>
         <source>The download would reduce free local disk space below the limit</source>
-        <translation>De download zal de vrije lokale schijfruimte reduceren tot onder het limiet</translation>
+        <translation>Скачивание сократит доступное пространство на локальном диске ниже допустимого предела</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagatedownload.cpp" line="544"/>
         <source>Free space on disk is less than %1</source>
-        <translation>Vrije schijfruimte is minder dan %1</translation>
+        <translation>Свободное место на диске меньше, чем %1</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagatedownload.cpp" line="665"/>
         <source>File was deleted from server</source>
-        <translation>Bestand was verwijderd van de server</translation>
+        <translation>Файл был удален с сервера</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagatedownload.cpp" line="724"/>
         <source>Broken webserver returned empty content length for non-empty file on resume</source>
-        <translation>Kapotte webserver retourneerde een leeg antwoord voor een niet-leeg bestand bij het resumeren.</translation>
+        <translation>Сломанный вебсервер при возобновлении вернул пустую длину содержимого для не-пустого файла</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagatedownload.cpp" line="731"/>
         <source>The file could not be downloaded completely.</source>
-        <translation>Het bestand kon niet volledig worden gedownload.</translation>
+        <translation>Невозможно полностью загрузить файл.</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagatedownload.cpp" line="738"/>
         <source>The downloaded file is empty despite the server announced it should have been %1.</source>
-        <translation>Het gedownloade bestand is leeg, hoewel de server meldde dat het %1 zou moeten zijn.</translation>
+        <translation>Скачанный файл пуст, хотя сервер заявил, что он должен быть %1.</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagatedownload.cpp" line="845"/>
         <source>File %1 cannot be saved because of a local file name clash with %2!</source>
-        <translation>Kon bestand %1 niet opslaan vanwege een lokaal bestandsconflict met %2!</translation>
+        <translation>Нельзя сохранить файл %1 из-за пересечения локального имени файла с %2!</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagatedownload.cpp" line="933"/>
         <source>Error updating metadata: %1</source>
-        <translation>Fout bij het bijwerken van de metadata: %1</translation>
+        <translation>Ошибка обновления метаданных: %1</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagatedownload.cpp" line="490"/>
@@ -2453,13 +2451,13 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
         <location filename="../src/libsync/propagatedownload.cpp" line="901"/>
         <location filename="../src/libsync/propagatedownload.cpp" line="936"/>
         <source>The file %1 is currently in use</source>
-        <translation>Bestand %1 is in gebruik</translation>
+        <translation>Файл %1 сейчас занят</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagatedownload.cpp" line="371"/>
         <location filename="../src/libsync/propagatedownload.cpp" line="893"/>
         <source>File has changed since discovery</source>
-        <translation>Het bestand is gewijzigd sinds het is gevonden</translation>
+        <translation>После обнаружения файл был изменен</translation>
     </message>
 </context>
 <context>
@@ -2467,7 +2465,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/libsync/owncloudpropagator.cpp" line="235"/>
         <source>; Restoration Failed: %1</source>
-        <translation>; Herstel mislukte: %1</translation>
+        <translation>; Восстановление не удалось: %1</translation>
     </message>
 </context>
 <context>
@@ -2475,27 +2473,27 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/libsync/propagatorjobs.cpp" line="163"/>
         <source>could not delete file %1, error: %2</source>
-        <translation>kon bestand file %1 niet verwijderen, fout: %2</translation>
+        <translation>не удалось удалить файл %1, ошибка: %2</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagatorjobs.cpp" line="178"/>
         <source>Can not create local folder %1 because of a local file name clash with %2</source>
-        <translation>Kon lokale map %1 niet aanmaken vanwege een lokaal bestandsnaam conflict met %2</translation>
+        <translation>Не могу создать локальный каталог %1 из-за совпадения локального имени файла с %2</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagatorjobs.cpp" line="196"/>
         <source>Error updating metadata: %1</source>
-        <translation>Fout bij het bijwerken van de metadata: %1</translation>
+        <translation>Ошибка обновления метаданных: %1</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagatorjobs.cpp" line="199"/>
         <source>The file %1 is currently in use</source>
-        <translation>Bestand %1 is in gebruik</translation>
+        <translation>Файл %1 сейчас занят</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagatorjobs.cpp" line="183"/>
         <source>could not create folder %1</source>
-        <translation>kon map %1 niet maken</translation>
+        <translation>не удается создать папку %1</translation>
     </message>
 </context>
 <context>
@@ -2503,23 +2501,23 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/libsync/propagatorjobs.cpp" line="77"/>
         <source>%1 failed with: %2</source>
-        <translation>z%1 is mislukt: %2</translation>
+        <translation>%1 не удалось: %2</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagatorjobs.cpp" line="107"/>
         <source>Could not remove %1 because of a local file name clash with %2!</source>
-        <translation>Kon %1 niet verwijderen vanwege een lokaal bestandsnaam conflict met %2!</translation>
+        <translation>Не удалось удалить %1 из-за пересечения локального имени файла с %2!</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagatorjobs.cpp" line="123"/>
         <source>Could not move &apos;%1&apos; to the trash bin</source>
-        <translation>Kan &apos;%1&apos; niet naar de prullenbak verplaatsen</translation>
+        <translation>Не удалось переместить &apos;% 1&apos; в мусорное ведро</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagatorjobs.cpp" line="87"/>
         <location filename="../src/libsync/propagatorjobs.cpp" line="114"/>
         <source>%1 the file is currently in use</source>
-        <translation>%1 is in gebruik</translation>
+        <translation>Файл %1 сейчас используется</translation>
     </message>
 </context>
 <context>
@@ -2527,32 +2525,32 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/libsync/propagatorjobs.cpp" line="235"/>
         <source>File %1 can not be renamed to %2 because of a local file name clash</source>
-        <translation>Bestand %1 kan niet worden hernoemd naar %2, omdat de naam conflicteert met een lokaal bestand</translation>
+        <translation>Файл %1 не может быть переименован в %2 из-за локального конфликта имен</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagatorjobs.cpp" line="242"/>
         <source>Could not rename %1 to %2, the file is currently in use</source>
-        <translation>Kan %1 niet naar %2 verplaatsen, het bestand is in gebruik</translation>
+        <translation>Не удалось переименовать %1 в %2, файл сейчас используется</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagatorjobs.cpp" line="269"/>
         <source>Error updating metadata: %1</source>
-        <translation>Fout bij het bijwerken van de metadata: %1</translation>
+        <translation>Ошибка обновления метаданных: %1</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagatorjobs.cpp" line="272"/>
         <source>The file %1 is currently in use</source>
-        <translation>Bestand %1 is in gebruik</translation>
+        <translation>Файл %1 сейчас занят</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagatorjobs.cpp" line="278"/>
         <source>Failed to rename file</source>
-        <translation>Kan bestand niet hernoemen</translation>
+        <translation>Не удалось переименовать файл</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagatorjobs.cpp" line="284"/>
         <source>Error setting pin state</source>
-        <translation>Fout bij het instellen van pin staat</translation>
+        <translation>Ошибка при установке состояния прикреплённости</translation>
     </message>
 </context>
 <context>
@@ -2560,7 +2558,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/libsync/propagateremotedelete.cpp" line="95"/>
         <source>Wrong HTTP code returned by server. Expected 204, but received &quot;%1 %2&quot;.</source>
-        <translation>Foutieve HTTP code ontvangen van de server. Verwacht was 204, maar ontvangen &quot;%1 %2&quot;.</translation>
+        <translation>Сервер ответил не правильным HTTP кодом. Ожидался 204, но получен &quot;%1 %2&quot;.</translation>
     </message>
 </context>
 <context>
@@ -2568,17 +2566,17 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/libsync/propagateremotemkdir.cpp" line="104"/>
         <source>Wrong HTTP code returned by server. Expected 201, but received &quot;%1 %2&quot;.</source>
-        <translation>Foutieve HTTP code ontvangen van de server. Verwacht was 201, maar ontvangen &quot;%1 %2&quot;.</translation>
+        <translation>Сервер ответил не правильным HTTP кодом. Ожидался 201, но получен &quot;%1 %2&quot;.</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateremotemkdir.cpp" line="140"/>
         <source>Error writing metadata to the database: %1</source>
-        <translation>Fout bij schrijven van Metadata naar de database: %1</translation>
+        <translation>Не удалось записать метаданные в базу данных: %1</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateremotemkdir.cpp" line="182"/>
         <source>Setting file status failed due to file lock</source>
-        <translation>Kon een bestandsstatus niet zetten vanwege een bestandslock.</translation>
+        <translation>Установка состояния файла не прошла из-за блокировки файла</translation>
     </message>
 </context>
 <context>
@@ -2586,27 +2584,27 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/libsync/propagateremotemove.cpp" line="113"/>
         <source>Wrong HTTP code returned by server. Expected 201, but received &quot;%1 %2&quot;.</source>
-        <translation>Foutieve HTTP code ontvangen van de server. Verwacht werd 201, maar ontvangen &quot;%1 %2&quot;.</translation>
+        <translation>Сервер ответил не правильным HTTP кодом. Ожидался 201, но получен &quot;%1 %2&quot;.</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateremotemove.cpp" line="151"/>
         <source>Error updating metadata: %1</source>
-        <translation>Fout bij het bijwerken van de metadata: %1</translation>
+        <translation>Ошибка обновления метаданных: %1</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateremotemove.cpp" line="154"/>
         <source>The file %1 is currently in use</source>
-        <translation>Bestand %1 is in gebruik</translation>
+        <translation>Файл %1 сейчас занят</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateremotemove.cpp" line="166"/>
         <source>Error writing metadata to the database</source>
-        <translation>Fout bij schrijven van Metadata naar de database</translation>
+        <translation>Ошибка записи метаданных в базу данных</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateremotemove.cpp" line="159"/>
         <source>Error setting pin state</source>
-        <translation>Fout bij het instellen van pin staat</translation>
+        <translation>Ошибка при установке состояния прикреплённости</translation>
     </message>
 </context>
 <context>
@@ -2614,12 +2612,12 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/libsync/owncloudpropagator.cpp" line="1298"/>
         <source>Could not update file : %1</source>
-        <translation>Kon bestand niet bijwerken : %1</translation>
+        <translation>Не удалось обновить файл : %1</translation>
     </message>
     <message>
         <location filename="../src/libsync/owncloudpropagator.cpp" line="1301"/>
         <source>The file %1 is currently in use</source>
-        <translation>Bestand %1 is in gebruik</translation>
+        <translation>Файл %1 сейчас занят</translation>
     </message>
 </context>
 <context>
@@ -2627,29 +2625,29 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/libsync/propagateuploadcommon.cpp" line="64"/>
         <source>Local file changed during sync. It will be resumed.</source>
-        <translation>Lokaal bestand gewijzigd bij sync. Het wordt opnieuw meegenomen.</translation>
+        <translation>Локальный файл изменился в процессе синхронизации. Операция будет возобновлена.</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateuploadcommon.cpp" line="81"/>
         <source>File %1 cannot be uploaded because another file with the same name, differing only in case, exists</source>
-        <translation>Bestand %1 kan niet worden geüpload omdat er al een ander bestand met dezelfde naam bestaan, al verschillen hoofd/kleine letters</translation>
+        <translation>Невозможно загрузить файл %1, так как уже есть другой файл с тем же именем, отличающимся только регистром символов</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateuploadcommon.cpp" line="92"/>
         <location filename="../src/libsync/propagateuploadcommon.cpp" line="280"/>
         <source>Upload of %1 exceeds the quota for the folder</source>
-        <translation>Upload van %1 overtreft de quota van de folder</translation>
+        <translation>Закачка %1 превышает квоту для каталога</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateuploadcommon.cpp" line="132"/>
         <location filename="../src/libsync/propagateuploadcommon.cpp" line="163"/>
         <source>%1 the file is currently in use</source>
-        <translation>%1 is in gebruik</translation>
+        <translation>Файл %1 сейчас используется</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateuploadcommon.cpp" line="198"/>
         <source>File Removed</source>
-        <translation>Bestand verwijderd</translation>
+        <translation>Файл Перемещён</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateuploadcommon.cpp" line="385"/>
@@ -2659,7 +2657,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/libsync/propagateuploadcommon.cpp" line="393"/>
         <source>Error updating metadata: %1</source>
-        <translation>Fout bij het bijwerken van de metadata: %1</translation>
+        <translation>Ошибка обновления метаданных: %1</translation>
     </message>
 </context>
 <context>
@@ -2667,17 +2665,17 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/libsync/propagateuploadfile.cpp" line="41"/>
         <source>%1 the file is currently in use</source>
-        <translation>%1 is in gebruik</translation>
+        <translation>Файл %1 сейчас используется</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateuploadfile.cpp" line="121"/>
         <source>The server did ask for a removed legacy feature(polling)</source>
-        <translation>De server vroeg om een verwijderde legacy feature (polling).</translation>
+        <translation>Сервер запросил удалённую устаревшую возможность (опрос)</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateuploadfile.cpp" line="141"/>
         <source>The local file was removed during sync.</source>
-        <translation>Het lokale bestand werd verwijderd tijdens sync.</translation>
+        <translation>Локальный файл был удалён в процессе синхронизации.</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateuploadfile.cpp" line="161"/>
@@ -2690,17 +2688,17 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/libsync/propagateuploadtus.cpp" line="57"/>
         <source>%1 the file is currently in use</source>
-        <translation>%1 is in gebruik</translation>
+        <translation>Файл %1 сейчас используется</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateuploadtus.cpp" line="113"/>
         <source>Checksum computation failed</source>
-        <translation>Checksum berekening heeft gefaald</translation>
+        <translation>Не удалось рассчитать контрольную сумму</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateuploadtus.cpp" line="218"/>
         <source>The local file was removed during sync.</source>
-        <translation>Het lokale bestand werd verwijderd tijdens sync.</translation>
+        <translation>Локальный файл был удалён в процессе синхронизации.</translation>
     </message>
 </context>
 <context>
@@ -2708,42 +2706,42 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/models/protocolitemmodel.cpp" line="125"/>
         <source>Time</source>
-        <translation>Tijd</translation>
+        <translation>Время</translation>
     </message>
     <message>
         <location filename="../src/gui/models/protocolitemmodel.cpp" line="127"/>
         <source>File</source>
-        <translation>Bestand</translation>
+        <translation>Файл</translation>
     </message>
     <message>
         <location filename="../src/gui/models/protocolitemmodel.cpp" line="129"/>
         <source>Folder</source>
-        <translation>Map</translation>
+        <translation>Папка</translation>
     </message>
     <message>
         <location filename="../src/gui/models/protocolitemmodel.cpp" line="131"/>
         <source>Issues</source>
-        <translation>Problemen</translation>
+        <translation>Проблемы</translation>
     </message>
     <message>
         <location filename="../src/gui/models/protocolitemmodel.cpp" line="131"/>
         <source>Action</source>
-        <translation>Handeling</translation>
+        <translation>Действие</translation>
     </message>
     <message>
         <location filename="../src/gui/models/protocolitemmodel.cpp" line="133"/>
         <source>Size</source>
-        <translation>Grootte</translation>
+        <translation>Размер</translation>
     </message>
     <message>
         <location filename="../src/gui/models/protocolitemmodel.cpp" line="135"/>
         <source>Account</source>
-        <translation>Account</translation>
+        <translation>Уч.запись</translation>
     </message>
     <message>
         <location filename="../src/gui/models/protocolitemmodel.cpp" line="137"/>
         <source>Status</source>
-        <translation>Status</translation>
+        <translation>Статус</translation>
     </message>
 </context>
 <context>
@@ -2756,7 +2754,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="108"/>
         <source>Authentication failed.</source>
-        <translation>Authenticatie mislukt.</translation>
+        <translation>Ошибка авторизации</translation>
     </message>
 </context>
 <context>
@@ -2799,12 +2797,12 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="95"/>
         <source>Stay logged out</source>
-        <translation>Uitgelogd blijven</translation>
+        <translation>Не выходить из системы</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="97"/>
         <source>Sign in</source>
-        <translation>Inloggen</translation>
+        <translation>Войти</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="179"/>
@@ -2814,7 +2812,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="181"/>
         <source>Copy URL</source>
-        <translation>Kopiëren URL </translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -2827,7 +2825,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="63"/>
         <source>Could not detect compatible server at %1</source>
-        <translation>Kon geen compatibele server detecteren bij %1</translation>
+        <translation>Не удалось найти совместимый сервер по адресу %1</translation>
     </message>
     <message>
         <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="68"/>
@@ -2845,22 +2843,22 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/selectivesyncwidget.cpp" line="69"/>
         <source>Loading …</source>
-        <translation>Laden...</translation>
+        <translation>Идёт загрузка ...</translation>
     </message>
     <message>
         <location filename="../src/gui/selectivesyncwidget.cpp" line="75"/>
         <source>Deselect remote folders you do not wish to synchronize.</source>
-        <translation>Deselecteer de externe mappen die u niet wenst te synchroniseren.</translation>
+        <translation>Снимите выбор с удалённых папок, котрые вы не хотите синхронизировать.</translation>
     </message>
     <message>
         <location filename="../src/gui/selectivesyncwidget.cpp" line="89"/>
         <source>Name</source>
-        <translation>Naam</translation>
+        <translation>Название</translation>
     </message>
     <message>
         <location filename="../src/gui/selectivesyncwidget.cpp" line="90"/>
         <source>Size</source>
-        <translation>Grootte</translation>
+        <translation>Размер</translation>
     </message>
     <message>
         <location filename="../src/gui/selectivesyncwidget.cpp" line="112"/>
@@ -2879,17 +2877,17 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/settingsdialog.cpp" line="99"/>
         <source>Hide</source>
-        <translation>Verbergen</translation>
+        <translation>Скрыть</translation>
     </message>
     <message>
         <location filename="../src/gui/settingsdialog.cpp" line="108"/>
         <source>Quit %1</source>
-        <translation>%1 afsluiten</translation>
+        <translation>Закрыть %1</translation>
     </message>
     <message>
         <location filename="../src/gui/settingsdialog.cpp" line="109"/>
         <source>Are you sure you want to quit %1?</source>
-        <translation>Weet je zeker dat je %1 wilt afsluiten?</translation>
+        <translation>Вы уверены, что хотите выйти из?</translation>
     </message>
     <message>
         <location filename="../src/gui/settingsdialog.cpp" line="135"/>
@@ -2899,7 +2897,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/settingsdialog.ui" line="14"/>
         <source>MainWindow</source>
-        <translation>MainWindow</translation>
+        <translation>ГлавноеОкно</translation>
     </message>
 </context>
 <context>
@@ -2908,41 +2906,41 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
         <location filename="../src/gui/socketapi/socketapi.cpp" line="470"/>
         <source>Share with %1</source>
         <comment>parameter is the application name</comment>
-        <translation>Delen met %1</translation>
+        <translation>Поделиться с %1</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="575"/>
         <source>Confirm deletion</source>
-        <translation>Bevestig verwijderen</translation>
+        <translation>Подтвердите удаление</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="577"/>
         <source>Do you want to delete the directory &lt;i&gt;%1&lt;/i&gt; and all its contents permanently?</source>
-        <translation>Wil je de map &lt;i&gt;%1&lt;/i&gt; en de inhoud daarvan permanent verwijderen?</translation>
+        <translation>Хотите окончательно удалить каталог &lt;i&gt;%1&lt;/i&gt;, и всё его содержимое?</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="578"/>
         <source>Do you want to delete the file &lt;i&gt;%1&lt;/i&gt; permanently?</source>
-        <translation>Wil je het bestand &lt;i&gt;%1&lt;/i&gt; permanent verwijderen?</translation>
+        <translation>Хотите окончательно удалить файл &lt;i&gt;%1&lt;/i&gt;?</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="630"/>
         <source>Error</source>
-        <translation>Fout</translation>
+        <translation>Ошибка</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="631"/>
         <source>Moving file failed:
 
 %1</source>
-        <translation>Kon bestand niet verplaasen:
+        <translation>Перемещение не удалось:
 
 %1</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="695"/>
         <source>I shared something with you</source>
-        <translation>Ik deelde iets met u</translation>
+        <translation>Я поделился с тобой</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="620"/>
@@ -2959,27 +2957,27 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
         <location filename="../src/gui/socketapi/socketapi.cpp" line="710"/>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="741"/>
         <source>Copy private link to clipboard</source>
-        <translation>Kopiëren privé-link naar klembord</translation>
+        <translation>Копировать приватную ссылку в буфер обмена...</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="735"/>
         <source>Resharing this file is not allowed</source>
-        <translation>Opnieuw delen van dit bestand is niet toegestaan</translation>
+        <translation>Повторное предоставление доступа к этому файлу не разрешено</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="735"/>
         <source>Resharing this folder is not allowed</source>
-        <translation>Opnieuw delen van deze map is niet toegestaan</translation>
+        <translation>Повторное предоставление доступа к этому каталогу не разрешено</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="810"/>
         <source>Open in %1</source>
-        <translation>Open in %1</translation>
+        <translation>Открыто в% 1</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="821"/>
         <source>Show file versions in web browser</source>
-        <translation>Toon bestandsversies in browser</translation>
+        <translation>Отображение версий файлов в веб-браузере</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="843"/>
@@ -3010,12 +3008,12 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="861"/>
         <source>Delete local changes</source>
-        <translation>Verwijder lokale wijzigingen</translation>
+        <translation>Удалить локальные изменения</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="867"/>
         <source>Delete</source>
-        <translation>Verwijderen</translation>
+        <translation>Удалить</translation>
     </message>
 </context>
 <context>
@@ -3036,54 +3034,54 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/libsync/syncengine.cpp" line="151"/>
         <source>%1 (skipped due to earlier error, trying again in %2)</source>
-        <translation>%1 (overgeslagen wegens eerdere fout, opnieuw proberen in %2)</translation>
+        <translation>%1 (пропущено из-за предыдущей ошибки, повторная попытка через %2)</translation>
     </message>
     <message>
         <location filename="../src/libsync/syncengine.cpp" line="324"/>
         <source>Only %1 are available, need at least %2 to start</source>
         <comment>Placeholders are postfixed with file sizes using Utility::octetsToString()</comment>
-        <translation>Slechts %1 beschikbaar, maar heeft minimaal %2 nodig om te starten</translation>
+        <translation>Только %1 доступно, нужно как минимум %2 чтобы начать</translation>
     </message>
     <message>
         <location filename="../src/libsync/syncengine.cpp" line="352"/>
         <source>Unable to open or create the local sync database. Make sure you have write access in the sync folder.</source>
-        <translation>Kan de lokale sync database niet openen of aanmaken. Controleer of je de juiste lees- en schrijfrechten in de lokale sync-map hebt.</translation>
+        <translation>Не могу открыть или создать локальную базу данных синхронизации. Удостоверьтесь, что у вас есть доступ на запись в каталог синхронизации.</translation>
     </message>
     <message>
         <location filename="../src/libsync/syncengine.cpp" line="775"/>
         <source>Aborted due to %1</source>
-        <translation>Afgebroken vanwege %1</translation>
+        <translation>Прервано из-за% 1</translation>
     </message>
     <message>
         <location filename="../src/libsync/syncengine.cpp" line="793"/>
         <source>Disk space is low: Downloads that would reduce free space below %1 were skipped.</source>
-        <translation>Onvoldoende schijfruimte: Downloads dat je vrije schijfruime zou reduceren tot onder %1 zijn overgeslagen.</translation>
+        <translation>Мало места на диске: Скачивания, которые сократят свободное место ниже %1, будут пропущены.</translation>
     </message>
     <message>
         <location filename="../src/libsync/syncengine.cpp" line="800"/>
         <source>There is insufficient space available on the server for some uploads.</source>
-        <translation>Er is te weinig ruimte beschikbaar op de server voor sommige uploads.</translation>
+        <translation>На сервере недостаточно места для некоторых закачек.</translation>
     </message>
     <message>
         <location filename="../src/libsync/syncengine.cpp" line="79"/>
         <source>application exit</source>
         <comment>abort reason</comment>
-        <translation>Applicatie afsluiten</translation>
+        <translation>выход из приложения</translation>
     </message>
     <message>
         <location filename="../src/libsync/syncengine.cpp" line="372"/>
         <source>Unable to read the blacklist from the local database</source>
-        <translation>Kan de blacklist niet lezen uit de lokale database</translation>
+        <translation>Не удалось прочитать файл чёрного списка из локальной базы данных.</translation>
     </message>
     <message>
         <location filename="../src/libsync/syncengine.cpp" line="398"/>
         <source>Unable to read from the sync journal.</source>
-        <translation>Niet mogelijk om te lezen uit het synchronisatie verslag.</translation>
+        <translation>Не удалось прочитать из журнала синхронизации.</translation>
     </message>
     <message>
         <location filename="../src/libsync/syncengine.cpp" line="472"/>
         <source>Cannot open the sync journal</source>
-        <translation>Kan het sync transactielog niet openen</translation>
+        <translation>Не удаётся открыть журнал синхронизации</translation>
     </message>
 </context>
 <context>
@@ -3091,47 +3089,47 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/syncerrorwidget.ui" line="40"/>
         <source>Issues table</source>
-        <translation>Problemen tabel</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/syncerrorwidget.ui" line="72"/>
         <source>There were too many issues. Not all will be visible here.</source>
-        <translation>Er zijn teveel problemen. Niet alles zal worden vertoond.</translation>
+        <translation>Было слишком много проблем. Не все будут видны здесь.</translation>
     </message>
     <message>
         <location filename="../src/gui/syncerrorwidget.ui" line="82"/>
         <source>There were conflicts. Check the documentation on how to resolve them.</source>
-        <translation>Er waren conflicten. Raadpleeg de documentatie om ze te verhelpen.</translation>
+        <translation>Имеются конфликты. См. документацию по их разрешению.</translation>
     </message>
     <message>
         <location filename="../src/gui/syncerrorwidget.cpp" line="210"/>
         <source>The file %1 was ignored as its name is reserved by %2</source>
-        <translation>Het bestand %1 is genegeerd, want de naam is gereserveerd door %2</translation>
+        <translation>Файл %1 был проигнорирован, так как его имя зарезервировано %2</translation>
     </message>
     <message>
         <location filename="../src/gui/syncerrorwidget.cpp" line="236"/>
         <source>Reset column sizes</source>
-        <translation>Kolom grootes terugzetten</translation>
+        <translation>Сбросить размеры колонок</translation>
     </message>
     <message>
         <location filename="../src/gui/syncerrorwidget.cpp" line="256"/>
         <source>There were conflicts. &lt;a href=&quot;%1&quot;&gt;Check the documentation on how to resolve them.&lt;/a&gt;</source>
-        <translation>Er waren conflicten. &lt;a href=&quot;%1&quot;&gt;Raadpleeg de documentatie om ze te verhelpen.&lt;/a&gt;</translation>
+        <translation>Имеются конфликты. &lt;a href=&quot;%1&quot;&gt;См. документацию по их разрешению.&lt;/a&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/syncerrorwidget.cpp" line="285"/>
         <source>Filter menu</source>
-        <translation>Filter menu</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/syncerrorwidget.cpp" line="287"/>
         <source>Account</source>
-        <translation>Account</translation>
+        <translation>Уч.запись</translation>
     </message>
     <message>
         <location filename="../src/gui/syncerrorwidget.cpp" line="377"/>
         <source>Filter</source>
-        <translation>Filter</translation>
+        <translation>Фильтр</translation>
     </message>
 </context>
 <context>
@@ -3139,7 +3137,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/common/syncjournaldb.cpp" line="906"/>
         <source>Failed to connect database.</source>
-        <translation>Kon geen tijdelijke database aanmaken</translation>
+        <translation>Не удалось подключиться к базе данных.</translation>
     </message>
 </context>
 <context>
@@ -3155,27 +3153,27 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/tlserrordialog.ui" line="14"/>
         <source>TLS Certificate Error</source>
-        <translation>TLS certificaat fout</translation>
+        <translation>Ошибка сертификата TLS</translation>
     </message>
     <message>
         <location filename="../src/gui/tlserrordialog.ui" line="42"/>
         <source>Do you want to trust this certificate anyway?</source>
-        <translation>Wil je dit certificaat alsnog vertrouwen?</translation>
+        <translation>Доверять этому сертификату в любом случае?</translation>
     </message>
     <message>
         <location filename="../src/gui/tlserrordialog.cpp" line="28"/>
         <source>Cannot connect securely to %1</source>
-        <translation>Kan niet beveiligd verbinden met &lt;i&gt;%1&lt;/i&gt;:</translation>
+        <translation>Не удается безопасно подключиться к% 1</translation>
     </message>
     <message>
         <location filename="../src/gui/tlserrordialog.cpp" line="66"/>
         <source>&amp;lt;not specified&amp;gt;</source>
-        <translation>&amp;lt;niet gespecificeerd&amp;gt;</translation>
+        <translation>&amp;lt;не указано&amp;gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/tlserrordialog.cpp" line="72"/>
         <source>&lt;div id=&quot;cert&quot;&gt;&lt;h3&gt;with Certificate %1&lt;/h3&gt;&lt;div id=&quot;ccert&quot;&gt;&lt;p&gt;Organization: %2&lt;br/&gt;Unit: %3&lt;br/&gt;Country: %4&lt;/p&gt;&lt;p&gt;Fingerprint (MD5): &lt;tt&gt;%5&lt;/tt&gt;&lt;br/&gt;Fingerprint (SHA1): &lt;tt&gt;%6&lt;/tt&gt;&lt;br/&gt;Fingerprint (SHA256): &lt;tt&gt;%7&lt;/tt&gt;&lt;br/&gt;&lt;br/&gt;Effective Date: %8Expiration Date: %9&lt;/div&gt;&lt;h3&gt;Issuer: %10&lt;/h3&gt;&lt;div id=&quot;issuer&quot;&gt;&lt;p&gt;Organization: %11&lt;br/&gt;Unit: %12&lt;br/&gt;Country: %13&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</source>
-        <translation>&lt;div id=&quot;cert&quot;&gt;&lt;h3&gt;met certificaat %1&lt;/h3&gt;&lt;div id=&quot;ccert&quot;&gt;&lt;p&gt;Organisatie: %2&lt;br/&gt;Afdeling: %3&lt;br/&gt;Land: %4&lt;/p&gt;&lt;p&gt;Vingerafdruk (MD5): &lt;tt&gt;%5&lt;/tt&gt;&lt;br/&gt;Vingerafdruk (SHA1): &lt;tt&gt;%6&lt;/tt&gt;&lt;br/&gt;Vingerafdruk (SHA256): &lt;tt&gt;%7&lt;/tt&gt;&lt;br/&gt;&lt;br/&gt;Effectief vanaf: %8Verval datum: %9&lt;/div&gt;&lt;h3&gt;Uitgever: %10&lt;/h3&gt;&lt;div id=&quot;issuer&quot;&gt;&lt;p&gt;Organisatie: %11&lt;br/&gt;Afdeling: %12&lt;br/&gt;Land: %13&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -3183,12 +3181,12 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/updater/updatedownloadedwidget.cpp" line="41"/>
         <source>Restart later</source>
-        <translation>Later herstarten</translation>
+        <translation>Перезапустить позже</translation>
     </message>
     <message>
         <location filename="../src/gui/updater/updatedownloadedwidget.cpp" line="43"/>
         <source>Restart now</source>
-        <translation>Nu herstarten</translation>
+        <translation>Перезапустить сейчас</translation>
     </message>
 </context>
 <context>
@@ -3196,7 +3194,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="50"/>
         <source>Update available</source>
-        <translation>Update beschikbaar</translation>
+        <translation>Доступно обновление</translation>
     </message>
 </context>
 <context>
@@ -3214,7 +3212,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="59"/>
         <source>Welcome to %1</source>
-        <translation>Welkom bij %1</translation>
+        <translation>Добро пожаловать в %1</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="67"/>
@@ -3280,7 +3278,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/common/checksums.cpp" line="388"/>
         <source>The downloaded file does not match the checksum, it will be resumed. &apos;%1&apos; != &apos;%2&apos;</source>
-        <translation>Het gedownloade bestand komt niet overeen met de checksum, het wordt hervat. &apos;%1&apos; != &apos;%2&apos;</translation>
+        <translation>Скачанный файл не соответствует по контрольной сумме, скачивание будет возобновлено. &apos;%1&apos; != &apos;%2&apos;</translation>
     </message>
 </context>
 <context>
@@ -3288,17 +3286,17 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/common/vfs.cpp" line="77"/>
         <source>The Virtual filesystem feature does not support a drive as sync root</source>
-        <translation>De Virtuele bestandssysteem-feature ondersteunt geen schijf als synchronisatiebron</translation>
+        <translation>Возможность Виртуальная файловая система не поддерживает диск в качестве корня синхронизации</translation>
     </message>
     <message>
         <location filename="../src/common/vfs.cpp" line="81"/>
         <source>The Virtual filesystem feature requires a NTFS file system, %1 is using %2</source>
-        <translation>De Virtuele bestandssysteem-feature vereist een NTFS-bestandssysteem, %1 gebruikt %2</translation>
+        <translation>Поддержка виртуальной файловой системы требует файловую систему NTFS, %1 использует %2</translation>
     </message>
     <message>
         <location filename="../src/common/vfs.cpp" line="85"/>
         <source>The Virtual filesystem feature is not supported on network drives</source>
-        <translation>De virtuele filesystem feature wordt niet ondersteund op netwerkschijven</translation>
+        <translation>Возможность Виртуальная файловая система не поддерживается на сетевых дисках</translation>
     </message>
 </context>
 <context>
@@ -3355,7 +3353,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="74"/>
         <source>Failed to retrieve user info</source>
-        <translation>Kon gebruiker informatie niet ophalen</translation>
+        <translation>Не удалось получить информацию о пользователе</translation>
     </message>
     <message>
         <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="100"/>
@@ -3368,37 +3366,37 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="380"/>
         <source>&lt;p&gt;A new version of the %1 Client is available.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; is available for download. The installed version is %3.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Er is een nieuwe versie van de %1 Client beschikbaar.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; is beschikbaar voor download. De geïnstalleerde versie is %3.&lt;/p&gt;</translation>
+        <translation>&lt;p&gt;Доступна новая версия приложения %1.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; доступна для загрузки. Установленная версия: %3.&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="426"/>
         <source>Skip this version</source>
-        <translation>Deze versie overslaan</translation>
+        <translation>Пропустить эту версию</translation>
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="407"/>
         <source>Update Failed</source>
-        <translation>Bijwerken mislukt</translation>
+        <translation>Обновление не удалось</translation>
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="413"/>
         <source>&lt;p&gt;A new version of the %1 Client is available but the updating process failed.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; has been downloaded. The installed version is %3.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Een nieuwe versie van de %1 Applicatie is beschikbaar maar het updateproces is mislukt.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; is gedownload. De geïnstalleerde versie is %3.&lt;/p&gt;</translation>
+        <translation>&lt;p&gt;Доступна новая версия клиента %1, но процесс обновления не удался. &lt;/p&gt;&lt;p&gt;Было скачано &lt;b&gt;%2&lt;/b&gt;. Установленная версия — %3.&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="427"/>
         <source>Ask again later</source>
-        <translation>Vraag later opnieuw</translation>
+        <translation>Попросить снова позже</translation>
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="428"/>
         <source>Restart and update</source>
-        <translation>Herstarten en bijwerken</translation>
+        <translation>Перезапустить и продолжить</translation>
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="429"/>
         <source>Update manually</source>
-        <translation>Handmatig bijwerken</translation>
+        <translation>Обновить вручную</translation>
     </message>
 </context>
 <context>
@@ -3406,32 +3404,32 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/owncloudgui.cpp" line="145"/>
         <source>The server on account %1 runs an unsupported version %2. Using this client with unsupported server versions is untested and potentially dangerous. Proceed at your own risk.</source>
-        <translation>De server op account %1 gebruikt een niet-ondersteunde versie %2. Het gebruik van deze applicatie met niet-ondersteunde serverversies is niet getest en mogelijk gevaarlijk. Doorgaan is op eigen risico.</translation>
+        <translation>Учётная запись сервера %1 работает с неподдерживаемой версией %2. Использование клиента с неподдерживаемой версией сервера не тестировалось и потенциально опасно. Продолжайте на свой страх и риск.</translation>
     </message>
     <message>
         <location filename="../src/gui/owncloudgui.cpp" line="204"/>
         <source>Help</source>
-        <translation>Help</translation>
+        <translation>Помощь</translation>
     </message>
     <message>
         <location filename="../src/gui/owncloudgui.cpp" line="211"/>
         <source>Quit %1</source>
-        <translation>%1 afsluiten</translation>
+        <translation>Закрыть %1</translation>
     </message>
     <message>
         <location filename="../src/gui/owncloudgui.cpp" line="144"/>
         <source>Unsupported Server Version</source>
-        <translation>Niet-ondersteunde server versie</translation>
+        <translation>Версия сервера не поддерживается</translation>
     </message>
     <message>
         <location filename="../src/gui/owncloudgui.cpp" line="179"/>
         <source>Show %1</source>
-        <translation>Toon %1</translation>
+        <translation>Показывать %1</translation>
     </message>
     <message>
         <location filename="../src/gui/owncloudgui.cpp" line="208"/>
         <source>About %1</source>
-        <translation>Over %1</translation>
+        <translation>Про %1</translation>
     </message>
     <message>
         <location filename="../src/gui/owncloudgui.cpp" line="240"/>
@@ -3457,32 +3455,32 @@ Please check the server&apos;s availability then run the wizard again.</source>
     <message>
         <location filename="../src/common/utility.cpp" line="309"/>
         <source>in the future</source>
-        <translation>in de toekomst</translation>
+        <translation>в будущем</translation>
     </message>
     <message numerus="yes">
         <location filename="../src/common/utility.cpp" line="304"/>
         <source>%n day(s) ago</source>
-        <translation><numerusform>%n dag geleden</numerusform><numerusform>%n dagen geleden</numerusform></translation>
+        <translation><numerusform>%n день назад</numerusform><numerusform>%n дня назад</numerusform><numerusform>%n дней назад</numerusform><numerusform>%n дней назад</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/common/utility.cpp" line="314"/>
         <source>%n hour(s) ago</source>
-        <translation><numerusform>%n uur geleden</numerusform><numerusform>%n uur geleden</numerusform></translation>
+        <translation><numerusform>%n час назад</numerusform><numerusform>%n часа назад</numerusform><numerusform>%n часов назад</numerusform><numerusform>%n часов назад</numerusform></translation>
     </message>
     <message>
         <location filename="../src/common/utility.cpp" line="320"/>
         <source>now</source>
-        <translation>nu</translation>
+        <translation>сейчас</translation>
     </message>
     <message>
         <location filename="../src/common/utility.cpp" line="322"/>
         <source>less than a minute ago</source>
-        <translation>minder dan een minuut geleden</translation>
+        <translation>менее минуты назад</translation>
     </message>
     <message numerus="yes">
         <location filename="../src/common/utility.cpp" line="326"/>
         <source>%n minute(s) ago</source>
-        <translation><numerusform>%n minuut geleden</numerusform><numerusform>%n minuten geleden</numerusform></translation>
+        <translation><numerusform>%n минута назад</numerusform><numerusform>%n минуты назад</numerusform><numerusform>%n минут назад</numerusform><numerusform>%n минут назад</numerusform></translation>
     </message>
     <message>
         <location filename="../src/libsync/syncresult.cpp" line="117"/>
@@ -3496,7 +3494,7 @@ Please check the server&apos;s availability then run the wizard again.</source>
     <message>
         <location filename="../src/gui/spaces/spacesbrowser.ui" line="14"/>
         <source>Form</source>
-        <translation>Formulier</translation>
+        <translation>Форма</translation>
     </message>
 </context>
 <context>
@@ -3504,7 +3502,7 @@ Please check the server&apos;s availability then run the wizard again.</source>
     <message>
         <location filename="../src/gui/folderwizard/spacespage.ui" line="36"/>
         <source>Spaces list</source>
-        <translation>Spaces lijst</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -3512,7 +3510,7 @@ Please check the server&apos;s availability then run the wizard again.</source>
     <message>
         <location filename="../src/gui/spaces/qml/SpacesView.qml" line="31"/>
         <source>Spaces</source>
-        <translation>Spaces</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -3520,63 +3518,63 @@ Please check the server&apos;s availability then run the wizard again.</source>
     <message>
         <location filename="../src/libsync/syncfileitem.cpp" line="96"/>
         <source>Undefined</source>
-        <translation>ongedefiniëerd</translation>
+        <translation>Неопределенный</translation>
     </message>
     <message>
         <location filename="../src/libsync/syncfileitem.cpp" line="98"/>
         <source>Fatal Error</source>
-        <translation>Fatale fout</translation>
+        <translation>Неисправимая ошибка</translation>
     </message>
     <message>
         <location filename="../src/libsync/syncfileitem.cpp" line="100"/>
         <location filename="../src/libsync/syncfileitem.cpp" line="112"/>
         <source>Error</source>
-        <translation>Fout</translation>
+        <translation>Ошибка</translation>
     </message>
     <message>
         <location filename="../src/libsync/syncfileitem.cpp" line="102"/>
         <source>Info</source>
-        <translation>Info</translation>
+        <translation>Инфо</translation>
     </message>
     <message>
         <location filename="../src/libsync/syncfileitem.cpp" line="104"/>
         <source>Success</source>
-        <translation>Succes</translation>
+        <translation>Успешно</translation>
     </message>
     <message>
         <location filename="../src/libsync/syncfileitem.cpp" line="106"/>
         <source>Conflict</source>
-        <translation>Conflict</translation>
+        <translation>Конфликт</translation>
     </message>
     <message>
         <location filename="../src/libsync/syncfileitem.cpp" line="108"/>
         <source>File Ignored</source>
-        <translation>genegeerd</translation>
+        <translation>Файл игнорируется</translation>
     </message>
     <message>
         <location filename="../src/libsync/syncfileitem.cpp" line="110"/>
         <source>Restored</source>
-        <translation>hersteld</translation>
+        <translation>Восстановленный</translation>
     </message>
     <message>
         <location filename="../src/libsync/syncfileitem.cpp" line="114"/>
         <source>Blacklisted</source>
-        <translation>op de zwarte lijst</translation>
+        <translation>Занесен в черный список</translation>
     </message>
     <message>
         <location filename="../src/libsync/syncfileitem.cpp" line="116"/>
         <source>Excluded</source>
-        <translation>uitgezonderd</translation>
+        <translation>Исключенный</translation>
     </message>
     <message>
         <location filename="../src/libsync/syncfileitem.cpp" line="118"/>
         <source>Message</source>
-        <translation>Bericht</translation>
+        <translation>Сообщение</translation>
     </message>
     <message>
         <location filename="../src/libsync/syncfileitem.cpp" line="120"/>
         <source>Filename Reserved</source>
-        <translation>Bestandsnaam is gereserveerd</translation>
+        <translation>Имя файла зарезервировано</translation>
     </message>
 </context>
 <context>
@@ -3584,7 +3582,8 @@ Please check the server&apos;s availability then run the wizard again.</source>
     <message>
         <location filename="../src/gui/updater/updatedownloadedwidget.ui" line="74"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt; font-weight:700;&quot;&gt;Restart required&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt; font-weight:700;&quot;&gt;Herstart vereist&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt; font-weight:700;&quot;&gt;Требуется перезагрузка
+&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
 </context>
 <context>
@@ -3592,32 +3591,32 @@ Please check the server&apos;s availability then run the wizard again.</source>
     <message numerus="yes">
         <location filename="../src/common/utility.cpp" line="208"/>
         <source>%n year(s)</source>
-        <translation><numerusform>%n jaar</numerusform><numerusform>%n jaren</numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/common/utility.cpp" line="209"/>
         <source>%n month(s)</source>
-        <translation><numerusform>%n maand</numerusform><numerusform>%n maanden</numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/common/utility.cpp" line="210"/>
         <source>%n day(s)</source>
-        <translation><numerusform>%n dag</numerusform><numerusform>%n dagen</numerusform></translation>
+        <translation><numerusform>%n день</numerusform><numerusform>%n дня</numerusform><numerusform>%n дней</numerusform><numerusform>%n дней</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/common/utility.cpp" line="211"/>
         <source>%n hour(s)</source>
-        <translation><numerusform>%n uur</numerusform><numerusform>%n uren</numerusform></translation>
+        <translation><numerusform>%n час</numerusform><numerusform>%n часа</numerusform><numerusform>%n часов</numerusform><numerusform>%n часов</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/common/utility.cpp" line="212"/>
         <source>%n minute(s)</source>
-        <translation><numerusform>%n minuut</numerusform><numerusform>%n minuten</numerusform></translation>
+        <translation><numerusform>%n минута</numerusform><numerusform>%n минуты</numerusform><numerusform>%n минут</numerusform><numerusform>%n минут</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/common/utility.cpp" line="213"/>
         <source>%n second(s)</source>
-        <translation><numerusform>%n seconde</numerusform><numerusform>%n seconden</numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message>
         <location filename="../src/common/utility.cpp" line="237"/>
@@ -3627,7 +3626,7 @@ Please check the server&apos;s availability then run the wizard again.</source>
     <message>
         <location filename="../src/libsync/platform_win.cpp" line="111"/>
         <source>Shutting down %1</source>
-        <translation>%1 aan het afsluiten</translation>
+        <translation>Выключение %1</translation>
     </message>
 </context>
 <context>
@@ -3635,12 +3634,12 @@ Please check the server&apos;s availability then run the wizard again.</source>
     <message>
         <location filename="../src/gui/main.cpp" line="470"/>
         <source>Error accessing the configuration file</source>
-        <translation>Fout bij benaderen configuratiebestand</translation>
+        <translation>Ошибка при доступе к файлу конфигурации</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="471"/>
         <source>There was an error while accessing the configuration file at %1.</source>
-        <translation>Er trad een fout op bij het benaderen configuratiebestand op %1</translation>
+        <translation>При обращении к файлу конфигурации %1 произошла ошибка.</translation>
     </message>
 </context>
 <context>
@@ -3648,7 +3647,7 @@ Please check the server&apos;s availability then run the wizard again.</source>
     <message>
         <location filename="../src/libsync/theme.cpp" line="306"/>
         <source>%1 %2%7%8Libraries Qt %3, %4%7Using virtual files plugin: %5%7%6</source>
-        <translation>%1 %2 %7%8biliotheken Qt %3, %4%7Gebruikt virtuele bestandenplugin: %5%7%6</translation>
+        <translation>%1 %2 %3 %4%8Библиотеки QT %5, %6%8Используется плагин виртуальных файлов: %7%8</translation>
     </message>
 </context>
 <context>
@@ -3656,7 +3655,7 @@ Please check the server&apos;s availability then run the wizard again.</source>
     <message>
         <location filename="../src/libsync/theme.cpp" line="289"/>
         <source>%1 (Built against Qt %2)</source>
-        <translation>%1 (Gebouwd met Qt %2)</translation>
+        <translation>%1 (Собрано с Qt %2)</translation>
     </message>
 </context>
 <context>
@@ -3672,22 +3671,22 @@ Please check the server&apos;s availability then run the wizard again.</source>
     <message>
         <location filename="../src/common/pinstate.cpp" line="27"/>
         <source>Always available locally</source>
-        <translation>Altijd lokaal beschikbaar</translation>
+        <translation>Всегда доступно локально</translation>
     </message>
     <message>
         <location filename="../src/common/pinstate.cpp" line="29"/>
         <source>Currently available locally</source>
-        <translation>Momenteel lokaal beschikbaar</translation>
+        <translation>Сейчас доступно локально</translation>
     </message>
     <message>
         <location filename="../src/common/pinstate.cpp" line="31"/>
         <source>Some available online only</source>
-        <translation>Enkele alleen online beschikbaar</translation>
+        <translation>Часть доступна локально</translation>
     </message>
     <message>
         <location filename="../src/common/pinstate.cpp" line="35"/>
         <source>Available online only</source>
-        <translation>Alleen online beschikbaar</translation>
+        <translation>Доступно только при наличии сети</translation>
     </message>
 </context>
 <context>
@@ -3695,93 +3694,93 @@ Please check the server&apos;s availability then run the wizard again.</source>
     <message>
         <location filename="../src/libsync/progressdispatcher.cpp" line="33"/>
         <source>Virtual file created</source>
-        <translation>Virtueel bestand aangemaakt</translation>
+        <translation>Виртуальный файл создан</translation>
     </message>
     <message>
         <location filename="../src/libsync/progressdispatcher.cpp" line="35"/>
         <source>Replaced by virtual file</source>
-        <translation>Vervangen door virtueel bestand</translation>
+        <translation>Заменено виртуальным файлом</translation>
     </message>
     <message>
         <location filename="../src/libsync/progressdispatcher.cpp" line="37"/>
         <source>Downloaded</source>
-        <translation>Gedownload</translation>
+        <translation>Скачано</translation>
     </message>
     <message>
         <location filename="../src/libsync/progressdispatcher.cpp" line="40"/>
         <source>Uploaded</source>
-        <translation>Geüpload</translation>
+        <translation>Загружено</translation>
     </message>
     <message>
         <location filename="../src/libsync/progressdispatcher.cpp" line="45"/>
         <source>Deleted</source>
-        <translation>Verwijderd</translation>
+        <translation>Удалено</translation>
     </message>
     <message>
         <location filename="../src/libsync/progressdispatcher.cpp" line="47"/>
         <source>%1 moved to %2</source>
-        <translation>%1 is verplaatst naar %2</translation>
+        <translation>%1 Перемещено в %2</translation>
     </message>
     <message>
         <location filename="../src/libsync/progressdispatcher.cpp" line="49"/>
         <source>Ignored</source>
-        <translation>Genegeerd</translation>
+        <translation>Проигнорирован</translation>
     </message>
     <message>
         <location filename="../src/libsync/progressdispatcher.cpp" line="43"/>
         <source>Server version downloaded, local copy was backed up as conflict file</source>
-        <translation>De versie van de server is gedownload en de lokale versie is hernoemd als een conflict bestand</translation>
+        <translation>Серверная версия загружена, локальная копия сохранена как файл конфликта</translation>
     </message>
     <message>
         <location filename="../src/libsync/progressdispatcher.cpp" line="51"/>
         <source>Error</source>
-        <translation>Fout</translation>
+        <translation>Ошибка</translation>
     </message>
     <message>
         <location filename="../src/libsync/progressdispatcher.cpp" line="53"/>
         <source>Updated local metadata</source>
-        <translation>Lokale metadata ge-uploaded</translation>
+        <translation>Обновлены локальные метаданные</translation>
     </message>
     <message>
         <location filename="../src/libsync/progressdispatcher.cpp" line="55"/>
         <location filename="../src/libsync/progressdispatcher.cpp" line="57"/>
         <source>Unknown</source>
-        <translation>Onbekend</translation>
+        <translation>Неизвестно</translation>
     </message>
     <message>
         <location filename="../src/libsync/progressdispatcher.cpp" line="68"/>
         <source>downloading</source>
-        <translation>downloaden</translation>
+        <translation>скачивание</translation>
     </message>
     <message>
         <location filename="../src/libsync/progressdispatcher.cpp" line="70"/>
         <source>uploading</source>
-        <translation>uploaden</translation>
+        <translation>загрузка</translation>
     </message>
     <message>
         <location filename="../src/libsync/progressdispatcher.cpp" line="72"/>
         <source>deleting</source>
-        <translation>verwijderen</translation>
+        <translation>удаление</translation>
     </message>
     <message>
         <location filename="../src/libsync/progressdispatcher.cpp" line="74"/>
         <source>moving</source>
-        <translation>verplaatsen</translation>
+        <translation>перемещение</translation>
     </message>
     <message>
         <location filename="../src/libsync/progressdispatcher.cpp" line="76"/>
         <source>ignoring</source>
-        <translation>negerend</translation>
+        <translation>игнорирование</translation>
     </message>
     <message>
         <location filename="../src/libsync/progressdispatcher.cpp" line="78"/>
         <source>error</source>
-        <translation>fout</translation>
+        <translation>ошибка</translation>
     </message>
     <message>
         <location filename="../src/libsync/progressdispatcher.cpp" line="80"/>
         <source>updating local metadata</source>
-        <translation>Bijwerken lokale metadata</translation>
+        <translation>обновление локальных метаданных</translation>
     </message>
 </context>
 <context>
@@ -3789,32 +3788,32 @@ Please check the server&apos;s availability then run the wizard again.</source>
     <message>
         <location filename="../src/gui/guiutility.cpp" line="52"/>
         <source>Could not open browser</source>
-        <translation>Kon het browser niet openen</translation>
+        <translation>Невозможно открыть браузер</translation>
     </message>
     <message>
         <location filename="../src/gui/guiutility.cpp" line="53"/>
         <source>There was an error when launching the browser to go to URL %1. Maybe no default browser is configured?</source>
-        <translation>Er is een fout opgetreden bij het starten van de browser om naar %1 te gaan. Misschien is er geen standaard browser geconfigureerd?</translation>
+        <translation>При запуске браузера чтобы открыть адрес %1 произошла ошибка. Может быть не настроен браузер по умолчанию?</translation>
     </message>
     <message>
         <location filename="../src/gui/guiutility.cpp" line="76"/>
         <source>Could not open email client</source>
-        <translation>Kon e-mailclient niet openen</translation>
+        <translation>Не удалось открыть почтового клиента</translation>
     </message>
     <message>
         <location filename="../src/gui/guiutility.cpp" line="77"/>
         <source>There was an error when launching the email client to create a new message. Maybe no default email client is configured?</source>
-        <translation>Er trad een fout op bij het starten van de e-mailclient om een nieuw bericht te maken. Misschien is er geen e-mailclient gedefinieerd?</translation>
+        <translation>При запуске почтового клиента для создания нового сообщения произошла ошибка. Возможно, почтовый клиент по умолчанию не настроен?</translation>
     </message>
     <message>
         <location filename="../src/gui/guiutility.cpp" line="90"/>
         <source>Make always available locally</source>
-        <translation>Altijd lokaal beschikbaar maken</translation>
+        <translation>Сделать всегда доступным локально</translation>
     </message>
     <message>
         <location filename="../src/gui/guiutility.cpp" line="95"/>
         <source>Free up local space</source>
-        <translation>Lokale ruimte vrijmaken</translation>
+        <translation>Освободить локальное место</translation>
     </message>
 </context>
 <context>
@@ -3822,7 +3821,7 @@ Please check the server&apos;s availability then run the wizard again.</source>
     <message>
         <location filename="../src/gui/main.cpp" line="172"/>
         <source>Some settings were configured in newer versions of this client and use features that are not available in this version</source>
-        <translation>Enkele instellingen zijn geconfigureerd in een nieuwere versie van de applicatie en gebruiken functionaliteit die niet beschikbaar zijn in deze versie van de applicatie</translation>
+        <translation>Некоторые параметры были настроены в более новых версиях этого клиента и используют функции, недоступные в этой версии</translation>
     </message>
 </context>
 </TS>
