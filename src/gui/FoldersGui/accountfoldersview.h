@@ -16,9 +16,11 @@
 #include <QWidget>
 
 class QStandardItemModel;
+class QItemSelectionModel;
 class QTreeView;
 class QLabel;
 class QPushButton;
+class QMenu;
 
 namespace OCC {
 
@@ -28,19 +30,23 @@ class AccountFoldersView : public QWidget
 public:
     explicit AccountFoldersView(QWidget *parent = nullptr);
 
-    void setItemModel(QStandardItemModel *model);
+    void setItemModels(QStandardItemModel *model, QItemSelectionModel *selectionModel);
     void setFolderActions(QList<QAction *> actions);
     void setSyncedFolderCount(int synced, int total);
     void enableAddFolder(bool enableAdd);
+    void setMenuActions(QList<QAction *> actions);
 
 signals:
     void addFolderTriggered();
+    void requestActionsUpdate();
 
 private:
     void buildView();
+    void popItemMenu(const QPoint &pos);
 
     QTreeView *_treeView = nullptr;
     QLabel *_syncedFolderCountLabel = nullptr;
     QPushButton *_addFolderButton = nullptr;
+    QMenu *_itemMenu = nullptr;
 };
 }

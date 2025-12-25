@@ -60,7 +60,9 @@ AccountFoldersController::AccountFoldersController(AccountState *state, AccountF
          _sortModel = weightedModel;
      */
 
-    _view->setItemModel(model);
+    _view->setItemModels(model, modelController->selectionModel());
+
+    buildMenuActions();
 
     connect(_view, &AccountFoldersView::addFolderTriggered, this, &AccountFoldersController::slotAddFolder);
     // ui->quickWidget->engine()->addImageProvider(QStringLiteral("space"), new Spaces::SpaceImageProvider(_accountState->account()->spacesManager()));
@@ -123,28 +125,40 @@ void AccountFoldersController::slotFolderWizardAccepted(OCC::FolderMan::SyncConn
 
 void AccountFoldersController::buildMenuActions()
 {
+    QList<QAction *> itemActions;
+
     // show in finder
     _showInSystemFolder = new QAction(CommonStrings::showInFileBrowser(), this);
+    itemActions.push_back(_showInSystemFolder);
     connect(_showInSystemFolder, &QAction::triggered, this, &AccountFoldersController::onShowInSystemFolder);
 
     if (_accountState->account()->capabilities().privateLinkPropertyAvailable()) {
         _showInBrowser = new QAction(CommonStrings::showInWebBrowser(), this);
+        itemActions.push_back(_showInBrowser);
         connect(_showInBrowser, &QAction::triggered, this, &AccountFoldersController::onShowInBrowser);
     }
 
+    QAction *separator = new QAction(this);
+    separator->setSeparator(true);
+    itemActions.push_back(separator);
+
     _forceSync = new QAction(tr("Force sync now"), this);
+    itemActions.push_back(_forceSync);
     connect(_forceSync, &QAction::triggered, this, &AccountFoldersController::onForceSync);
 
     _pauseSync = new QAction(this);
+    itemActions.push_back(_pauseSync);
     connect(_pauseSync, &QAction::triggered, this, &AccountFoldersController::onTogglePauseSync);
 
     _removeSync = new QAction(tr("Remove folder sync connection"), this);
+    itemActions.push_back(_removeSync);
     connect(_removeSync, &QAction::triggered, this, &AccountFoldersController::onRemoveSync);
 
     // we may want to treat this similar to the enable vfs option, because choose sync can only be activated
     // if the folder is not using vfs. So the idea is if force vfs is on the user will never be able to choose
     // so showing the option at all is probably not great
     _chooseSync = new QAction(tr("Choose what to sync"), this);
+    itemActions.push_back(_chooseSync);
     connect(_chooseSync, &QAction::triggered, this, &AccountFoldersController::onChooseSync);
 
 
@@ -176,6 +190,9 @@ void AccountFoldersController::buildMenuActions()
           }
       _enableVfs = new QAction(this);
     */
+
+    connect(_view, &AccountFoldersView::requestActionsUpdate, this, &AccountFoldersController::updateActions);
+    _view->setFolderActions(itemActions);
 }
 
 
@@ -337,7 +354,7 @@ void AccountFoldersController::buildMenuActions()
 
 void AccountFoldersController::updateActions()
 {
-    if (!_currentFolder)
+    if (!_currentFolder) // probably disable all actions here
         return;
 
     _showInSystemFolder->setEnabled(QFileInfo::exists(_currentFolder->path()));

@@ -1188,6 +1188,7 @@ void FolderMan::addFolderFromGui(AccountState *accountState, const SyncConnectio
 
         if (_unsyncedSpaces.contains(accountId) && _unsyncedSpaces[accountId].contains(f->spaceId()))
         {
+            _unsyncedSpaces[accountId].remove(f->spaceId());
             emit unsyncedSpaceCountChanged(accountId, _unsyncedSpaces[accountId].count(), accountState->account()->spacesManager()->spacesCount());
         }
 
