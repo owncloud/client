@@ -505,7 +505,7 @@ Utilitaire de synchronisation de fichiers pour ordinateur de bureau. </translati
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="77"/>
         <source>Syncing %1 out of %2 spaces</source>
-        <translation type="unfinished"/>
+        <translation>Synchronisation de %1 des %2 espaces</translation>
     </message>
 </context>
 <context>
@@ -1223,7 +1223,7 @@ La mise à jour sera effectuée en arrière-plan et va écraser le fichier Appim
     <message>
         <location filename="../src/gui/folder.cpp" line="391"/>
         <source>The folder has been disabled or removed from the server</source>
-        <translation type="unfinished"/>
+        <translation>Le dossier a été désactivé ou supprimé du serveur</translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="460"/>
