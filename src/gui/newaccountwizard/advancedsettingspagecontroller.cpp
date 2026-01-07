@@ -226,7 +226,7 @@ bool AdvancedSettingsPageController::validateSyncRoot(const QString &rootPath)
         return false;
     }
 
-    QString invalidPathErrorMessage = FolderMan::checkPathValidity(rootPath, FolderMan::NewFolderType::SpacesSyncRoot, {});
+    QString invalidPathErrorMessage = FolderMan::instance()->checkPathValidity(rootPath, FolderMan::NewFolderType::SpacesSyncRoot, {});
     if (!invalidPathErrorMessage.isEmpty()) {
         _errorField->setText(errorMessageTemplate.arg(rootPath, invalidPathErrorMessage));
         return false;

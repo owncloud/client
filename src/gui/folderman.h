@@ -130,12 +130,21 @@ public:
     static QString suggestSyncFolder(NewFolderType folderType, const QUuid &accountUuid);
 
     /**
-     * @brief Check a path for validity.
+     * @brief Check a path for a new spaces sync root or spaces folder for validity.
      *
-     * We do not allow putting a folder inside another folder that is already syncing to a server. We also disallow a space to be put into the default sync root
-     * of another (possibly branded) client, nor in the defaut sync root of another account in our own client.
+     * @param path The path to check
+     * @param folderType The kind of folder that is to be created (Folder or Spaces sync root)
+     * @param the account UUID for the which the folder is created
+     * @return an error string if there is a problem, or an null string if the path is valid
+     *
+     * Checks:
+     *  - spaces sync root not in a syncdb folder (a space folder)
+     *  - spaces sync root not in another spaces sync root
+     *  - space folder not in a syncdb folder (another space folder)
+     *  - space folder *can* be in sync root, if:
+     *  - space folder not in a spaces sync root of other account (check with account uuid) or (possibly branded) client
      */
-    static QString checkPathValidity(const QString &path, NewFolderType folderType, const QUuid &accountUuid);
+    QString checkPathValidity(const QString &path, NewFolderType folderType, const QUuid &accountUuid) const;
 
     static std::unique_ptr<FolderMan> createInstance();
 
@@ -207,7 +216,7 @@ public:
      * Optionally, the path relative to the found folder is returned in
      * relativePath.
      */
-    Folder *folderForPath(const QString &path, QString *relativePath = nullptr);
+    Folder *folderForPath(const QString &path, QString *relativePath = nullptr) const;
 
     /**
      * Ensures that a given directory does not contain a sync journal file.
@@ -228,7 +237,7 @@ public:
      * subfolder of ~ would be a good candidate. When that happens \a basePath
      * is returned.
      */
-    static QString findGoodPathForNewSyncFolder(const QString &basePath, const QString &newFolder, NewFolderType folderType, const QUuid &accountUuid);
+    QString findGoodPathForNewSyncFolder(const QString &basePath, const QString &newFolder, NewFolderType folderType, const QUuid &accountUuid) const;
 
     bool ignoreHiddenFiles() const;
     void setIgnoreHiddenFiles(bool ignore);
@@ -454,7 +463,7 @@ private:
     void registerFolderWithSocketApi(Folder *folder);
 
     // Helper for `checkPathValidity`
-    static QString checkPathValidityRecursive(const QString &path, NewFolderType folderType, const QUuid &accountUuid);
+    static QString findExistingFolderAndCheckValidity(const QString &path, NewFolderType folderType, const QUuid &accountUuid);
 
     QString _folderConfigPath;
     bool _ignoreHiddenFiles = true;

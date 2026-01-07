@@ -65,7 +65,7 @@ bool FolderWizardLocalPath::isComplete() const
 {
     auto folderType = FolderMan::NewFolderType::SpacesFolder;
     auto accountUuid = folderWizardPrivate()->uuid();
-    QString errorStr = FolderMan::checkPathValidity(localPath(), folderType, accountUuid);
+    QString errorStr = FolderMan::instance()->checkPathValidity(localPath(), folderType, accountUuid);
 
     bool isOk = errorStr.isEmpty();
     QStringList warnStrings;

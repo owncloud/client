@@ -101,7 +101,7 @@ FolderWizardPrivate::FolderWizardPrivate(FolderWizard *q, Account *account)
 
 QString FolderWizardPrivate::initialLocalPath() const
 {
-    return FolderMan::findGoodPathForNewSyncFolder(
+    return FolderMan::instance()->findGoodPathForNewSyncFolder(
         defaultSyncRoot(), _spacesPage->currentSpace()->displayName(), FolderMan::NewFolderType::SpacesSyncRoot, _account->uuid());
 }
 

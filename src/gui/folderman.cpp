@@ -761,7 +761,7 @@ void FolderMan::saveFolder(Folder *folder)
     saveFolder(folder, settings);
 }
 
-Folder *FolderMan::folderForPath(const QString &path, QString *relativePath)
+Folder *FolderMan::folderForPath(const QString &path, QString *relativePath) const
 {
     QString absolutePath = QDir::cleanPath(path) + QLatin1Char('/');
 
@@ -963,7 +963,7 @@ static QString checkPathForSyncRootMarkingRecursive(const QString &path, FolderM
  *  - space *can* be in sync root
  *  - space not in spaces sync root of other account (check with account uuid)
  */
-QString FolderMan::checkPathValidity(const QString &path, NewFolderType folderType, const QUuid &accountUuid)
+QString FolderMan::checkPathValidity(const QString &path, NewFolderType folderType, const QUuid &accountUuid) const
 {
     // Do checks against existing folders. This catches cases where:
     // - the user deleted a folder from the filesystem, but there is still a folder sync connection in the configuration
@@ -971,7 +971,7 @@ QString FolderMan::checkPathValidity(const QString &path, NewFolderType folderTy
     // If so, error out.
     const auto cs = Utility::fsCaseSensitivity();
     const QString userDir = QDir::cleanPath(canonicalPath(path)) + QLatin1Char('/');
-    for (auto f : FolderMan::instance()->folders()) {
+    for (auto f : folders()) {
         const QString folderDir = QDir::cleanPath(canonicalPath(f->path())) + QLatin1Char('/');
         if (QString::compare(folderDir, userDir, cs) == 0) {
             return tr("There is already a sync from the server to this local folder.");
@@ -988,13 +988,13 @@ QString FolderMan::checkPathValidity(const QString &path, NewFolderType folderTy
     }
 
     // Now run filesystem based checks
-    return checkPathValidityRecursive(path, folderType, accountUuid);
+    return findExistingFolderAndCheckValidity(path, folderType, accountUuid);
 }
 
-QString FolderMan::checkPathValidityRecursive(const QString &path, NewFolderType folderType, const QUuid &accountUuid)
+QString FolderMan::findExistingFolderAndCheckValidity(const QString &path, NewFolderType folderType, const QUuid &accountUuid)
 {
     if (path.isEmpty()) {
-        return FolderMan::tr("No valid folder selected.");
+        return tr("No valid folder selected.");
     }
 
 #ifdef Q_OS_WIN
@@ -1011,15 +1011,15 @@ QString FolderMan::checkPathValidityRecursive(const QString &path, NewFolderType
     if (!selectedPathInfo.exists()) {
         const QString parentPath = selectedPathInfo.path();
         if (parentPath != path) {
-            return checkPathValidityRecursive(parentPath, folderType, accountUuid);
+            return findExistingFolderAndCheckValidity(parentPath, folderType, accountUuid);
         }
-        return FolderMan::tr("The selected path does not exist.");
+        return tr("The selected path does not exist.");
     }
 
     // At this point we have an existing folder, so check if we can create files/folders here.
     // Note: we don't need to write to any parent, so we don't need to check writablility when traversing the parents.
     if (!selectedPathInfo.isWritable()) {
-        return FolderMan::tr("You have no permission to write to the selected folder.");
+        return tr("You have no permission to write to the selected folder.");
     }
 
     // Now check if none of the parents is already used.
@@ -1027,7 +1027,7 @@ QString FolderMan::checkPathValidityRecursive(const QString &path, NewFolderType
 }
 
 QString FolderMan::findGoodPathForNewSyncFolder(
-    const QString &basePath, const QString &newFolder, FolderMan::NewFolderType folderType, const QUuid &accountUuid)
+    const QString &basePath, const QString &newFolder, FolderMan::NewFolderType folderType, const QUuid &accountUuid) const
 {
     OC_ASSERT(!accountUuid.isNull() || folderType == FolderMan::NewFolderType::SpacesSyncRoot);
 
@@ -1038,7 +1038,7 @@ QString FolderMan::findGoodPathForNewSyncFolder(
     // possibly find a valid sync folder inside it.
     // Example: Someone syncs their home directory. Then ~/foobar is not
     // going to be an acceptable sync folder path for any value of foobar.
-    if (FolderMan::instance()->folderForPath(QFileInfo(normalisedPath).canonicalPath())) {
+    if (folderForPath(QFileInfo(normalisedPath).canonicalPath())) {
         // Any path with that parent is going to be unacceptable,
         // so just keep it as-is.
         return canonicalPath(normalisedPath);
