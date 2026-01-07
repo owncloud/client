@@ -412,20 +412,99 @@ File synchronization desktop utility.</source>
     </message>
 </context>
 <context>
-    <name>OCC::AccountFolderView</name>
+    <name>OCC::AccountFoldersController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderview.cpp" line="36"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="135"/>
+        <source>Force sync now</source>
+        <translation>ບັງຄັບຊິງຕອນນີ້</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="141"/>
+        <source>Remove folder sync connection</source>
+        <translation>ລຶບການເຊື່ອມຕໍ່ການຊິງໂຟນເດີ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="147"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="462"/>
+        <source>Choose what to sync</source>
+        <translation>ເລືອກສິ່ງທີ່ຈະຊິງ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="350"/>
+        <source>Resume sync</source>
+        <translation>ສືບຕໍ່ການຊິງ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="350"/>
+        <source>Pause sync</source>
+        <translation>ຢຸດການຊິງຊົ່ວຄາວ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="383"/>
+        <source>Internet connection is metered</source>
+        <translation>ການເຊື່ອມຕໍ່ອິນເຕີເນັດມີການຈຳກັດຂໍ້ມູນ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="384"/>
+        <source>Synchronization is paused because the Internet connection is a metered connection&lt;p&gt;Do you really want to force a Synchronization now?</source>
+        <translation>ການຊິງໂຄໄນຖືກຢຸດຊົ່ວຄາວ ເພາະການເຊື່ອມຕໍ່ອິນເຕີເນັດມີການຈຳກັດຂໍ້ມູນ&lt;p&gt;ທ່ານຕ້ອງການບັງຄັບໃຫ້ຊິງໂຄໄນຕອນນີ້ແທ້ບໍ່?</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="405"/>
+        <source>Sync Running</source>
+        <translation>ກຳລັງຊິງ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="405"/>
+        <source>The sync operation is running.&lt;br/&gt;Do you want to stop it?</source>
+        <translation>ການຊິງກຳລັງດຳເນີນການຢູ່.&lt;br/&gt;ທ່ານຕ້ອງການຢຸດມັນບໍ່?</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="411"/>
+        <source>Sync paused by user</source>
+        <translation>ການຊິງຖືກຢຸດຊົ່ວຄາວໂດຍຜູ້ໃຊ້</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="429"/>
+        <source>Confirm Folder Sync Connection Removal</source>
+        <translation>ຢືນຢັນການລຶບການເຊື່ອມຕໍ່ການຊິງໂຟນເດີ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="430"/>
+        <source>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
+        <translation>&lt;p&gt;ທ່ານຕ້ອງການຢຸດການຊິງໂຟນເດີ &lt;i&gt;%1&lt;/i&gt; ແທ້ບໍ່?&lt;/p&gt;&lt;p&gt;&lt;b&gt;ໝາຍເຫດ:&lt;/b&gt; ການກະທຳນີ້ຈະ&lt;b&gt;ບໍ່&lt;/b&gt;ລຶບໄຟລ໌ໃດໆ.&lt;/p&gt;</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="434"/>
+        <source>Remove Folder Sync Connection</source>
+        <translation>ລຶບການເຊື່ອມຕໍ່ການຊິງໂຟນເດີ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="435"/>
+        <source>Cancel</source>
+        <translation>ຍົກເລີກ</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::AccountFoldersView</name>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="37"/>
         <source>Folder sync</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderview.cpp" line="41"/>
+        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="42"/>
         <source>Manage your synced folders</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderview.cpp" line="45"/>
+        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="46"/>
         <source>Add new folder sync…</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="77"/>
+        <source>Syncing %1 out of %2 spaces</source>
         <translation type="unfinished"/>
     </message>
 </context>
@@ -462,7 +541,7 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="340"/>
         <location filename="../src/gui/accountsettings.cpp" line="381"/>
-        <location filename="../src/gui/accountsettings.cpp" line="743"/>
+        <location filename="../src/gui/accountsettings.cpp" line="744"/>
         <source>Cancel</source>
         <translation>ຍົກເລີກ</translation>
     </message>
@@ -637,17 +716,17 @@ This action will abort any currently running synchronization.</source>
         <translation>ຕັດການເຊື່ອມຕໍ່ແລ້ວ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="736"/>
+        <location filename="../src/gui/accountsettings.cpp" line="737"/>
         <source>Confirm Account Removal</source>
         <translation>ຢືນຢັນການລຶບບັນຊີ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="737"/>
+        <location filename="../src/gui/accountsettings.cpp" line="738"/>
         <source>&lt;p&gt;Do you really want to remove the connection to the account &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
         <translation>&lt;p&gt;ທ່ານຕ້ອງການລຶບການເຊື່ອມຕໍ່ກັບບັນຊີ &lt;i&gt;%1&lt;/i&gt; ແທ້ບໍ່?&lt;/p&gt;&lt;p&gt;&lt;b&gt;ໝາຍເຫດ:&lt;/b&gt; ການກະທຳນີ້ຈະ&lt;b&gt;ບໍ່&lt;/b&gt;ລຶບໄຟລ໌ໃດໆ.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="741"/>
+        <location filename="../src/gui/accountsettings.cpp" line="742"/>
         <source>Remove connection</source>
         <translation>ລຶບການເຊື່ອມຕໍ່</translation>
     </message>
@@ -700,219 +779,103 @@ This action will abort any currently running synchronization.</source>
         <translation>ການເຊື່ອມຕໍ່ການຊິງ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="167"/>
-        <source>Remove folder sync connection</source>
-        <translation>ລຶບການເຊື່ອມຕໍ່ການຊິງໂຟນເດີ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountview.cpp" line="172"/>
-        <source>Sync options menu</source>
-        <translation>ເມນູຕົວເລືອກການຊິງ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountview.cpp" line="178"/>
-        <source>Folder is not ready yet</source>
-        <translation>ໂຟນເດີຍັງບໍ່ພ້ອມ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountview.cpp" line="218"/>
-        <source>Force sync now</source>
-        <translation>ບັງຄັບຊິງຕອນນີ້</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountview.cpp" line="220"/>
-        <source>Restart sync</source>
-        <translation>ເລີ່ມການຊິງໃໝ່</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountview.cpp" line="226"/>
-        <source>Resume sync</source>
-        <translation>ສືບຕໍ່ການຊິງ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountview.cpp" line="226"/>
-        <source>Pause sync</source>
-        <translation>ຢຸດການຊິງຊົ່ວຄາວ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountview.cpp" line="239"/>
-        <source>Enable virtual file support</source>
-        <translation>ເປີດການຮອງຮັບໄຟລ໌ສະເໝືອນ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountview.cpp" line="253"/>
-        <source>Disable virtual file support</source>
-        <translation>ປິດການຮອງຮັບໄຟລ໌ສະເໝືອນ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountview.cpp" line="260"/>
-        <location filename="../src/gui/accountview.cpp" line="283"/>
-        <source>Choose what to sync</source>
-        <translation>ເລືອກສິ່ງທີ່ຈະຊິງ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountview.cpp" line="337"/>
-        <source>Confirm Folder Sync Connection Removal</source>
-        <translation>ຢືນຢັນການລຶບການເຊື່ອມຕໍ່ການຊິງໂຟນເດີ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountview.cpp" line="338"/>
-        <source>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;ທ່ານຕ້ອງການຢຸດການຊິງໂຟນເດີ &lt;i&gt;%1&lt;/i&gt; ແທ້ບໍ່?&lt;/p&gt;&lt;p&gt;&lt;b&gt;ໝາຍເຫດ:&lt;/b&gt; ການກະທຳນີ້ຈະ&lt;b&gt;ບໍ່&lt;/b&gt;ລຶບໄຟລ໌ໃດໆ.&lt;/p&gt;</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountview.cpp" line="343"/>
-        <source>Remove Folder Sync Connection</source>
-        <translation>ລຶບການເຊື່ອມຕໍ່ການຊິງໂຟນເດີ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountview.cpp" line="344"/>
-        <location filename="../src/gui/accountview.cpp" line="382"/>
-        <location filename="../src/gui/accountview.cpp" line="756"/>
+        <location filename="../src/gui/accountview.cpp" line="361"/>
         <source>Cancel</source>
         <translation>ຍົກເລີກ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="373"/>
-        <source>Disable virtual file support?</source>
-        <translation>ປິດການຮອງຮັບໄຟລ໌ສະເໝືອນບໍ່?</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountview.cpp" line="374"/>
-        <source>This action will disable virtual file support. As a consequence contents of folders that are currently marked as 'available online only' will be downloaded.
-
-The only advantage of disabling virtual file support is that the selective sync feature will become available again.
-
-This action will abort any currently running synchronization.</source>
-        <translation>ການກະທຳນີ້ຈະປິດການຮອງຮັບໄຟລ໌ສະເໝືອນ. ຜົນທີ່ຕາມມາຄືເນື້ອໃນຂອງໂຟນເດີທີ່ກຳລັງໝາຍວ່າ &apos;ມີສະເພາະອອນລາຍ&apos; ຈະຖືກດາວໂຫຼດ.
-
-ຂໍ້ດີພຽງຢ່າງດຽວຂອງການປິດການຮອງຮັບໄຟລ໌ສະເໝືອນແມ່ນຄຸນສົມບັດການຊິງແບບເລືອກໄດ້ຈະກັບມາໃຊ້ງານໄດ້ອີກຄັ້ງ.
-
-ການກະທຳນີ້ຈະຍົກເລີກການຊິງໂຄໄນທີ່ກຳລັງເຮັດວຽກຢູ່ທັງໝົດ.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountview.cpp" line="381"/>
-        <source>Disable support</source>
-        <translation>ປິດການຮອງຮັບ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountview.cpp" line="446"/>
-        <source>Sync Running</source>
-        <translation>ກຳລັງຊິງ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountview.cpp" line="446"/>
-        <source>The sync operation is running.&lt;br/&gt;Do you want to stop it?</source>
-        <translation>ການຊິງກຳລັງດຳເນີນການຢູ່.&lt;br/&gt;ທ່ານຕ້ອງການຢຸດມັນບໍ່?</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountview.cpp" line="463"/>
-        <source>Sync paused by user</source>
-        <translation>ການຊິງຖືກຢຸດຊົ່ວຄາວໂດຍຜູ້ໃຊ້</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountview.cpp" line="489"/>
-        <source>Internet connection is metered</source>
-        <translation>ການເຊື່ອມຕໍ່ອິນເຕີເນັດມີການຈຳກັດຂໍ້ມູນ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountview.cpp" line="490"/>
-        <source>Synchronization is paused because the Internet connection is a metered connection&lt;p&gt;Do you really want to force a Synchronization now?</source>
-        <translation>ການຊິງໂຄໄນຖືກຢຸດຊົ່ວຄາວ ເພາະການເຊື່ອມຕໍ່ອິນເຕີເນັດມີການຈຳກັດຂໍ້ມູນ&lt;p&gt;ທ່ານຕ້ອງການບັງຄັບໃຫ້ຊິງໂຄໄນຕອນນີ້ແທ້ບໍ່?</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountview.cpp" line="514"/>
+        <location filename="../src/gui/accountview.cpp" line="183"/>
         <source>Account options menu</source>
         <translation>ເມນູຕົວເລືອກບັນຊີ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="516"/>
-        <location filename="../src/gui/accountview.cpp" line="520"/>
+        <location filename="../src/gui/accountview.cpp" line="185"/>
+        <location filename="../src/gui/accountview.cpp" line="189"/>
         <source>Log in</source>
         <translation>ເຂົ້າສູ່ລະບົບ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="517"/>
+        <location filename="../src/gui/accountview.cpp" line="186"/>
         <source>Reconnect</source>
         <translation>ເຊື່ອມຕໍ່ໃໝ່</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="520"/>
+        <location filename="../src/gui/accountview.cpp" line="189"/>
         <source>Log out</source>
         <translation>ອອກຈາກລະບົບ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="525"/>
+        <location filename="../src/gui/accountview.cpp" line="194"/>
         <source>Remove</source>
         <translation>ລຶບ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="552"/>
+        <location filename="../src/gui/accountview.cpp" line="221"/>
         <source>The server version %1 is unsupported! Proceed at your own risk.</source>
         <translation>ເວີຊັນເຊີບເວີ %1 ບໍ່ຮອງຮັບ! ກະລຸນາດຳເນີນການຕໍ່ດ້ວຍຄວາມສ່ຽງຂອງທ່ານເອງ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="555"/>
+        <location filename="../src/gui/accountview.cpp" line="224"/>
         <source>Connected</source>
         <translation>ເຊື່ອມຕໍ່ແລ້ວ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="564"/>
+        <location filename="../src/gui/accountview.cpp" line="234"/>
         <source>Server is temporarily unavailable</source>
         <translation>ເຊີບເວີບໍ່ສາມາດໃຊ້ງານໄດ້ຊົ່ວຄາວ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="567"/>
+        <location filename="../src/gui/accountview.cpp" line="237"/>
         <source>Server is currently in maintenance mode</source>
         <translation>ເຊີບເວີກຳລັງຢູ່ໃນໂໝດບຳລຸງຮັກສາ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="570"/>
+        <location filename="../src/gui/accountview.cpp" line="240"/>
         <source>Signed out</source>
         <translation>ອອກຈາກລະບົບແລ້ວ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="573"/>
+        <location filename="../src/gui/accountview.cpp" line="243"/>
         <source>Updating credentials…</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="582"/>
+        <location filename="../src/gui/accountview.cpp" line="252"/>
         <source>Connecting…</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="578"/>
+        <location filename="../src/gui/accountview.cpp" line="248"/>
         <source>Captive portal prevents connections to the server.</source>
         <translation>Captive portal ກີດຂວາງການເຊື່ອມຕໍ່ກັບເຊີບເວີ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="580"/>
+        <location filename="../src/gui/accountview.cpp" line="250"/>
         <source>Sync is paused due to metered internet connection</source>
         <translation>ການຊິງຖືກຢຸດຊົ່ວຄາວເນື່ອງຈາກການເຊື່ອມຕໍ່ອິນເຕີເນັດມີການຈຳກັດຂໍ້ມູນ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="586"/>
+        <location filename="../src/gui/accountview.cpp" line="256"/>
         <source>Server configuration error</source>
         <translation>ການຕັ້ງຄ່າເຊີບເວີຜິດພາດ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="592"/>
+        <location filename="../src/gui/accountview.cpp" line="262"/>
         <source>Disconnected</source>
         <translation>ຕັດການເຊື່ອມຕໍ່ແລ້ວ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="750"/>
+        <location filename="../src/gui/accountview.cpp" line="355"/>
         <source>Confirm Account Removal</source>
         <translation>ຢືນຢັນການລຶບບັນຊີ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="751"/>
+        <location filename="../src/gui/accountview.cpp" line="356"/>
         <source>&lt;p&gt;Do you really want to remove the connection to the account &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
         <translation>&lt;p&gt;ທ່ານຕ້ອງການລຶບການເຊື່ອມຕໍ່ກັບບັນຊີ &lt;i&gt;%1&lt;/i&gt; ແທ້ບໍ່?&lt;/p&gt;&lt;p&gt;&lt;b&gt;ໝາຍເຫດ:&lt;/b&gt; ການກະທຳນີ້ຈະ&lt;b&gt;ບໍ່&lt;/b&gt;ລຶບໄຟລ໌ໃດໆ.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="755"/>
+        <location filename="../src/gui/accountview.cpp" line="360"/>
         <source>Remove connection</source>
         <translation>ລຶບການເຊື່ອມຕໍ່</translation>
     </message>
@@ -1215,30 +1178,30 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation>ບໍ່ສາມາດອ່ານ %1 ໄດ້.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="437"/>
+        <location filename="../src/gui/folder.cpp" line="455"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 ຖືກລຶບອອກແລ້ວ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="451"/>
+        <location filename="../src/gui/folder.cpp" line="469"/>
         <source>%1 has been updated.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 ຖືກອັບເດດແລ້ວ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="458"/>
+        <location filename="../src/gui/folder.cpp" line="476"/>
         <source>%1 has been renamed to %2.</source>
         <comment>%1 and %2 name files.</comment>
         <translation>%1 ຖືກປ່ຽນຊື່ເປັນ %2.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="465"/>
+        <location filename="../src/gui/folder.cpp" line="483"/>
         <source>%1 has been moved to %2.</source>
         <translation>%1 ຖືກຍ້າຍໄປທີ່ %2.</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="435"/>
+        <location filename="../src/gui/folder.cpp" line="453"/>
         <source>%1 and %n other file(s) have been removed.</source>
         <translation><numerusform>%1 ແລະ ໄຟລ໌ອື່ນໆອີກ %n ໄຟລ໌ຖືກລຶບອອກແລ້ວ.</numerusform></translation>
     </message>
@@ -1257,79 +1220,84 @@ The update will be performed in the background, and overwrite the current AppIma
         <source>%1 is not writable.</source>
         <translation>ບໍ່ສາມາດຂຽນໃສ່ %1 ໄດ້.</translation>
     </message>
+    <message>
+        <location filename="../src/gui/folder.cpp" line="391"/>
+        <source>The folder has been disabled or removed from the server</source>
+        <translation type="unfinished"/>
+    </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="442"/>
+        <location filename="../src/gui/folder.cpp" line="460"/>
         <source>%1 and %n other file(s) have been added.</source>
         <translation><numerusform>%1 ແລະ ໄຟລ໌ອື່ນໆອີກ %n ໄຟລ໌ຖືກເພີ່ມເຂົ້າມາແລ້ວ.</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="444"/>
+        <location filename="../src/gui/folder.cpp" line="462"/>
         <source>%1 has been added.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 ຖືກເພີ່ມເຂົ້າມາແລ້ວ.</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="449"/>
+        <location filename="../src/gui/folder.cpp" line="467"/>
         <source>%1 and %n other file(s) have been updated.</source>
         <translation><numerusform>%1 ແລະ ໄຟລ໌ອື່ນໆອີກ %n ໄຟລ໌ຖືກອັບເດດແລ້ວ.</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="456"/>
+        <location filename="../src/gui/folder.cpp" line="474"/>
         <source>%1 has been renamed to %2 and %n other file(s) have been renamed.</source>
         <translation><numerusform>%1 ຖືກປ່ຽນຊື່ເປັນ %2 ແລະ ໄຟລ໌ອື່ນໆອີກ %n ໄຟລ໌ຖືກປ່ຽນຊື່ແລ້ວ.</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="463"/>
+        <location filename="../src/gui/folder.cpp" line="481"/>
         <source>%1 has been moved to %2 and %n other file(s) have been moved.</source>
         <translation><numerusform>%1 ຖືກຍ້າຍໄປທີ່ %2 ແລະ ໄຟລ໌ອື່ນໆອີກ %n ໄຟລ໌ຖືກຍ້າຍແລ້ວ.</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="470"/>
+        <location filename="../src/gui/folder.cpp" line="488"/>
         <source>%1 and %n other file(s) have sync conflicts.</source>
         <translation><numerusform>%1 ແລະ ໄຟລ໌ອື່ນໆອີກ %n ໄຟລ໌ມີບັນຫາການຊິງຂັດກັນ.</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="472"/>
+        <location filename="../src/gui/folder.cpp" line="490"/>
         <source>%1 has a sync conflict. Please check the conflict file!</source>
         <translation>%1 ມີບັນຫາການຊິງຂັດກັນ. ກະລຸນາກວດສອບໄຟລ໌ທີ່ຂັດກັນ!</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="477"/>
+        <location filename="../src/gui/folder.cpp" line="495"/>
         <source>%1 and %n other file(s) could not be synced due to errors. See the log for details.</source>
         <translation><numerusform>%1 ແລະ ໄຟລ໌ອື່ນໆອີກ %n ໄຟລ໌ບໍ່ສາມາດຊິງໄດ້ເນື່ອງຈາກຄວາມຜິດພາດ. ເບິ່ງລາຍລະອຽດໃນລັອກ.</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="479"/>
+        <location filename="../src/gui/folder.cpp" line="497"/>
         <source>%1 could not be synced due to an error. See the log for details.</source>
         <translation>%1 ບໍ່ສາມາດຊິງໄດ້ເນື່ອງຈາກຄວາມຜິດພາດ. ເບິ່ງລາຍລະອຽດໃນລັອກ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="485"/>
+        <location filename="../src/gui/folder.cpp" line="503"/>
         <source>Sync Activity</source>
         <translation>ກິດຈະກຳການຊິງ</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="683"/>
+        <location filename="../src/gui/folder.cpp" line="701"/>
         <source>Switching VFS mode on folder &apos;%1&apos;</source>
         <translation>ກຳລັງປ່ຽນໂໝດ VFS ໃນໂຟນເດີ &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="878"/>
+        <location filename="../src/gui/folder.cpp" line="895"/>
         <source>Could not read system exclude file</source>
         <translation>ບໍ່ສາມາດອ່ານໄຟລ໌ຍົກເວັ້ນຂອງລະບົບ</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1073"/>
+        <location filename="../src/gui/folder.cpp" line="1090"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translation>ໂຟນເດີ %1 ຖືກສ້າງຂຶ້ນແລ້ວ ແຕ່ຖືກຍົກເວັ້ນຈາກການຊິງໂຄໄນກ່ອນໜ້ານີ້. ຂໍ້ມູນພາຍໃນຈະບໍ່ຖືກຊິງໂຄໄນ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1076"/>
+        <location filename="../src/gui/folder.cpp" line="1093"/>
         <source>The file %1 was created but was excluded from synchronization previously. It will not be synchronized.</source>
         <translation>ໄຟລ໌ %1 ຖືກສ້າງຂຶ້ນແລ້ວ ແຕ່ຖືກຍົກເວັ້ນຈາກການຊິງໂຄໄນກ່ອນໜ້ານີ້. ມັນຈະບໍ່ຖືກຊິງໂຄໄນ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1088"/>
+        <location filename="../src/gui/folder.cpp" line="1105"/>
         <source>Changes in synchronized folders could not be tracked reliably.
 
 This means that the synchronization client might not upload local changes immediately and will instead only scan for local changes and upload them occasionally (every two hours by default).
@@ -1345,107 +1313,107 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderMan</name>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="310"/>
+        <location filename="../src/gui/folderman.cpp" line="427"/>
         <source>Could not reset folder state</source>
         <translation>ບໍ່ສາມາດຣີເຊັດສະຖານະໂຟນເດີໄດ້</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="311"/>
+        <location filename="../src/gui/folderman.cpp" line="428"/>
         <source>An old sync journal &apos;%1&apos; was found, but could not be removed. Please make sure that no application is currently using it.</source>
         <translation>ພົບເຫັນບັນທຶກການຊິງເກົ່າ &apos;%1&apos;, ແຕ່ບໍ່ສາມາດລຶບອອກໄດ້. ກະລຸນາກວດສອບໃຫ້ແນ່ໃຈວ່າບໍ່ມີໂປຣແກຣມໃດກຳລັງນຳໃຊ້ມັນຢູ່.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="328"/>
+        <location filename="../src/gui/folderman.cpp" line="445"/>
         <source>Unsupported filesystem</source>
         <translation>ລະບົບໄຟລ໌ບໍ່ຮອງຮັບ</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="418"/>
+        <location filename="../src/gui/folderman.cpp" line="539"/>
         <source>Account disconnected or paused</source>
         <translation>ບັນຊີຖືກຕັດການເຊື່ອມຕໍ່ ຫຼື ຢຸດຊົ່ວຄາວ</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="671"/>
+        <location filename="../src/gui/folderman.cpp" line="813"/>
         <source>User triggered force sync</source>
         <translation>ຜູ້ໃຊ້ສັ່ງບັງຄັບຊິງ</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="699"/>
+        <location filename="../src/gui/folderman.cpp" line="844"/>
         <source>Folder is about to be removed</source>
         <translation>ໂຟນເດີກຳລັງຈະຖືກລຶບ</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="723"/>
+        <location filename="../src/gui/folderman.cpp" line="867"/>
         <source> (backup)</source>
         <translation> (ສຳຮອງ)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="728"/>
+        <location filename="../src/gui/folderman.cpp" line="872"/>
         <source> (backup %1)</source>
         <translation> (ສຳຮອງ %1)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="775"/>
+        <location filename="../src/gui/folderman.cpp" line="919"/>
         <source>Folder &apos;%1&apos; is already in use by application %2!</source>
         <translation>ໂຟນເດີ &apos;%1&apos; ຖືກນຳໃຊ້ໂດຍໂປຣແກຣມ %2 ຢູ່ແລ້ວ!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="790"/>
+        <location filename="../src/gui/folderman.cpp" line="934"/>
         <source>Folder &apos;%1&apos; is already in use by another account.</source>
         <translation>ໂຟນເດີ &apos;%1&apos; ຖືກນຳໃຊ້ໂດຍບັນຊີອື່ນຢູ່ແລ້ວ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="805"/>
+        <location filename="../src/gui/folderman.cpp" line="949"/>
         <source>No valid folder selected!</source>
         <translation>ບໍ່ມີໂຟນເດີທີ່ຖືກຕ້ອງຖືກເລືອກ!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="827"/>
+        <location filename="../src/gui/folderman.cpp" line="971"/>
         <source>The folder %1 is used in a folder sync connection!</source>
         <translation>ໂຟນເດີ %1 ຖືກໃຊ້ໃນການເຊື່ອມຕໍ່ການຊິງໂຟນເດີຢູ່ແລ້ວ!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="869"/>
+        <location filename="../src/gui/folderman.cpp" line="1013"/>
         <source>The local folder %1 already contains a folder used in a folder sync connection. Please pick another local folder!</source>
         <translation>ໂຟນເດີໃນເຄື່ອງ %1 ມີໂຟນເດີທີ່ຖືກໃຊ້ໃນການເຊື່ອມຕໍ່ການຊິງໂຟນເດີຢູ່ແລ້ວ. ກະລຸນາເລືອກໂຟນເດີອື່ນໃນເຄື່ອງ!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="875"/>
+        <location filename="../src/gui/folderman.cpp" line="1019"/>
         <source>The local folder %1 is already contained in a folder used in a folder sync connection. Please pick another local folder!</source>
         <translation>ໂຟນເດີໃນເຄື່ອງ %1 ເປັນສ່ວນໜຶ່ງຂອງໂຟນເດີທີ່ຖືກໃຊ້ໃນການເຊື່ອມຕໍ່ການຊິງໂຟນເດີຢູ່ແລ້ວ. ກະລຸນາເລືອກໂຟນເດີອື່ນໃນເຄື່ອງ!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="883"/>
+        <location filename="../src/gui/folderman.cpp" line="1027"/>
         <source>%1 Please pick another local folder!</source>
         <translation>%1 ກະລຸນາເລືອກໂຟນເດີອື່ນໃນເຄື່ອງ!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="823"/>
+        <location filename="../src/gui/folderman.cpp" line="967"/>
         <source>The selected path does not exist!</source>
         <translation>ເສັ້ນທາງທີ່ເລືອກບໍ່ມີຢູ່!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="328"/>
+        <location filename="../src/gui/folderman.cpp" line="445"/>
         <source>On macOS, only the Apple File System is supported.</source>
         <translation>ໃນ macOS, ຮອງຮັບສະເພາະ Apple File System ເທົ່ານັ້ນ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="833"/>
+        <location filename="../src/gui/folderman.cpp" line="977"/>
         <source>The selected path is not a folder!</source>
         <translation>ເສັ້ນທາງທີ່ເລືອກບໍ່ແມ່ນໂຟນເດີ!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="837"/>
+        <location filename="../src/gui/folderman.cpp" line="981"/>
         <source>You have no permission to write to the selected folder!</source>
         <translation>ທ່ານບໍ່ມີສິດໃນການຂຽນໃສ່ໂຟນເດີທີ່ເລືອກ!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="865"/>
+        <location filename="../src/gui/folderman.cpp" line="1009"/>
         <source>There is already a sync from the server to this local folder. Please pick another local folder!</source>
         <translation>ມີການຊິງຈາກເຊີບເວີມາທີ່ໂຟນເດີນີ້ຢູ່ແລ້ວ. ກະລຸນາເລືອກໂຟນເດີອື່ນໃນເຄື່ອງ!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="953"/>
+        <location filename="../src/gui/folderman.cpp" line="1097"/>
         <source>Multiple accounts are sharing the folder %1.
 This configuration is know to lead to dataloss and is no longer supported.
 Please consider removing this folder from the account and adding it again.</source>
@@ -1704,12 +1672,12 @@ Please consider removing this folder from the account and adding it again.</sour
 <context>
     <name>OCC::GraphApi::Space</name>
     <message>
-        <location filename="../src/libsync/graphapi/space.cpp" line="91"/>
+        <location filename="../src/libsync/graphapi/space.cpp" line="87"/>
         <source>Personal</source>
         <translation>ສ່ວນບຸກຄົນ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/graphapi/space.cpp" line="95"/>
+        <location filename="../src/libsync/graphapi/space.cpp" line="91"/>
         <source>Shares</source>
         <translation>ການແຊຣ໌</translation>
     </message>
@@ -2937,33 +2905,33 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::SocketApi</name>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="468"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="470"/>
         <source>Share with %1</source>
         <comment>parameter is the application name</comment>
         <translation>ແຊຣ໌ກັບ %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="573"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="575"/>
         <source>Confirm deletion</source>
         <translation>ຢືນຢັນການລຶບ</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="575"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="577"/>
         <source>Do you want to delete the directory &lt;i&gt;%1&lt;/i&gt; and all its contents permanently?</source>
         <translation>ທ່ານຕ້ອງການລຶບໄດເຣັກທໍຣີ &lt;i&gt;%1&lt;/i&gt; ແລະ ເນື້ອໃນທັງໝົດຂອງມັນຢ່າງຖາວອນບໍ່?</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="576"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="578"/>
         <source>Do you want to delete the file &lt;i&gt;%1&lt;/i&gt; permanently?</source>
         <translation>ທ່ານຕ້ອງການລຶບໄຟລ໌ &lt;i&gt;%1&lt;/i&gt; ຢ່າງຖາວອນບໍ່?</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="628"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="630"/>
         <source>Error</source>
         <translation>ຂໍ້ຜິດພາດ</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="629"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="631"/>
         <source>Moving file failed:
 
 %1</source>
@@ -2972,80 +2940,80 @@ Note that using any logging command line options will override the settings.</so
 %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="693"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="695"/>
         <source>I shared something with you</source>
         <translation>ຂ້ອຍໄດ້ແຊຣ໌ບາງຢ່າງກັບເຈົ້າ</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="618"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="620"/>
         <source>Select new location…</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="706"/>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="735"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="708"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="737"/>
         <source>Share…</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="708"/>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="739"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="710"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="741"/>
         <source>Copy private link to clipboard</source>
         <translation>ສຳເນົາລິ້ງສ່ວນຕົວໃສ່ຄລິບບອດ</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="733"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="735"/>
         <source>Resharing this file is not allowed</source>
         <translation>ບໍ່ອະນຸຍາດໃຫ້ແຊຣ໌ໄຟລ໌ນີ້ຕໍ່</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="733"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="735"/>
         <source>Resharing this folder is not allowed</source>
         <translation>ບໍ່ອະນຸຍາດໃຫ້ແຊຣ໌ໂຟເດີນີ້ຕໍ່</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="808"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="810"/>
         <source>Open in %1</source>
         <translation>ເປີດໃນ %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="819"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="821"/>
         <source>Show file versions in web browser</source>
         <translation>ສະແດງເວີຊັນຂອງໄຟລ໌ໃນເວັບເບຣົາເຊີ</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="841"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="843"/>
         <source>Rename…</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="844"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="846"/>
         <source>Rename and upload…</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="849"/>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="853"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="851"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="855"/>
         <source>Move and rename…</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="856"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="858"/>
         <source>Move, rename and upload…</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="864"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="866"/>
         <source>Move and upload…</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="859"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="861"/>
         <source>Delete local changes</source>
         <translation>ລຶບການປ່ຽນແປງໃນເຄື່ອງ</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="865"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="867"/>
         <source>Delete</source>
         <translation>ລຶບ</translation>
     </message>
@@ -3517,7 +3485,7 @@ Please check the server&apos;s availability then run the wizard again.</source>
         <translation><numerusform>%n ນາທີກ່ອນ</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncresult.cpp" line="115"/>
+        <location filename="../src/libsync/syncresult.cpp" line="117"/>
         <source>%1: %2</source>
         <extracomment>this displays an error string (%2) for a file %1</extracomment>
         <translation>%1: %2</translation>
