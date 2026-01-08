@@ -37,7 +37,7 @@ private Q_SLOTS:
     void testCheckPathValidityForNewFolder()
     {
 #ifdef Q_OS_WIN
-        Utility::NtfsPermissionLookupRAII ntfs_perm;
+        QNtfsPermissionCheckGuard ntfs_perm;
 #endif
         auto dir = TestUtils::createTempDir();
         QVERIFY(dir.isValid());

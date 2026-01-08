@@ -1009,5 +1009,3 @@ void SocketApiJobV2::setWarning(const QString &warning)
 }
 
 } // namespace OCC
-
-#include "socketapi.moc"
