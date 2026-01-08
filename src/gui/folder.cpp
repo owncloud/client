@@ -193,7 +193,7 @@ GraphApi::Space *Folder::space() const
 bool Folder::checkLocalPath()
 {
 #ifdef Q_OS_WIN
-    Utility::NtfsPermissionLookupRAII ntfs_perm;
+    QNtfsPermissionCheckGuard ntfs_perm;
 #endif
     const QFileInfo fi(_definition.localPath());
     _canonicalLocalPath = fi.canonicalFilePath();

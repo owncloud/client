@@ -72,20 +72,5 @@ namespace Utility {
     OCSYNC_EXPORT void UnixTimeToLargeIntegerFiletime(time_t t, LARGE_INTEGER *hundredNSecs);
 
     OCSYNC_EXPORT QString formatWinError(long error);
-
-    class OCSYNC_EXPORT NtfsPermissionLookupRAII
-    {
-    public:
-        /**
-         * NTFS permissions lookup is disabled by default for performance reasons
-         * Enable it and disable it again once we leave the scope
-         * https://doc.qt.io/Qt-5/qfileinfo.html#ntfs-permissions
-         */
-        NtfsPermissionLookupRAII();
-        ~NtfsPermissionLookupRAII();
-
-    private:
-        Q_DISABLE_COPY(NtfsPermissionLookupRAII);
-    };
 }
 }
