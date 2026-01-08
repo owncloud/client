@@ -59,13 +59,12 @@ QString FolderWizardPrivate::formatWarnings(const QStringList &warnings, bool is
     return ret;
 }
 
-// todo: #43
 QString FolderWizardPrivate::defaultSyncRoot() const
 {
     // this should never happen when we have set up the account using spaces - there is ALWAYS a default root when spaces are in play
     // and they are always in play so this check is bogus. todo: #43
     if (!_account->hasDefaultSyncRoot()) {
-        const auto folderType = FolderMan::NewFolderType::SpacesSyncRoot; // todo: #43 : FolderMan::NewFolderType::OC10SyncRoot;
+        const auto folderType = FolderMan::NewFolderType::SpacesSyncRoot;
         return FolderMan::suggestSyncFolder(folderType, _account->uuid());
     } else {
         return _account->defaultSyncRoot();
@@ -102,7 +101,7 @@ FolderWizardPrivate::FolderWizardPrivate(FolderWizard *q, Account *account)
 
 QString FolderWizardPrivate::initialLocalPath() const
 {
-    return FolderMan::findGoodPathForNewSyncFolder(
+    return FolderMan::instance()->findGoodPathForNewSyncFolder(
         defaultSyncRoot(), _spacesPage->currentSpace()->displayName(), FolderMan::NewFolderType::SpacesSyncRoot, _account->uuid());
 }
 
