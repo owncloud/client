@@ -462,7 +462,14 @@ private:
     // pair this with _socketApi->slotUnregisterPath(folder);
     void registerFolderWithSocketApi(Folder *folder);
 
-    // Helper for `checkPathValidity`
+    // Helper for `checkPathValidity`. It first checks if the folder `path` exists, and if not recusively checks its parent. When a folder
+    // is found, it checks for sync root markers. See the documentation of `checkPathValidity` for when a path is valid. If the path
+    // is valid, a null-string is returned. When a path is invalid, an error string is returned.
+    //
+    // For example: start with /x/y/z
+    // First check is if z exists. If not, retry with /x/y.
+    // Now if /x/y exists, check for markers wether this is used as a spaces folder, or a sync root for another account. If it is, return an error message. If
+    // not, check /x. When a path is valid, the null string is returned.
     static QString findExistingFolderAndCheckValidity(const QString &path, NewFolderType folderType, const QUuid &accountUuid);
 
     QString _folderConfigPath;
