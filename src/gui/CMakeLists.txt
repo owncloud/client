@@ -119,6 +119,7 @@ ecm_add_qml_module(owncloudGui
         URI org.ownCloud.gui
         VERSION 1.0
         NAMESPACE OCC
+        GENERATE_PLUGIN_SOURCE
         QML_FILES
             qml/AccountBar.qml
             qml/AccountButton.qml
