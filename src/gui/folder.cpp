@@ -21,7 +21,6 @@
 #include "accountstate.h"
 #include "application.h"
 #include "common/checksums.h"
-#include "common/depreaction.h"
 #include "common/filesystembase.h"
 #include "common/syncjournalfilerecord.h"
 #include "common/version.h"
@@ -30,7 +29,6 @@
 #include "filesystem.h"
 #include "folderman.h"
 #include "folderwatcher.h"
-#include "gui/accountsettings.h"
 #include "libsync/graphapi/spacesmanager.h"
 #include "localdiscoverytracker.h"
 #include "scheduling/syncscheduler.h"
@@ -75,7 +73,8 @@ auto displayNameC()
     return QLatin1String("displayString");
 }
 
-auto deployedC()
+// todo #52 - eliminate this config value and scrub configs next major release
+[[deprecated("deployed concept is no longer supported and will be removed in client 8.0")]] auto deployedC()
 {
     return QStringLiteral("deployed");
 }
@@ -331,7 +330,7 @@ QUrl Folder::webDavUrl() const
 {
     GraphApi::Space *sp = space();
     if (sp)
-        return QUrl(sp->drive().getRoot().getWebDavUrl());
+        return sp->webDavUrl();
     return _definition.webDavUrl();
 }
 
@@ -352,7 +351,7 @@ bool Folder::canSync() const
 {
     if (!_engine || !_accountState || !_accountState->account() || !_folderWatcher)
         return false;
-    return !syncPaused() && _accountState->readyForSync() && isReady() && _accountState->account()->hasCapabilities();
+    return isAvailable() && !syncPaused() && _accountState->readyForSync() && isReady() && _accountState->account()->hasCapabilities();
 }
 
 bool Folder::isReady() const
@@ -378,6 +377,24 @@ void Folder::setSyncPaused(bool paused)
         setSyncState(SyncResult::Paused);
     }
     Q_EMIT canSyncChanged();
+}
+
+void Folder::setAvailable(bool available)
+{
+    if (available != (space() != nullptr))
+        return;
+
+    _available = available;
+    _syncResult.reset();
+    if (!_available) {
+        _syncResult.setStatus(SyncResult::Status::Unavailable);
+        _syncResult.appendErrorString(tr("The folder has been disabled or removed from the server"));
+    } else {
+        _syncResult.setStatus(SyncResult::Status::NotYetStarted);
+    }
+
+    emit syncStateChange();
+    emit canSyncChanged();
 }
 
 void Folder::setSyncState(SyncResult::Status state)
@@ -532,8 +549,6 @@ void Folder::startVfs()
             }
         });
         _vfsIsReady = true;
-        // Refactoring todo: NO. Just no.
-        Q_EMIT FolderMan::instance()->folderListChanged();
         // We are set up, schedule ourselves if we can.
         // If not the scheduler will take care of it later.
         if (canSync()) {
@@ -852,7 +867,6 @@ bool Folder::reloadExcludes()
 
 void Folder::startSync()
 {
-    Q_ASSERT(isReady() && _folderWatcher);
     if (!isReady() || !_folderWatcher) {
         qCWarning(lcFolder) << "Folder sync attempted before ready and/or without valid folder watcher";
         return;
@@ -1130,6 +1144,11 @@ FolderDefinition::FolderDefinition(const QByteArray &id, const QUrl &davUrl, con
     , _spaceId(spaceId)
     , _id(id)
     , _displayName(displayName)
+{
+}
+
+FolderDefinition::FolderDefinition(const QUrl &davUrl, const QString &spaceId, const QString &displayName)
+    : FolderDefinition(QUuid::createUuid().toByteArray(QUuid::WithoutBraces), davUrl, spaceId, displayName)
 {
 }
 

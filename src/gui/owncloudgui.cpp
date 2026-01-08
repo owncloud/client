@@ -22,7 +22,6 @@
 #include "common/syncjournalfilerecord.h"
 #include "configfile.h"
 #include "folderman.h"
-#include "gui/accountsettings.h"
 #include "gui/networkinformation.h"
 #include "guiutility.h"
 #include "libsync/theme.h"

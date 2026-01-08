@@ -28,6 +28,11 @@ namespace {
 const auto personalC = QLatin1String("personal");
 
 // https://github.com/cs3org/reva/blob/0cde0a3735beaa14ebdfd8988c3eb77b3c2ab0e6/pkg/utils/utils.go#L56-L59
+
+// important detail about this id: the "shares" folder always has this id, even across different accounts!
+// this means that we can never assume that space id's are unique across accounts, to the contrary, if a share is
+// in play they most definitely are not. This concept could theoretically extend to other folders so we need to index
+// space id against account id for many operations.
 const auto sharesIdC = QLatin1String("a0ca6a90-a365-4782-871e-d44447bbc668$a0ca6a90-a365-4782-871e-d44447bbc668");
 }
 
@@ -40,16 +45,18 @@ Space::Space(SpacesManager *spacesManager, const OpenAPI::OAIDrive &drive, const
     // todo future refactoring: get this setDrive out of the ctr since it potentially kicks off a job for the SpaceImage before the Space is fully constructed
     // propose removing the drive arg from the ctr completely, and moving the call to setDrive to the spacesmanager such that any call to
     // "new" space is immediately followed by setDrive.
+    if (_spaceManager->account())
+        _accountId = _spaceManager->account()->uuid();
     setDrive(drive);
     connect(_image, &SpaceImage::imageChanged, this, &Space::imageChanged);
 }
 
-OpenAPI::OAIDrive Space::drive() const
+QUuid Space::accountId() const
 {
-    return _drive;
+    return _accountId;
 }
 
-void Space::setDrive(const OpenAPI::OAIDrive &drive)
+bool Space::setDrive(const OpenAPI::OAIDrive &drive)
 {
 
     // first config naturally has an empty drive - reality check that updated drives are always valid
@@ -62,10 +69,11 @@ void Space::setDrive(const OpenAPI::OAIDrive &drive)
     // as on changing the space image so we may have further wrinkles if there is an error in logic server side, but for now
     // we want to reduce updates to "only when something changed" else everything is auto-refreshed periodically (eg every 30s)
     if (curTag == newTag)
-        return;
+        return false;
 
     _drive = drive;
     _image->update();
+    return true;
 }
 
 QString Space::displayName() const
@@ -85,7 +93,13 @@ QString Space::displayName() const
     return _drive.getName();
 }
 
-uint32_t Space::priority() const
+QString Space::description() const
+{
+    return _drive.getDescription();
+}
+
+
+uint32_t Space::sortPriority() const
 {
     if (_drive.getDriveType() == personalC) {
         return 100;
@@ -111,9 +125,29 @@ QString Space::id() const
     return _drive.getRoot().getId();
 }
 
-QUrl Space::webdavUrl() const
+QUrl Space::webDavUrl() const
 {
     return QUrl(_drive.getRoot().getWebDavUrl());
+}
+
+QUrl Space::webUrl() const
+{
+    return QUrl(_drive.getRoot().getWebUrl());
+}
+
+QString Space::eTag() const
+{
+    return _drive.getETag();
+}
+
+QList<OpenAPI::OAIDriveItem> Space::getSpecialItems() const
+{
+    return _drive.getSpecial();
+}
+
+OpenAPI::OAIQuota Space::quota() const
+{
+    return _drive.getQuota();
 }
 
 SpaceImage::SpaceImage(Space *space)
@@ -142,7 +176,7 @@ QUrl SpaceImage::qmlImageUrl() const
 
 void SpaceImage::update()
 {
-    const auto &special = _space->drive().getSpecial();
+    const auto &special = _space->getSpecialItems();
     const auto img = std::find_if(special.cbegin(), special.cend(), [](const auto &it) { return it.getSpecialFolder().getName() == QLatin1String("image"); });
     if (img != special.cend())
     {

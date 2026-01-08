@@ -83,7 +83,14 @@ AccountSettings::AccountSettings(AccountState *accountState, QWidget *parent)
     ui->quickWidget->engine()->addImageProvider(QStringLiteral("space"), new Spaces::SpaceImageProvider(_accountState->account()->spacesManager()));
     ui->quickWidget->setOCContext(QUrl(QStringLiteral("qrc:/qt/qml/org/ownCloud/gui/qml/FolderDelegate.qml")), this);
 
-    connect(FolderMan::instance(), &FolderMan::folderListChanged, _model, &FolderStatusModel::resetFolders);
+    QUuid accountId = _accountState->account()->uuid();
+    FolderMan *folderMan = FolderMan::instance();
+    connect(folderMan, &FolderMan::folderListChanged, _model, &FolderStatusModel::resetFolders);
+    connect(folderMan, &FolderMan::folderAdded, _model, &FolderStatusModel::onFolderAdded);
+    connect(folderMan, &FolderMan::folderRemoved, _model, &FolderStatusModel::onFolderRemoved);
+    _model->resetFolders(accountId, folderMan->foldersForAccount(accountId));
+
+    connect(folderMan, &FolderMan::folderSyncStateChange, _model, &FolderStatusModel::slotFolderSyncStateChange);
 
     ui->connectionStatusLabel->clear();
 
@@ -165,7 +172,7 @@ void AccountSettings::slotCustomContextMenuRequested(Folder *folder)
             addRemoveFolderAction(menu);
         }
         menu->popup(QCursor::pos());
-        // accassebility
+        // accessibility
         menu->setFocus();
         return;
     }
@@ -326,14 +333,16 @@ void AccountSettings::slotRemoveCurrentFolder(Folder *folder)
            "<p><b>Note:</b> This will <b>not</b> delete any files.</p>")
             .arg(shortGuiLocalPath),
         QMessageBox::NoButton, ocApp()->gui()->settingsDialog());
+    messageBox->setObjectName("ConfirmFolderSyncRemovalMessageBox");
     messageBox->setAttribute(Qt::WA_DeleteOnClose);
     QPushButton *yesButton = messageBox->addButton(tr("Remove Folder Sync Connection"), QMessageBox::YesRole);
-    messageBox->addButton(tr("Cancel"), QMessageBox::NoRole);
+    yesButton->setObjectName("RemoveFolderSyncButton");
+    QPushButton *cancelButton = messageBox->addButton(tr("Cancel"), QMessageBox::NoRole);
+    cancelButton->setObjectName("CancelFolderSyncDialog");
     connect(messageBox, &QMessageBox::finished, this, [messageBox, yesButton, folder, this] {
         if (messageBox->clickedButton() == yesButton) {
-            // todo: #3
-            FolderMan::instance()->removeFolderSettings(folder);
-            FolderMan::instance()->removeFolderSync(folder);
+            // todo: #3, this should be a signal to folderman
+            FolderMan::instance()->removeFolderFromGui(folder);
             // todo:#4
             QTimer::singleShot(0, this, &AccountSettings::slotSpacesUpdated);
         }
@@ -366,7 +375,9 @@ void AccountSettings::slotDisableVfsCurrentFolder(Folder *folder)
            "will become available again."
            "\n\n"
            "This action will abort any currently running synchronization."));
+    msgBox->setObjectName("DisableVFSMessageBox");
     auto acceptButton = msgBox->addButton(tr("Disable support"), QMessageBox::AcceptRole);
+    acceptButton->setObjectName("DisableVFSSupportButton");
     msgBox->addButton(tr("Cancel"), QMessageBox::RejectRole);
     connect(msgBox, &QMessageBox::finished, msgBox, [msgBox, folder, acceptButton] {
         msgBox->deleteLater();
@@ -482,25 +493,7 @@ void AccountSettings::slotForceSyncCurrentFolder(Folder *folder)
 
 void AccountSettings::doForceSyncCurrentFolder(Folder *selectedFolder)
 {
-    // Prevent new sync starts
-    FolderMan::instance()->scheduler()->stop();
-
-    // Terminate and reschedule any running sync
-    for (auto *folder : FolderMan::instance()->folders()) {
-        if (folder->isSyncRunning()) {
-            folder->slotTerminateSync(tr("User triggered force sync"));
-            FolderMan::instance()->scheduler()->enqueueFolder(folder);
-        }
-    }
-
-    selectedFolder->slotWipeErrorBlacklist(); // issue #6757
-    selectedFolder->slotNextSyncFullLocalDiscovery(); // ensure we don't forget about local errors
-
-    // Insert the selected folder at the front of the queue
-    FolderMan::instance()->scheduler()->enqueueFolder(selectedFolder, SyncScheduler::Priority::High);
-
-    // Restart scheduler
-    FolderMan::instance()->scheduler()->start();
+    FolderMan::instance()->forceFolderSync(selectedFolder);
 }
 
 void AccountSettings::buildManageAccountMenu()
@@ -533,7 +526,7 @@ void AccountSettings::slotAccountStateChanged(AccountState::State state)
     qCDebug(lcAccountSettings) << "Account state changed to" << state << "for account" << account;
 
     FolderMan *folderMan = FolderMan::instance();
-    for (auto *folder : folderMan->folders()) {
+    for (auto *folder : folderMan->foldersForAccount(_accountState->account()->uuid())) {
         _model->slotUpdateFolderState(folder);
     }
 
@@ -563,7 +556,7 @@ void AccountSettings::slotAccountStateChanged(AccountState::State state)
         showConnectionLabel(tr("Signed out"), StatusIcon::Disconnected);
         break;
     case AccountState::AskingCredentials: {
-        showConnectionLabel(tr("Updating credentials..."), StatusIcon::Info);
+        showConnectionLabel(tr("Updating credentials…"), StatusIcon::Info);
         break;
     }
     case AccountState::Connecting:
@@ -572,7 +565,7 @@ void AccountSettings::slotAccountStateChanged(AccountState::State state)
         } else if (NetworkInformation::instance()->isMetered() && ConfigFile().pauseSyncWhenMetered()) {
             showConnectionLabel(tr("Sync is paused due to metered internet connection"), StatusIcon::Disconnected);
         } else {
-            showConnectionLabel(tr("Connecting..."), StatusIcon::Info);
+            showConnectionLabel(tr("Connecting…"), StatusIcon::Info);
         }
         break;
     case AccountState::ConfigurationError:
@@ -587,6 +580,8 @@ void AccountSettings::slotAccountStateChanged(AccountState::State state)
     }
 }
 
+
+// todo: #47 - this does not belong here, but in folderman. see details below
 void AccountSettings::slotSpacesUpdated()
 {
     if (!_accountState || !_accountState->account() || !_accountState->account()->spacesManager()) {
@@ -595,7 +590,7 @@ void AccountSettings::slotSpacesUpdated()
 
     auto spaces = _accountState->account()->spacesManager()->spaces();
     auto unsycnedSpaces = std::set<GraphApi::Space *>(spaces.cbegin(), spaces.cend());
-    for (const auto &f : std::as_const(FolderMan::instance()->folders())) {
+    for (const auto &f : FolderMan::instance()->foldersForAccount(_accountState->account()->uuid())) {
         unsycnedSpaces.erase(f->space());
     }
 
@@ -620,12 +615,13 @@ void AccountSettings::slotSpacesUpdated()
                     localDir, newSpace->displayName(), FolderMan::NewFolderType::SpacesFolder, _accountState->account()->uuid());
 
                 FolderMan::SyncConnectionDescription fwr;
-                fwr.davUrl = QUrl(newSpace->drive().getRoot().getWebDavUrl());
-                fwr.spaceId = newSpace->drive().getRoot().getId();
+                fwr.davUrl = newSpace->webDavUrl();
+                fwr.spaceId = newSpace->id();
                 fwr.localPath = folderName;
                 fwr.displayName = newSpace->displayName();
                 fwr.useVirtualFiles = Utility::isWindows() ? Theme::instance()->showVirtualFilesOption() : false;
-                fwr.priority = newSpace->priority();
+                fwr.sortPriority = newSpace->sortPriority();
+                // todo DC-205: this is not from gui so fix this!
                 FolderMan::instance()->addFolderFromGui(_accountState, fwr);
             }
 
@@ -744,6 +740,7 @@ void AccountSettings::slotDeleteAccount()
             .arg(_accountState->account()->displayNameWithHost()),
         QMessageBox::NoButton, this);
     auto yesButton = messageBox->addButton(tr("Remove connection"), QMessageBox::YesRole);
+    yesButton->setObjectName("RemoveConnectionButton");
     messageBox->addButton(tr("Cancel"), QMessageBox::NoRole);
     messageBox->setAttribute(Qt::WA_DeleteOnClose);
     connect(messageBox, &QMessageBox::finished, this, [this, messageBox, yesButton]{

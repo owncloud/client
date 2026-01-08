@@ -1,5 +1,7 @@
 # Table of Contents
 
+* [Changelog for unreleased](#changelog-for-owncloud-desktop-client-unreleased-unreleased)
+* [Changelog for 6.0.2](#changelog-for-owncloud-desktop-client-602-2025-11-03)
 * [Changelog for 6.0.1](#changelog-for-owncloud-desktop-client-601-2025-10-10)
 * [Changelog for 6.0.0](#changelog-for-owncloud-desktop-client-600-2025-09-08)
 * [Changelog for 5.3.2](#changelog-for-owncloud-desktop-client-532-2025-01-20)
@@ -38,6 +40,55 @@
 * [Changelog for 2.6.3](#changelog-for-owncloud-desktop-client-263-2020-06-10)
 * [Changelog for 2.6.2](#changelog-for-owncloud-desktop-client-262-2020-02-21)
 * [Changelog for 2.6.1 versions and below](#changelog-for-261-versions-and-below)
+# Changelog for ownCloud Desktop Client [unreleased] (UNRELEASED)
+
+The following sections list the changes in ownCloud Desktop Client unreleased relevant to
+ownCloud admins and users.
+
+[unreleased]: https://github.com/owncloud/client/compare/v6.0.2...master
+
+## Summary
+
+* Bugfix - Fix compatibility with extra-cmake-modules-6.19.0: [#12374](https://github.com/owncloud/client/pull/12374)
+* Change - Remove capability to upload conflict files: [#12369](https://github.com/owncloud/client/pull/12369)
+
+## Details
+
+* Bugfix - Fix compatibility with extra-cmake-modules-6.19.0: [#12374](https://github.com/owncloud/client/pull/12374)
+
+   Fix runtime crash at startup with ECM 6.19.
+
+   https://github.com/owncloud/client/pull/12374
+
+* Change - Remove capability to upload conflict files: [#12369](https://github.com/owncloud/client/pull/12369)
+
+   None of the supported servers implements (or plans on implementing) this
+   feature. This removal includes the `OWNCLOUD_UPLOAD_CONFLICT_FILES` environment
+   variable.
+
+   https://github.com/owncloud/client/pull/12369
+
+# Changelog for ownCloud Desktop Client [6.0.2] (2025-11-03)
+
+The following sections list the changes in ownCloud Desktop Client 6.0.2 relevant to
+ownCloud admins and users.
+
+[6.0.2]: https://github.com/owncloud/client/compare/v6.0.1...v6.0.2
+
+## Summary
+
+* Security - Fixing high security vulnerability in MacOS client: [#12379](https://github.com/owncloud/client/pull/12379)
+
+## Details
+
+* Security - Fixing high security vulnerability in MacOS client: [#12379](https://github.com/owncloud/client/pull/12379)
+
+   CVE: CVE-2025-64441
+
+   https://github.com/owncloud/client/pull/12379
+   https://github.com/owncloud/client/pull/12389
+   https://github.com/owncloud/client/pull/12390
+
 # Changelog for ownCloud Desktop Client [6.0.1] (2025-10-10)
 
 The following sections list the changes in ownCloud Desktop Client 6.0.1 relevant to
@@ -503,7 +554,7 @@ ownCloud admins and users.
 
 * Security - Fixing high security vulnerability in Windows Installer: [#12010](https://github.com/owncloud/client/issues/12010)
 
-   CVE and security advisory will follow.
+   CVE: CVE-2025-24926
 
    https://github.com/owncloud/client/issues/12010
 
@@ -816,7 +867,7 @@ ownCloud admins and users.
 * Enhancement - Change how all files deleted is handled: [#8360](https://github.com/owncloud/client/issues/8360)
 * Enhancement - Port from QtSingleApplication to KDSingleApplication: [#8432](https://github.com/owncloud/client/issues/8432)
 * Enhancement - Enable crash reporter in commandline client: [#8991](https://github.com/owncloud/client/issues/8991)
-* Enhancement - Make "Show files versions..." context menu action available: [#10197](https://github.com/owncloud/client/issues/10197)
+* Enhancement - Make "Show files versions…" context menu action available: [#10197](https://github.com/owncloud/client/issues/10197)
 * Enhancement - Log http request when it is sent: [#10313](https://github.com/owncloud/client/issues/10313)
 * Enhancement - Allow selective sync of spaces in folder wizard: [#10596](https://github.com/owncloud/client/issues/10596)
 * Enhancement - Send a language header in all http requests: [#10619](https://github.com/owncloud/client/issues/10619)
@@ -1026,7 +1077,7 @@ ownCloud admins and users.
 
    https://github.com/owncloud/client/issues/8991
 
-* Enhancement - Make "Show files versions..." context menu action available: [#10197](https://github.com/owncloud/client/issues/10197)
+* Enhancement - Make "Show files versions…" context menu action available: [#10197](https://github.com/owncloud/client/issues/10197)
 
    https://github.com/owncloud/client/issues/10197
 
@@ -1411,7 +1462,7 @@ ownCloud admins and users.
 
 * Enhancement - Open sharing options in Web: [#10590](https://github.com/owncloud/client/pull/10590)
 
-   When selecting "Share..." in the file browser context menu, we now not only
+   When selecting "Share…" in the file browser context menu, we now not only
    display that file in the web view but also directly show the sharing options.
 
    https://github.com/owncloud/client/pull/10590

@@ -13,12 +13,14 @@ set(client_UI_SRCS
     settingsdialog.ui
     tlserrordialog.ui
     logbrowser.ui
+    accountview.ui
 )
 
 set(client_SRCS
     aboutdialog.cpp
     accountmanager.cpp
     accountsettings.cpp
+    accountview.cpp
 
     accountmodalwidget.cpp
     accountmodalwidget.ui
@@ -81,7 +83,6 @@ set( final_src
 )
 
 add_subdirectory(folderwizard)
-
 add_library(owncloudGui SHARED ${final_src})
 
 set_target_properties(owncloudGui PROPERTIES AUTOUIC ON AUTORCC ON)
@@ -100,6 +101,7 @@ ecm_add_qml_module(owncloudGui
         URI org.ownCloud.gui
         VERSION 1.0
         NAMESPACE OCC
+        GENERATE_PLUGIN_SOURCE
         QML_FILES
             qml/AccountBar.qml
             qml/AccountButton.qml
@@ -120,6 +122,7 @@ add_subdirectory(networkadapters)
 add_subdirectory(newaccountwizard)
 add_subdirectory(socketapi)
 add_subdirectory(spaces)
+add_subdirectory(FoldersGui)
 
 target_include_directories(owncloudGui PUBLIC
     ${CMAKE_SOURCE_DIR}/src/3rdparty/QProgressIndicator
@@ -151,6 +154,8 @@ if(WITH_AUTO_UPDATER)
     target_compile_definitions(owncloudGui PUBLIC $<BUILD_INTERFACE:WITH_AUTO_UPDATER>)
 endif()
 
+find_package(Qt6 REQUIRED COMPONENTS Core)
+
 add_executable(owncloud main.cpp)
 
 set_target_properties(owncloud PROPERTIES
@@ -160,6 +165,7 @@ set_target_properties(owncloud PROPERTIES
 )
 apply_common_target_settings(owncloud)
 target_link_libraries(owncloud PUBLIC owncloudGui owncloudResources KDAB::kdsingleapplication )
+target_link_libraries(owncloud PRIVATE Qt6::Core)
 
 MESSAGE(STATUS "OWNCLOUD_SIDEBAR_ICONS: ${APPLICATION_ICON_NAME}: ${OWNCLOUD_SIDEBAR_ICONS}")
 

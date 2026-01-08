@@ -2,30 +2,33 @@ name: "Update translations"
 
 on:
   workflow_dispatch:
-  #schedule:
-  #  - cron: "0 3 * * *"
+  schedule:
+    - cron: "0 3 * * *"
 
 permissions: {}
-
-defaults:
-  run:
-    shell: pwsh
 
 jobs:
   update-translations:
     permissions:
       # for git push
       contents: write
+    strategy:
+      matrix:
+        # current transifex plan only allows 1 additional branch
+        branch: ['master', '6']
+
     runs-on: ubuntu-latest
 
     env:
       TX_TOKEN: ${{ secrets.TX_TOKEN }}
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           ssh-key: ${{ secrets.DEPLOYMENT_SSH_KEY }}
           submodules: recursive
+          fetch-depth: 0
+          ref: ${{ matrix.branch }}
 
       - name: install-deps
         run: sudo apt install -y qt6-l10n-tools
@@ -39,22 +42,44 @@ jobs:
         run: /usr/lib/qt6/bin/lupdate src -no-obsolete -ts translations/client_en.ts
 
       - name: l10n-push-source
+        if: ${{ matrix.branch != 'master' }}
         uses: transifex/cli-action@v2
         with:
           token: ${{ secrets.TX_TOKEN }}
-          args: push -s --silent
+          args: push -s --branch "${{ matrix.branch }}"
+
+      - name: l10n-push-source
+        if: ${{ matrix.branch == 'master' }}
+        uses: transifex/cli-action@v2
+        with:
+          token: ${{ secrets.TX_TOKEN }}
+          args: push -s
 
       - name: fix-transifex-action
         run: rm -rf /tmp/tx
 
       - name: l10n-pull
+        if: ${{ matrix.branch != 'master' }}
+        uses: transifex/cli-action@v2
+        with:
+          token: ${{ secrets.TX_TOKEN }}
+          args: pull --force --all --silent --branch "${{ matrix.branch }}"
+
+      - name: l10n-pull
+        if: ${{ matrix.branch == 'master' }}
         uses: transifex/cli-action@v2
         with:
           token: ${{ secrets.TX_TOKEN }}
           args: pull --force --all --silent
 
-      - uses: GuillaumeFalourd/git-commit-push@v1.3
-        with:
-          email: devops@owncloud.com
-          name: ownClouders
-          commit_message: "[tx] updated translations from transifex"
+      - name: Push
+        run: |
+          git config user.name "ownClouders"
+          git config user.email "devops@owncloud.com"
+          git add translations
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "[tx] updated translations from transifex"
+          git push origin ${{ matrix.branch }}

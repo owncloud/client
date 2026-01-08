@@ -76,6 +76,7 @@ Q_SIGNALS:
     void showIssuesList();
     void unsyncedSpacesChanged();
     void syncedSpacesChanged();
+    void removeFolderFromGui(Folder *f);
 
 public Q_SLOTS:
     void slotAccountStateChanged(AccountState::State state);

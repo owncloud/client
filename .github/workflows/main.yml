@@ -58,13 +58,13 @@ jobs:
     steps:
     - name: Check out full source code for tooling
       if: ${{ matrix.useSonarCloud || matrix.name  == 'linux-gcc-x86_64' }}
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
       with:
         fetch-depth: 0
 
     - name: Check out latest commit
       if: ${{ !matrix.useSonarCloud && matrix.name  != 'linux-gcc-x86_64' }}
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
 
     - uses: actions/setup-python@v6
       if: matrix.name  == 'windows-cl-x86_64'
@@ -72,7 +72,7 @@ jobs:
         python-version: '3.12'
 
     - name: Restore cache
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: ~/cache
         key: ${{ runner.os }}-${{ matrix.target }}
@@ -162,15 +162,6 @@ jobs:
       run: |
         & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --no-cache --test owncloud/owncloud-client
 
-    - name: Clang tidy
-      if: github.event_name != 'pull_request'
-      run: |
-        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c libs/llvm python-modules/pip
-        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --run python3 -m pip install clang-html
-        $env:BUILD_DIR = $(& "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --get buildDir -q owncloud-client)
-        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --run pwsh "${env:GITHUB_WORKSPACE}/.github/workflows/.run-clang-tidy.ps1"
-        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --run python3 -m clang_html "${env:TMPDIR}/clang-tidy.log" -o "${env:GITHUB_WORKSPACE}/binaries/clang-tidy.html"
-
     - name: Package
       run: |
         if ("${{ matrix.target }}" -eq "linux-64-gcc" ) {
@@ -186,7 +177,7 @@ jobs:
         Copy-Item "${env:GITHUB_WORKSPACE}/.craft.shelf" "${env:GITHUB_WORKSPACE}/binaries/"
 
     - name: Upload artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: ${{ matrix.name }}
         path: ${{ github.workspace }}/binaries/*

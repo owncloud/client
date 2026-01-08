@@ -16,7 +16,7 @@ from helpers.SyncHelper import (
     listen_sync_status_for_item,
     delete_socket_connection,
 )
-from helpers.ConfigHelper import get_config, is_windows, is_linux
+from helpers.ConfigHelper import get_config, is_windows, is_linux, is_owncloud_client
 
 
 @When('the user adds the following user credentials:')
@@ -29,7 +29,7 @@ def step(context):
 
 @Then('the account with displayname "|any|" and host "|any|" should be displayed')
 def step(context, displayname, _):
-    if get_config('client_name') != 'ownCloud':
+    if not is_owncloud_client():
         # get displayname from first name
         displayname = get_displayname_for_user(displayname.split()[0].strip())
     displayname = substitute_inline_codes(displayname)

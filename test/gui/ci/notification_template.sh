@@ -4,19 +4,19 @@
 #
 # Generates a template file for notification
 
-COMMIT_SHA_SHORT=${DRONE_COMMIT:0:8}
+COMMIT_SHA_SHORT=${GITHUB_SHA:0:8}
 SERVERS=("oc10" "ocis")
 BUILD_STATUS="✅ Success"
 TEST_LOGS=""
-BRANCH_NAME="${DRONE_BRANCH}"
+BRANCH_NAME="${GITHUB_REF_NAME}"
 ROOMID="!rnWsCVUmDHDJbiSPMM:matrix.org"
 
-if [ "${DRONE_BUILD_STATUS}" == "failure" ]; then
+if [ "${GITHUB_BUILD_STATUS}" == "failure" ]; then
     BUILD_STATUS="❌️ Failure"
 fi
 
 for server in "${SERVERS[@]}"; do
-    LOG_URL_PATH="${CACHE_ENDPOINT}/${CACHE_BUCKET}/${DRONE_REPO}/${DRONE_BUILD_NUMBER}/${server}/guiReportUpload"
+    LOG_URL_PATH="${CACHE_ENDPOINT}/${CACHE_BUCKET}/${GITHUB_REPOSITORY}/${GITHUB_RUN_NUMBER}/${server}/guiReportUpload"
     CURL="curl --write-out %{http_code} --silent --output /dev/null"
 
     LOGS=""
@@ -28,7 +28,7 @@ for server in "${SERVERS[@]}"; do
         LOGS+=': <a href='"${GUI_LOG}"'>Squish Report</a>'
     fi
 
-    if [ "${DRONE_BUILD_STATUS}" == "failure" ]; then
+    if [ "${GITHUB_BUILD_STATUS}" == "failure" ]; then
         SERVER_LOG="${LOG_URL_PATH}/serverlog.log"
         STACKTRACE="${LOG_URL_PATH}/stacktrace.log"
 
@@ -49,8 +49,8 @@ for server in "${SERVERS[@]}"; do
     fi
 done
 
-if [ "${DRONE_BUILD_EVENT}" == "tag" ]; then
-    BRANCH_NAME="Tag: \`${DRONE_TAG}\`"
+if [ "${GITHUB_EVENT_NAME}" == "tag" ]; then
+    BRANCH_NAME="Tag: \`${GITHUB_REF_NAME}\`"
 fi
 
 # helper functions
@@ -66,7 +66,12 @@ log_success() {
   echo -e "\e[32m$1\e[0m"
 }
 
-message_html='<b>'$BUILD_STATUS'</b> <a href="'${DRONE_BUILD_LINK}'">'${DRONE_REPO}'#'$COMMIT_SHA_SHORT'</a> ('${BRANCH_NAME}') by <b>'${DRONE_COMMIT_AUTHOR}'</b> <br> <b>'"${TEST_LOGS}"'</b>'
+GITHUB_BUILD_LINK="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+
+AUTHOR_NAME=""
+[ "$GITHUB_EVENT_NAME" != "schedule" ] && AUTHOR_NAME=" by <b>$COMMIT_AUTHOR</b>"
+
+message_html='<b>'$BUILD_STATUS'</b> <a href="'${GITHUB_BUILD_LINK}'">'${GITHUB_REPOSITORY}'#'$COMMIT_SHA_SHORT'</a> ('${BRANCH_NAME}')'${AUTHOR_NAME}' <br> <b>'"${TEST_LOGS}"'</b>'
 message_html=$(echo "$message_html" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g')
 
 log_info "Sending report to the element chat..."

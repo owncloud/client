@@ -236,7 +236,7 @@ void VfsWinPrivate::startFetchData(CfOpdata opdata, const QString &targetPath, q
     // will wait for more data that isn't coming, or Windows will reject us
     // feeding more data than it expects.
     if (static_cast<quint64>(record._fileSize) != fetchEnd) {
-        qCInfo(lcVfs) << "DB size and placeholder size don't match up, restarting..."
+        qCInfo(lcVfs) << "DB size and placeholder size don't match up, restarting…"
                       << accountRelativePath << record._fileSize << fetchEnd;
         restartHydration(opdata, targetPath, record._fileSize);
         return;
@@ -310,7 +310,7 @@ void HydrationContext::downloadJobDone()
                 Q_EMIT pluginInstance()->needSync();
                 transferDataError(STATUS_CLOUD_FILE_NOT_IN_SYNC);
             } else {
-                qCInfo(lcVfs) << "Data size and placeholder size don't match up, restarting..." << record._path;
+                qCInfo(lcVfs) << "Data size and placeholder size don't match up, restarting…" << record._path;
                 record._fileSize = newFileSize;
                 journal->setFileRecord(record);
                 restartHydration(opdata, filesystemPath, record._fileSize);

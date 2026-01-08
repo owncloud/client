@@ -77,11 +77,13 @@ void AdvancedSettingsPageController::buildPage()
     layout->addWidget(vfsButton, Qt::AlignLeft);
 
     QRadioButton *syncAllButton = new QRadioButton(tr("Automatically sync and download folders and files"), _page);
+    syncAllButton->setObjectName("SyncAllRadioButton");
     syncAllButton->setFocusPolicy(Qt::StrongFocus);
     _buttonGroup->addButton(syncAllButton, NewAccount::SyncType::SYNC_ALL);
     layout->addWidget(syncAllButton, Qt::AlignLeft);
 
     QRadioButton *selectiveSyncButton = new QRadioButton(tr("Sync and download folders manually"), _page);
+    selectiveSyncButton->setObjectName("SelectiveSyncRadioButton");
     selectiveSyncButton->setFocusPolicy(Qt::StrongFocus);
     _buttonGroup->addButton(selectiveSyncButton, NewAccount::SyncType::SELECTIVE_SYNC);
     layout->addWidget(selectiveSyncButton, Qt::AlignLeft);
@@ -135,7 +137,8 @@ void AdvancedSettingsPageController::buildPage()
     });
     connect(_rootDirEdit, &QLineEdit::editingFinished, this, &AdvancedSettingsPageController::onRootDirFieldEdited);
 
-    _folderButton = new QPushButton(tr("Browse..."), _page);
+    _folderButton = new QPushButton(tr("Browse…"), _page);
+    _folderButton->setObjectName("BrowseButton");
     _folderButton->setFocusPolicy(Qt::StrongFocus);
     _folderButton->setAccessibleDescription(tr("Browse for a download location"));
     connect(_folderButton, &QPushButton::clicked, this, &AdvancedSettingsPageController::showFolderPicker);
@@ -223,7 +226,7 @@ bool AdvancedSettingsPageController::validateSyncRoot(const QString &rootPath)
         return false;
     }
 
-    QString invalidPathErrorMessage = FolderMan::checkPathValidityRecursive(rootPath, FolderMan::NewFolderType::SpacesSyncRoot, {});
+    QString invalidPathErrorMessage = FolderMan::instance()->checkPathValidity(rootPath, FolderMan::NewFolderType::SpacesSyncRoot, {});
     if (!invalidPathErrorMessage.isEmpty()) {
         _errorField->setText(errorMessageTemplate.arg(rootPath, invalidPathErrorMessage));
         return false;

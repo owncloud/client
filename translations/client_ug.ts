@@ -28,49 +28,6 @@
     </message>
 </context>
 <context>
-    <name>AccountConfiguredWizardPage</name>
-    <message>
-        <location filename="../src/gui/newwizard/pages/accountconfiguredwizardpage.ui" line="33"/>
-        <source>✓ You&apos;re all set!</source>
-        <translation>All ھەممىڭلار تەييار!</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/pages/accountconfiguredwizardpage.ui" line="68"/>
-        <source>Advanced configuration</source>
-        <translation>ئىلغار سەپلىمە</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/pages/accountconfiguredwizardpage.ui" line="140"/>
-        <source>Configure files download:</source>
-        <translation>ھۆججەت چۈشۈرۈشنى سەپلەڭ:</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/pages/accountconfiguredwizardpage.ui" line="147"/>
-        <source>Download everything</source>
-        <translation>ھەممىنى چۈشۈرۈڭ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/pages/accountconfiguredwizardpage.ui" line="157"/>
-        <source>After completing this wizard, you can set up folder synchronization manually.</source>
-        <translation>بۇ سېھىرگەرنى تاماملىغاندىن كېيىن ، ھۆججەت قىسقۇچ ماسقەدەملەشنى قولدا تەڭشىيەلەيسىز.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/pages/accountconfiguredwizardpage.ui" line="160"/>
-        <source>Configure synchronization manually</source>
-        <translation>ماس قەدەمدە قولدا تەڭشەڭ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/pages/accountconfiguredwizardpage.ui" line="207"/>
-        <source>Choose local download directory:</source>
-        <translation>يەرلىك چۈشۈرۈش مۇندەرىجىسىنى تاللاڭ:</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/pages/accountconfiguredwizardpage.ui" line="230"/>
-        <source>Restore default value</source>
-        <translation>سۈكۈتتىكى قىممەتنى ئەسلىگە كەلتۈرۈڭ</translation>
-    </message>
-</context>
-<context>
     <name>AppImageUpdateAvailableWidgetUi</name>
     <message>
         <location filename="../src/gui/updater/appimageupdateavailablewidget.ui" line="123"/>
@@ -81,7 +38,7 @@
 <context>
     <name>AppProvider</name>
     <message>
-        <location filename="../src/libsync/appprovider.cpp" line="89"/>
+        <location filename="../src/libsync/appprovider.cpp" line="92"/>
         <source>Failed to open %1 in web. Error: %2.</source>
         <translation>% 1 تورنى ئاچالمىدى. خاتالىق:% 2.</translation>
     </message>
@@ -188,28 +145,6 @@ File synchronization desktop utility.</source>
     </message>
 </context>
 <context>
-    <name>Credentials</name>
-    <message>
-        <location filename="../src/gui/qml/credentials/Credentials.qml" line="44"/>
-        <source>Stay logged out</source>
-        <translation>تىزىملىتىڭ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/qml/credentials/Credentials.qml" line="94"/>
-        <source>Connecting %1 to:
-%2</source>
-        <translation>% 1 گە ئۇلىنىش:
-% 2</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/qml/credentials/Credentials.qml" line="94"/>
-        <source>Connecting to:
-%1</source>
-        <translation>ئۇلىنىش:
-% 1</translation>
-    </message>
-</context>
-<context>
     <name>FetchUserInfoJobFactory</name>
     <message>
         <location filename="../src/libsync/networkjobs/fetchuserinfojobfactory.cpp" line="63"/>
@@ -222,8 +157,8 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/common/filesystembase.cpp" line="178"/>
         <location filename="../src/common/filesystembase.cpp" line="180"/>
-        <location filename="../src/common/filesystembase.cpp" line="230"/>
-        <location filename="../src/common/filesystembase.cpp" line="235"/>
+        <location filename="../src/common/filesystembase.cpp" line="237"/>
+        <location filename="../src/common/filesystembase.cpp" line="242"/>
         <source>Can&apos;t rename %1, the file is currently in use</source>
         <translation>% 1 نىڭ ئىسمىنى ئۆزگەرتەلمىدى ، بۇ ھۆججەت ھازىر ئىشلىتىلىۋاتىدۇ</translation>
     </message>
@@ -236,27 +171,27 @@ File synchronization desktop utility.</source>
 <context>
     <name>FolderDelegate</name>
     <message>
-        <location filename="../src/gui/qml/FolderDelegate.qml" line="31"/>
+        <location filename="../src/gui/qml/FolderDelegate.qml" line="30"/>
         <source>Folder Sync</source>
         <translation>ھۆججەت قىسقۇچ ماسقەدەملەش</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/FolderDelegate.qml" line="235"/>
+        <location filename="../src/gui/qml/FolderDelegate.qml" line="234"/>
         <source>Add Space</source>
         <translation>بوشلۇق قوشۇڭ</translation>
     </message>
     <message>
-        <location filename="../src/gui/qml/FolderDelegate.qml" line="235"/>
+        <location filename="../src/gui/qml/FolderDelegate.qml" line="234"/>
         <source>Add Folder</source>
         <translation>ھۆججەت قىسقۇچ قوشۇڭ</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/qml/FolderDelegate.qml" line="261"/>
+        <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
         <source>You are synchronizing %1 out of %n folder(s)</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/qml/FolderDelegate.qml" line="261"/>
+        <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
         <source>You are synchronizing %1 out of %n space(s)</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
@@ -277,52 +212,52 @@ File synchronization desktop utility.</source>
 <context>
     <name>FolderStatus</name>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="100"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="99"/>
         <source>&apos;%1&apos;</source>
         <translation>&apos;% 1&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="121"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="120"/>
         <source>Syncing %1</source>
         <extracomment>Example text: &quot;Syncing 'foo.txt', 'bar.txt'&quot;</extracomment>
         <translation>ماس قەدەم% 1</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="123"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="122"/>
         <source>, ⬇️ %1/s</source>
         <translation>, ⬇️% 1 / s</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="126"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="125"/>
         <source>, ⬆️ %1/s</source>
         <translation>, ⬆️% 1 / s</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="130"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="129"/>
         <source>%1 %2 (%3 of %4)</source>
         <extracomment>Example text: &quot;uploading foobar.png (2MB of 2MB)&quot;</extracomment>
         <translation>% 1% 2 (% 4 نىڭ% 3)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="135"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="134"/>
         <source>%1 %2</source>
         <extracomment>Example text: &quot;uploading foobar.png&quot;</extracomment>
         <translation>% 1% 2</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="152"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="151"/>
         <source>%5 left, %1 of %2, file %3 of %4</source>
         <extracomment>Example text: &quot;5 minutes left, 12 MB of 345 MB, file 6 of 7&quot;</extracomment>
         <translation>% 5 قالدى ،% 2 نىڭ% 1 ،% 4 نىڭ% 3</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="160"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="159"/>
         <source>%1 of %2, file %3 of %4</source>
         <extracomment>Example text: &quot;12 MB of 345 MB, file 6 of 7&quot;</extracomment>
         <translation>% 2 نىڭ% 1 ،% 4 نىڭ% 3 ھۆججىتى</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="164"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="163"/>
         <source>file %1 of %2</source>
         <translation>ھۆججەت% 2 نىڭ% 1</translation>
     </message>
@@ -330,22 +265,22 @@ File synchronization desktop utility.</source>
 <context>
     <name>FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="51"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="49"/>
         <source>&lt;b&gt;Error:&lt;/b&gt; %1</source>
         <translation>&lt;b&gt; خاتالىق: &lt;/b&gt;% 1</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="51"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="49"/>
         <source>&lt;b&gt;Warning:&lt;/b&gt; %1</source>
         <translation>&lt;b&gt; ئاگاھلاندۇرۇش: &lt;/b&gt;% 1</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="57"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="55"/>
         <source>&lt;b&gt;Error:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</source>
         <translation>&lt;b&gt; خاتالىق: &lt;/b&gt; &lt;ul&gt;% 1 &lt;/ul&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="58"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="56"/>
         <source>&lt;b&gt;Warning:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</source>
         <translation>&lt;b&gt; ئاگاھلاندۇرۇش: &lt;/b&gt; &lt;ul&gt;% 1 &lt;/ul&gt;</translation>
     </message>
@@ -364,8 +299,8 @@ File synchronization desktop utility.</source>
     </message>
     <message>
         <location filename="../src/gui/folderwizard/folderwizardsourcepage.ui" line="32"/>
-        <source>&amp;Choose...</source>
-        <translation>&amp; تاللاڭ ...</translation>
+        <source>Browse…</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -394,62 +329,6 @@ File synchronization desktop utility.</source>
         <location filename="../src/gui/folderwizard/folderwizardtargetpage.ui" line="39"/>
         <source>Folders</source>
         <translation>قىسقۇچ</translation>
-    </message>
-</context>
-<context>
-    <name>NotificationWidget</name>
-    <message>
-        <location filename="../src/gui/notificationwidget.ui" line="49"/>
-        <source>Notification icon</source>
-        <translation>ئۇقتۇرۇش سىنبەلگىسى</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/notificationwidget.ui" line="73"/>
-        <source>Lorem ipsum dolor sit amet</source>
-        <translation>خېرىدار ئىنتايىن خۇشال</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/notificationwidget.ui" line="86"/>
-        <source>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod temporm </source>
-        <translation>ئاغرىقنىڭ ئۆزى ئىنتايىن مۇھىم ، ئەمما بۇنىڭغا ئۇزۇن ۋاقىت كېتىدۇ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/notificationwidget.ui" line="113"/>
-        <source>Action button group</source>
-        <translation>ھەرىكەت كۇنۇپكىسى گۇرۇپپىسى</translation>
-    </message>
-</context>
-<context>
-    <name>OAuthCredentials</name>
-    <message>
-        <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="32"/>
-        <source>Log in with your web browser</source>
-        <translation>توركۆرگۈڭىز بىلەن كىرىڭ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="32"/>
-        <source>Login failed, please try it again</source>
-        <translation>كىرىش مەغلۇپ بولدى ، قايتا سىناڭ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="51"/>
-        <source>Reopen web browser</source>
-        <translation>توركۆرگۈنى قايتا ئېچىڭ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="51"/>
-        <source>Open web browser</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="100"/>
-        <source>Restart authentication</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="67"/>
-        <source>Copy URL</source>
-        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -508,17 +387,17 @@ File synchronization desktop utility.</source>
 <context>
     <name>OCC::AbstractNetworkJob</name>
     <message>
-        <location filename="../src/libsync/abstractnetworkjob.cpp" line="257"/>
+        <location filename="../src/libsync/abstractnetworkjob.cpp" line="255"/>
         <source>Connection timed out</source>
         <translation>ئۇلىنىش ۋاقتى توشتى</translation>
     </message>
     <message>
-        <location filename="../src/libsync/abstractnetworkjob.cpp" line="259"/>
+        <location filename="../src/libsync/abstractnetworkjob.cpp" line="257"/>
         <source>Unknown error: network reply was deleted</source>
         <translation>نامەلۇم خاتالىق: تور جاۋاب ئۆچۈرۈلدى</translation>
     </message>
     <message>
-        <location filename="../src/libsync/abstractnetworkjob.cpp" line="360"/>
+        <location filename="../src/libsync/abstractnetworkjob.cpp" line="358"/>
         <source>Server replied &quot;%1 %2&quot; to &quot;%3 %4&quot;</source>
         <translation>مۇلازىمېتىر «% 1% 2» گە «% 3% 4» دەپ جاۋاب بەردى</translation>
     </message>
@@ -526,9 +405,106 @@ File synchronization desktop utility.</source>
 <context>
     <name>OCC::Account</name>
     <message>
-        <location filename="../src/libsync/account.cpp" line="149"/>
+        <location filename="../src/libsync/account.cpp" line="154"/>
         <source>%1@%2</source>
         <translation>% 1 @% 2</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::AccountFoldersController</name>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="135"/>
+        <source>Force sync now</source>
+        <translation>ھازىر ماسقەدەملەش</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="141"/>
+        <source>Remove folder sync connection</source>
+        <translation>ھۆججەت قىسقۇچ ماسقەدەملەشنى ئۆچۈرۈڭ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="147"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="462"/>
+        <source>Choose what to sync</source>
+        <translation>ماسقەدەملەشنى تاللاڭ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="350"/>
+        <source>Resume sync</source>
+        <translation>ماسقەدەملەشنى ئەسلىگە كەلتۈرۈش</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="350"/>
+        <source>Pause sync</source>
+        <translation>ماسقەدەملەشنى توختىتىڭ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="383"/>
+        <source>Internet connection is metered</source>
+        <translation>تور ئۇلىنىشى ئۆلچەم قىلىنغان</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="384"/>
+        <source>Synchronization is paused because the Internet connection is a metered connection&lt;p&gt;Do you really want to force a Synchronization now?</source>
+        <translation>ئىنتېرنېت ئۇلىنىشى ئۆلچەملىك ئۇلىنىش بولغانلىقى ئۈچۈن ماس قەدەملىك توختىتىلىدۇ &lt;p&gt; ھازىر ماسقەدەملەشنى زورلىماقچىمۇ؟</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="405"/>
+        <source>Sync Running</source>
+        <translation>ماسقەدەملەش</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="405"/>
+        <source>The sync operation is running.&lt;br/&gt;Do you want to stop it?</source>
+        <translation>ماسقەدەملەش مەشغۇلاتى ئىجرا بولۇۋاتىدۇ. &lt;br/&gt; ئۇنى توختاتماقچىمۇ؟</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="411"/>
+        <source>Sync paused by user</source>
+        <translation>ئىشلەتكۈچى ماسقەدەملەش</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="429"/>
+        <source>Confirm Folder Sync Connection Removal</source>
+        <translation>ھۆججەت قىسقۇچ ماسقەدەملەشنى ئۆچۈرۈڭ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="430"/>
+        <source>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
+        <translation>&lt;p&gt; راستىنلا &lt;i&gt;% 1 &lt;/i&gt; ھۆججەت قىسقۇچنى ماسقەدەملەشنى توختاتماقچىمۇ؟ &lt;/p&gt; &lt;p&gt; &lt;b&gt; ئەسكەرتىش: &lt;/b&gt; بۇ &lt;b&gt; ئەمەس &lt;/b&gt; ئۆچۈرۈلىدۇ ھۆججەتلەر. &lt;/p&gt;</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="434"/>
+        <source>Remove Folder Sync Connection</source>
+        <translation>ھۆججەت قىسقۇچ ئۇلىنىشىنى ئۆچۈرۈڭ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="435"/>
+        <source>Cancel</source>
+        <translation>ۋازكەچ</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::AccountFoldersView</name>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="37"/>
+        <source>Folder sync</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="42"/>
+        <source>Manage your synced folders</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="46"/>
+        <source>Add new folder sync…</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="77"/>
+        <source>Syncing %1 out of %2 spaces</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -562,75 +538,75 @@ File synchronization desktop utility.</source>
         <translation>ئۇلىنىشلارنى ماسقەدەملەش</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="332"/>
-        <location filename="../src/gui/accountsettings.cpp" line="371"/>
-        <location filename="../src/gui/accountsettings.cpp" line="776"/>
+        <location filename="../src/gui/accountsettings.cpp" line="340"/>
+        <location filename="../src/gui/accountsettings.cpp" line="381"/>
+        <location filename="../src/gui/accountsettings.cpp" line="744"/>
         <source>Cancel</source>
         <translation>ۋاز كەچ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="521"/>
+        <location filename="../src/gui/accountsettings.cpp" line="513"/>
         <source>Remove</source>
         <translation>چىقىرىۋەت</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="246"/>
-        <location filename="../src/gui/accountsettings.cpp" line="269"/>
+        <location filename="../src/gui/accountsettings.cpp" line="252"/>
+        <location filename="../src/gui/accountsettings.cpp" line="275"/>
         <source>Choose what to sync</source>
         <translation>ماسقەدەملەشنى تاللاڭ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="204"/>
+        <location filename="../src/gui/accountsettings.cpp" line="210"/>
         <source>Force sync now</source>
         <translation>ھازىر ماسقەدەملەش</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="206"/>
+        <location filename="../src/gui/accountsettings.cpp" line="212"/>
         <source>Restart sync</source>
         <translation>ماسقەدەملەشنى قايتا قوزغىتىڭ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="153"/>
+        <location filename="../src/gui/accountsettings.cpp" line="159"/>
         <source>Remove folder sync connection</source>
         <translation>ھۆججەت قىسقۇچ ماسقەدەملەشنى ئۆچۈرۈڭ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="510"/>
+        <location filename="../src/gui/accountsettings.cpp" line="502"/>
         <source>Account options menu</source>
         <translation>ھېسابات تاللانمىلىرى تىزىملىكى</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="513"/>
+        <location filename="../src/gui/accountsettings.cpp" line="505"/>
         <source>Reconnect</source>
         <translation>قايتا ئۇلاڭ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="158"/>
+        <location filename="../src/gui/accountsettings.cpp" line="164"/>
         <source>Sync options menu</source>
         <translation>ماسقەدەملەش تىزىملىكى</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="164"/>
+        <location filename="../src/gui/accountsettings.cpp" line="170"/>
         <source>Folder is not ready yet</source>
         <translation>ھۆججەت قىسقۇچ تېخى تەييار ئەمەس</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="325"/>
+        <location filename="../src/gui/accountsettings.cpp" line="331"/>
         <source>Confirm Folder Sync Connection Removal</source>
         <translation>ھۆججەت قىسقۇچ ماسقەدەملەشنى ئۆچۈرۈڭ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="331"/>
+        <location filename="../src/gui/accountsettings.cpp" line="338"/>
         <source>Remove Folder Sync Connection</source>
         <translation>ھۆججەت قىسقۇچ ئۇلىنىشىنى ئۆچۈرۈڭ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="362"/>
+        <location filename="../src/gui/accountsettings.cpp" line="370"/>
         <source>Disable virtual file support?</source>
         <translation>مەۋھۇم ھۆججەت قوللاشنى چەكلەمسىز؟</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="363"/>
+        <location filename="../src/gui/accountsettings.cpp" line="371"/>
         <source>This action will disable virtual file support. As a consequence contents of folders that are currently marked as 'available online only' will be downloaded.
 
 The only advantage of disabling virtual file support is that the selective sync feature will become available again.
@@ -643,262 +619,361 @@ This action will abort any currently running synchronization.</source>
 بۇ ھەرىكەت نۆۋەتتە ئىجرا قىلىنىۋاتقان ماس قەدەمنى ئەمەلدىن قالدۇرىدۇ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="370"/>
+        <location filename="../src/gui/accountsettings.cpp" line="379"/>
         <source>Disable support</source>
         <translation>قوللاشنى چەكلەڭ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="435"/>
+        <location filename="../src/gui/accountsettings.cpp" line="445"/>
         <source>Sync Running</source>
         <translation>ماسقەدەملەش</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="435"/>
+        <location filename="../src/gui/accountsettings.cpp" line="445"/>
         <source>The sync operation is running.&lt;br/&gt;Do you want to stop it?</source>
         <translation>ماسقەدەملەش مەشغۇلاتى ئىجرا بولۇۋاتىدۇ. &lt;br/&gt; ئۇنى توختاتماقچىمۇ؟</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="239"/>
+        <location filename="../src/gui/accountsettings.cpp" line="245"/>
         <source>Disable virtual file support</source>
         <translation>مەۋھۇم ھۆججەت قوللاشنى چەكلەڭ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="225"/>
+        <location filename="../src/gui/accountsettings.cpp" line="231"/>
         <source>Enable virtual file support</source>
         <translation>مەۋھۇم ھۆججەت قوللاشنى قوزغىتىڭ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="452"/>
+        <location filename="../src/gui/accountsettings.cpp" line="462"/>
         <source>Sync paused by user</source>
         <translation>ئىشلەتكۈچى ماسقەدەملەش</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="467"/>
+        <location filename="../src/gui/accountsettings.cpp" line="477"/>
         <source>Internet connection is metered</source>
         <translation>تور ئۇلىنىشى ئۆلچەم قىلىنغان</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="468"/>
+        <location filename="../src/gui/accountsettings.cpp" line="478"/>
         <source>Synchronization is paused because the Internet connection is a metered connection&lt;p&gt;Do you really want to force a Synchronization now?</source>
         <translation>ئىنتېرنېت ئۇلىنىشى ئۆلچەملىك ئۇلىنىش بولغانلىقى ئۈچۈن ماس قەدەملىك توختىتىلىدۇ &lt;p&gt; ھازىر ماسقەدەملەشنى زورلىماقچىمۇ؟</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="492"/>
-        <source>User triggered force sync</source>
-        <translation>ئىشلەتكۈچى كۈچ ماسقەدەملەشنى قوزغىدى</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="512"/>
-        <location filename="../src/gui/accountsettings.cpp" line="516"/>
+        <location filename="../src/gui/accountsettings.cpp" line="504"/>
+        <location filename="../src/gui/accountsettings.cpp" line="508"/>
         <source>Log in</source>
         <translation>كىرىڭ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="574"/>
+        <location filename="../src/gui/accountsettings.cpp" line="541"/>
         <source>Connected</source>
         <translation>ئۇلاندى</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="585"/>
+        <location filename="../src/gui/accountsettings.cpp" line="550"/>
         <source>Server is temporarily unavailable</source>
         <translation>مۇلازىمېتىرنى ۋاقىتلىق ئىشلەتكىلى بولمايدۇ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="588"/>
+        <location filename="../src/gui/accountsettings.cpp" line="553"/>
         <source>Server is currently in maintenance mode</source>
         <translation>مۇلازىمېتىر ھازىر ئاسراش ھالىتىدە</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="591"/>
+        <location filename="../src/gui/accountsettings.cpp" line="556"/>
         <source>Signed out</source>
         <translation>تىزىملاتتى</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="594"/>
-        <source>Updating credentials...</source>
-        <translation>كىنىشكىنى يېڭىلاش ...</translation>
+        <location filename="../src/gui/accountsettings.cpp" line="559"/>
+        <source>Updating credentials…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="599"/>
+        <location filename="../src/gui/accountsettings.cpp" line="568"/>
+        <source>Connecting…</source>
+        <translation>ئۇلىنىش…</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/accountsettings.cpp" line="564"/>
         <source>Captive portal prevents connections to the server.</source>
         <translation>تۇتۇلغان ئېغىز مۇلازىمېتىرغا ئۇلىنىشنىڭ ئالدىنى ئالىدۇ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="601"/>
+        <location filename="../src/gui/accountsettings.cpp" line="566"/>
         <source>Sync is paused due to metered internet connection</source>
         <translation>ماس قەدەملىك تور ئۇلىنىشى سەۋەبىدىن ماسقەدەملەش توختىتىلدى</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="603"/>
-        <source>Connecting...</source>
-        <translation>ئۇلىنىش ...</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="607"/>
+        <location filename="../src/gui/accountsettings.cpp" line="572"/>
         <source>Server configuration error</source>
         <translation>مۇلازىمېتىر سەپلەش خاتالىقى</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="613"/>
+        <location filename="../src/gui/accountsettings.cpp" line="578"/>
         <source>Disconnected</source>
         <translation>ئۈزۈلۈپ قالدى</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="770"/>
+        <location filename="../src/gui/accountsettings.cpp" line="737"/>
         <source>Confirm Account Removal</source>
         <translation>ھېسابات ئۆچۈرۈشنى جەزملەشتۈرۈڭ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="771"/>
+        <location filename="../src/gui/accountsettings.cpp" line="738"/>
         <source>&lt;p&gt;Do you really want to remove the connection to the account &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
         <translation>&lt;p&gt; ھېساباتقا ئۇلىنىشنى &lt;i&gt;% 1 &lt;/i&gt; ئۆچۈرمەكچىمۇ؟ &lt;/p&gt; &lt;p&gt; &lt;b&gt; ئەسكەرتىش: &lt;/b&gt; بۇ &lt;b&gt; ئەمەس &lt;/b&gt; بولىدۇ. ھەرقانداق ھۆججەتنى ئۆچۈرۈڭ. &lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="775"/>
+        <location filename="../src/gui/accountsettings.cpp" line="742"/>
         <source>Remove connection</source>
         <translation>ئۇلىنىشنى ئۆچۈرۈڭ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="516"/>
+        <location filename="../src/gui/accountsettings.cpp" line="508"/>
         <source>Log out</source>
         <translation>تىزىمدىن چىق</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="212"/>
+        <location filename="../src/gui/accountsettings.cpp" line="218"/>
         <source>Resume sync</source>
         <translation>ماسقەدەملەشنى ئەسلىگە كەلتۈرۈش</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="212"/>
+        <location filename="../src/gui/accountsettings.cpp" line="218"/>
         <source>Pause sync</source>
         <translation>ماسقەدەملەشنى توختىتىڭ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="326"/>
+        <location filename="../src/gui/accountsettings.cpp" line="332"/>
         <source>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
         <translation>&lt;p&gt; راستىنلا &lt;i&gt;% 1 &lt;/i&gt; ھۆججەت قىسقۇچنى ماسقەدەملەشنى توختاتماقچىمۇ؟ &lt;/p&gt; &lt;p&gt; &lt;b&gt; ئەسكەرتىش: &lt;/b&gt; بۇ &lt;b&gt; ئەمەس &lt;/b&gt; ئۆچۈرۈلىدۇ ھۆججەتلەر. &lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsettings.cpp" line="571"/>
+        <location filename="../src/gui/accountsettings.cpp" line="538"/>
         <source>The server version %1 is unsupported! Proceed at your own risk.</source>
         <translation>مۇلازىمېتىر نۇسخىسى% 1 قوللىمايدۇ! ئۆزىڭىزنىڭ خەتىرىگە قاراپ ئىلگىرىلەڭ.</translation>
     </message>
 </context>
 <context>
-    <name>OCC::ActivityListModel</name>
+    <name>OCC::AccountView</name>
     <message>
-        <location filename="../src/gui/models/activitylistmodel.cpp" line="91"/>
-        <source>%1 %2 on %3</source>
-        <translation>% 1 دىكى% 1</translation>
+        <location filename="../src/gui/accountview.ui" line="14"/>
+        <source>Form</source>
+        <translation>شەكىل</translation>
     </message>
     <message>
-        <location filename="../src/gui/models/activitylistmodel.cpp" line="113"/>
-        <source>Activity</source>
-        <translation>پائالىيەت</translation>
+        <location filename="../src/gui/accountview.ui" line="73"/>
+        <source>Manage Account</source>
+        <translation>ھېساباتنى باشقۇرۇش</translation>
     </message>
     <message>
-        <location filename="../src/gui/models/activitylistmodel.cpp" line="115"/>
-        <source>Account</source>
-        <translation>ھېسابات</translation>
+        <location filename="../src/gui/accountview.ui" line="109"/>
+        <source>Preparing the account</source>
+        <translation>ھېسابات تەييارلاش</translation>
     </message>
     <message>
-        <location filename="../src/gui/models/activitylistmodel.cpp" line="117"/>
-        <source>Time</source>
-        <translation>ۋاقىت</translation>
+        <location filename="../src/gui/accountview.ui" line="137"/>
+        <source>Sync connections</source>
+        <translation>ئۇلىنىشلارنى ماسقەدەملەش</translation>
     </message>
     <message>
-        <location filename="../src/gui/models/activitylistmodel.cpp" line="119"/>
-        <source>Local path</source>
-        <translation>يەرلىك يول</translation>
+        <location filename="../src/gui/accountview.cpp" line="361"/>
+        <source>Cancel</source>
+        <translation>ۋازكەچ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/accountview.cpp" line="183"/>
+        <source>Account options menu</source>
+        <translation>ھېسابات تاللانمىلىرى تىزىملىكى</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/accountview.cpp" line="185"/>
+        <location filename="../src/gui/accountview.cpp" line="189"/>
+        <source>Log in</source>
+        <translation>كىرىڭ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/accountview.cpp" line="186"/>
+        <source>Reconnect</source>
+        <translation>قايتا ئۇلاڭ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/accountview.cpp" line="189"/>
+        <source>Log out</source>
+        <translation>تىزىمدىن چىق</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/accountview.cpp" line="194"/>
+        <source>Remove</source>
+        <translation>ئۆچۈرۈڭ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/accountview.cpp" line="221"/>
+        <source>The server version %1 is unsupported! Proceed at your own risk.</source>
+        <translation>مۇلازىمېتىر نۇسخىسى% 1 قوللىمايدۇ! ئۆزىڭىزنىڭ خەتىرىگە قاراپ ئىلگىرىلەڭ.</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/accountview.cpp" line="224"/>
+        <source>Connected</source>
+        <translation>ئۇلاندى</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/accountview.cpp" line="234"/>
+        <source>Server is temporarily unavailable</source>
+        <translation>مۇلازىمېتىرنى ۋاقىتلىق ئىشلەتكىلى بولمايدۇ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/accountview.cpp" line="237"/>
+        <source>Server is currently in maintenance mode</source>
+        <translation>مۇلازىمېتىر ھازىر ئاسراش ھالىتىدە</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/accountview.cpp" line="240"/>
+        <source>Signed out</source>
+        <translation>تىزىملاتتى</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/accountview.cpp" line="243"/>
+        <source>Updating credentials…</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/accountview.cpp" line="252"/>
+        <source>Connecting…</source>
+        <translation>ئۇلىنىش…</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/accountview.cpp" line="248"/>
+        <source>Captive portal prevents connections to the server.</source>
+        <translation>تۇتۇلغان ئېغىز مۇلازىمېتىرغا ئۇلىنىشنىڭ ئالدىنى ئالىدۇ.</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/accountview.cpp" line="250"/>
+        <source>Sync is paused due to metered internet connection</source>
+        <translation>ماس قەدەملىك تور ئۇلىنىشى سەۋەبىدىن ماسقەدەملەش توختىتىلدى</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/accountview.cpp" line="256"/>
+        <source>Server configuration error</source>
+        <translation>مۇلازىمېتىر سەپلەش خاتالىقى</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/accountview.cpp" line="262"/>
+        <source>Disconnected</source>
+        <translation>ئۈزۈلۈپ قالدى</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/accountview.cpp" line="355"/>
+        <source>Confirm Account Removal</source>
+        <translation>ھېسابات ئۆچۈرۈشنى جەزملەشتۈرۈڭ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/accountview.cpp" line="356"/>
+        <source>&lt;p&gt;Do you really want to remove the connection to the account &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
+        <translation>&lt;p&gt; ھېساباتقا ئۇلىنىشنى &lt;i&gt;% 1 &lt;/i&gt; ئۆچۈرمەكچىمۇ؟ &lt;/p&gt; &lt;p&gt; &lt;b&gt; ئەسكەرتىش: &lt;/b&gt; بۇ &lt;b&gt; ئەمەس &lt;/b&gt; بولىدۇ. ھەرقانداق ھۆججەتنى ئۆچۈرۈڭ. &lt;/p&gt;</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/accountview.cpp" line="360"/>
+        <source>Remove connection</source>
+        <translation>ئۇلىنىشنى ئۆچۈرۈڭ</translation>
     </message>
 </context>
 <context>
     <name>OCC::ActivitySettings</name>
     <message>
-        <location filename="../src/gui/activitywidget.cpp" line="459"/>
-        <location filename="../src/gui/activitywidget.cpp" line="507"/>
-        <source>Server Activity</source>
-        <translation>مۇلازىمېتىر پائالىيىتى</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/activitywidget.cpp" line="466"/>
+        <location filename="../src/gui/activitysettings.cpp" line="37"/>
         <source>Local Activity</source>
         <translation>يەرلىك پائالىيەت</translation>
     </message>
     <message>
-        <location filename="../src/gui/activitywidget.cpp" line="515"/>
+        <location filename="../src/gui/activitysettings.cpp" line="54"/>
         <source>Not Synced</source>
         <translation>ماسقەدەملەنمىدى</translation>
     </message>
     <message>
-        <location filename="../src/gui/activitywidget.cpp" line="518"/>
+        <location filename="../src/gui/activitysettings.cpp" line="57"/>
         <source>Not Synced (%1)</source>
         <extracomment>%1 is the number of not synced files.</extracomment>
         <translation>ماسقەدەملەنمىدى (% 1)</translation>
     </message>
 </context>
 <context>
-    <name>OCC::ActivityWidget</name>
+    <name>OCC::AdvancedSettingsPageController</name>
     <message>
-        <location filename="../src/gui/activitywidget.ui" line="14"/>
-        <source>Server activities</source>
-        <translation>مۇلازىمېتىر پائالىيىتى</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/activitywidget.ui" line="73"/>
-        <source>Filter</source>
-        <translation>سۈزگۈچ</translation>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="48"/>
+        <source>Advanced settings</source>
+        <translation>ئىلغار تەڭشەكلەر</translation>
     </message>
     <message>
-        <location filename="../src/gui/activitywidget.ui" line="91"/>
-        <source>Server activity table</source>
-        <translation>مۇلازىمېتىر پائالىيەت جەدۋىلى</translation>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="55"/>
+        <source>Sync and download options</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/activitywidget.cpp" line="100"/>
-        <location filename="../src/gui/activitywidget.cpp" line="106"/>
-        <source>Account</source>
-        <translation>ھېسابات</translation>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="56"/>
+        <source>Download location</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/activitywidget.cpp" line="147"/>
-        <source>&amp;Server Activities</source>
-        <translation>&amp; مۇلازىمېتىر پائالىيىتى</translation>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="74"/>
+        <source>Sync and download files as you use them (saves hard drive space)</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/activitywidget.cpp" line="148"/>
-        <source>&amp;Notifications</source>
-        <translation>&amp; ئۇقتۇرۇش</translation>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="79"/>
+        <source>Automatically sync and download folders and files</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/activitywidget.cpp" line="153"/>
-        <source>&lt;br/&gt;%1 does not provide activities.</source>
-        <translation>&lt;br/&gt;% 1 پائالىيەت بىلەن تەمىنلىمەيدۇ.</translation>
-    </message>
-    <message numerus="yes">
-        <location filename="../src/gui/activitywidget.cpp" line="287"/>
-        <source>%n notification(s) for %1.</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
-    </message>
-    <message numerus="yes">
-        <location filename="../src/gui/activitywidget.cpp" line="293"/>
-        <source>%n notification(s) for %1 and %2.</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="85"/>
+        <source>Sync and download folders manually</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/activitywidget.cpp" line="295"/>
-        <source>New notifications for %1, %2 and other accounts.</source>
-        <translation>% 1 ،% 2 ۋە باشقا ھېساباتلارنىڭ يېڭى ئۇقتۇرۇشى.</translation>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="132"/>
+        <source>Download location on the local machine</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/activitywidget.cpp" line="298"/>
-        <source>Open the activity view for details.</source>
-        <translation>تەپسىلاتلار ئۈچۈن پائالىيەت كۆرۈنۈشىنى ئېچىڭ.</translation>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="140"/>
+        <source>Browse…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/activitywidget.cpp" line="422"/>
-        <source>Activity item menu</source>
-        <translation>پائالىيەت تۈر تىزىملىكى</translation>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="143"/>
+        <source>Browse for a download location</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="210"/>
+        <source>Invalid local download directory %1: %2</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="213"/>
+        <source>your user directory may not be chosen as the sync root.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="220"/>
+        <source>path is not located on a supported Apple File System.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="225"/>
+        <source>path must be absolute.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="239"/>
+        <source>selected path does not support using virtual file system.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="254"/>
+        <source>Select sync root</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -944,12 +1019,7 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/authsuccesspagecontroller.cpp" line="56"/>
-        <source>Advanced Settings</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../src/gui/newaccountwizard/authsuccesspagecontroller.cpp" line="82"/>
+        <location filename="../src/gui/newaccountwizard/authsuccesspagecontroller.cpp" line="64"/>
         <source>Additional logo defined by the organization</source>
         <translation type="unfinished"/>
     </message>
@@ -957,32 +1027,37 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::ConnectionValidator</name>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="75"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="74"/>
         <source>No ownCloud account configured</source>
         <translation>OwnCloud ھېساباتى سەپلەنمىدى</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="255"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="290"/>
         <source>Please update to the latest server and restart the client.</source>
         <translation>ئەڭ يېڭى مۇلازىمېتىرغا يېڭىلاپ خېرىدارنى قايتا قوزغىتىڭ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="161"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="171"/>
         <source>Authentication error: Either username or password are wrong.</source>
         <translation>دەلىللەش خاتالىقى: ئىشلەتكۈچى ئىسمى ياكى پارول خاتا.</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="143"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="153"/>
         <source>timeout</source>
         <translation>ۋاقىت</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="232"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="226"/>
+        <source>No account configured</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/connectionvalidator.cpp" line="261"/>
         <source>The provided credentials are not correct</source>
         <translation>تەمىنلەنگەن كىنىشكا توغرا ئەمەس</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="255"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="290"/>
         <source>The configured server for this client is too old.</source>
         <translation>بۇ خېرىدار ئۈچۈن سەپلەنگەن مۇلازىمېتىر بەك كونا.</translation>
     </message>
@@ -990,7 +1065,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::CredentialJob</name>
     <message>
-        <location filename="../src/libsync/creds/credentialmanager.cpp" line="221"/>
+        <location filename="../src/libsync/creds/credentialmanager.cpp" line="218"/>
         <source>Failed to parse credentials %1</source>
         <translation>كىنىشكىنى% 1 تەھلىل قىلالمىدى</translation>
     </message>
@@ -1024,8 +1099,13 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::DiscoverySingleDirectoryJob</name>
     <message>
-        <location filename="../src/libsync/discoveryphase.cpp" line="305"/>
-        <location filename="../src/libsync/discoveryphase.cpp" line="417"/>
+        <location filename="../src/libsync/discoveryphase.cpp" line="276"/>
+        <source>The account was deleted before we could start the propfind job</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/libsync/discoveryphase.cpp" line="309"/>
+        <location filename="../src/libsync/discoveryphase.cpp" line="421"/>
         <source>Server error: PROPFIND reply is not XML formatted!</source>
         <translation>مۇلازىمېتىر خاتالىقى: PROPFIND جاۋاب XML فورماتى ئەمەس!</translation>
     </message>
@@ -1033,22 +1113,22 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::DiscoverySingleLocalDirectoryJob</name>
     <message>
-        <location filename="../src/libsync/discoveryphase.cpp" line="210"/>
+        <location filename="../src/libsync/discoveryphase.cpp" line="208"/>
         <source>Error while opening directory %1</source>
         <translation>مۇندەرىجە% 1 نى ئاچقاندا خاتالىق</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discoveryphase.cpp" line="212"/>
+        <location filename="../src/libsync/discoveryphase.cpp" line="210"/>
         <source>Directory not accessible on client, permission denied</source>
         <translation>مۇندەرىجە خېرىدارنى زىيارەت قىلالمايدۇ ، ئىجازەت رەت قىلىندى</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discoveryphase.cpp" line="216"/>
+        <location filename="../src/libsync/discoveryphase.cpp" line="214"/>
         <source>Directory not found: %1</source>
         <translation>مۇندەرىجە تېپىلمىدى:% 1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discoveryphase.cpp" line="251"/>
+        <location filename="../src/libsync/discoveryphase.cpp" line="249"/>
         <source>Error while reading directory %1</source>
         <translation>مۇندەرىجە% 1 نى ئوقۇغاندا خاتالىق</translation>
     </message>
@@ -1082,136 +1162,141 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::Folder</name>
     <message>
-        <location filename="../src/gui/folder.cpp" line="238"/>
+        <location filename="../src/gui/folder.cpp" line="227"/>
         <source>Local folder %1 does not exist.</source>
         <translation>يەرلىك ھۆججەت قىسقۇچ% 1 مەۋجۇت ئەمەس.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="240"/>
+        <location filename="../src/gui/folder.cpp" line="229"/>
         <source>%1 should be a folder but is not.</source>
         <translation>% 1 ھۆججەت قىسقۇچ بولۇشى كېرەك ، ئەمما ئۇنداق ئەمەس.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="242"/>
+        <location filename="../src/gui/folder.cpp" line="231"/>
         <source>%1 is not readable.</source>
         <translation>% 1 نى ئوقۇغىلى بولمايدۇ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="454"/>
+        <location filename="../src/gui/folder.cpp" line="455"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translation>% 1 ئۆچۈرۈلدى.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="468"/>
+        <location filename="../src/gui/folder.cpp" line="469"/>
         <source>%1 has been updated.</source>
         <comment>%1 names a file.</comment>
         <translation>% 1 يېڭىلاندى.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="475"/>
+        <location filename="../src/gui/folder.cpp" line="476"/>
         <source>%1 has been renamed to %2.</source>
         <comment>%1 and %2 name files.</comment>
         <translation>% 1 گە ئۆزگەرتىلدى% 2.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="482"/>
+        <location filename="../src/gui/folder.cpp" line="483"/>
         <source>%1 has been moved to %2.</source>
         <translation>% 1% 2 گە يۆتكەلدى.</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="452"/>
+        <location filename="../src/gui/folder.cpp" line="453"/>
         <source>%1 and %n other file(s) have been removed.</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="187"/>
+        <location filename="../src/gui/folder.cpp" line="176"/>
         <source>The path &apos;%1&apos; is too long. Please enable long paths in the Windows settings or choose a different folder.</source>
         <translation>«% 1» يولى بەك ئۇزۇن. Windows تەڭشىكىدە ئۇزۇن يوللارنى قوزغىتىڭ ياكى باشقا ھۆججەت قىسقۇچنى تاللاڭ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="232"/>
+        <location filename="../src/gui/folder.cpp" line="221"/>
         <source>%1 failed to open the database.</source>
         <translation>% 1 سانداننى ئاچالمىدى.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="244"/>
+        <location filename="../src/gui/folder.cpp" line="233"/>
         <source>%1 is not writable.</source>
         <translation>% 1 يازغىلى بولمايدۇ.</translation>
     </message>
+    <message>
+        <location filename="../src/gui/folder.cpp" line="391"/>
+        <source>The folder has been disabled or removed from the server</source>
+        <translation type="unfinished"/>
+    </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="459"/>
+        <location filename="../src/gui/folder.cpp" line="460"/>
         <source>%1 and %n other file(s) have been added.</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="461"/>
+        <location filename="../src/gui/folder.cpp" line="462"/>
         <source>%1 has been added.</source>
         <comment>%1 names a file.</comment>
         <translation>% 1 قوشۇلدى.</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="466"/>
+        <location filename="../src/gui/folder.cpp" line="467"/>
         <source>%1 and %n other file(s) have been updated.</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="473"/>
+        <location filename="../src/gui/folder.cpp" line="474"/>
         <source>%1 has been renamed to %2 and %n other file(s) have been renamed.</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="480"/>
+        <location filename="../src/gui/folder.cpp" line="481"/>
         <source>%1 has been moved to %2 and %n other file(s) have been moved.</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="487"/>
+        <location filename="../src/gui/folder.cpp" line="488"/>
         <source>%1 and %n other file(s) have sync conflicts.</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="489"/>
+        <location filename="../src/gui/folder.cpp" line="490"/>
         <source>%1 has a sync conflict. Please check the conflict file!</source>
         <translation>% 1 نىڭ ماس قەدەملىك توقۇنۇشى بار. توقۇنۇش ھۆججىتىنى تەكشۈرۈپ بېقىڭ!</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="494"/>
+        <location filename="../src/gui/folder.cpp" line="495"/>
         <source>%1 and %n other file(s) could not be synced due to errors. See the log for details.</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="496"/>
+        <location filename="../src/gui/folder.cpp" line="497"/>
         <source>%1 could not be synced due to an error. See the log for details.</source>
         <translation>% 1 خاتالىق سەۋەبىدىن ماسقەدەملەنمىدى. تەپسىلاتىنى خاتىرىدىن كۆرۈڭ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="502"/>
+        <location filename="../src/gui/folder.cpp" line="503"/>
         <source>Sync Activity</source>
         <translation>ماسقەدەملەش پائالىيىتى</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="699"/>
+        <location filename="../src/gui/folder.cpp" line="701"/>
         <source>Switching VFS mode on folder &apos;%1&apos;</source>
         <translation>«% 1» ھۆججەت قىسقۇچىدا VFS ھالىتىنى ئالماشتۇرۇش</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="894"/>
+        <location filename="../src/gui/folder.cpp" line="895"/>
         <source>Could not read system exclude file</source>
         <translation>ھۆججەتنى چىقىرىۋېتىش سىستېمىسىنى ئوقۇيالمىدى</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1133"/>
+        <location filename="../src/gui/folder.cpp" line="1090"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translation>% 1 ھۆججەت قىسقۇچى قۇرۇلدى ، ئەمما ماس قەدەمدە چىقىرىۋېتىلدى. ئۇنىڭ ئىچىدىكى سانلىق مەلۇماتلار ماس قەدەمدە بولمايدۇ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1136"/>
+        <location filename="../src/gui/folder.cpp" line="1093"/>
         <source>The file %1 was created but was excluded from synchronization previously. It will not be synchronized.</source>
         <translation>% 1 ھۆججىتى قۇرۇلدى ، ئەمما ماس قەدەمدە چىقىرىۋېتىلدى. ئۇ ماس قەدەمدە بولمايدۇ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1148"/>
+        <location filename="../src/gui/folder.cpp" line="1105"/>
         <source>Changes in synchronized folders could not be tracked reliably.
 
 This means that the synchronization client might not upload local changes immediately and will instead only scan for local changes and upload them occasionally (every two hours by default).
@@ -1227,112 +1312,107 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderMan</name>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="297"/>
+        <location filename="../src/gui/folderman.cpp" line="427"/>
         <source>Could not reset folder state</source>
         <translation>ھۆججەت قىسقۇچ ھالىتىنى ئەسلىگە كەلتۈرەلمىدى</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="298"/>
+        <location filename="../src/gui/folderman.cpp" line="428"/>
         <source>An old sync journal &apos;%1&apos; was found, but could not be removed. Please make sure that no application is currently using it.</source>
         <translation>كونا ماس قەدەملىك ژۇرنال &apos;% 1&apos; تېپىلدى ، ئەمما ئۆچۈرگىلى بولمىدى. ھازىر ھېچقانداق قوللىنىشچان پروگراممىنىڭ ئىشلىتىلمەيدىغانلىقىنى جەزملەشتۈرۈڭ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="315"/>
+        <location filename="../src/gui/folderman.cpp" line="445"/>
         <source>Unsupported filesystem</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="405"/>
+        <location filename="../src/gui/folderman.cpp" line="539"/>
         <source>Account disconnected or paused</source>
         <translation>ھېسابات ئۈزۈلۈپ قالدى ياكى توختىتىلدى</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="691"/>
+        <location filename="../src/gui/folderman.cpp" line="813"/>
+        <source>User triggered force sync</source>
+        <translation>ئىشلەتكۈچى كۈچ ماسقەدەملەشنى قوزغىدى</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/folderman.cpp" line="844"/>
         <source>Folder is about to be removed</source>
         <translation>ھۆججەت قىسقۇچ ئۆچۈرۈلمەكچى</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="718"/>
+        <location filename="../src/gui/folderman.cpp" line="867"/>
         <source> (backup)</source>
         <translation>(زاپاسلاش)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="723"/>
+        <location filename="../src/gui/folderman.cpp" line="872"/>
         <source> (backup %1)</source>
         <translation>(زاپاسلاش% 1)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="774"/>
-        <source>Sync was successful, unresolved conflicts.</source>
-        <translation>ماس قەدەم مۇۋەپپەقىيەتلىك بولدى ، ھەل قىلىنمىغان زىددىيەتلەر.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderman.cpp" line="783"/>
-        <source>%1 (Sync is paused)</source>
-        <translation>% 1 (ماسقەدەملەش توختىتىلدى)</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderman.cpp" line="815"/>
+        <location filename="../src/gui/folderman.cpp" line="919"/>
         <source>Folder &apos;%1&apos; is already in use by application %2!</source>
         <translation>«% 1» ھۆججەت قىسقۇچى ئاللىقاچان% 2 قوللىنىشچان پروگراممىدا ئىشلىتىلىپ بولدى!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="830"/>
+        <location filename="../src/gui/folderman.cpp" line="934"/>
         <source>Folder &apos;%1&apos; is already in use by another account.</source>
         <translation>ھۆججەت قىسقۇچى &apos;% 1&apos; ئاللىبۇرۇن باشقا ھېسابات تەرىپىدىن ئىشلىتىلگەن.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="845"/>
+        <location filename="../src/gui/folderman.cpp" line="949"/>
         <source>No valid folder selected!</source>
         <translation>ئىناۋەتلىك ھۆججەت قىسقۇچ تاللانمىدى!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="867"/>
+        <location filename="../src/gui/folderman.cpp" line="971"/>
         <source>The folder %1 is used in a folder sync connection!</source>
         <translation>% 1 ھۆججەت قىسقۇچ ماسقەدەملەشتە ئىشلىتىلىدۇ!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="909"/>
+        <location filename="../src/gui/folderman.cpp" line="1013"/>
         <source>The local folder %1 already contains a folder used in a folder sync connection. Please pick another local folder!</source>
         <translation>يەرلىك قىسقۇچ% 1 ھۆججەت قىسقۇچ ماسقەدەملەشتە ئىشلىتىلىدىغان ھۆججەت قىسقۇچنى ئۆز ئىچىگە ئالىدۇ. باشقا يەرلىك ھۆججەت قىسقۇچنى تاللاڭ!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="915"/>
+        <location filename="../src/gui/folderman.cpp" line="1019"/>
         <source>The local folder %1 is already contained in a folder used in a folder sync connection. Please pick another local folder!</source>
         <translation>يەرلىك ھۆججەت قىسقۇچ% 1 ھۆججەت قىسقۇچ ماسقەدەملەشتە ئىشلىتىلىدىغان ھۆججەت قىسقۇچتا بار. باشقا يەرلىك ھۆججەت قىسقۇچنى تاللاڭ!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="923"/>
+        <location filename="../src/gui/folderman.cpp" line="1027"/>
         <source>%1 Please pick another local folder!</source>
         <translation>% 1 باشقا يەرلىك ھۆججەت قىسقۇچنى تاللاڭ!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="863"/>
+        <location filename="../src/gui/folderman.cpp" line="967"/>
         <source>The selected path does not exist!</source>
         <translation>تاللانغان يول مەۋجۇت ئەمەس!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="315"/>
+        <location filename="../src/gui/folderman.cpp" line="445"/>
         <source>On macOS, only the Apple File System is supported.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="873"/>
+        <location filename="../src/gui/folderman.cpp" line="977"/>
         <source>The selected path is not a folder!</source>
         <translation>تاللانغان يول ھۆججەت قىسقۇچ ئەمەس!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="877"/>
+        <location filename="../src/gui/folderman.cpp" line="981"/>
         <source>You have no permission to write to the selected folder!</source>
         <translation>تاللانغان ھۆججەت قىسقۇچقا يېزىش ھوقۇقىڭىز يوق!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="905"/>
+        <location filename="../src/gui/folderman.cpp" line="1009"/>
         <source>There is already a sync from the server to this local folder. Please pick another local folder!</source>
         <translation>مۇلازىمېتىردىن بۇ يەرلىك ھۆججەت قىسقۇچقا ماسقەدەملەش بار. باشقا يەرلىك ھۆججەت قىسقۇچنى تاللاڭ!</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="989"/>
+        <location filename="../src/gui/folderman.cpp" line="1097"/>
         <source>Multiple accounts are sharing the folder %1.
 This configuration is know to lead to dataloss and is no longer supported.
 Please consider removing this folder from the account and adding it again.</source>
@@ -1344,39 +1424,57 @@ Please consider removing this folder from the account and adding it again.</sour
 <context>
     <name>OCC::FolderStatusModel</name>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="257"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="220"/>
         <source>There are unresolved conflicts.</source>
         <translation>ھەل قىلىنمىغان توقۇنۇشلار بار.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="307"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="267"/>
         <source>%1 of %2 used</source>
         <translation>ئىشلىتىلگەن% 2 نىڭ% 1</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="387"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="347"/>
         <source>Checking for changes in remote &apos;%1&apos;</source>
         <translation>يىراقتىكى «% 1» دىكى ئۆزگىرىشلەرنى تەكشۈرۈش</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="389"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="349"/>
         <source>Checking for changes in local &apos;%1&apos;</source>
         <translation>يەرلىك &apos;% 1&apos; دىكى ئۆزگىرىشلەرنى تەكشۈرۈش</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="393"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="353"/>
         <source>Reconciling changes</source>
         <translation>ئۆزگەرتىشلەرنى ماسلاشتۇرۇش</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="433"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="393"/>
         <source>Queued</source>
         <translation>ئۆچرەتتە تۇرغان</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="268"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="231"/>
         <source>Local folder: %1</source>
         <translation>يەرلىك ھۆججەت قىسقۇچ:% 1</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::FolderStatusUpdater</name>
+    <message>
+        <location filename="../src/gui/FoldersGui/folderstatusupdater.cpp" line="64"/>
+        <source>Checking for changes in remote &apos;%1&apos;</source>
+        <translation>يىراقتىكى «% 1» دىكى ئۆزگىرىشلەرنى تەكشۈرۈش</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/folderstatusupdater.cpp" line="66"/>
+        <source>Checking for changes in local &apos;%1&apos;</source>
+        <translation>يەرلىك &apos;% 1&apos; دىكى ئۆزگىرىشلەرنى تەكشۈرۈش</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/folderstatusupdater.cpp" line="70"/>
+        <source>Reconciling changes</source>
+        <translation>ئۆزگەرتىشلەرنى ماسلاشتۇرۇش</translation>
     </message>
 </context>
 <context>
@@ -1398,17 +1496,17 @@ Please consider removing this folder from the account and adding it again.</sour
 <context>
     <name>OCC::FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="166"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="140"/>
         <source>Virtual files are not available for the selected folder</source>
         <translation>تاللانغان ھۆججەت قىسقۇچقا مەۋھۇم ھۆججەتلەرنى ئىشلەتكىلى بولمايدۇ</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="179"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="153"/>
         <source>Add Folder Sync Connection</source>
         <translation>ھۆججەت قىسقۇچ ماسقەدەملەشنى قوشۇڭ</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="181"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="156"/>
         <source>Add Sync Connection</source>
         <translation>ماسقەدەم ئۇلىنىشنى قوشۇڭ</translation>
     </message>
@@ -1432,67 +1530,9 @@ Please consider removing this folder from the account and adding it again.</sour
     </message>
 </context>
 <context>
-    <name>OCC::FolderWizardRemotePath</name>
-    <message>
-        <location filename="../src/gui/folderwizard/folderwizardremotepath.cpp" line="74"/>
-        <source>Create Remote Folder</source>
-        <translation>يىراقتىن ھۆججەت قىسقۇچ قۇرۇش</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderwizard/folderwizardremotepath.cpp" line="75"/>
-        <source>Enter the name of the new folder to be created below &apos;%1&apos;:</source>
-        <translation>&apos;% 1&apos; دىن تۆۋەندە قۇرۇلماقچى بولغان يېڭى ھۆججەت قىسقۇچنىڭ نامىنى كىرگۈزۈڭ:</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderwizard/folderwizardremotepath.cpp" line="106"/>
-        <source>Folder was successfully created on %1.</source>
-        <translation>ھۆججەت قىسقۇچ% 1 دە مۇۋەپپەقىيەتلىك قۇرۇلدى.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderwizard/folderwizardremotepath.cpp" line="116"/>
-        <source>Authentication failed accessing %1</source>
-        <translation>دەلىللەش% 1 گە كىرەلمىدى</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderwizard/folderwizardremotepath.cpp" line="118"/>
-        <source>Failed to create the folder on %1. Please check manually.</source>
-        <translation>% 1 دىكى ھۆججەت قىسقۇچنى قۇرالمىدى. قولدا تەكشۈرۈپ بېقىڭ.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderwizard/folderwizardremotepath.cpp" line="134"/>
-        <source>Failed to list a folder. Error: %1</source>
-        <translation>قىسقۇچنى تىزىش مەغلۇب بولدى. خاتالىق:% 1</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderwizard/folderwizardremotepath.cpp" line="218"/>
-        <source>Choose this to sync the entire account</source>
-        <translation>پۈتۈن ھېساباتنى ماسقەدەملەش ئۈچۈن بۇنى تاللاڭ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderwizard/folderwizardremotepath.cpp" line="332"/>
-        <source>This folder is already being synced.</source>
-        <translation>بۇ ھۆججەت قىسقۇچ ئاللىقاچان ماسقەدەملىنىۋاتىدۇ.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderwizard/folderwizardremotepath.cpp" line="335"/>
-        <source>This folder can&apos;t be synced. Please choose another one.</source>
-        <translation>بۇ ھۆججەت قىسقۇچنى ماسقەدەملىگىلى بولمايدۇ. باشقا بىرىنى تاللاڭ.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderwizard/folderwizardremotepath.cpp" line="338"/>
-        <source>You are already syncing &lt;i&gt;%1&lt;/i&gt;, which is a parent folder of &lt;i&gt;%2&lt;/i&gt;.</source>
-        <translation>سىز ئاللىبۇرۇن &lt;i&gt;% 1 &lt;/i&gt; نى ماسقەدەملەۋاتىسىز ، بۇ &lt;i&gt;% 2 &lt;/i&gt; نىڭ ئانا ھۆججەت قىسقۇچى.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderwizard/folderwizardremotepath.cpp" line="340"/>
-        <source>You are already syncing &lt;i&gt;%1&lt;/i&gt;, which is a subfolder of &lt;i&gt;%2&lt;/i&gt;.</source>
-        <translation>سىز ئاللىقاچان &lt;i&gt;% 1 &lt;/i&gt; نى ماسقەدەملەۋاتىسىز ، بۇ &lt;i&gt;% 2 &lt;/i&gt; نىڭ تارماق قىسقۇچ.</translation>
-    </message>
-</context>
-<context>
     <name>OCC::FolderWizardSelectiveSync</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizardselectivesync.cpp" line="47"/>
+        <location filename="../src/gui/folderwizard/folderwizardselectivesync.cpp" line="45"/>
         <source>Use virtual files instead of downloading content immediately</source>
         <translation>مەزمۇننى دەرھال چۈشۈرۈشنىڭ ئورنىغا مەۋھۇم ھۆججەتلەرنى ئىشلىتىڭ</translation>
     </message>
@@ -1500,27 +1540,27 @@ Please consider removing this folder from the account and adding it again.</sour
 <context>
     <name>OCC::GETFileJob</name>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="169"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="168"/>
         <source>Connection Timeout</source>
         <translation>ئۇلىنىش ۋاقتى</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="247"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="246"/>
         <source>No E-Tag received from server, check Proxy/Gateway</source>
         <translation>مۇلازىمېتىردىن ئېلېكترونلۇق خەت تاپشۇرۇۋالمىدى ، ۋاكالەتچى / دەرۋازىنى تەكشۈرۈڭ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="254"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="253"/>
         <source>We received a different E-Tag for resuming. Retrying next time.</source>
         <translation>ئەسلىگە كەلتۈرۈش ئۈچۈن باشقىچە E-Tag تاپشۇرۇۋالدۇق. كېلەر قېتىم قايتا سىناڭ.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="265"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="264"/>
         <source>We received an unexpected download Content-Length.</source>
         <translation>ئويلىمىغان يەردىن چۈشۈرۈش مەزمۇنىنى تاپشۇرۇۋالدۇق.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="293"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="292"/>
         <source>Server returned wrong content-range</source>
         <translation>مۇلازىمېتىر خاتا مەزمۇن دائىرىسىنى قايتۇردى</translation>
     </message>
@@ -1631,22 +1671,14 @@ Please consider removing this folder from the account and adding it again.</sour
 <context>
     <name>OCC::GraphApi::Space</name>
     <message>
-        <location filename="../src/libsync/graphapi/space.cpp" line="80"/>
+        <location filename="../src/libsync/graphapi/space.cpp" line="87"/>
         <source>Personal</source>
         <translation>شەخسىي</translation>
     </message>
     <message>
-        <location filename="../src/libsync/graphapi/space.cpp" line="84"/>
+        <location filename="../src/libsync/graphapi/space.cpp" line="91"/>
         <source>Shares</source>
         <translation>ھەمبەھىر</translation>
-    </message>
-</context>
-<context>
-    <name>OCC::HttpCredentialsGui</name>
-    <message>
-        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="95"/>
-        <source>Login required</source>
-        <translation>كىرىش تەلەپ قىلىنىدۇ</translation>
     </message>
 </context>
 <context>
@@ -1717,51 +1749,47 @@ Items where deletion is allowed will be deleted if they prevent a directory from
     </message>
 </context>
 <context>
-    <name>OCC::IssuesWidget</name>
+    <name>OCC::LocalActivityWidget</name>
     <message>
-        <location filename="../src/gui/issueswidget.cpp" line="365"/>
+        <location filename="../src/gui/localactivitywidget.ui" line="32"/>
         <source>Filter</source>
         <translation>سۈزگۈچ</translation>
     </message>
     <message>
-        <location filename="../src/gui/issueswidget.ui" line="40"/>
-        <source>Issues table</source>
-        <translation>مەسىلىلەر جەدۋىلى</translation>
+        <location filename="../src/gui/localactivitywidget.ui" line="44"/>
+        <source>Local activity table</source>
+        <translation>يەرلىك پائالىيەت جەدۋىلى</translation>
     </message>
     <message>
-        <location filename="../src/gui/issueswidget.ui" line="72"/>
-        <source>There were too many issues. Not all will be visible here.</source>
-        <translation>مەسىلە بەك كۆپ ئىدى. بۇ يەردە ھەممىسى كۆرۈنمەيدۇ.</translation>
+        <location filename="../src/gui/localactivitywidget.cpp" line="62"/>
+        <location filename="../src/gui/localactivitywidget.cpp" line="68"/>
+        <source>Account</source>
+        <translation>ھېسابات</translation>
     </message>
     <message>
-        <location filename="../src/gui/issueswidget.ui" line="82"/>
-        <source>There were conflicts. Check the documentation on how to resolve them.</source>
-        <translation>توقۇنۇشلار بولدى. ئۇلارنى قانداق ھەل قىلىش توغرىسىدىكى ھۆججەتلەرنى تەكشۈرۈڭ.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/issueswidget.cpp" line="208"/>
-        <source>The file %1 was ignored as its name is reserved by %2</source>
-        <translation>ئۇنىڭ ئىسمى% 2 ساقلانغانلىقى ئۈچۈن% 1 ھۆججىتىگە پەرۋا قىلىنمىدى</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/issueswidget.cpp" line="234"/>
-        <source>Reset column sizes</source>
-        <translation>ستون چوڭلۇقىنى ئەسلىگە كەلتۈرۈڭ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/issueswidget.cpp" line="254"/>
-        <source>There were conflicts. &lt;a href=&quot;%1&quot;&gt;Check the documentation on how to resolve them.&lt;/a&gt;</source>
-        <translation>توقۇنۇشلار بولدى. &lt;a href = &quot;% 1&quot;&gt; ئۇلارنى قانداق ھەل قىلىش توغرىسىدىكى ھۆججەتلەرنى تەكشۈرۈڭ. &lt;/a&gt;</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/issueswidget.cpp" line="273"/>
+        <location filename="../src/gui/localactivitywidget.cpp" line="105"/>
         <source>Filter menu</source>
         <translation>سۈزگۈچ تىزىملىكى</translation>
     </message>
     <message>
-        <location filename="../src/gui/issueswidget.cpp" line="275"/>
-        <source>Account</source>
-        <translation>ھېسابات</translation>
+        <location filename="../src/gui/localactivitywidget.cpp" line="120"/>
+        <source>Actions menu</source>
+        <translation>مەشغۇلات تىزىملىكى</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/localactivitywidget.cpp" line="162"/>
+        <source>Sort ascending by %1</source>
+        <translation>% 1 بويىچە ئۆرلەش</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/localactivitywidget.cpp" line="166"/>
+        <source>Sort descending by %1</source>
+        <translation>تۆۋەنلەش نىسبىتى% 1</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/localactivitywidget.cpp" line="188"/>
+        <source>Retry sync</source>
+        <translation>قايتا ماسقەدەملەش</translation>
     </message>
 </context>
 <context>
@@ -1834,12 +1862,12 @@ Note that using any logging command line options will override the settings.</so
         <translation>ھەممىسى</translation>
     </message>
     <message>
-        <location filename="../src/gui/issueswidget.cpp" line="293"/>
+        <location filename="../src/gui/syncerrorwidget.cpp" line="305"/>
         <source>Reset Filters</source>
         <translation>سۈزگۈچنى ئەسلىگە كەلتۈرۈش</translation>
     </message>
     <message>
-        <location filename="../src/gui/issueswidget.cpp" line="380"/>
+        <location filename="../src/gui/syncerrorwidget.cpp" line="393"/>
         <source>Status Filter:</source>
         <translation>ھالەت سۈزگۈچ:</translation>
     </message>
@@ -1902,28 +1930,6 @@ Note that using any logging command line options will override the settings.</so
         <translation>ئەسكەرتىش: ۋاكالەتچى تەڭشەكلەرنىڭ localhost دىكى ھېساباتلارغا ھېچقانداق تەسىرى يوق</translation>
     </message>
     <message>
-        <location filename="../src/gui/networksettings.ui" line="287"/>
-        <source>Download Bandwidth</source>
-        <translation>كەڭ بەلۋاغنى چۈشۈرۈڭ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/networksettings.ui" line="407"/>
-        <source>Upload bandwidth in kilobytes per second</source>
-        <translation>سېكۇنتتا كەڭ بەلۋاغ كەڭلىكىنى يۈكلەڭ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/networksettings.ui" line="338"/>
-        <location filename="../src/gui/networksettings.ui" line="423"/>
-        <source>KBytes/s</source>
-        <translation>KBytes / s</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/networksettings.ui" line="293"/>
-        <location filename="../src/gui/networksettings.ui" line="375"/>
-        <source>No limit</source>
-        <translation>چەكلىمىسى يوق</translation>
-    </message>
-    <message>
         <location filename="../src/gui/networksettings.ui" line="59"/>
         <source>Specify proxy manually</source>
         <translation>ۋاكالەتچىنى قولدا بەلگىلەڭ</translation>
@@ -1932,39 +1938,6 @@ Note that using any logging command line options will override the settings.</so
         <location filename="../src/gui/networksettings.ui" line="80"/>
         <source>Proxy type</source>
         <translation>ۋاكالەتچى تىپى</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/networksettings.ui" line="270"/>
-        <source>Bandwidth limits are deprecated and will be removed in a future release!</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../src/gui/networksettings.ui" line="303"/>
-        <location filename="../src/gui/networksettings.ui" line="385"/>
-        <source>Limit to 3/4 of estimated bandwidth</source>
-        <translation>مۆلچەردىكى كەڭ بەلۋاغنىڭ 3/4 گە چەك قويۇڭ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/networksettings.ui" line="315"/>
-        <location filename="../src/gui/networksettings.ui" line="397"/>
-        <source>Manual limit</source>
-        <translation>قولدا چەك</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/networksettings.ui" line="325"/>
-        <source>Download bandwidth in kilobytes per second</source>
-        <translation>سېكۇنتتا كەڭ بەلۋاغ كەڭلىكىنى چۈشۈرۈڭ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/networksettings.ui" line="369"/>
-        <source>Upload Bandwidth</source>
-        <translation>كەڭ بەلۋاغنى يۈكلەڭ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/networksettings.ui" line="306"/>
-        <location filename="../src/gui/networksettings.ui" line="388"/>
-        <source>Limit automatically</source>
-        <translation>ئاپتوماتىك چەكلەڭ</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.cpp" line="49"/>
@@ -1996,24 +1969,55 @@ Note that using any logging command line options will override the settings.</so
     </message>
 </context>
 <context>
-    <name>OCC::NewAccountWizardController</name>
+    <name>OCC::NewAccountBuilder</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="55"/>
-        <source>Welcome to %1</source>
-        <translation>% 1 گە خۇش كەپسىز</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="63"/>
-        <source>Advanced Settings</source>
+        <location filename="../src/gui/newaccountwizard/newaccountbuilder.cpp" line="50"/>
+        <source>no error details are available</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="184"/>
-        <source>Next</source>
-        <translation>كېيىنكى</translation>
+        <location filename="../src/gui/newaccountwizard/newaccountbuilder.cpp" line="51"/>
+        <source>Unable to connect to server during account creation: %1.</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
+    <name>OCC::NewAccountWizard</name>
+    <message>
+        <location filename="../src/gui/newaccountwizard/newaccountwizard.cpp" line="52"/>
+        <source>Cancel Setup</source>
+        <translation>تەڭشەشنى ئەمەلدىن قالدۇرۇڭ</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="187"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizard.cpp" line="52"/>
+        <source>Do you really want to cancel the account setup?</source>
+        <translation>ھېسابات تەڭشىكىنى ئەمەلدىن قالدۇرماقچىمۇ؟</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::NewAccountWizardController</name>
+    <message>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="55"/>
+        <source>Add account…</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="63"/>
+        <source>Back</source>
+        <translation>قايتىش</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="64"/>
+        <source>Advanced</source>
+        <translation>ئىلغار</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="208"/>
+        <source>Sign in</source>
+        <translation>تىزىملىتىڭ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="211"/>
         <source>Open sign in again</source>
         <translation type="unfinished"/>
     </message>
@@ -2037,95 +2041,64 @@ Note that using any logging command line options will override the settings.</so
     </message>
 </context>
 <context>
-    <name>OCC::NotificationWidget</name>
-    <message>
-        <location filename="../src/gui/notificationwidget.cpp" line="67"/>
-        <source>Created at %1</source>
-        <translation>% 1 دە قۇرۇلدى</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/notificationwidget.cpp" line="80"/>
-        <source>Closing in a few seconds...</source>
-        <translation>بىر نەچچە سېكۇنت ئىچىدە تاقاش ...</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/notificationwidget.cpp" line="126"/>
-        <source>%1 request failed at %2</source>
-        <extracomment>The second parameter is a time, such as 'failed at 09:58pm'</extracomment>
-        <translation>% 1 تەلەپ% 2 دە مەغلۇپ بولدى</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/notificationwidget.cpp" line="132"/>
-        <source>&apos;%1&apos; selected at %2</source>
-        <extracomment>The second parameter is a time, such as 'selected at 09:58pm'</extracomment>
-        <translation>% 2 دە تاللانغان &apos;% 1&apos;</translation>
-    </message>
-</context>
-<context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="289"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="156"/>
+        <source>Successfully signed in</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/creds/oauth.cpp" line="157"/>
+        <source>Now, explore %1 on desktop.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/creds/oauth.cpp" line="268"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
         <translation>مۇلازىمېتىردىن خاتالىق: &lt;em&gt;% 1 &lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="291"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="270"/>
         <source>There was an error accessing the &apos;token&apos; endpoint: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</source>
         <translation>«بەلگە» ئاخىرقى نۇقتىغا كىرىشتە خاتالىق كۆرۈلدى: &lt;br&gt; &lt;em&gt;% 1 &lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="293"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="272"/>
         <source>Could not parse the JSON returned from the server: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</source>
         <translation>مۇلازىمېتىردىن قايتىپ كەلگەن JSON نى تەھلىل قىلالمىدى: &lt;br&gt; &lt;em&gt;% 1 &lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="295"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="274"/>
         <source>Unsupported token type: %1</source>
         <translation>قوللىمايدىغان بەلگە تىپى:% 1</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="297"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="276"/>
         <source>The reply from the server did not contain all expected fields
 :%1</source>
         <translation>مۇلازىمېتىردىن كەلگەن جاۋاب بارلىق مۆلچەرلەنگەن مەزمۇنلارنى ئۆز ئىچىگە ئالمىدى
 :% 1</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="299"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="278"/>
         <source>Unknown Error</source>
         <translation>نامەلۇم خاتالىق</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="302"/>
-        <location filename="../src/gui/creds/oauth.cpp" line="325"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="281"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="304"/>
         <source>Login Error</source>
         <translation>كىرىش خاتالىقى</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="331"/>
-        <source>&lt;h1&gt;Wrong user&lt;/h1&gt;&lt;p&gt;You logged-in with user &lt;em&gt;%1&lt;/em&gt;, but must login with user &lt;em&gt;%2&lt;/em&gt;.&lt;br&gt;Please return to the %3 client and restart the authentication.&lt;/p&gt;</source>
-        <translation>&lt;h1&gt; خاتا ئىشلەتكۈچى &lt;/h1&gt; &lt;p&gt; ئىشلەتكۈچى &lt;em&gt;% 1 &lt;/em&gt; بىلەن تىزىملىتىپ كىردىڭىز ، ئەمما ئىشلەتكۈچى &lt;em&gt;% 2 &lt;/em&gt; بىلەن تىزىملىتىشىڭىز كېرەك. &lt;br&gt; % 3 خېرىدار ۋە دەلىللەشنى قايتا قوزغىتىڭ. &lt;/p&gt;</translation>
+        <location filename="../src/gui/creds/oauth.cpp" line="310"/>
+        <source>You logged-in with user &lt;em&gt;%1&lt;/em&gt;, but must login with user &lt;em&gt;%2&lt;/em&gt;.&lt;br&gt;Please return to the %3 client and restart the authentication.</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="335"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="313"/>
         <source>Wrong user</source>
         <translation>خاتا ئىشلەتكۈچى</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="183"/>
-        <source>&lt;h1&gt;Login Successful&lt;/h1&gt;&lt;p&gt;You can close this window.&lt;/p&gt;</source>
-        <translation>&lt;h1&gt; كىرىش مۇۋەپپەقىيەتلىك &lt;/h1&gt; &lt;p&gt; بۇ كۆزنەكنى ياپالايسىز. &lt;/p&gt;</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="184"/>
-        <source>Login Successful</source>
-        <translation>كىرىش مۇۋەپپەقىيەتلىك</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="302"/>
-        <location filename="../src/gui/creds/oauth.cpp" line="325"/>
-        <source>&lt;h1&gt;Login Error&lt;/h1&gt;&lt;p&gt;%1&lt;/p&gt;</source>
-        <translation>&lt;h1&gt; كىرىش خاتالىقى &lt;/h1&gt; &lt;p&gt;% 1 &lt;/p&gt;</translation>
     </message>
 </context>
 <context>
@@ -2141,64 +2114,79 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="74"/>
-        <source>Login URL</source>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="75"/>
+        <source>Sign in URL</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="81"/>
-        <source>Copy the login URL to the clipboard</source>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="76"/>
+        <source>To copy the sign in URL to the clipboard, use the copy button</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="101"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="83"/>
+        <source>Copy URL to sign in</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="103"/>
         <source>Additional logo defined by the organization</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="175"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="180"/>
         <source>URL copied</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="177"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="182"/>
         <source>Copy URL</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="230"/>
-        <source>Failed to look up webfinger instances: %1</source>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="237"/>
+        <source>Please copy the authentication URL using the button above, and provide this information to support.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="247"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="251"/>
+        <source>Failed to look up WebFinger instances: %1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="268"/>
         <source>You are already connected to an account with these credentials.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="265"/>
-        <source>Unable to retrieve capabilities from server</source>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="286"/>
+        <source>Unable to retrieve capabilities from server.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="269"/>
-        <source>The server is not supported by this client</source>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="290"/>
+        <source>The server is not supported by this client.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="279"/>
-        <source>Error while trying to log in to OAuth2-enabled server.</source>
-        <translation>OAuth2 قوزغىتىلغان مۇلازىمېتىرغا كىرمەكچى بولغاندا خاتالىق.</translation>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="300"/>
+        <source>Error while trying to log in to OAuth2-enabled server. %1</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="284"/>
-        <source>Server reports that OAuth2 is not supported.</source>
-        <translation>مۇلازىمېتىر OAuth2 نى قوللىمايدىغانلىقىنى دوكلات قىلدى.</translation>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="307"/>
+        <source>Unable to open browser with provided URL. %1</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="288"/>
-        <source>Oauth2 authentication requires a secured connection.</source>
-        <translation>Oauth2 دەلىللەش بىخەتەر ئۇلىنىشنى تەلەپ قىلىدۇ.</translation>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="311"/>
+        <source>OAuth2 authentication requires a secured connection. %1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="315"/>
+        <source>Authorization server unreachable. %1</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -2215,8 +2203,8 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="146"/>
-        <source>Downloading %1. Please wait...</source>
-        <translation>چۈشۈرۈش% 1. ساقلاپ تۇرۇڭ ...</translation>
+        <source>Downloading %1. Please wait…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="149"/>
@@ -2240,8 +2228,8 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="167"/>
-        <source>Checking update server...</source>
-        <translation>يېڭىلاش مۇلازىمېتىرىنى تەكشۈرۈۋاتىدۇ ...</translation>
+        <source>Checking update server…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="169"/>
@@ -2257,7 +2245,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OwncloudPropagator</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="765"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="770"/>
         <source>File %1 is currently in use</source>
         <translation>ھۆججەت% 1 ھازىر ئىشلىتىلىۋاتىدۇ</translation>
     </message>
@@ -2335,52 +2323,59 @@ Note that using any logging command line options will override the settings.</so
         <translation>مۇلازىمېتىر% 1 نى دوكلات قىلدى</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1070"/>
+        <location filename="../src/libsync/discovery.cpp" line="554"/>
+        <location filename="../src/libsync/discovery.cpp" line="954"/>
+        <location filename="../src/libsync/discovery.cpp" line="1316"/>
+        <source>account was deleted. Unable to continue</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/libsync/discovery.cpp" line="1113"/>
         <source>SelectiveSync: Ignored because its path is deselected</source>
         <translation>SelectiveSync: ئۇنىڭ يولى تاللانغانلىقى ئۈچۈن سەل قارىلىدۇ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1144"/>
+        <location filename="../src/libsync/discovery.cpp" line="1187"/>
         <source>Moved to invalid target, restoring</source>
         <translation>ئىناۋەتسىز نىشانغا يۆتكەلدى ، ئەسلىگە كەلدى</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1157"/>
+        <location filename="../src/libsync/discovery.cpp" line="1200"/>
         <source>Not allowed to remove, restoring</source>
         <translation>چىقىرىۋېتىشكە ، ئەسلىگە كەلتۈرۈشكە بولمايدۇ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1103"/>
+        <location filename="../src/libsync/discovery.cpp" line="1146"/>
         <source>Not allowed because you don&apos;t have permission to add subfolders to that folder</source>
         <translation>رۇخسەت قىلىنمايدۇ ، چۈنكى بۇ قىسقۇچقا تارماق ھۆججەت قىسقۇچ قوشۇشقا ئىجازەت يوق</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="575"/>
+        <location filename="../src/libsync/discovery.cpp" line="579"/>
         <source>Error while doing a rename, unhandled status code: %1</source>
         <translation>ئىسمىنى ئۆزگەرتكەندە خاتالىق ، كونترول قىلىنمىغان ھالەت كودى:% 1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1108"/>
+        <location filename="../src/libsync/discovery.cpp" line="1151"/>
         <source>Not allowed because you don&apos;t have permission to add files in that folder</source>
         <translation>رۇخسەت قىلىنمايدۇ ، چۈنكى ئۇ ھۆججەت قىسقۇچقا ھۆججەت قوشۇش ھوقۇقىڭىز يوق</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1121"/>
+        <location filename="../src/libsync/discovery.cpp" line="1164"/>
         <source>Not allowed to upload this file because it is read-only on the server, restoring</source>
         <translation>بۇ ھۆججەتنى يۈكلەشكە بولمايدۇ ، چۈنكى ئۇ پەقەت مۇلازىمېتىردىلا ئوقۇلىدۇ ، ئەسلىگە كېلىدۇ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1267"/>
+        <location filename="../src/libsync/discovery.cpp" line="1310"/>
         <source>Error while reading the database</source>
         <translation>سانداننى ئوقۇغاندا خاتالىق</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1294"/>
+        <location filename="../src/libsync/discovery.cpp" line="1342"/>
         <source>This Space is currently unavailable</source>
         <translation>بۇ بوشلۇقنى ھازىر ئىشلەتكىلى بولمايدۇ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1315"/>
+        <location filename="../src/libsync/discovery.cpp" line="1363"/>
         <source>Server replied with an error while reading directory &apos;%1&apos; : %2</source>
         <translation>مۇلازىمېتىر &apos;% 1&apos; مۇندەرىجىسىنى ئوقۇغاندا خاتالىق بىلەن جاۋاب بەردى:% 2</translation>
     </message>
@@ -2388,12 +2383,12 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateDirectory</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="1130"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="1114"/>
         <source>Error updating metadata: %1</source>
         <translation>مېتا سانلىق مەلۇماتنى يېڭىلاشتا خاتالىق:% 1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="1133"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="1117"/>
         <source>%1 the folder is currently in use</source>
         <translation>% 1 ھۆججەت قىسقۇچ ھازىر ئىشلىتىلىۋاتىدۇ</translation>
     </message>
@@ -2401,67 +2396,67 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateDownloadFile</name>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="377"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="376"/>
         <source>Failed to free up space, the file %1 is currently in use</source>
         <translation>بوشلۇقنى بوشاتمىدى ،% 1 ھۆججەت ھازىر ئىشلىتىلىۋاتىدۇ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="402"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="483"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="401"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="482"/>
         <source>File %1 can not be downloaded because of a local file name clash with %2!</source>
         <translation>يەرلىك ھۆججەت ئىسمى% 2 بىلەن توقۇنۇشقانلىقتىن% 1 ھۆججەتنى چۈشۈرگىلى بولمايدۇ!</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="541"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="540"/>
         <source>The download would reduce free local disk space below the limit</source>
         <translation>چۈشۈرۈش ھەقسىز يەرلىك دىسكا بوشلۇقىنى چەكتىن تۆۋەنلىتىدۇ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="545"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="544"/>
         <source>Free space on disk is less than %1</source>
         <translation>دىسكىدىكى بوش ئورۇن% 1 كىمۇ يەتمەيدۇ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="670"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="665"/>
         <source>File was deleted from server</source>
         <translation>ھۆججەت مۇلازىمېتىردىن ئۆچۈرۈلدى</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="729"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="724"/>
         <source>Broken webserver returned empty content length for non-empty file on resume</source>
         <translation>بۇزۇلغان تور مۇلازىمېتىرى قۇرۇق ھۆججەتنىڭ قۇرۇق مەزمۇنىنى ئەسلىگە كەلتۈردى</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="736"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="731"/>
         <source>The file could not be downloaded completely.</source>
         <translation>ھۆججەتنى تولۇق چۈشۈرگىلى بولمىدى.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="743"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="738"/>
         <source>The downloaded file is empty despite the server announced it should have been %1.</source>
         <translation>مۇلازىمېتىر% 1 بولۇشى كېرەكلىكىنى ئېلان قىلغان بولسىمۇ چۈشۈرۈلگەن ھۆججەت قۇرۇق.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="850"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="845"/>
         <source>File %1 cannot be saved because of a local file name clash with %2!</source>
         <translation>يەرلىك ھۆججەت ئىسمى% 2 بىلەن توقۇنۇشقانلىقتىن% 1 ھۆججەتنى ساقلىغىلى بولمايدۇ!</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="938"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="933"/>
         <source>Error updating metadata: %1</source>
         <translation>مېتا سانلىق مەلۇماتنى يېڭىلاشتا خاتالىق:% 1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="491"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="874"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="906"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="941"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="490"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="869"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="901"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="936"/>
         <source>The file %1 is currently in use</source>
         <translation>% 1 ھۆججىتى ھازىر ئىشلىتىلىۋاتىدۇ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="372"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="898"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="371"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="893"/>
         <source>File has changed since discovery</source>
         <translation>ھۆججەت بايقالغاندىن بۇيان ئۆزگەردى</translation>
     </message>
@@ -2469,7 +2464,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateItemJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="239"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="235"/>
         <source>; Restoration Failed: %1</source>
         <translation>; ئەسلىگە كەلتۈرۈش مەغلۇپ بولدى:% 1</translation>
     </message>
@@ -2562,7 +2557,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateRemoteDelete</name>
     <message>
-        <location filename="../src/libsync/propagateremotedelete.cpp" line="97"/>
+        <location filename="../src/libsync/propagateremotedelete.cpp" line="95"/>
         <source>Wrong HTTP code returned by server. Expected 204, but received &quot;%1 %2&quot;.</source>
         <translation>مۇلازىمېتىر تەرىپىدىن قايتۇرۇلغان خاتا HTTP كودى. مۆلچەرلەنگەن 204 ، ئەمما «% 1% 2» گە ئېرىشتى.</translation>
     </message>
@@ -2570,17 +2565,17 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateRemoteMkdir</name>
     <message>
-        <location filename="../src/libsync/propagateremotemkdir.cpp" line="108"/>
+        <location filename="../src/libsync/propagateremotemkdir.cpp" line="104"/>
         <source>Wrong HTTP code returned by server. Expected 201, but received &quot;%1 %2&quot;.</source>
         <translation>مۇلازىمېتىر تەرىپىدىن قايتۇرۇلغان خاتا HTTP كودى. مۆلچەرلەنگەن 201 ، ئەمما «% 1% 2» گە ئېرىشتى.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateremotemkdir.cpp" line="143"/>
+        <location filename="../src/libsync/propagateremotemkdir.cpp" line="140"/>
         <source>Error writing metadata to the database: %1</source>
         <translation>ساندانغا مېتا سانلىق مەلۇمات يېزىشتا خاتالىق:% 1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateremotemkdir.cpp" line="185"/>
+        <location filename="../src/libsync/propagateremotemkdir.cpp" line="182"/>
         <source>Setting file status failed due to file lock</source>
         <translation>ھۆججەت قۇلۇپى سەۋەبىدىن ھۆججەت ھالىتىنى تەڭشەش مەغلۇب بولدى</translation>
     </message>
@@ -2588,27 +2583,27 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateRemoteMove</name>
     <message>
-        <location filename="../src/libsync/propagateremotemove.cpp" line="114"/>
+        <location filename="../src/libsync/propagateremotemove.cpp" line="113"/>
         <source>Wrong HTTP code returned by server. Expected 201, but received &quot;%1 %2&quot;.</source>
         <translation>مۇلازىمېتىر تەرىپىدىن قايتۇرۇلغان خاتا HTTP كودى. مۆلچەرلەنگەن 201 ، ئەمما «% 1% 2» گە ئېرىشتى.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateremotemove.cpp" line="152"/>
+        <location filename="../src/libsync/propagateremotemove.cpp" line="151"/>
         <source>Error updating metadata: %1</source>
         <translation>مېتا سانلىق مەلۇماتنى يېڭىلاشتا خاتالىق:% 1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateremotemove.cpp" line="155"/>
+        <location filename="../src/libsync/propagateremotemove.cpp" line="154"/>
         <source>The file %1 is currently in use</source>
         <translation>% 1 ھۆججىتى ھازىر ئىشلىتىلىۋاتىدۇ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateremotemove.cpp" line="167"/>
+        <location filename="../src/libsync/propagateremotemove.cpp" line="166"/>
         <source>Error writing metadata to the database</source>
         <translation>ساندانغا مېتا سانلىق مەلۇمات يېزىشتا خاتالىق</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateremotemove.cpp" line="160"/>
+        <location filename="../src/libsync/propagateremotemove.cpp" line="159"/>
         <source>Error setting pin state</source>
         <translation>Pin ھالىتىنى تەڭشەشتە خاتالىق</translation>
     </message>
@@ -2616,215 +2611,209 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateUpdateMetaDataJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="1314"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="1298"/>
         <source>Could not update file : %1</source>
         <translation>ھۆججەتنى يېڭىلىيالمىدى:% 1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="1317"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="1301"/>
         <source>The file %1 is currently in use</source>
         <translation>% 1 ھۆججىتى ھازىر ئىشلىتىلىۋاتىدۇ</translation>
     </message>
 </context>
 <context>
-    <name>OCC::PropagateUploadFileCommon</name>
+    <name>OCC::PropagateUploadCommon</name>
     <message>
-        <location filename="../src/libsync/propagateupload.cpp" line="125"/>
-        <source>File %1 cannot be uploaded because another file with the same name, differing only in case, exists</source>
-        <translation>% 1 ھۆججەتنى يۈكلەشكە بولمايدۇ ، چۈنكى ئوخشاش ئىسىمدىكى باشقا ھۆججەت مەۋجۇت</translation>
-    </message>
-    <message>
-        <location filename="../src/libsync/propagateupload.cpp" line="178"/>
-        <location filename="../src/libsync/propagateupload.cpp" line="209"/>
-        <source>%1 the file is currently in use</source>
-        <translation>% 1 ھۆججەت ھازىر ئىشلىتىلىۋاتىدۇ</translation>
-    </message>
-    <message>
-        <location filename="../src/libsync/propagateupload.cpp" line="244"/>
-        <source>File Removed</source>
-        <translation>ھۆججەت ئۆچۈرۈلدى</translation>
-    </message>
-    <message>
-        <location filename="../src/libsync/propagateupload.cpp" line="108"/>
+        <location filename="../src/libsync/propagateuploadcommon.cpp" line="64"/>
         <source>Local file changed during sync. It will be resumed.</source>
         <translation>ماسقەدەملەش جەريانىدا يەرلىك ھۆججەت ئۆزگەردى. ئۇ ئەسلىگە كېلىدۇ.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateupload.cpp" line="525"/>
-        <source>The server did not provide the file permissions</source>
-        <translation>مۇلازىمېتىر ھۆججەت ئىجازەتنامىسى بىلەن تەمىنلىمىدى</translation>
+        <location filename="../src/libsync/propagateuploadcommon.cpp" line="81"/>
+        <source>File %1 cannot be uploaded because another file with the same name, differing only in case, exists</source>
+        <translation>% 1 ھۆججەتنى يۈكلەشكە بولمايدۇ ، چۈنكى ئوخشاش ئىسىمدىكى باشقا ھۆججەت مەۋجۇت</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateupload.cpp" line="533"/>
-        <source>Error updating metadata: %1</source>
-        <translation>مېتا سانلىق مەلۇماتنى يېڭىلاشتا خاتالىق:% 1</translation>
-    </message>
-    <message>
-        <location filename="../src/libsync/propagateupload.cpp" line="136"/>
-        <location filename="../src/libsync/propagateupload.cpp" line="420"/>
+        <location filename="../src/libsync/propagateuploadcommon.cpp" line="92"/>
+        <location filename="../src/libsync/propagateuploadcommon.cpp" line="280"/>
         <source>Upload of %1 exceeds the quota for the folder</source>
         <translation>% 1 نىڭ يۈكلىنىشى ھۆججەت قىسقۇچنىڭ نورمىدىن ئېشىپ كەتتى</translation>
     </message>
-</context>
-<context>
-    <name>OCC::PropagateUploadFileNG</name>
     <message>
-        <location filename="../src/libsync/propagateuploadng.cpp" line="92"/>
+        <location filename="../src/libsync/propagateuploadcommon.cpp" line="132"/>
+        <location filename="../src/libsync/propagateuploadcommon.cpp" line="163"/>
         <source>%1 the file is currently in use</source>
         <translation>% 1 ھۆججەت ھازىر ئىشلىتىلىۋاتىدۇ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateuploadng.cpp" line="456"/>
-        <source>The local file was removed during sync.</source>
-        <translation>ماسقەدەملەش جەريانىدا يەرلىك ھۆججەت ئۆچۈرۈلدى.</translation>
+        <location filename="../src/libsync/propagateuploadcommon.cpp" line="198"/>
+        <source>File Removed</source>
+        <translation>ھۆججەت ئۆچۈرۈلدى</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateuploadng.cpp" line="503"/>
+        <location filename="../src/libsync/propagateuploadcommon.cpp" line="385"/>
+        <source>The server did not provide the file permissions</source>
+        <translation>مۇلازىمېتىر ھۆججەت ئىجازەتنامىسى بىلەن تەمىنلىمىدى</translation>
+    </message>
+    <message>
+        <location filename="../src/libsync/propagateuploadcommon.cpp" line="393"/>
+        <source>Error updating metadata: %1</source>
+        <translation>مېتا سانلىق مەلۇماتنى يېڭىلاشتا خاتالىق:% 1</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::PropagateUploadFile</name>
+    <message>
+        <location filename="../src/libsync/propagateuploadfile.cpp" line="41"/>
+        <source>%1 the file is currently in use</source>
+        <translation>% 1 ھۆججەت ھازىر ئىشلىتىلىۋاتىدۇ</translation>
+    </message>
+    <message>
+        <location filename="../src/libsync/propagateuploadfile.cpp" line="121"/>
         <source>The server did ask for a removed legacy feature(polling)</source>
         <translation>مۇلازىمېتىر ئۆچۈرۈلگەن مىراس ئىقتىدارىنى (بېلەت تاشلاش) تەلەپ قىلدى</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateuploadng.cpp" line="508"/>
-        <source>Unexpected return code from server (%1)</source>
-        <translation>مۇلازىمېتىردىن كۈتۈلمىگەن قايتۇرۇش كودى (% 1)</translation>
+        <location filename="../src/libsync/propagateuploadfile.cpp" line="141"/>
+        <source>The local file was removed during sync.</source>
+        <translation>ماسقەدەملەش جەريانىدا يەرلىك ھۆججەت ئۆچۈرۈلدى.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateuploadng.cpp" line="515"/>
-        <source>Missing File ID from server</source>
-        <translation>مۇلازىمېتىردىن ھۆججەت كىملىكى يوقاپ كەتتى</translation>
-    </message>
-    <message>
-        <location filename="../src/libsync/propagateuploadng.cpp" line="528"/>
-        <source>Missing ETag from server</source>
-        <translation>مۇلازىمېتىردىن ETag يوقاپ كەتتى</translation>
+        <location filename="../src/libsync/propagateuploadfile.cpp" line="161"/>
+        <source>The server did not acknowledge the file upload. (No e-tag was present)</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
     <name>OCC::PropagateUploadFileTUS</name>
     <message>
-        <location filename="../src/libsync/propagateuploadtus.cpp" line="60"/>
+        <location filename="../src/libsync/propagateuploadtus.cpp" line="57"/>
         <source>%1 the file is currently in use</source>
         <translation>% 1 ھۆججەت ھازىر ئىشلىتىلىۋاتىدۇ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateuploadtus.cpp" line="116"/>
+        <location filename="../src/libsync/propagateuploadtus.cpp" line="113"/>
         <source>Checksum computation failed</source>
         <translation>Checksum ھېسابلاش مەغلۇب بولدى</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateuploadtus.cpp" line="221"/>
+        <location filename="../src/libsync/propagateuploadtus.cpp" line="218"/>
         <source>The local file was removed during sync.</source>
         <translation>ماسقەدەملەش جەريانىدا يەرلىك ھۆججەت ئۆچۈرۈلدى.</translation>
-    </message>
-</context>
-<context>
-    <name>OCC::PropagateUploadFileV1</name>
-    <message>
-        <location filename="../src/libsync/propagateuploadv1.cpp" line="42"/>
-        <source>%1 the file is currently in use</source>
-        <translation>% 1 ھۆججەت ھازىر ئىشلىتىلىۋاتىدۇ</translation>
-    </message>
-    <message>
-        <location filename="../src/libsync/propagateuploadv1.cpp" line="204"/>
-        <source>The server did ask for a removed legacy feature(polling)</source>
-        <translation>مۇلازىمېتىر ئۆچۈرۈلگەن مىراس ئىقتىدارىنى (بېلەت تاشلاش) تەلەپ قىلدى</translation>
-    </message>
-    <message>
-        <location filename="../src/libsync/propagateuploadv1.cpp" line="224"/>
-        <source>The local file was removed during sync.</source>
-        <translation>ماسقەدەملەش جەريانىدا يەرلىك ھۆججەت ئۆچۈرۈلدى.</translation>
-    </message>
-    <message>
-        <location filename="../src/libsync/propagateuploadv1.cpp" line="247"/>
-        <source>The server did not acknowledge the last chunk. (No e-tag was present)</source>
-        <translation>مۇلازىمېتىر ئاخىرقى بۆلەكنى ئېتىراپ قىلمىدى. (ئېلېكترونلۇق خەت يوق)</translation>
     </message>
 </context>
 <context>
     <name>OCC::ProtocolItemModel</name>
     <message>
-        <location filename="../src/gui/models/protocolitemmodel.cpp" line="129"/>
+        <location filename="../src/gui/models/protocolitemmodel.cpp" line="125"/>
         <source>Time</source>
         <translation>ۋاقىت</translation>
     </message>
     <message>
-        <location filename="../src/gui/models/protocolitemmodel.cpp" line="131"/>
+        <location filename="../src/gui/models/protocolitemmodel.cpp" line="127"/>
         <source>File</source>
         <translation>ھۆججەت</translation>
     </message>
     <message>
-        <location filename="../src/gui/models/protocolitemmodel.cpp" line="133"/>
+        <location filename="../src/gui/models/protocolitemmodel.cpp" line="129"/>
         <source>Folder</source>
         <translation>قىسقۇچ</translation>
     </message>
     <message>
-        <location filename="../src/gui/models/protocolitemmodel.cpp" line="135"/>
+        <location filename="../src/gui/models/protocolitemmodel.cpp" line="131"/>
         <source>Issues</source>
         <translation>مەسىلىلەر</translation>
     </message>
     <message>
-        <location filename="../src/gui/models/protocolitemmodel.cpp" line="135"/>
+        <location filename="../src/gui/models/protocolitemmodel.cpp" line="131"/>
         <source>Action</source>
         <translation>ھەرىكەت</translation>
     </message>
     <message>
-        <location filename="../src/gui/models/protocolitemmodel.cpp" line="137"/>
+        <location filename="../src/gui/models/protocolitemmodel.cpp" line="133"/>
         <source>Size</source>
         <translation>چوڭلۇقى</translation>
     </message>
     <message>
-        <location filename="../src/gui/models/protocolitemmodel.cpp" line="139"/>
+        <location filename="../src/gui/models/protocolitemmodel.cpp" line="135"/>
         <source>Account</source>
         <translation>ھېسابات</translation>
     </message>
     <message>
-        <location filename="../src/gui/models/protocolitemmodel.cpp" line="141"/>
+        <location filename="../src/gui/models/protocolitemmodel.cpp" line="137"/>
         <source>Status</source>
         <translation>ھالەت</translation>
     </message>
 </context>
 <context>
-    <name>OCC::ProtocolWidget</name>
+    <name>OCC::RequestAuthenticationController</name>
     <message>
-        <location filename="../src/gui/protocolwidget.ui" line="32"/>
-        <source>Filter</source>
-        <translation>سۈزگۈچ</translation>
+        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="97"/>
+        <source>IdP is unreachable. Contact your system administrator or try again later.</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/protocolwidget.ui" line="44"/>
-        <source>Local activity table</source>
-        <translation>يەرلىك پائالىيەت جەدۋىلى</translation>
+        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="108"/>
+        <source>Authentication failed.</source>
+        <translation>دەلىللىيەلمىدى.</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::RequestAuthenticationWidget</name>
+    <message>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="43"/>
+        <source>Application Name Logo %1</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/protocolwidget.cpp" line="62"/>
-        <location filename="../src/gui/protocolwidget.cpp" line="68"/>
-        <source>Account</source>
-        <translation>ھېسابات</translation>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="45"/>
+        <source>Sign in required</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/protocolwidget.cpp" line="96"/>
-        <source>Filter menu</source>
-        <translation>سۈزگۈچ تىزىملىكى</translation>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="53"/>
+        <source>You may have been automatically disconnected due to a server issue or time out. Please sign in again.</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/protocolwidget.cpp" line="111"/>
-        <source>Actions menu</source>
-        <translation>مەشغۇلات تىزىملىكى</translation>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="64"/>
+        <source>Sign in URL</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/protocolwidget.cpp" line="153"/>
-        <source>Sort ascending by %1</source>
-        <translation>% 1 بويىچە ئۆرلەش</translation>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="65"/>
+        <source>To copy the sign in URL to the clipboard, use the copy button</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/protocolwidget.cpp" line="157"/>
-        <source>Sort descending by %1</source>
-        <translation>تۆۋەنلەش نىسبىتى% 1</translation>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="71"/>
+        <source>Copy URL to sign in</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/protocolwidget.cpp" line="179"/>
-        <source>Retry sync</source>
-        <translation>قايتا ماسقەدەملەش</translation>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="92"/>
+        <source>Additional logo defined by the organization</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="95"/>
+        <source>Stay logged out</source>
+        <translation>تىزىملىتىڭ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="97"/>
+        <source>Sign in</source>
+        <translation>تىزىملىتىڭ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="179"/>
+        <source>URL copied</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="181"/>
+        <source>Copy URL</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -2854,8 +2843,8 @@ Note that using any logging command line options will override the settings.</so
     <name>OCC::SelectiveSyncWidget</name>
     <message>
         <location filename="../src/gui/selectivesyncwidget.cpp" line="69"/>
-        <source>Loading ...</source>
-        <translation>Loading ...</translation>
+        <source>Loading …</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/selectivesyncwidget.cpp" line="75"/>
@@ -2873,44 +2862,36 @@ Note that using any logging command line options will override the settings.</so
         <translation>چوڭلۇقى</translation>
     </message>
     <message>
-        <location filename="../src/gui/selectivesyncwidget.cpp" line="108"/>
-        <location filename="../src/gui/selectivesyncwidget.cpp" line="244"/>
+        <location filename="../src/gui/selectivesyncwidget.cpp" line="112"/>
+        <location filename="../src/gui/selectivesyncwidget.cpp" line="247"/>
         <source>Currently there are no subfolders on the server.</source>
         <translation>ھازىر مۇلازىمېتىردا تارماق قىسقۇچ يوق.</translation>
     </message>
     <message>
-        <location filename="../src/gui/selectivesyncwidget.cpp" line="110"/>
+        <location filename="../src/gui/selectivesyncwidget.cpp" line="114"/>
         <source>An error occurred while loading the list of subfolders.</source>
         <translation>تارماق قىسقۇچلارنىڭ تىزىملىكىنى يۈكلەۋاتقاندا خاتالىق كۆرۈلدى.</translation>
     </message>
 </context>
 <context>
-    <name>OCC::ServerNotificationHandler</name>
-    <message>
-        <location filename="../src/gui/servernotificationhandler.cpp" line="95"/>
-        <source>Dismiss</source>
-        <translation>تاشلىۋەت</translation>
-    </message>
-</context>
-<context>
     <name>OCC::SettingsDialog</name>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="98"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="99"/>
         <source>Hide</source>
         <translation>يوشۇر</translation>
     </message>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="107"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="108"/>
         <source>Quit %1</source>
         <translation>Quit% 1</translation>
     </message>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="108"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="109"/>
         <source>Are you sure you want to quit %1?</source>
         <translation>% 1 دىن ۋاز كېچىشنى خالامسىز؟</translation>
     </message>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="140"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="135"/>
         <source>%1 - %2</source>
         <translation>% 1 -% 2</translation>
     </message>
@@ -2921,370 +2902,35 @@ Note that using any logging command line options will override the settings.</so
     </message>
 </context>
 <context>
-    <name>OCC::ShareDialog</name>
-    <message>
-        <location filename="../src/gui/sharedialog.ui" line="40"/>
-        <source>share label</source>
-        <translation>share label</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharedialog.ui" line="20"/>
-        <source>Dialog</source>
-        <translation>دىئالوگ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharedialog.ui" line="62"/>
-        <source>ownCloud Path:</source>
-        <translation>ownCloud Path:</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharedialog.cpp" line="105"/>
-        <source>%1 Sharing</source>
-        <translation>% 1 ئورتاقلىشىش</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharedialog.cpp" line="86"/>
-        <source>%1</source>
-        <translation>% 1</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharedialog.cpp" line="102"/>
-        <source>Folder: %2</source>
-        <translation>ھۆججەت قىسقۇچ:% 2</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharedialog.cpp" line="108"/>
-        <source>The server does not allow sharing</source>
-        <translation>مۇلازىمېتىر ئورتاقلىشىشقا يول قويمايدۇ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharedialog.cpp" line="118"/>
-        <source>Retrieving maximum possible sharing permissions from server...</source>
-        <translation>مۇلازىمېتىردىن ئەڭ كۆپ ئورتاقلىشىش ئىجازەتنامىسىنى ئېلىش ...</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharedialog.cpp" line="177"/>
-        <source>The file can not be shared because it was shared without sharing permission.</source>
-        <translation>ھۆججەتنى ھەمبەھىرلىگىلى بولمايدۇ ، چۈنكى ئۇ ئىجازەت ئالماي ھەمبەھىرلەنگەن.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharedialog.cpp" line="186"/>
-        <source>Users and Groups</source>
-        <translation>ئىشلەتكۈچى ۋە گۇرۇپپىلار</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharedialog.cpp" line="193"/>
-        <source>Public Links</source>
-        <translation>ئاممىۋى ئۇلىنىشلار</translation>
-    </message>
-</context>
-<context>
-    <name>OCC::ShareLinkWidget</name>
-    <message>
-        <location filename="../src/gui/sharelinkwidget.ui" line="14"/>
-        <source>Share NewDocument.odt</source>
-        <translation>NewDocument.odt نى ھەمبەھىرلەڭ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharelinkwidget.ui" line="147"/>
-        <source>Upload only (File Drop)</source>
-        <translation>پەقەت يۈكلەڭ (ھۆججەت تامچىسى)</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharelinkwidget.ui" line="160"/>
-        <source>Receive files from others without revealing the contents of the folder.</source>
-        <translation>ھۆججەت قىسقۇچنىڭ مەزمۇنىنى ئاشكارىلىماي تۇرۇپ باشقىلاردىن ھۆججەت تاپشۇرۇۋېلىڭ.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharelinkwidget.ui" line="124"/>
-        <source>Download / View / Edit</source>
-        <translation>چۈشۈرۈش / كۆرۈش / تەھرىرلەش</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharelinkwidget.ui" line="269"/>
-        <source>Name:</source>
-        <translation>ئىسمى:</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharelinkwidget.ui" line="276"/>
-        <source>Enter name of new share...</source>
-        <translation>يېڭى ھەمبەھىرنىڭ نامىنى كىرگۈزۈڭ ...</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharelinkwidget.ui" line="283"/>
-        <source>&amp;Create</source>
-        <translation>&amp; قۇرۇش</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharelinkwidget.ui" line="221"/>
-        <source>Set &amp;password </source>
-        <translation>پارول بەلگىلەڭ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharelinkwidget.ui" line="235"/>
-        <source>Set &amp;expiration date</source>
-        <translation>ۋاقتى ۋە ۋاقتى</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharelinkwidget.ui" line="181"/>
-        <source>Set password</source>
-        <translation>ئىم بەلگىلەش</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharelinkwidget.ui" line="114"/>
-        <source>Recipients can view or download contents.</source>
-        <translation>تاپشۇرۇۋالغۇچىلار مەزمۇنلارنى كۆرەلەيدۇ ياكى چۈشۈرەلەيدۇ.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharelinkwidget.ui" line="99"/>
-        <source>Download / View</source>
-        <translation>چۈشۈرۈش / كۆرۈش</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharelinkwidget.ui" line="137"/>
-        <source>Recipients can view, download, edit, delete and upload contents.</source>
-        <translation>تاپشۇرۋالغۇچىلار مەزمۇنلارنى كۆرەلەيدۇ، چۈشۈرەلەيدۇ ئۆزگەرتەلەيدۇ ھەمدە چىقىرالايدۇ.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharelinkwidget.ui" line="20"/>
-        <source>Anyone with the link has access to the file/folder</source>
-        <translation>بۇ ئۇلانما بار ھەرقانداق كىشى بۇ ھۆججەت/قىسقۇچنى زىيارەت قىلالايدۇ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="118"/>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="351"/>
-        <source>P&amp;assword protect</source>
-        <translation>پارولنى قوغداش</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="96"/>
-        <source>The file can not be shared because it was shared without sharing permission.</source>
-        <translation>ھۆججەتنى ھەمبەھىرلىگىلى بولمايدۇ ، چۈنكى ئۇ ئىجازەت ئالماي ھەمبەھىرلەنگەن.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="93"/>
-        <source>Link shares have been disabled</source>
-        <translation>ئۇلىنىش پايلىرى چەكلەنگەن</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="107"/>
-        <source>Create public link share</source>
-        <translation>ئاممىۋى ئۇلىنىش ئورتاقلىشىش</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="168"/>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="597"/>
-        <source>Delete</source>
-        <translation>ئۆچۈر</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="163"/>
-        <source>Open link in browser</source>
-        <translation>توركۆرگۈدە ئۇلىنىش ئېچىڭ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="164"/>
-        <source>Copy link to clipboard</source>
-        <translation>ئۇلىنىشنى چاپلاش تاختىسىغا كۆچۈرۈڭ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="165"/>
-        <source>Copy link to clipboard (direct download)</source>
-        <translation>ئۇلىنىشنى چاپلاش تاختىسىغا كۆچۈرۈڭ (بىۋاسىتە چۈشۈرۈش)</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="166"/>
-        <source>Send link by email</source>
-        <translation>ئېلېكترونلۇق خەت ئارقىلىق ئۇلىنىش ئەۋەتىڭ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="167"/>
-        <source>Send link by email (direct download)</source>
-        <translation>ئېلېكترونلۇق خەت ئارقىلىق ئۇلىنىش ئەۋەتىڭ (بىۋاسىتە چۈشۈرۈش)</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="283"/>
-        <source>Create new...</source>
-        <translation>يېڭى قۇر ...</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="576"/>
-        <source>I shared %1 with you</source>
-        <translation>مەن سىز بىلەن% 1 نى ئورتاقلاشتىم</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="590"/>
-        <source>Confirm Link Share Deletion</source>
-        <translation>ئۇلىنىشنى ھەمبەھىرلەشنى جەزملەشتۈرۈڭ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="591"/>
-        <source>&lt;p&gt;Do you really want to delete the public link share &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;Note: This action cannot be undone.&lt;/p&gt;</source>
-        <translation>&lt;p&gt; ئاممىۋى ئۇلىنىش ئۈلۈشىنى &lt;i&gt;% 1 &lt;/i&gt; ئۆچۈرمەكچىمۇ؟ &lt;/p&gt; &lt;p&gt; ئەسكەرتىش: بۇ ھەرىكەتنى ئەمەلدىن قالدۇرغىلى بولمايدۇ. &lt;/p&gt;</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="598"/>
-        <source>Cancel</source>
-        <translation>ۋاز كەچ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="62"/>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="614"/>
-        <source>Public link</source>
-        <translation>ئاممىۋى ئۇلىنىش</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="267"/>
-        <source>Delete link share</source>
-        <translation>ئۇلىنىش ئۈلۈشىنى ئۆچۈرۈڭ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="355"/>
-        <location filename="../src/gui/sharelinkwidget.cpp" line="544"/>
-        <source>Please Set Password</source>
-        <translation>پارول بەلگىلەڭ</translation>
-    </message>
-</context>
-<context>
-    <name>OCC::ShareUserGroupWidget</name>
-    <message>
-        <location filename="../src/gui/shareusergroupwidget.ui" line="14"/>
-        <source>Share NewDocument.odt</source>
-        <translation>NewDocument.odt نى ھەمبەھىرلەڭ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/shareusergroupwidget.ui" line="22"/>
-        <source>Share with users or groups ...</source>
-        <translation>ئىشلەتكۈچىلەر ياكى گۇرۇپپىلار بىلەن ئورتاقلىشىڭ ...</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/shareusergroupwidget.cpp" line="86"/>
-        <source>You can direct people to this shared file or folder %1 by giving them a private link</source>
-        <translation>كىشىلەرنى بۇ ئورتاق ھۆججەت ياكى% 1 ھۆججەت قىسقۇچقا شەخسىي ئۇلىنىش ئارقىلىق يېتەكلىيەلەيسىز</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/shareusergroupwidget.cpp" line="208"/>
-        <source>The item is not shared with any users or groups</source>
-        <translation>بۇ تۈر ھېچقانداق ئىشلەتكۈچى ياكى گۇرۇپپا بىلەن ئورتاقلاشمايدۇ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/shareusergroupwidget.cpp" line="239"/>
-        <source>Open link in browser</source>
-        <translation>توركۆرگۈدە ئۇلىنىش ئېچىڭ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/shareusergroupwidget.cpp" line="241"/>
-        <source>Copy link to clipboard</source>
-        <translation>ئۇلىنىشنى چاپلاش تاختىسىغا كۆچۈرۈڭ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/shareusergroupwidget.cpp" line="243"/>
-        <source>Send link by email</source>
-        <translation>ئېلېكترونلۇق خەت ئارقىلىق ئۇلىنىش ئەۋەتىڭ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/shareusergroupwidget.cpp" line="253"/>
-        <source>No results for &apos;%1&apos;</source>
-        <translation>&apos;% 1&apos; نىڭ نەتىجىسى يوق</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/shareusergroupwidget.cpp" line="329"/>
-        <source>I shared something with you</source>
-        <translation>مەن سىز بىلەن بىر نەرسە ئورتاقلاشتىم</translation>
-    </message>
-</context>
-<context>
-    <name>OCC::ShareUserLine</name>
-    <message>
-        <location filename="../src/gui/shareuserline.ui" line="17"/>
-        <source>Form</source>
-        <translation>شەكىل</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/shareuserline.ui" line="59"/>
-        <source>can edit</source>
-        <translation>تەھرىركىلى بولىدۇ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/shareuserline.ui" line="52"/>
-        <source>can share</source>
-        <translation>ھەمبەھىر قىلالايدۇ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/shareuserline.ui" line="66"/>
-        <source>...</source>
-        <translation>...</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/shareusergroupwidget.cpp" line="349"/>
-        <source>create</source>
-        <translation>قۇرماق</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/shareusergroupwidget.cpp" line="352"/>
-        <source>change</source>
-        <translation>ئۆزگەرتىش</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/shareusergroupwidget.cpp" line="355"/>
-        <source>delete</source>
-        <translation>ئۆچۈر</translation>
-    </message>
-</context>
-<context>
-    <name>OCC::ShareeModel</name>
-    <message>
-        <location filename="../src/gui/sharee.cpp" line="157"/>
-        <source>%1 (%2)</source>
-        <comment>sharee (shareWithAdditionalInfo)</comment>
-        <translation>% 1 (% 2)</translation>
-    </message>
-</context>
-<context>
     <name>OCC::SocketApi</name>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="500"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="470"/>
         <source>Share with %1</source>
-        <comment>parameter is ownCloud</comment>
+        <comment>parameter is the application name</comment>
         <translation>% 1 بىلەن ئورتاقلىشىش</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="533"/>
-        <source>Context menu share</source>
-        <translation>مەزمۇن تىزىملىكى ئورتاقلىشىش</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="538"/>
-        <source>Context menu share %1</source>
-        <translation>مەزمۇن تىزىملىكى% 1</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="712"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="575"/>
         <source>Confirm deletion</source>
         <translation>ئۆچۈرۈشنى جەزملەشتۈرۈڭ</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="714"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="577"/>
         <source>Do you want to delete the directory &lt;i&gt;%1&lt;/i&gt; and all its contents permanently?</source>
         <translation>مۇندەرىجە &lt;i&gt;% 1 &lt;/i&gt; ۋە ئۇنىڭدىكى بارلىق مەزمۇنلارنى مەڭگۈلۈك ئۆچۈرمەكچىمۇ؟</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="715"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="578"/>
         <source>Do you want to delete the file &lt;i&gt;%1&lt;/i&gt; permanently?</source>
         <translation>ھۆججەتنى &lt;i&gt;% 1 &lt;/i&gt; مەڭگۈلۈك ئۆچۈرمەكچىمۇ؟</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="757"/>
-        <source>Select new location...</source>
-        <translation>يېڭى ئورۇننى تاللاڭ ...</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="767"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="630"/>
         <source>Error</source>
         <translation>خاتالىق</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="768"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="631"/>
         <source>Moving file failed:
 
 %1</source>
@@ -3293,90 +2939,80 @@ Note that using any logging command line options will override the settings.</so
 % 1</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="843"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="695"/>
         <source>I shared something with you</source>
         <translation>مەن سىز بىلەن بىر نەرسە ئورتاقلاشتىم</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="856"/>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="886"/>
-        <source>Share...</source>
-        <translation>ھەمبەھىر ...</translation>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="620"/>
+        <source>Select new location…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="858"/>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="908"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="708"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="737"/>
+        <source>Share…</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="710"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="741"/>
         <source>Copy private link to clipboard</source>
         <translation>شەخسىي ئۇلىنىشنى چاپلاش تاختىسىغا كۆچۈرۈڭ</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="859"/>
-        <source>Send private link by email...</source>
-        <translation>ئېلېكترونلۇق خەت ئارقىلىق شەخسىي ئۇلىنىش ئەۋەتىڭ ...</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="884"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="735"/>
         <source>Resharing this file is not allowed</source>
         <translation>بۇ ھۆججەتنى قايتا ئىشلىتىشكە بولمايدۇ</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="884"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="735"/>
         <source>Resharing this folder is not allowed</source>
         <translation>بۇ ھۆججەت قىسقۇچنى قايتا ئىشلىتىشكە بولمايدۇ</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="900"/>
-        <source>Create and copy public link to clipboard</source>
-        <translation>چاپلاش تاختىسىغا ئاممىۋى ئۇلىنىش قۇرۇش ۋە كۆپەيتىش</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="903"/>
-        <source>Manage public links</source>
-        <translation>ئاممىۋى ئۇلىنىشنى باشقۇرۇش</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="977"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="810"/>
         <source>Open in %1</source>
         <translation>% 1 دە ئېچىڭ</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="988"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="821"/>
         <source>Show file versions in web browser</source>
         <translation>توركۆرگۈدە ھۆججەت نۇسخىسىنى كۆرسەت</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="1010"/>
-        <source>Rename...</source>
-        <translation>ئىسىم ئۆزگەرتىش ...</translation>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="843"/>
+        <source>Rename…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="1013"/>
-        <source>Rename and upload...</source>
-        <translation>ئىسىم ئۆزگەرتىش ۋە يوللاش ...</translation>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="846"/>
+        <source>Rename and upload…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="1018"/>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="1022"/>
-        <source>Move and rename...</source>
-        <translation>يۆتكەڭ ۋە ئۆزگەرتىڭ ...</translation>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="851"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="855"/>
+        <source>Move and rename…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="1025"/>
-        <source>Move, rename and upload...</source>
-        <translation>يۆتكەش ، ئىسىم ئۆزگەرتىش ۋە يوللاش ...</translation>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="858"/>
+        <source>Move, rename and upload…</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="1028"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="866"/>
+        <source>Move and upload…</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="861"/>
         <source>Delete local changes</source>
         <translation>يەرلىك ئۆزگەرتىشلەرنى ئۆچۈرۈڭ</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="1033"/>
-        <source>Move and upload...</source>
-        <translation>يۆتكەش ۋە يوللاش ...</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="1034"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="867"/>
         <source>Delete</source>
         <translation>ئۆچۈر</translation>
     </message>
@@ -3384,12 +3020,12 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::SpacesPage</name>
     <message>
-        <location filename="../src/gui/folderwizard/spacespage.cpp" line="29"/>
+        <location filename="../src/gui/folderwizard/spacespage.cpp" line="31"/>
         <source>Select a folder to sync it to your computer.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/spacespage.cpp" line="29"/>
+        <location filename="../src/gui/folderwizard/spacespage.cpp" line="31"/>
         <source>Select a Space to sync it to your computer.</source>
         <translation type="unfinished"/>
     </message>
@@ -3397,61 +3033,104 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::SyncEngine</name>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="154"/>
+        <location filename="../src/libsync/syncengine.cpp" line="151"/>
         <source>%1 (skipped due to earlier error, trying again in %2)</source>
         <translation>% 1 (ئىلگىرىكى خاتالىق سەۋەبىدىن ئاتلاپ ئۆتۈپ كەتتى ،% 2 دە قايتا سىناڭ)</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="336"/>
+        <location filename="../src/libsync/syncengine.cpp" line="324"/>
         <source>Only %1 are available, need at least %2 to start</source>
         <comment>Placeholders are postfixed with file sizes using Utility::octetsToString()</comment>
         <translation>پەقەت% 1 بار ، باشلاش ئۈچۈن كەم دېگەندە% 2 لازىم</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="364"/>
+        <location filename="../src/libsync/syncengine.cpp" line="352"/>
         <source>Unable to open or create the local sync database. Make sure you have write access in the sync folder.</source>
         <translation>يەرلىك ماسقەدەملەش ساندانىنى ئاچقىلى ياكى قۇرالمىدى. ماسقەدەملەش قىسقۇچىدا يېزىش ھوقۇقىڭىزنىڭ بار-يوقلۇقىنى جەزملەشتۈرۈڭ.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="810"/>
+        <location filename="../src/libsync/syncengine.cpp" line="775"/>
         <source>Aborted due to %1</source>
         <translation>% 1 سەۋەبىدىن ئەمەلدىن قالدۇرۇلدى</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="828"/>
+        <location filename="../src/libsync/syncengine.cpp" line="793"/>
         <source>Disk space is low: Downloads that would reduce free space below %1 were skipped.</source>
         <translation>دىسكا بوشلۇقى تۆۋەن:% 1 دىن تۆۋەن بوشلۇقنى ئازايتىدىغان چۈشۈرۈشلەر ئاتلاپ كەتتى.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="835"/>
+        <location filename="../src/libsync/syncengine.cpp" line="800"/>
         <source>There is insufficient space available on the server for some uploads.</source>
         <translation>مۇلازىمېتىردا بەزى يۈكلەشلەر ئۈچۈن يېتەرلىك بوشلۇق يوق.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="276"/>
-        <source>Unresolved conflict.</source>
-        <translation>ھەل قىلىنمىغان توقۇنۇش.</translation>
-    </message>
-    <message>
-        <location filename="../src/libsync/syncengine.cpp" line="82"/>
+        <location filename="../src/libsync/syncengine.cpp" line="79"/>
         <source>application exit</source>
         <comment>abort reason</comment>
         <translation>ئىلتىماس چېكىنىش</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="386"/>
+        <location filename="../src/libsync/syncengine.cpp" line="372"/>
         <source>Unable to read the blacklist from the local database</source>
         <translation>يەرلىك سانداندىن قارا تىزىملىكنى ئوقۇيالمىدى</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="413"/>
+        <location filename="../src/libsync/syncengine.cpp" line="398"/>
         <source>Unable to read from the sync journal.</source>
         <translation>ماس قەدەملىك ژۇرنالدىن ئوقۇشقا ئامالسىز.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="487"/>
+        <location filename="../src/libsync/syncengine.cpp" line="472"/>
         <source>Cannot open the sync journal</source>
         <translation>ماس قەدەملىك ژۇرنالنى ئاچقىلى بولمايدۇ</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::SyncErrorWidget</name>
+    <message>
+        <location filename="../src/gui/syncerrorwidget.ui" line="40"/>
+        <source>Issues table</source>
+        <translation>مەسىلىلەر جەدۋىلى</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/syncerrorwidget.ui" line="72"/>
+        <source>There were too many issues. Not all will be visible here.</source>
+        <translation>مەسىلە بەك كۆپ ئىدى. بۇ يەردە ھەممىسى كۆرۈنمەيدۇ.</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/syncerrorwidget.ui" line="82"/>
+        <source>There were conflicts. Check the documentation on how to resolve them.</source>
+        <translation>توقۇنۇشلار بولدى. ئۇلارنى قانداق ھەل قىلىش توغرىسىدىكى ھۆججەتلەرنى تەكشۈرۈڭ.</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/syncerrorwidget.cpp" line="210"/>
+        <source>The file %1 was ignored as its name is reserved by %2</source>
+        <translation>ئۇنىڭ ئىسمى% 2 ساقلانغانلىقى ئۈچۈن% 1 ھۆججىتىگە پەرۋا قىلىنمىدى</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/syncerrorwidget.cpp" line="236"/>
+        <source>Reset column sizes</source>
+        <translation>ستون چوڭلۇقىنى ئەسلىگە كەلتۈرۈڭ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/syncerrorwidget.cpp" line="256"/>
+        <source>There were conflicts. &lt;a href=&quot;%1&quot;&gt;Check the documentation on how to resolve them.&lt;/a&gt;</source>
+        <translation>توقۇنۇشلار بولدى. &lt;a href = &quot;% 1&quot;&gt; ئۇلارنى قانداق ھەل قىلىش توغرىسىدىكى ھۆججەتلەرنى تەكشۈرۈڭ. &lt;/a&gt;</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/syncerrorwidget.cpp" line="285"/>
+        <source>Filter menu</source>
+        <translation>سۈزگۈچ تىزىملىكى</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/syncerrorwidget.cpp" line="287"/>
+        <source>Account</source>
+        <translation>ھېسابات</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/syncerrorwidget.cpp" line="377"/>
+        <source>Filter</source>
+        <translation>سۈزگۈچ</translation>
     </message>
 </context>
 <context>
@@ -3460,14 +3139,6 @@ Note that using any logging command line options will override the settings.</so
         <location filename="../src/common/syncjournaldb.cpp" line="906"/>
         <source>Failed to connect database.</source>
         <translation>سانداننى ئۇلاش مەغلۇپ بولدى.</translation>
-    </message>
-</context>
-<context>
-    <name>OCC::Systray</name>
-    <message>
-        <location filename="../src/gui/systray.cpp" line="91"/>
-        <source>%1: %2</source>
-        <translation>% 1:% 2</translation>
     </message>
 </context>
 <context>
@@ -3530,32 +3201,52 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="56"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="42"/>
+        <source>Your web browser will be opened to complete sign in.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="57"/>
         <source>%1 logo</source>
         <translation>% 1 logo</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="58"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="59"/>
         <source>Welcome to %1</source>
         <translation>% 1 گە خۇش كەپسىز</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="66"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="67"/>
         <source>Enter your server address to get started. Your web browser will be opened to complete sign in.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="186"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="83"/>
+        <source>Server address field</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="84"/>
+        <source>Enter your server address here</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="105"/>
+        <source>Additional logo defined by the organization</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="198"/>
         <source>Invalid server URL: %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="190"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="202"/>
         <source>Invalid URL scheme. Only https is accepted.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="218"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="230"/>
         <source>The requested URL failed with query value: %1</source>
         <translation type="unfinished"/>
     </message>
@@ -3610,6 +3301,55 @@ Note that using any logging command line options will override the settings.</so
     </message>
 </context>
 <context>
+    <name>OCC::VfsWinPrivate</name>
+    <message>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="580"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="583"/>
+        <source>%1 - %2</source>
+        <translation>% 1 -% 2</translation>
+    </message>
+    <message>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="617"/>
+        <source>Could not find StorageProviderState property %1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="631"/>
+        <source>Could not find StorageFolder for %1 error: %2</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="641"/>
+        <source>Could not retrieve StorageFolder for %1 %2</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="678"/>
+        <source>%1 is managed by another sync client</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="683"/>
+        <source>The folder is used by a different client %1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="693"/>
+        <source>Downgrading the folder from %1 to %2 is not supported</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="705"/>
+        <source>Error registering StorageProvider for %1: %2 %3</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="738"/>
+        <source>CfConnectSyncRoot: %1 error: %2</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
     <name>OCC::WebFingerLookupAdapter</name>
     <message>
         <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="74"/>
@@ -3661,380 +3401,54 @@ Note that using any logging command line options will override the settings.</so
     </message>
 </context>
 <context>
-    <name>OCC::Wizard::AccountConfiguredSetupWizardState</name>
-    <message>
-        <location filename="../src/gui/newwizard/states/accountconfiguredsetupwizardstate.cpp" line="67"/>
-        <source>Invalid local download directory: %1</source>
-        <translation>ئىناۋەتسىز يەرلىك چۈشۈرۈش مۇندەرىجىسى:% 1</translation>
-    </message>
-</context>
-<context>
-    <name>OCC::Wizard::AccountConfiguredWizardPage</name>
-    <message>
-        <location filename="../src/gui/newwizard/pages/accountconfiguredwizardpage.cpp" line="28"/>
-        <source>Use &amp;virtual files instead of downloading content immediately</source>
-        <translation>مەزمۇننى دەرھال چۈشۈرۈشنىڭ ئورنىغا &amp; مەۋھۇم ھۆججەتلەرنى ئىشلىتىڭ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/pages/accountconfiguredwizardpage.cpp" line="45"/>
-        <source>%1 (recommended)</source>
-        <translation>% 1 (تەۋسىيە قىلىنغان)</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/pages/accountconfiguredwizardpage.cpp" line="63"/>
-        <source>The virtual filesystem feature is not available for this installation.</source>
-        <translation>بۇ قاچىلاشتا مەۋھۇم ھۆججەت سىستېمىسى ئىقتىدارى يوق.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/pages/accountconfiguredwizardpage.cpp" line="67"/>
-        <source>Select the local folder</source>
-        <translation>يەرلىك ھۆججەت قىسقۇچنى تاللاڭ</translation>
-    </message>
-</context>
-<context>
-    <name>OCC::Wizard::OAuthCredentialsSetupWizardState</name>
-    <message>
-        <location filename="../src/gui/newwizard/states/oauthcredentialssetupwizardstate.cpp" line="60"/>
-        <source>Error while trying to log in to OAuth2-enabled server.</source>
-        <translation>OAuth2 قوزغىتىلغان مۇلازىمېتىرغا كىرمەكچى بولغاندا خاتالىق.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/states/oauthcredentialssetupwizardstate.cpp" line="65"/>
-        <source>Server reports that OAuth2 is not supported.</source>
-        <translation>مۇلازىمېتىر OAuth2 نى قوللىمايدىغانلىقىنى دوكلات قىلدى.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/states/oauthcredentialssetupwizardstate.cpp" line="69"/>
-        <source>Oauth2 authentication requires a secured connection.</source>
-        <translation>Oauth2 دەلىللەش بىخەتەر ئۇلىنىشنى تەلەپ قىلىدۇ.</translation>
-    </message>
-</context>
-<context>
-    <name>OCC::Wizard::ServerUrlSetupWizardPage</name>
-    <message>
-        <location filename="../src/gui/newwizard/pages/serverurlsetupwizardpage.cpp" line="16"/>
-        <source>Welcome to %1</source>
-        <translation>% 1 گە خۇش كەپسىز</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/pages/serverurlsetupwizardpage.cpp" line="36"/>
-        <source>%1 logo</source>
-        <extracomment>This is the accessibility text for the logo in the setup wizard page. The parameter is the name for the (branded) application.</extracomment>
-        <translation>% 1 logo</translation>
-    </message>
-</context>
-<context>
-    <name>OCC::Wizard::ServerUrlSetupWizardState</name>
-    <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="105"/>
-        <source>Invalid server URL: %1</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="118"/>
-        <source>Insecure connection</source>
-        <translation>بىخەتەر ئۇلىنىش</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="119"/>
-        <source>The connection to %1 is insecure.
-Are you sure you want to proceed?</source>
-        <translation>% 1 گە ئۇلىنىش بىخەتەر ئەمەس.
-داۋاملاشتۇرۇشنى خالامسىز؟</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="123"/>
-        <source>Confirm</source>
-        <translation>جەزملەشتۈرۈڭ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="126"/>
-        <source>Insecure server rejected by user</source>
-        <translation>بىخەتەر مۇلازىمېتىر ئىشلەتكۈچى تەرىپىدىن رەت قىلىندى</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="131"/>
-        <source>Invalid URL scheme. Only http and https are accepted.</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="157"/>
-        <source>The requested URL failed with query value: %1</source>
-        <translation type="unfinished"/>
-    </message>
-</context>
-<context>
-    <name>OCC::Wizard::SetupWizardController</name>
-    <message>
-        <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="154"/>
-        <source>You are already connected to an account with these credentials.</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="169"/>
-        <source>Unable to retrieve capabilities from server</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="173"/>
-        <source>The server is not supported by this client</source>
-        <translation type="unfinished"/>
-    </message>
-</context>
-<context>
-    <name>OCC::Wizard::SetupWizardWidget</name>
-    <message>
-        <location filename="../src/gui/newwizard/setupwizardwidget.cpp" line="43"/>
-        <location filename="../src/gui/newwizard/setupwizardwidget.cpp" line="44"/>
-        <source>Back</source>
-        <translation>قايتىش</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/setupwizardwidget.cpp" line="43"/>
-        <source>&lt; &amp;Back</source>
-        <translation>&lt;&amp; قايتىش</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/setupwizardwidget.cpp" line="49"/>
-        <source>Cancel Setup</source>
-        <translation>تەڭشەشنى ئەمەلدىن قالدۇرۇڭ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/setupwizardwidget.cpp" line="49"/>
-        <source>Do you really want to cancel the account setup?</source>
-        <translation>ھېسابات تەڭشىكىنى ئەمەلدىن قالدۇرماقچىمۇ؟</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/setupwizardwidget.cpp" line="107"/>
-        <location filename="../src/gui/newwizard/setupwizardwidget.cpp" line="108"/>
-        <source>Done</source>
-        <translation>تامام</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/setupwizardwidget.cpp" line="107"/>
-        <source>&amp;Finish</source>
-        <translation>&amp; تامام</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/setupwizardwidget.cpp" line="108"/>
-        <source>Finish</source>
-        <translation>تامام</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/setupwizardwidget.cpp" line="110"/>
-        <location filename="../src/gui/newwizard/setupwizardwidget.cpp" line="111"/>
-        <source>Continue</source>
-        <translation>داۋاملاشتۇر</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/setupwizardwidget.cpp" line="110"/>
-        <source>&amp;Next &gt;</source>
-        <translation>&amp; Next&gt;</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/setupwizardwidget.cpp" line="111"/>
-        <source>Next</source>
-        <translation>كېيىنكى</translation>
-    </message>
-</context>
-<context>
     <name>OCC::ownCloudGui</name>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="250"/>
-        <source>Please sign in</source>
-        <translation>تىزىملىتىڭ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="278"/>
-        <source>Folder %1: %2</source>
-        <translation>ھۆججەت قىسقۇچ% 1:% 2</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="287"/>
-        <source>Unresolved %1 conflicts</source>
-        <translation>% 1 توقۇنۇش ھەل قىلىنمىدى</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="290"/>
-        <source>Ignored errors %1</source>
-        <translation>سەل قارالغان خاتالىق% 1</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="305"/>
-        <source>There are no sync folders configured.</source>
-        <translation>ماس قەدەملىك ھۆججەت قىسقۇچ سەپلەنمىگەن.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="339"/>
-        <source>Log in...</source>
-        <translation>كىرىڭ ...</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="341"/>
-        <source>Log out</source>
-        <translation>تىزىمدىن چىق</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="438"/>
-        <source>Recent Changes</source>
-        <translation>يېقىنقى ئۆزگىرىشلەر</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="328"/>
-        <source>Open folder &apos;%1&apos;</source>
-        <translation>&apos;% 1&apos; ھۆججەت قىسقۇچىنى ئېچىڭ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="179"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="145"/>
         <source>The server on account %1 runs an unsupported version %2. Using this client with unsupported server versions is untested and potentially dangerous. Proceed at your own risk.</source>
         <translation>% 1 ھېساباتىدىكى مۇلازىمېتىر قوللىمايدىغان نەشرىنى% 2 ئىجرا قىلىدۇ. قوللىمايدىغان مۇلازىمېتىر نەشرى بىلەن بۇ خېرىدارنى ئىشلىتىش سىناقتىن ئۆتمىگەن ۋە خەتەرلىك بولۇشى مۇمكىن. ئۆزىڭىزنىڭ خەتىرىگە قاراپ ئىلگىرىلەڭ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="237"/>
-        <source>Account %1</source>
-        <translation>ھېسابات% 1</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="335"/>
-        <location filename="../src/gui/owncloudgui.cpp" line="568"/>
-        <source>Stop synchronization</source>
-        <translation>ماس قەدەمنى توختىتىڭ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="563"/>
-        <source>Create a new account</source>
-        <translation>يېڭى ھېسابات قۇر</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="686"/>
-        <source>Unknown status</source>
-        <translation>نامەلۇم ھالەت</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="702"/>
-        <source>Details...</source>
-        <translation>تەپسىلاتى ...</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="613"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="204"/>
         <source>Help</source>
         <translation>ياردەم</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="333"/>
-        <location filename="../src/gui/owncloudgui.cpp" line="566"/>
-        <source>Resume synchronization</source>
-        <translation>ماس قەدەمنى ئەسلىگە كەلتۈرۈش</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="620"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="211"/>
         <source>Quit %1</source>
         <translation>Quit% 1</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="232"/>
-        <source>Disconnected from %1</source>
-        <translation>% 1 دىن ئۈزۈلگەن</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="178"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="144"/>
         <source>Unsupported Server Version</source>
         <translation>قوللىمايدىغان مۇلازىمېتىر نۇسخىسى</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="222"/>
-        <source>Disconnected</source>
-        <translation>ئۈزۈلۈپ قالدى</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="224"/>
-        <source>Disconnected from some accounts</source>
-        <translation>بەزى ھېساباتلاردىن ئۈزۈلۈپ قالدى</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="235"/>
-        <source>Disconnected from accounts:</source>
-        <translation>ھېساباتتىن ئۈزۈلگەن:</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="251"/>
-        <source>Signed out</source>
-        <translation>تىزىملاتتى</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="255"/>
-        <source>Account synchronization is disabled</source>
-        <translation>ھېسابات ماسقەدەملەش چەكلەنگەن</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="256"/>
-        <source>Synchronization is paused</source>
-        <translation>ماس قەدەملىك توختىتىلدى</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="302"/>
-        <source>Up to date (%1)</source>
-        <translation>ئەڭ يېڭى (% 1)</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="306"/>
-        <source>No sync folders configured</source>
-        <translation>ماس قەدەملىك ھۆججەت قىسقۇچ سەپلەنمىدى</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="559"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="179"/>
         <source>Show %1</source>
         <translation>% 1 نى كۆرسەت</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="617"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="208"/>
         <source>About %1</source>
         <translation>تەخمىنەن% 1</translation>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="699"/>
-        <source>No items synced recently</source>
-        <translation>يېقىندا ھېچقانداق تۈر ماسلاشمىدى</translation>
+        <location filename="../src/gui/owncloudgui.cpp" line="240"/>
+        <location filename="../src/gui/owncloudgui.cpp" line="254"/>
+        <source>New account failure</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="716"/>
-        <source>Checking for changes in remote &apos;%1&apos;</source>
-        <translation>يىراقتىكى «% 1» دىكى ئۆزگىرىشلەرنى تەكشۈرۈش</translation>
+        <location filename="../src/gui/owncloudgui.cpp" line="240"/>
+        <source>The information required to create a new account is incomplete. Please run the wizard again.</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="719"/>
-        <source>Checking for changes in local &apos;%1&apos;</source>
-        <translation>يەرلىك &apos;% 1&apos; دىكى ئۆزگىرىشلەرنى تەكشۈرۈش</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="734"/>
-        <source>Syncing %1 of %2  (%3 left)</source>
-        <translation>% 2 نىڭ% 1 نى ماسقەدەملەش (% 3 قالدى)</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="739"/>
-        <source>Syncing %1 of %2</source>
-        <translation>% 2 نىڭ% 1 نى ماسقەدەملەش</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="748"/>
-        <source>Syncing %1 (%2 left)</source>
-        <translation>ماس قەدەم% 1 (% 2 سول)</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="751"/>
-        <source>Syncing %1</source>
-        <translation>ماس قەدەم% 1</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="760"/>
-        <source>%1 (%2, %3)</source>
-        <translation>% 1 (% 2,% 3)</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="920"/>
-        <source>User paused sync for account &apos;%1&apos;</source>
-        <translation>ئىشلەتكۈچى «% 1» ھېساباتى ئۈچۈن ماسقەدەملەشنى توختاتتى</translation>
+        <location filename="../src/gui/owncloudgui.cpp" line="255"/>
+        <source>The account could not be created due to an error:
+%1
+Please check the server&apos;s availability then run the wizard again.</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -4070,69 +3484,10 @@ Are you sure you want to proceed?</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncresult.cpp" line="115"/>
+        <location filename="../src/libsync/syncresult.cpp" line="117"/>
         <source>%1: %2</source>
         <extracomment>this displays an error string (%2) for a file %1</extracomment>
         <translation>% 1:% 2</translation>
-    </message>
-</context>
-<context>
-    <name>ServerUrlSetupWizardPage</name>
-    <message>
-        <location filename="../src/gui/newwizard/pages/serverurlsetupwizardpage.ui" line="14"/>
-        <source>Form</source>
-        <translation>شەكىل</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/pages/serverurlsetupwizardpage.ui" line="85"/>
-        <source>What is your server&apos;s address?</source>
-        <translation>مۇلازىمېتىرىڭىزنىڭ ئادرېسى نېمە؟</translation>
-    </message>
-</context>
-<context>
-    <name>SetupWizardState</name>
-    <message>
-        <location filename="../src/gui/newwizard/enums.cpp" line="29"/>
-        <source>Server URL</source>
-        <translation>مۇلازىمېتىر URL</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/enums.cpp" line="31"/>
-        <source>Welcome</source>
-        <translation>مەرھابا</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/enums.cpp" line="34"/>
-        <source>Login</source>
-        <translation>تىزىمغا كىرىڭ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/enums.cpp" line="36"/>
-        <source>Sync Options</source>
-        <translation>ماسقەدەملەش تاللانمىلىرى</translation>
-    </message>
-</context>
-<context>
-    <name>SetupWizardWidget</name>
-    <message>
-        <location filename="../src/gui/newwizard/setupwizardwidget.ui" line="14"/>
-        <source>Add New Account</source>
-        <translation>يېڭى ھېسابات قوشۇڭ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/setupwizardwidget.ui" line="101"/>
-        <source>&amp;Dismiss</source>
-        <translation>&amp; Dismiss</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/setupwizardwidget.ui" line="116"/>
-        <source>&amp;Cancel</source>
-        <translation>&amp; Cancel</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/newwizard/setupwizardwidget.ui" line="152"/>
-        <source>&lt; Back</source>
-        <translation>&lt;قايتىش</translation>
     </message>
 </context>
 <context>
@@ -4224,19 +3579,6 @@ Are you sure you want to proceed?</source>
     </message>
 </context>
 <context>
-    <name>Type of user ID</name>
-    <message>
-        <location filename="../src/libsync/theme.cpp" line="587"/>
-        <source>Username</source>
-        <translation>ئىشلەتكۈچى ئاتى</translation>
-    </message>
-    <message>
-        <location filename="../src/libsync/theme.cpp" line="589"/>
-        <source>E-mail address</source>
-        <translation>ئېلېكترونلۇق خەت ئادرېسى</translation>
-    </message>
-</context>
-<context>
     <name>UpdateDownloadedWidget</name>
     <message>
         <location filename="../src/gui/updater/updatedownloadedwidget.ui" line="74"/>
@@ -4290,12 +3632,12 @@ Are you sure you want to proceed?</source>
 <context>
     <name>account loading</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="465"/>
+        <location filename="../src/gui/main.cpp" line="470"/>
         <source>Error accessing the configuration file</source>
         <translation>سەپلىمە ھۆججىتىگە كىرىشتە خاتالىق</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="466"/>
+        <location filename="../src/gui/main.cpp" line="471"/>
         <source>There was an error while accessing the configuration file at %1.</source>
         <translation>% 1 دىكى سەپلىمە ھۆججىتىنى زىيارەت قىلغاندا خاتالىق كۆرۈلدى.</translation>
     </message>

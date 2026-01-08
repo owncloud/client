@@ -404,7 +404,7 @@ void PropagateDownloadFile::start()
         const bool isConflict = _item->instruction() == CSYNC_INSTRUCTION_CONFLICT && QFileInfo(fsPath).isDir();
         if (isConflict) {
             QString error;
-            if (!propagator()->createConflict(_item, _associatedComposite, &error)) {
+            if (!propagator()->createConflict(_item, &error)) {
                 done(SyncFileItem::SoftError, error);
                 return;
             }
@@ -801,7 +801,7 @@ void PropagateDownloadFile::deleteExistingFolder()
     }
 
     QString error;
-    if (!propagator()->createConflict(_item, _associatedComposite, &error)) {
+    if (!propagator()->createConflict(_item, &error)) {
         done(SyncFileItem::NormalError, error);
     }
 }
@@ -874,7 +874,7 @@ void PropagateDownloadFile::downloadFinished()
     bool isConflict = _item->instruction() == CSYNC_INSTRUCTION_CONFLICT && (QFileInfo(fn).isDir() || !FileSystem::fileEquals(fn, _tmpFile.fileName()));
     if (isConflict) {
         QString error;
-        if (!propagator()->createConflict(_item, _associatedComposite, &error)) {
+        if (!propagator()->createConflict(_item, &error)) {
             done(SyncFileItem::SoftError, error);
             return;
         }

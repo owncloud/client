@@ -68,11 +68,8 @@ LocalActivityWidget::LocalActivityWidget(QWidget *parent)
         showFilterMenu(_ui->_filterButton, _sortModel, static_cast<int>(ProtocolItemModel::ProtocolItemRole::Account), tr("Account"));
     });
 
-    connect(FolderMan::instance(), &FolderMan::folderRemoved, this, [this](Folder *f) {
-        _model->remove_if([f](const ProtocolItem &item) {
-            return item.folder() == f;
-        });
-    });
+    connect(FolderMan::instance(), &FolderMan::folderRemoved, this, &LocalActivityWidget::onFolderRemoved);
+    connect(FolderMan::instance(), &FolderMan::folderListChanged, this, &LocalActivityWidget::onFolderListChanged);
 }
 
 LocalActivityWidget::~LocalActivityWidget()
@@ -80,6 +77,18 @@ LocalActivityWidget::~LocalActivityWidget()
     delete _ui;
 }
 
+void LocalActivityWidget::onFolderListChanged(const QUuid &accountId, const QList<Folder *> folders)
+{
+    _model->remove_if([accountId, folders](const ProtocolItem &item) {
+        return (item.folder()->accountState()->account()->uuid() == accountId && !folders.contains(item.folder()));
+    });
+}
+
+void LocalActivityWidget::onFolderRemoved(const QUuid &accountId, Folder *f)
+{
+    Q_UNUSED(accountId);
+    _model->remove_if([f](const ProtocolItem &item) { return item.folder() == f; });
+}
 /**
  * @brief Show a filter menu for the given model.
  *

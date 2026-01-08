@@ -48,7 +48,6 @@ class Toolbar:
         "visible": 1,
     }
     CONFIRM_QUIT_BUTTON = {
-        "text": "Yes",
         "type": "QPushButton",
         "unnamed": 1,
         "visible": 1,

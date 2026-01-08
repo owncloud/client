@@ -193,3 +193,7 @@ def set_config(key, value):
 def clear_scenario_config():
     for key, value in SCENARIO_CONFIGS.items():
         CONFIG[key] = value
+
+
+def is_owncloud_client():
+    return get_config('client_name') == 'ownCloud'

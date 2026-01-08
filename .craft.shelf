@@ -1,13 +1,13 @@
 [General]
 version = 2
-blueprintrepositories = https://github.com/owncloud/craft-blueprints-owncloud.git|master|;https://invent.kde.org/packaging/craft-blueprints-kde.git|master|
+blueprintrepositories = https://invent.kde.org/packaging/craft-blueprints-kde.git|master|;https://github.com/owncloud/craft-blueprints-owncloud.git|master|
 
 [core/cacert]
-version = 2023-12-12
+version = 2025-09-09
 
 [craft/craft-blueprints-kde]
 version = master
-revision = 466fec8a
+revision = 945d9fa
 
 [craft/craft-blueprints-owncloud]
 version = master
@@ -15,16 +15,19 @@ revision = ba6feae
 
 [craft/craft-core]
 version = master
-revision = 59ba2eecac262d0637e3ab40e601549114966ad9
+revision = 949d36244
 
 [dev-utils/7zip-base]
-version = 24.09
+version = 25.01
 
 [dev-utils/cmake]
 version = latest
 
 [dev-utils/cmake-base]
-version = 3.30.0
+version = 3.31.9
+
+[dev-utils/icoutils]
+version = 0.32.3
 
 [dev-utils/jom]
 version = 1_1_3
@@ -36,31 +39,34 @@ version = 0.6.1
 version = 2.16.03
 
 [dev-utils/ninja]
-version = 1.12.1
+version = 1.13.1
 
 [dev-utils/perl]
 version = 5.40.1
 
 [dev-utils/pkgconf]
-version = 2.4.3
+version = 2.5.1
 
 [dev-utils/symsorter]
 version = 0.7.0
 
 [kde/frameworks/extra-cmake-modules]
-version = 6.17.0
+version = 6.20.0
 
 [kde/frameworks/tier1/syntax-highlighting]
-version = 6.17.0
+version = 6.20.0
 
 [libs/brotli]
 version = 1.1.0
 
+[libs/cairo]
+version = 1.18.4
+
 [libs/expat]
-version = 2.2.10
+version = 2.7.3
 
 [libs/freetype]
-version = 2.12.1
+version = 2.14.1
 
 [libs/gettext]
 version = 0.22.3
@@ -68,8 +74,11 @@ version = 0.22.3
 [libs/giflib]
 version = 5.2.1
 
+[libs/glib]
+version = 2.81.0
+
 [libs/harfbuzz]
-version = 2.7.2
+version = 11.2.0
 
 [libs/kdsingleapplication]
 version = 1.2.0
@@ -78,7 +87,7 @@ version = 1.2.0
 version = 0.98.1
 
 [libs/libbzip2]
-version = 1.0.6
+version = 1.0.8
 
 [libs/libffi]
 version = 3.4.7
@@ -96,25 +105,28 @@ version = 1.6.45
 version = 1.0.4
 
 [libs/libunistring]
-version = 1.2
+version = 1.4.1
 
 [libs/libxml2]
 version = 2.12.7
 
 [libs/libzstd]
-version = 1.5.6
+version = 1.5.7
 
 [libs/llvm]
-version = 18.1.8
+version = 20.1.7
 
 [libs/nlohmann-json]
-version = 3.11.2
+version = 3.12.0
 
 [libs/openssl]
 version = 3.4.3
 
 [libs/pcre2]
 version = 10.44
+
+[libs/pixman]
+version = 0.46.4
 
 [libs/python]
 version = 3.11.11
@@ -150,7 +162,7 @@ version = 6.8.3
 version = 17
 
 [libs/sqlite]
-version = 3.42.0
+version = 3.50.4
 
 [libs/tiff]
 version = 4.4.0

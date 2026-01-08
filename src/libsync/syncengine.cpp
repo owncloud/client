@@ -260,17 +260,8 @@ void OCC::SyncEngine::slotItemDiscovered(const OCC::SyncFileItemPtr &item)
 
     if (Utility::isConflictFile(item->_file))
         _seenConflictFiles.insert(item->_file);
-    if (item->instruction() == CSYNC_INSTRUCTION_NONE) {
-        if (_account->capabilities().uploadConflictFiles() && Utility::isConflictFile(item->_file)) {
-            // For uploaded conflict files, files with no action performed on them should
-            // be displayed: but we mustn't overwrite the instruction if something happens
-            // to the file!
-            item->_errorString = tr("Unresolved conflict.");
-            item->setInstruction(CSYNC_INSTRUCTION_IGNORE);
-            item->_status = SyncFileItem::Conflict;
-        }
+    if (item->instruction() == CSYNC_INSTRUCTION_NONE)
         return;
-    }
 
     // check for blacklisting of this item.
     // if the item is on blacklist, the instruction was set to ERROR
@@ -368,8 +359,6 @@ void SyncEngine::startSync()
     // filtering via schedulePathForRemoteDiscovery(). This *is* the next sync, so
     // undo the filter to allow this sync to retrieve and store the correct etags.
     _journal->clearEtagStorageFilter();
-
-    _excludedFiles->setExcludeConflictFiles(!_account->capabilities().uploadConflictFiles());
 
     _lastLocalDiscoveryStyle = _localDiscoveryStyle;
 

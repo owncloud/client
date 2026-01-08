@@ -24,19 +24,17 @@ class SyncConnectionWizard:
     BACK_BUTTON = {
         "window": names.add_Folder_Sync_Connection_OCC_FolderWizard,
         "type": "QPushButton",
-        "text": "< &Back",
         "visible": 1,
     }
     NEXT_BUTTON = {
         "window": names.add_Folder_Sync_Connection_OCC_FolderWizard,
+        "name": "__qt__passive_wizardbutton1",
         "type": "QPushButton",
-        "text": "&Next >",
         "visible": 1,
     }
     SELECTIVE_SYNC_ROOT_FOLDER = {
         "column": 0,
         "container": names.folder_Sync_Connection_Deselect_remote_folders_QTreeWidget,
-        "text": get_config("client_name"),
         "type": "QModelIndex",
     }
     SYNC_DIALOG_FOLDER_TREE = {
@@ -57,7 +55,6 @@ class SyncConnectionWizard:
         "visible": 1,
     }
     VFS_CHECKBOX = {
-        "text": "Use virtual files instead of downloading content immediately",
         "type": "QCheckBox",
         "unnamed": 1,
         "visible": 1,
@@ -86,19 +83,6 @@ class SyncConnectionWizard:
         "name": "addFolderButton",
         "type": "QPushButton",
         "visible": 1,
-    }
-    CREATE_REMOTE_FOLDER_INPUT = {
-        "buddy": names.create_Remote_Folder_Enter_the_name_of_the_new_folder_to_be_created_below_QLabel,
-        "type": "QLineEdit",
-        "unnamed": 1,
-        "visible": 1,
-    }
-    CREATE_REMOTE_FOLDER_CONFIRM_BUTTON = {
-        "text": "OK",
-        "type": "QPushButton",
-        "unnamed": 1,
-        "visible": 1,
-        "window": names.create_Remote_Folder_QInputDialog,
     }
     REFRESH_BUTTON = {
         "container": names.add_Folder_Sync_Connection_groupBox_QGroupBox,
@@ -278,21 +262,6 @@ class SyncConnectionWizard:
         SyncConnectionWizard.add_sync_connection()
 
     @staticmethod
-    def create_folder_in_remote_destination(folder_name):
-        squish.clickButton(
-            squish.waitForObject(SyncConnectionWizard.CREATE_REMOTE_FOLDER_BUTTON)
-        )
-        squish.type(
-            squish.waitForObject(SyncConnectionWizard.CREATE_REMOTE_FOLDER_INPUT),
-            folder_name,
-        )
-        squish.clickButton(
-            squish.waitForObject(
-                SyncConnectionWizard.CREATE_REMOTE_FOLDER_CONFIRM_BUTTON
-            )
-        )
-
-    @staticmethod
     def refresh_remote():
         squish.clickButton(squish.waitForObject(SyncConnectionWizard.REFRESH_BUTTON))
 
@@ -357,3 +326,15 @@ class SyncConnectionWizard:
         return squish.waitForObjectExists(
             SyncConnectionWizard.ADD_FOLDER_SYNC_BUTTON
         ).enabled
+
+    @staticmethod
+    def is_space_available(space_name):
+        selector = SyncConnectionWizard.SPACE_NAME_SELECTOR.copy()
+        selector["text"] = space_name
+        space_available = False
+        try:
+            squish.waitForObject(selector)
+            space_available = True
+        except:
+            pass
+        return space_available
