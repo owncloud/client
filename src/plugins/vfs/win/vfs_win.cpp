@@ -813,15 +813,11 @@ void VfsWin::stop()
 void VfsWin::unregisterFolder()
 {
     Q_D(VfsWin);
-    using SyncRootManager = winrt::Windows::Storage::Provider::StorageProviderSyncRootManager;
-    try {
-        QMutexLocker registrationLock(&d->registrationMutex);
-        SyncRootManager::Unregister(d->_registrationId);
-    } catch (winrt::hresult_error const &ex) {
-        qCWarning(lcVfs) << "Could not Unregister() sync root:" << hstringToQString(ex.message());
-    }
 
-    // Remove the folder from the search index
+    if (d->_registrationState == VfsWinPrivate::Unregistered)
+        return;
+
+    // First step: remove the folder from the search index
     const std::wstring url(convertFullNativePathToFullyDecodedUrlW(d->syncRootPath()));
     winrt::com_ptr<ISearchCrawlScopeManager> searchCrawlScopeManager = getSearchCrawlScopeManager();
 
@@ -833,6 +829,15 @@ void VfsWin::unregisterFolder()
         }
     } else {
         qCWarning(lcVfs) << "Unable to get the SearchCrawlScopeManager to remove the path" << url;
+    }
+
+    // Final step: unregister the path. We're now completely done with it.
+    using SyncRootManager = winrt::Windows::Storage::Provider::StorageProviderSyncRootManager;
+    try {
+        QMutexLocker registrationLock(&d->registrationMutex);
+        SyncRootManager::Unregister(d->_registrationId);
+    } catch (winrt::hresult_error const &ex) {
+        qCWarning(lcVfs) << "Could not Unregister() sync root:" << hstringToQString(ex.message());
     }
 }
 
