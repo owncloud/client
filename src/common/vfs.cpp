@@ -68,7 +68,7 @@ QString Utility::enumToString(Vfs::Mode mode)
     }
 }
 
-Result<void, QString> Vfs::checkAvailability(const QString &path, Vfs::Mode mode)
+QString Vfs::pathSupportDetail(const QString &path, Vfs::Mode mode)
 {
 #ifdef Q_OS_WIN
     if (mode == Mode::WindowsCfApi) {
