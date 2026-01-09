@@ -125,7 +125,17 @@ public:
 
     static Mode modeFromString(const QString &str);
 
-    static Result<void, QString> checkAvailability(const QString &path, OCC::Vfs::Mode mode);
+    /**
+     * @brief pathSupportDetail - needs a better name but the concept is that this function checks to see if the path is supported for vfs.
+     * if it is not supported the return string contains the "reason" it's not supported.
+     * @param path to check to for support
+     * @param mode which we want to check - note that the only arg that makes sense here at all is Vfs::WindowsCfApi
+     * @return empty string if the mode is supported on the given path. If the string is not empty, it contains a string explaining the
+     * reason the mode is not supported.
+     *
+     * as of this writing, the possible root reasons are: path is a drive, path is on a network drive, path fs is not ntfs.
+     */
+    static QString pathSupportDetail(const QString &path, OCC::Vfs::Mode mode);
 
     enum class AvailabilityError
     {

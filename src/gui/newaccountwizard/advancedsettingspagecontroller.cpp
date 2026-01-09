@@ -235,9 +235,13 @@ bool AdvancedSettingsPageController::validateSyncRoot(const QString &rootPath)
     // I'm not testing the case that vfs is actually the chosen mode here as if vfs is available we should just block dirs that don't support it,
     // the idea being that eg if they change the mode in the page after they select the dir, or use selective sync with vfs later, at least we know the default
     // root they select here will not cause any issues down the road
-    if (_vfsIsAvailable && !FolderMan::instance()->checkVfsAvailability(rootPath)) {
-        _errorField->setText(errorMessageTemplate.arg(rootPath, tr("selected path does not support using virtual file system.")));
-        return false;
+    // todo: use this same approach when fixing the folder wizard as part of DC-219
+    if (_vfsIsAvailable) {
+        QString pathSupported = Vfs::pathSupportDetail(rootPath, Vfs::Mode::WindowsCfApi);
+        if (!pathSupported.isEmpty()) {
+            _errorField->setText(errorMessageTemplate.arg(rootPath, tr("selected path does not support using virtual file system. %1").arg(pathSupported)));
+            return false;
+        }
     }
 
     return true;
