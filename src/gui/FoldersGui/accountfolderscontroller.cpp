@@ -369,7 +369,7 @@ void AccountFoldersController::updateActions()
     // they made a mistake when adding the folder or whatever
     _pauseSync->setEnabled(_currentFolder->isAvailable());
 
-    _chooseSync->setEnabled(!_currentFolder->virtualFilesEnabled());
+    _chooseSync->setEnabled(_currentFolder->isAvailable() && !_currentFolder->virtualFilesEnabled());
 }
 
 void OCC::AccountFoldersController::onShowInSystemFolder()
@@ -386,7 +386,7 @@ void AccountFoldersController::onShowInBrowser()
     if (!_currentFolder)
         return;
 
-    QString path = _currentFolder->path();
+    QString path = _currentFolder->remotePathTrailingSlash();
     QUrl davUrl = _currentFolder->webDavUrl();
     fetchPrivateLinkUrl(_accountState->account(), davUrl, path, this, [](const QUrl &url) { Utility::openBrowser(url, nullptr); });
 }
@@ -460,7 +460,7 @@ void AccountFoldersController::onRemoveSync()
 
 void AccountFoldersController::onChooseSync()
 {
-    if (!_currentFolder || _accountState || !_accountState->account()) {
+    if (!_currentFolder || !_accountState || !_accountState->account()) {
         return;
     }
 
