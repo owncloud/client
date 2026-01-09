@@ -19,14 +19,10 @@
 #include "utility_win.h"
 #include "utility.h"
 
-#include "asserts.h"
-#include "filesystembase.h"
-
 #include <comdef.h>
 #include <qt_windows.h>
 #include <shlguid.h>
 #include <shlobj.h>
-#include <string>
 
 #include <QCoreApplication>
 #include <QDir>
@@ -110,18 +106,6 @@ QString Utility::formatWinError(long errorCode)
 {
     return QStringLiteral("WindowsError: %1: %2").arg(QString::number(errorCode, 16), QString::fromWCharArray(_com_error(errorCode).ErrorMessage()));
 }
-
-
-Utility::NtfsPermissionLookupRAII::NtfsPermissionLookupRAII()
-{
-    qt_ntfs_permission_lookup++;
-}
-
-Utility::NtfsPermissionLookupRAII::~NtfsPermissionLookupRAII()
-{
-    qt_ntfs_permission_lookup--;
-}
-
 
 Utility::Handle::Handle(HANDLE h, std::function<void(HANDLE)> &&close)
     : _handle(h)

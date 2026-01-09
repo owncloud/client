@@ -1353,44 +1353,54 @@ Esto significa que el cliente de sincronización podría no subir los cambios lo
         <translation>(copia de seguridad %1)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="919"/>
-        <source>Folder &apos;%1&apos; is already in use by application %2!</source>
-        <translation>Ordner &apos;%1&apos; wird durch die Anwendung %2 schon benutzt!</translation>
+        <location filename="../src/gui/folderman.cpp" line="918"/>
+        <source>The selected path is not a folder.</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="934"/>
+        <location filename="../src/gui/folderman.cpp" line="922"/>
+        <source>The folder %1 is used in a folder sync connection.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/folderman.cpp" line="930"/>
+        <source>Folder &apos;%1&apos; is already in use by application %2.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/folderman.cpp" line="977"/>
+        <source>There is already a sync from the server to this local folder.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/folderman.cpp" line="980"/>
+        <source>The local folder %1 already contains a folder used in a folder sync connection.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/folderman.cpp" line="985"/>
+        <source>The local folder %1 is already contained in a folder used in a folder sync connection.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/folderman.cpp" line="997"/>
+        <source>No valid folder selected.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/folderman.cpp" line="1016"/>
+        <source>The selected path does not exist.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/folderman.cpp" line="1022"/>
+        <source>You have no permission to write to the selected folder.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/folderman.cpp" line="943"/>
         <source>Folder &apos;%1&apos; is already in use by another account.</source>
         <translation>La carpeta &apos;%1&apos; está siendo usada por otra cuenta. </translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderman.cpp" line="949"/>
-        <source>No valid folder selected!</source>
-        <translation>¡La carpeta seleccionada no es válida!</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderman.cpp" line="971"/>
-        <source>The folder %1 is used in a folder sync connection!</source>
-        <translation>La carpeta %1 está en uso en una conexión de sincronización de carpetas.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderman.cpp" line="1013"/>
-        <source>The local folder %1 already contains a folder used in a folder sync connection. Please pick another local folder!</source>
-        <translation>La carpeta local %1 ya contiene otra carpeta usada en una conexión de sincronización. Por favor, seleccione otra carpeta local!</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderman.cpp" line="1019"/>
-        <source>The local folder %1 is already contained in a folder used in a folder sync connection. Please pick another local folder!</source>
-        <translation>La carpeta local %1 ya contiene una carpeta usada en una conexión de sincronización. Por favor, seleccione otra carpeta local!</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderman.cpp" line="1027"/>
-        <source>%1 Please pick another local folder!</source>
-        <translation>%1 Por favor seleccione otra carpeta local!</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderman.cpp" line="967"/>
-        <source>The selected path does not exist!</source>
-        <translation>¡La ruta seleccionada no existe!</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="445"/>
@@ -1398,22 +1408,7 @@ Esto significa que el cliente de sincronización podría no subir los cambios lo
         <translation>En macOS, solo se soporta el sistema de ficheros de Apple.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="977"/>
-        <source>The selected path is not a folder!</source>
-        <translation>¡La ruta seleccionada no es un directorio!</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderman.cpp" line="981"/>
-        <source>You have no permission to write to the selected folder!</source>
-        <translation>¡Usted no tiene permiso para escribir en la carpeta seleccionada!</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderman.cpp" line="1009"/>
-        <source>There is already a sync from the server to this local folder. Please pick another local folder!</source>
-        <translation>Ya existe una tarea de sincronización entre el servidor y esta carpeta. Por favor elija otra carpeta local.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderman.cpp" line="1097"/>
+        <location filename="../src/gui/folderman.cpp" line="1094"/>
         <source>Multiple accounts are sharing the folder %1.
 This configuration is know to lead to dataloss and is no longer supported.
 Please consider removing this folder from the account and adding it again.</source>
@@ -1497,17 +1492,17 @@ Por favor, considere eliminar esta carpeta desde la cuenta y añadirla de nuevo.
 <context>
     <name>OCC::FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="140"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="139"/>
         <source>Virtual files are not available for the selected folder</source>
         <translation>Archivos Virtuales no está disponible para la carpeta seleccionada</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="153"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="152"/>
         <source>Add Folder Sync Connection</source>
         <translation>Añadir conexión de sincronización de carpetas</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="156"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="155"/>
         <source>Add Sync Connection</source>
         <translation>Añadir Sincronización de Conexión</translation>
     </message>
@@ -3320,8 +3315,23 @@ Tenga en cuenta que el uso de cualquier opción de línea de comando de registro
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="641"/>
-        <source>Could not retrieve StorageFolder for %1 %2</source>
-        <translation>No se pudo recuperar StorageFolder para %1 %2</translation>
+        <source>Could not retrieve StorageFolder for %1 %2 (0x%3)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="683"/>
+        <source>The folder is used by a different client: %1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="705"/>
+        <source>Error registering StorageProvider for %1: %2 (0x%3)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="738"/>
+        <source>Unable to connect sync root: %1 error: %2</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="678"/>
@@ -3329,24 +3339,9 @@ Tenga en cuenta que el uso de cualquier opción de línea de comando de registro
         <translation>%1 es gestionado por otro cliente de sincronización.</translation>
     </message>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="683"/>
-        <source>The folder is used by a different client %1</source>
-        <translation>La carpeta es utilizada por un cliente diferente %1.</translation>
-    </message>
-    <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="693"/>
         <source>Downgrading the folder from %1 to %2 is not supported</source>
         <translation>No se admite la degradación de la carpeta de %1 a %2.</translation>
-    </message>
-    <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="705"/>
-        <source>Error registering StorageProvider for %1: %2 %3</source>
-        <translation>Error al registrar StorageProvider para %1: %2 %3</translation>
-    </message>
-    <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="738"/>
-        <source>CfConnectSyncRoot: %1 error: %2</source>
-        <translation>CfConnectSyncRoot: error %1: %2</translation>
     </message>
 </context>
 <context>

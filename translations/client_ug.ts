@@ -1352,44 +1352,54 @@ This means that the synchronization client might not upload local changes immedi
         <translation>(زاپاسلاش% 1)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="919"/>
-        <source>Folder &apos;%1&apos; is already in use by application %2!</source>
-        <translation>«% 1» ھۆججەت قىسقۇچى ئاللىقاچان% 2 قوللىنىشچان پروگراممىدا ئىشلىتىلىپ بولدى!</translation>
+        <location filename="../src/gui/folderman.cpp" line="918"/>
+        <source>The selected path is not a folder.</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="934"/>
+        <location filename="../src/gui/folderman.cpp" line="922"/>
+        <source>The folder %1 is used in a folder sync connection.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/folderman.cpp" line="930"/>
+        <source>Folder &apos;%1&apos; is already in use by application %2.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/folderman.cpp" line="977"/>
+        <source>There is already a sync from the server to this local folder.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/folderman.cpp" line="980"/>
+        <source>The local folder %1 already contains a folder used in a folder sync connection.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/folderman.cpp" line="985"/>
+        <source>The local folder %1 is already contained in a folder used in a folder sync connection.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/folderman.cpp" line="997"/>
+        <source>No valid folder selected.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/folderman.cpp" line="1016"/>
+        <source>The selected path does not exist.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/folderman.cpp" line="1022"/>
+        <source>You have no permission to write to the selected folder.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/folderman.cpp" line="943"/>
         <source>Folder &apos;%1&apos; is already in use by another account.</source>
         <translation>ھۆججەت قىسقۇچى &apos;% 1&apos; ئاللىبۇرۇن باشقا ھېسابات تەرىپىدىن ئىشلىتىلگەن.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderman.cpp" line="949"/>
-        <source>No valid folder selected!</source>
-        <translation>ئىناۋەتلىك ھۆججەت قىسقۇچ تاللانمىدى!</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderman.cpp" line="971"/>
-        <source>The folder %1 is used in a folder sync connection!</source>
-        <translation>% 1 ھۆججەت قىسقۇچ ماسقەدەملەشتە ئىشلىتىلىدۇ!</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderman.cpp" line="1013"/>
-        <source>The local folder %1 already contains a folder used in a folder sync connection. Please pick another local folder!</source>
-        <translation>يەرلىك قىسقۇچ% 1 ھۆججەت قىسقۇچ ماسقەدەملەشتە ئىشلىتىلىدىغان ھۆججەت قىسقۇچنى ئۆز ئىچىگە ئالىدۇ. باشقا يەرلىك ھۆججەت قىسقۇچنى تاللاڭ!</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderman.cpp" line="1019"/>
-        <source>The local folder %1 is already contained in a folder used in a folder sync connection. Please pick another local folder!</source>
-        <translation>يەرلىك ھۆججەت قىسقۇچ% 1 ھۆججەت قىسقۇچ ماسقەدەملەشتە ئىشلىتىلىدىغان ھۆججەت قىسقۇچتا بار. باشقا يەرلىك ھۆججەت قىسقۇچنى تاللاڭ!</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderman.cpp" line="1027"/>
-        <source>%1 Please pick another local folder!</source>
-        <translation>% 1 باشقا يەرلىك ھۆججەت قىسقۇچنى تاللاڭ!</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderman.cpp" line="967"/>
-        <source>The selected path does not exist!</source>
-        <translation>تاللانغان يول مەۋجۇت ئەمەس!</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="445"/>
@@ -1397,22 +1407,7 @@ This means that the synchronization client might not upload local changes immedi
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="977"/>
-        <source>The selected path is not a folder!</source>
-        <translation>تاللانغان يول ھۆججەت قىسقۇچ ئەمەس!</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderman.cpp" line="981"/>
-        <source>You have no permission to write to the selected folder!</source>
-        <translation>تاللانغان ھۆججەت قىسقۇچقا يېزىش ھوقۇقىڭىز يوق!</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderman.cpp" line="1009"/>
-        <source>There is already a sync from the server to this local folder. Please pick another local folder!</source>
-        <translation>مۇلازىمېتىردىن بۇ يەرلىك ھۆججەت قىسقۇچقا ماسقەدەملەش بار. باشقا يەرلىك ھۆججەت قىسقۇچنى تاللاڭ!</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderman.cpp" line="1097"/>
+        <location filename="../src/gui/folderman.cpp" line="1094"/>
         <source>Multiple accounts are sharing the folder %1.
 This configuration is know to lead to dataloss and is no longer supported.
 Please consider removing this folder from the account and adding it again.</source>
@@ -1496,17 +1491,17 @@ Please consider removing this folder from the account and adding it again.</sour
 <context>
     <name>OCC::FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="140"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="139"/>
         <source>Virtual files are not available for the selected folder</source>
         <translation>تاللانغان ھۆججەت قىسقۇچقا مەۋھۇم ھۆججەتلەرنى ئىشلەتكىلى بولمايدۇ</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="153"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="152"/>
         <source>Add Folder Sync Connection</source>
         <translation>ھۆججەت قىسقۇچ ماسقەدەملەشنى قوشۇڭ</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="156"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="155"/>
         <source>Add Sync Connection</source>
         <translation>ماسقەدەم ئۇلىنىشنى قوشۇڭ</translation>
     </message>
@@ -3320,7 +3315,22 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="641"/>
-        <source>Could not retrieve StorageFolder for %1 %2</source>
+        <source>Could not retrieve StorageFolder for %1 %2 (0x%3)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="683"/>
+        <source>The folder is used by a different client: %1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="705"/>
+        <source>Error registering StorageProvider for %1: %2 (0x%3)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="738"/>
+        <source>Unable to connect sync root: %1 error: %2</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -3329,23 +3339,8 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="683"/>
-        <source>The folder is used by a different client %1</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="693"/>
         <source>Downgrading the folder from %1 to %2 is not supported</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="705"/>
-        <source>Error registering StorageProvider for %1: %2 %3</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="738"/>
-        <source>CfConnectSyncRoot: %1 error: %2</source>
         <translation type="unfinished"/>
     </message>
 </context>

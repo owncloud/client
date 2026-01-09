@@ -1353,44 +1353,54 @@ This means that the synchronization client might not upload local changes immedi
         <translation> (ສຳຮອງ %1)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="919"/>
-        <source>Folder &apos;%1&apos; is already in use by application %2!</source>
-        <translation>ໂຟນເດີ &apos;%1&apos; ຖືກນຳໃຊ້ໂດຍໂປຣແກຣມ %2 ຢູ່ແລ້ວ!</translation>
+        <location filename="../src/gui/folderman.cpp" line="918"/>
+        <source>The selected path is not a folder.</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="934"/>
+        <location filename="../src/gui/folderman.cpp" line="922"/>
+        <source>The folder %1 is used in a folder sync connection.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/folderman.cpp" line="930"/>
+        <source>Folder &apos;%1&apos; is already in use by application %2.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/folderman.cpp" line="977"/>
+        <source>There is already a sync from the server to this local folder.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/folderman.cpp" line="980"/>
+        <source>The local folder %1 already contains a folder used in a folder sync connection.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/folderman.cpp" line="985"/>
+        <source>The local folder %1 is already contained in a folder used in a folder sync connection.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/folderman.cpp" line="997"/>
+        <source>No valid folder selected.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/folderman.cpp" line="1016"/>
+        <source>The selected path does not exist.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/folderman.cpp" line="1022"/>
+        <source>You have no permission to write to the selected folder.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/folderman.cpp" line="943"/>
         <source>Folder &apos;%1&apos; is already in use by another account.</source>
         <translation>ໂຟນເດີ &apos;%1&apos; ຖືກນຳໃຊ້ໂດຍບັນຊີອື່ນຢູ່ແລ້ວ.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderman.cpp" line="949"/>
-        <source>No valid folder selected!</source>
-        <translation>ບໍ່ມີໂຟນເດີທີ່ຖືກຕ້ອງຖືກເລືອກ!</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderman.cpp" line="971"/>
-        <source>The folder %1 is used in a folder sync connection!</source>
-        <translation>ໂຟນເດີ %1 ຖືກໃຊ້ໃນການເຊື່ອມຕໍ່ການຊິງໂຟນເດີຢູ່ແລ້ວ!</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderman.cpp" line="1013"/>
-        <source>The local folder %1 already contains a folder used in a folder sync connection. Please pick another local folder!</source>
-        <translation>ໂຟນເດີໃນເຄື່ອງ %1 ມີໂຟນເດີທີ່ຖືກໃຊ້ໃນການເຊື່ອມຕໍ່ການຊິງໂຟນເດີຢູ່ແລ້ວ. ກະລຸນາເລືອກໂຟນເດີອື່ນໃນເຄື່ອງ!</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderman.cpp" line="1019"/>
-        <source>The local folder %1 is already contained in a folder used in a folder sync connection. Please pick another local folder!</source>
-        <translation>ໂຟນເດີໃນເຄື່ອງ %1 ເປັນສ່ວນໜຶ່ງຂອງໂຟນເດີທີ່ຖືກໃຊ້ໃນການເຊື່ອມຕໍ່ການຊິງໂຟນເດີຢູ່ແລ້ວ. ກະລຸນາເລືອກໂຟນເດີອື່ນໃນເຄື່ອງ!</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderman.cpp" line="1027"/>
-        <source>%1 Please pick another local folder!</source>
-        <translation>%1 ກະລຸນາເລືອກໂຟນເດີອື່ນໃນເຄື່ອງ!</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderman.cpp" line="967"/>
-        <source>The selected path does not exist!</source>
-        <translation>ເສັ້ນທາງທີ່ເລືອກບໍ່ມີຢູ່!</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="445"/>
@@ -1398,22 +1408,7 @@ This means that the synchronization client might not upload local changes immedi
         <translation>ໃນ macOS, ຮອງຮັບສະເພາະ Apple File System ເທົ່ານັ້ນ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="977"/>
-        <source>The selected path is not a folder!</source>
-        <translation>ເສັ້ນທາງທີ່ເລືອກບໍ່ແມ່ນໂຟນເດີ!</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderman.cpp" line="981"/>
-        <source>You have no permission to write to the selected folder!</source>
-        <translation>ທ່ານບໍ່ມີສິດໃນການຂຽນໃສ່ໂຟນເດີທີ່ເລືອກ!</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderman.cpp" line="1009"/>
-        <source>There is already a sync from the server to this local folder. Please pick another local folder!</source>
-        <translation>ມີການຊິງຈາກເຊີບເວີມາທີ່ໂຟນເດີນີ້ຢູ່ແລ້ວ. ກະລຸນາເລືອກໂຟນເດີອື່ນໃນເຄື່ອງ!</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderman.cpp" line="1097"/>
+        <location filename="../src/gui/folderman.cpp" line="1094"/>
         <source>Multiple accounts are sharing the folder %1.
 This configuration is know to lead to dataloss and is no longer supported.
 Please consider removing this folder from the account and adding it again.</source>
@@ -1497,17 +1492,17 @@ Please consider removing this folder from the account and adding it again.</sour
 <context>
     <name>OCC::FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="140"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="139"/>
         <source>Virtual files are not available for the selected folder</source>
         <translation>ໄຟລ໌ສະເໝືອນບໍ່ສາມາດໃຊ້ງານໄດ້ກັບໂຟນເດີທີ່ເລືອກ</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="153"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="152"/>
         <source>Add Folder Sync Connection</source>
         <translation>ເພີ່ມການເຊື່ອມຕໍ່ການຊິງໂຟນເດີ</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="156"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="155"/>
         <source>Add Sync Connection</source>
         <translation>ເພີ່ມການເຊື່ອມຕໍ່ການຊິງ</translation>
     </message>
@@ -3321,7 +3316,22 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="641"/>
-        <source>Could not retrieve StorageFolder for %1 %2</source>
+        <source>Could not retrieve StorageFolder for %1 %2 (0x%3)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="683"/>
+        <source>The folder is used by a different client: %1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="705"/>
+        <source>Error registering StorageProvider for %1: %2 (0x%3)</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="738"/>
+        <source>Unable to connect sync root: %1 error: %2</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -3330,23 +3340,8 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="683"/>
-        <source>The folder is used by a different client %1</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="693"/>
         <source>Downgrading the folder from %1 to %2 is not supported</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="705"/>
-        <source>Error registering StorageProvider for %1: %2 %3</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="738"/>
-        <source>CfConnectSyncRoot: %1 error: %2</source>
         <translation type="unfinished"/>
     </message>
 </context>
