@@ -800,7 +800,7 @@ void FolderMan::removeFolderFromGui(Folder *f)
 void FolderMan::forceFolderSync(Folder *f)
 {
     if (!f)
-return;
+        return;
     // Prevent new sync starts
     _scheduler->stop();
 
@@ -1029,8 +1029,6 @@ QString FolderMan::findExistingFolderAndCheckValidity(const QString &path, NewFo
 QString FolderMan::findGoodPathForNewSyncFolder(
     const QString &basePath, const QString &newFolder, FolderMan::NewFolderType folderType, const QUuid &accountUuid) const
 {
-    OC_ASSERT(!accountUuid.isNull() || folderType == FolderMan::NewFolderType::SpacesSyncRoot);
-
     // reserve extra characters to allow appending of a number
     const QString normalisedPath = FileSystem::createPortableFileName(basePath, FileSystem::pathEscape(newFolder), std::string_view(" (100)").size());
 
@@ -1085,29 +1083,6 @@ void FolderMan::setIgnoreHiddenFiles(bool ignore)
     setSyncEnabled(true);
 }
 
-Result<void, QString> FolderMan::unsupportedConfiguration(const QString &path) const
-{
-    auto it = _unsupportedConfigurationError.find(path);
-    if (it == _unsupportedConfigurationError.end()) {
-        it = _unsupportedConfigurationError.insert(path, [&]() -> Result<void, QString> {
-            if (numberOfSyncJournals(path) > 1) {
-                const QString error = tr("Multiple accounts are sharing the folder %1.\n"
-                                         "This configuration is know to lead to dataloss and is no longer supported.\n"
-                                         "Please consider removing this folder from the account and adding it again.")
-                                          .arg(path);
-                if (Theme::instance()->warnOnMultipleDb()) {
-                    qCWarning(lcFolderMan) << error;
-                    return error;
-                } else {
-                    qCWarning(lcFolderMan) << error << "this error is not displayed to the user as this is a branded"
-                                           << "client and the error itself might be a false positive caused by a previous broken migration";
-                }
-            }
-            return {};
-        }());
-    }
-    return *it;
-}
 
 bool FolderMan::isSpaceSynced(GraphApi::Space *space) const
 {
@@ -1122,11 +1097,6 @@ void FolderMan::slotReloadSyncOptions()
             f->reloadSyncOptions();
         }
     }
-}
-
-bool FolderMan::checkVfsAvailability(const QString &path, Vfs::Mode mode) const
-{
-    return unsupportedConfiguration(path) && Vfs::checkAvailability(path, mode);
 }
 
 Folder *FolderMan::addFolderFromScratch(AccountState *accountState, FolderDefinition &&folderDefinition, bool useVfs)
