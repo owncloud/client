@@ -31,6 +31,7 @@ AccountFoldersView::AccountFoldersView(QWidget *parent)
 {
     buildView();
     _itemMenu = new QMenu(this);
+    _itemMenu->setAccessibleName(tr("Sync options menu"));
 }
 
 void AccountFoldersView::buildView()

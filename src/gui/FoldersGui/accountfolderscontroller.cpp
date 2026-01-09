@@ -198,82 +198,6 @@ void AccountFoldersController::buildMenuActions()
 
 /*void AccountView::slotCustomContextMenuRequested(Folder *folder)
 {
-    // Refactoring todo: we need to eval defensive handling of the account state QPointer in more depth, and I
-    // am not able to easily determine what should happen in this handler if the state is null. For now we just assert
-    // to make the "source" of the nullptr obvious before it trickles down into sub-areas and causes a crash that's harder
-    // to id
-    Q_ASSERT(_accountState && _accountState->account());
-
-    // qpointer for async calls
-    const auto isDeployed = folder->isDeployed();
-    const auto addRemoveFolderAction = [isDeployed, folder, this](QMenu *menu) {
-        Q_ASSERT(!isDeployed);
-        return menu->addAction(tr("Remove folder sync connection"), this, [folder, this] { slotRemoveCurrentFolder(folder); });
-    };
-
-
-    auto *menu = new QMenu(ui->accountFoldersView);
-    menu->setAccessibleName(tr("Sync options menu"));
-    menu->setAttribute(Qt::WA_DeleteOnClose);
-    connect(folder, &OCC::Folder::destroyed, menu, &QMenu::close);
-    // Only allow removal if the item isn't in "ready" state.
-    if (!folder->isReady() && !isDeployed) {
-        if (Theme::instance()->syncNewlyDiscoveredSpaces()) {
-            menu->addAction(tr("Folder is not ready yet"))->setEnabled(false);
-        } else {
-            addRemoveFolderAction(menu);
-        }
-        menu->popup(QCursor::pos());
-        // accessibility
-        menu->setFocus();
-        return;
-    }
-    // Add an action to open the folder in the system's file browser:
-    QAction *showInFileManagerAction = menu->addAction(CommonStrings::showInFileBrowser(), [folder]() {
-        qCInfo(lcAccountView) << "Opening local folder" << folder->path();
-        if (QFileInfo::exists(folder->path())) {
-            showInFileManager(folder->path());
-        }
-    });
-
-    if (!QFile::exists(folder->path())) {
-        showInFileManagerAction->setEnabled(false);
-    }
-
-    // Add an action to open the folder on the server in a webbrowser:
-    // Refactoring todo: why are we using the folder accountState AND the local member? shouldn't the folder have the same account state
-    // as this settings panel?!
-    if (folder->accountState()->account()->capabilities().privateLinkPropertyAvailable()) {
-        QString path = folder->remotePathTrailingSlash();
-        menu->addAction(CommonStrings::showInWebBrowser(), [path, davUrl = folder->webDavUrl(), this] {
-            fetchPrivateLinkUrl(_accountState->account(), davUrl, path, this, [](const QUrl &url) { Utility::openBrowser(url, nullptr); });
-        });
-    }
-
-
-    // Root-folder specific actions:
-    menu->addSeparator();
-
-    // qpointer for the async context menu
-    if (OC_ENSURE(folder->isReady())) {
-        const bool folderPaused = folder->syncPaused();
-
-        if (!folderPaused) {
-            QAction *forceSyncAction = menu->addAction(tr("Force sync now"));
-            if (folder->isSyncRunning()) {
-                forceSyncAction->setText(tr("Restart sync"));
-            }
-            forceSyncAction->setEnabled(folder->accountState()->isConnected());
-            connect(forceSyncAction, &QAction::triggered, this, [folder, this] { slotForceSyncCurrentFolder(folder); });
-        }
-
-        QAction *resumeAction = menu->addAction(folderPaused ? tr("Resume sync") : tr("Pause sync"));
-        connect(resumeAction, &QAction::triggered, this, [folder, this] { slotEnableCurrentFolder(folder, true); });
-
-        if (!isDeployed) {
-            if (!Theme::instance()->syncNewlyDiscoveredSpaces()) {
-                addRemoveFolderAction(menu);
-            }
 
             auto maybeShowEnableVfs = [folder, menu, this]() {
                 // Only show "Enable VFS" if a VFS mode is available
@@ -300,34 +224,28 @@ void AccountFoldersController::buildMenuActions()
                     }
                 }
             }
-            if (!folder->virtualFilesEnabled()) {
-                menu->addAction(tr("Choose what to sync"), this, [folder, this] { showSelectiveSyncDialog(folder); });
-            }
-            menu->popup(QCursor::pos());
-            menu->setFocus(); // for accassebility (keyboard navigation)
-        } else {
-            menu->deleteLater();
-        }
-    }
-}
 
-
-/*void AccountFoldersController::slotEnableVfsCurrentFolder(Folder *folder)
-{
-    if (OC_ENSURE(VfsPluginManager::instance().bestAvailableVfsMode() == Vfs::WindowsCfApi)) {
-        if (!folder) {
-            return;
-        }
-        qCInfo(lcAccountView) << "Enabling vfs support for folder" << folder->path();
-
-        // Change the folder vfs mode and load the plugin
-        folder->setVirtualFilesEnabled(true);
     }
 }*/
 
-/*void AccountFoldersController::slotDisableVfsCurrentFolder(Folder *folder)
+
+void AccountFoldersController::onEnableVfs()
 {
-    auto msgBox = new QMessageBox(QMessageBox::Question, tr("Disable virtual file support?"),
+    if (!_currentFolder || _currentFolder->virtualFilesEnabled() || VfsPluginManager::instance().bestAvailableVfsMode() != Vfs::WindowsCfApi)
+        return;
+
+    qCInfo(lcAccountView) << "Enabling vfs support for folder" << folder->path();
+
+    // Change the folder vfs mode and load the plugin
+    folder->setVirtualFilesEnabled(true);
+}
+
+void AccountFoldersController::onDisableVfs()
+{
+    if (!_currentFolder)
+        return;
+
+    QMessageBox msgBox(QMessageBox::Question, tr("Disable virtual file support?"),
         tr("This action will disable virtual file support. As a consequence contents of folders that "
            "are currently marked as 'available online only' will be downloaded."
            "\n\n"
@@ -335,41 +253,47 @@ void AccountFoldersController::buildMenuActions()
            "will become available again."
            "\n\n"
            "This action will abort any currently running synchronization."));
-    auto acceptButton = msgBox->addButton(tr("Disable support"), QMessageBox::AcceptRole);
-    msgBox->addButton(tr("Cancel"), QMessageBox::RejectRole);
-    connect(msgBox, &QMessageBox::finished, msgBox, [msgBox, folder, acceptButton] {
-        msgBox->deleteLater();
-        if (msgBox->clickedButton() != acceptButton || !folder) {
-            return;
-        }
+    msgBox.button(QMessageBox::Yes)->setText(tr("Disable support"));
+    msgBox.button(QMessageBox::No)->setText(tr("Cancel"));
 
-        qCInfo(lcAccountView) << "Disabling vfs support for folder" << folder->path();
+    int result = msgBox.exec();
+    if (result == QDialog::Rejected)
+        return;
 
-        // Also wipes virtual files, schedules remote discovery
-        folder->setVirtualFilesEnabled(false);
-    });
-    msgBox->open();
-}*/
+    qCInfo(lcAccountFoldersController) << "Disabling vfs support for folder" << _currentFolder->path();
+
+    // Also wipes virtual files, schedules remote discovery
+    _currentFolder->setVirtualFilesEnabled(false);
+}
 
 
 void AccountFoldersController::updateActions()
 {
-    if (!_currentFolder) // probably disable all actions here
-        return;
-
-    _showInSystemFolder->setEnabled(QFileInfo::exists(_currentFolder->path()));
+    // the checks for _currentFolder are twofold:
+    // obvs we don't want to try to access values that aren't there
+    // furthermore, we do need to disable if the current folder selection
+    // is empty so it's actually a key part of the evaluation for action state here
+    _showInSystemFolder->setEnabled(_currentFolder && QFileInfo::exists(_currentFolder->path()));
 
     if (_showInBrowser)
-        _showInBrowser->setEnabled(_currentFolder->isAvailable());
+        _showInBrowser->setEnabled(_currentFolder && _currentFolder->isAvailable());
 
-    _forceSync->setEnabled(!_currentFolder->isSyncRunning() && _currentFolder->canSync());
+    _forceSync->setEnabled(_currentFolder && _currentFolder->canSync());
+    _forceSync->setText(_currentFolder && _currentFolder->isSyncRunning() ? tr("Restart sync") : tr("Force sync now"));
 
-    _pauseSync->setText(_currentFolder->syncPaused() ? tr("Resume sync") : tr("Pause sync"));
+    _pauseSync->setText(_currentFolder && _currentFolder->syncPaused() ? tr("Resume sync") : tr("Pause sync"));
     // is this enough? I think we need to keep it enabled even if sync is running so the user can effectively cancel it + pause. as who knows. maybe
     // they made a mistake when adding the folder or whatever
-    _pauseSync->setEnabled(_currentFolder->isAvailable());
+    _pauseSync->setEnabled(_currentFolder && _currentFolder->isAvailable());
 
-    _chooseSync->setEnabled(_currentFolder->isAvailable() && !_currentFolder->virtualFilesEnabled());
+    _removeSync->setEnabled(_currentFolder);
+
+    if (_toggleVfs) {
+        _toggleVfs->setText(_currentFolder && _currentFolder->virtualFilesEnabled() ? tr("Disable virtual file support") : tr("Enable virtual file support");
+        _toggleVfs->setEnabled();
+    }
+
+    _chooseSync->setEnabled(_currentFolder && _currentFolder->isAvailable() && !_currentFolder->virtualFilesEnabled());
 }
 
 void OCC::AccountFoldersController::onShowInSystemFolder()
@@ -401,7 +325,6 @@ void AccountFoldersController::onForceSync()
             tr("Synchronization is paused because the Internet connection is a metered connection"
                "<p>Do you really want to force a Synchronization now?"),
             QMessageBox::Yes | QMessageBox::No, ocApp()->gui()->settingsDialog());
-        messageBox.setAttribute(Qt::WA_DeleteOnClose);
         int result = messageBox.exec();
         if (result == QDialog::Rejected)
             return;

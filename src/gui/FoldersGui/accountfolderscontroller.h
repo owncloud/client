@@ -75,5 +75,7 @@ private:
     void onTogglePauseSync();
     void onRemoveSync();
     void onChooseSync();
+    void onDisableVfs();
+    void onEnableVfs();
 };
 }
