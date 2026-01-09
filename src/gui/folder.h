@@ -345,14 +345,6 @@ public:
     bool supportsSelectiveSync() const;
 
     /**
-     * Whether to register the parent folder of our sync root in the explorer
-     * The default behaviour is to register alls spaces in a common dir in the home folder
-     * in that case we only display that common dir in the Windows sidebar.
-     * With the legacy behaviour we only have one dir which we will register with Windows
-     */
-    bool groupInSidebar() const;
-
-    /**
      * The folder is deployed by an admin
      * We will hide the remove option and the disable/enable vfs option.
      */
