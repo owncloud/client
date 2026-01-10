@@ -1355,47 +1355,47 @@ Kjo do të thotë që klienti i njëkohësimeve mund të mos ngarkojë menjëher
     <message>
         <location filename="../src/gui/folderman.cpp" line="918"/>
         <source>The selected path is not a folder.</source>
-        <translation type="unfinished"/>
+        <translation>Shtegu i përzgjedhur s’shpie te një dosje.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="922"/>
         <source>The folder %1 is used in a folder sync connection.</source>
-        <translation type="unfinished"/>
+        <translation>Dosja %1 përdoret në një lidhje njëkohësimi dosjesh.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="930"/>
         <source>Folder &apos;%1&apos; is already in use by application %2.</source>
-        <translation type="unfinished"/>
+        <translation>Dosja “%1” përdoret tashmë nga aplikacioni %2.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="977"/>
         <source>There is already a sync from the server to this local folder.</source>
-        <translation type="unfinished"/>
+        <translation>Ka tashmë një njëkohësim prej shërbyesit te kjo dosje vendore.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="980"/>
         <source>The local folder %1 already contains a folder used in a folder sync connection.</source>
-        <translation type="unfinished"/>
+        <translation>Dosja vendore %1 përmban tashmë një dosje të përdorur në një lidhje njëkohësimi dosjesh.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="985"/>
         <source>The local folder %1 is already contained in a folder used in a folder sync connection.</source>
-        <translation type="unfinished"/>
+        <translation>Dosja vendore %1 gjendet tashmë në një dosje të përdorur në një lidhje njëkohësimi dosjesh.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="997"/>
         <source>No valid folder selected.</source>
-        <translation type="unfinished"/>
+        <translation>U përzgjodh dosje jo e vlefshme.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="1016"/>
         <source>The selected path does not exist.</source>
-        <translation type="unfinished"/>
+        <translation>Shtegu i përzgjedhur s’ekziston.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="1022"/>
         <source>You have no permission to write to the selected folder.</source>
-        <translation type="unfinished"/>
+        <translation>S’keni leje të shkruani te dosja e përzgjedhur.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="943"/>
@@ -3317,22 +3317,22 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="641"/>
         <source>Could not retrieve StorageFolder for %1 %2 (0x%3)</source>
-        <translation type="unfinished"/>
+        <translation>S’u mor dot StorageFolder për %1 %2 (0x%3)</translation>
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="683"/>
         <source>The folder is used by a different client: %1</source>
-        <translation type="unfinished"/>
+        <translation>Dosja po përdoret nga një tjetër klient: %1</translation>
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="705"/>
         <source>Error registering StorageProvider for %1: %2 (0x%3)</source>
-        <translation type="unfinished"/>
+        <translation>Gabim në regjistrim StorageProvider-i për %1: %2 (0x%3)</translation>
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="738"/>
         <source>Unable to connect sync root: %1 error: %2</source>
-        <translation type="unfinished"/>
+        <translation>S’arrihet të lidhet rrënjë njëkohësimi: gabim %1: %2</translation>
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="678"/>
