@@ -779,11 +779,6 @@ void Folder::changeVfsMode(Vfs::Mode newMode)
     Q_EMIT vfsModeChanged(this, newMode);
 }
 
-bool Folder::supportsSelectiveSync() const
-{
-    return !virtualFilesEnabled() && isReady();
-}
-
 bool Folder::isDeployed() const
 {
     return _definition.isDeployed();

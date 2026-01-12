@@ -341,9 +341,6 @@ public:
     bool virtualFilesEnabled() const;
     void setVirtualFilesEnabled(bool enabled);
 
-    /** Whether this folder should show selective sync ui */
-    bool supportsSelectiveSync() const;
-
     /**
      * Whether to register the parent folder of our sync root in the explorer
      * The default behaviour is to register alls spaces in a common dir in the home folder
@@ -355,8 +352,10 @@ public:
     /**
      * The folder is deployed by an admin
      * We will hide the remove option and the disable/enable vfs option.
+     *
+     * see FolderDefinition isDeployed - this concept was oc10 related so it needs to go
      */
-    bool isDeployed() const;
+    [[deprecated("see FolderDefinition::isDeployed")]] bool isDeployed() const;
 
     uint32_t sortPriority() const { return _definition.priority(); }
 
@@ -525,11 +524,16 @@ private:
     QTimer _scheduleSelfTimer;
 
     /**
-     * Setting up vfs is an async operation
+     * Setting up vfs can be an async operation which is triggered by vfs::startImpl
+     * this bool is set to true once vfs is fully started as notified via the started() signal
+     * when a "real" vfs impl is in play, started is emitted after the async setup is complete
+     * when vfs is effectively "off", started() is emitted immediately by startImpl
+     * main point is that even when vfs is not actually in play we pretend it's "started" -> _vfsIsReady will be true
      */
     bool _vfsIsReady = false;
 
-    // does the folder have a corresponding space on the server? folderman will update the value if not
+    // does the folder have a corresponding space on the server? folderman will update the value based on info we get
+    // from spaces manager.
     bool _available = true;
 
     /**
@@ -553,7 +557,7 @@ private:
     QScopedPointer<LocalDiscoveryTracker> _localDiscoveryTracker;
 
     /**
-     * The vfs mode instance (created by plugin) to use. Never null.
+     * The vfs mode instance (created by plugin) to use. Never null. When vfs is not im play, vfs_off is the impl used.
      */
     // Refactoring todo: this is shared with the SyncOptions that are passed to the engine. This needs reevaluation and cleanup
     // to ensure we don't keep it alive outside of usable scope. Would probably be simplest to make it a QPointer for use with the
@@ -562,7 +566,5 @@ private:
     // extra fun is I have no idea what happens to the instance in the SyncOptions - is it still alive relative to the engine?
     // I don't see any handling of the engine or SyncOptions whatsoever in wipeForRemoval so we'll need to go spelunking.
     QSharedPointer<Vfs> _vfs;
-
-    friend class SpaceMigration;
 };
 }
