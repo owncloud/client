@@ -1,5 +1,6 @@
 # Table of Contents
 
+* [Changelog for 6.0.3](#changelog-for-owncloud-desktop-client-603-2026-01-07)
 * [Changelog for 6.0.2](#changelog-for-owncloud-desktop-client-602-2025-11-03)
 * [Changelog for 6.0.1](#changelog-for-owncloud-desktop-client-601-2025-10-10)
 * [Changelog for 6.0.0](#changelog-for-owncloud-desktop-client-600-2025-09-08)
@@ -39,6 +40,34 @@
 * [Changelog for 2.6.3](#changelog-for-owncloud-desktop-client-263-2020-06-10)
 * [Changelog for 2.6.2](#changelog-for-owncloud-desktop-client-262-2020-02-21)
 * [Changelog for 2.6.1 versions and below](#changelog-for-261-versions-and-below)
+# Changelog for ownCloud Desktop Client [6.0.3] (2026-01-07)
+
+The following sections list the changes in ownCloud Desktop Client 6.0.3 relevant to
+ownCloud admins and users.
+
+[6.0.3]: https://github.com/owncloud/client/compare/v6.0.2...v6.0.3
+
+## Summary
+
+* Security - Fixing medium security vulnerability in password input handling: [#12430](https://github.com/owncloud/client/pull/12430)
+* Change - Third party upgrades in distributed binaries: [#12364](https://github.com/owncloud/client/pull/12364)
+
+## Details
+
+* Security - Fixing medium security vulnerability in password input handling: [#12430](https://github.com/owncloud/client/pull/12430)
+
+   CVE and security advisory will follow.
+
+   https://github.com/owncloud/client/pull/12430
+   https://github.com/owncloud/client/pull/12431
+
+* Change - Third party upgrades in distributed binaries: [#12364](https://github.com/owncloud/client/pull/12364)
+
+   We updated OpenSSL to 3.4.3
+
+   https://github.com/owncloud/client/pull/12364
+   https://github.com/owncloud/client/pull/12432
+
 # Changelog for ownCloud Desktop Client [6.0.2] (2025-11-03)
 
 The following sections list the changes in ownCloud Desktop Client 6.0.2 relevant to
