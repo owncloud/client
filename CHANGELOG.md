@@ -41,13 +41,12 @@
 * [Changelog for 2.6.3](#changelog-for-owncloud-desktop-client-263-2020-06-10)
 * [Changelog for 2.6.2](#changelog-for-owncloud-desktop-client-262-2020-02-21)
 * [Changelog for 2.6.1 versions and below](#changelog-for-261-versions-and-below)
-
 # Changelog for ownCloud Desktop Client [unreleased] (UNRELEASED)
 
 The following sections list the changes in ownCloud Desktop Client unreleased relevant to
 ownCloud admins and users.
 
-[unreleased]: https://github.com/owncloud/client/compare/v6.0.2...master
+[unreleased]: https://github.com/owncloud/client/compare/v6.0.3...master
 
 ## Summary
 
