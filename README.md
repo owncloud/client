@@ -21,6 +21,17 @@ can be found on the Internet, in particular on GitHub. However, the
 authoritative repository maintained by the developers is located at
 https://github.com/owncloud/client.
 
+### Building from source
+
+This project uses CMake as build system. Please refer to the cmake documentation
+for general instructions on how to use CMake: https://cmake.org/documentation/.
+
+Further more as meta build system KDE Craft is used. Please refer to the KDE Craft
+documentation for instructions on how to use Craft: https://community.kde.org/Craft.
+
+For easy to use instructions on how to build the ownCloud Desktop Client please have 
+a look at https://github.com/owncloud/ownbuild.
+
 ## Reporting issues and contributing
 
 If you find any bugs or have any suggestion for improvement, please

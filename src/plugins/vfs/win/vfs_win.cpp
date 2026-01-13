@@ -517,6 +517,8 @@ QString VfsWinPrivate::syncRootPath() const
     return QDir::toNativeSeparators(Utility::stripTrailingSlash(q->params().filesystemPath));
 }
 
+QMutex VfsWinPrivate::registrationMutex;
+
 // Register as a sync provider with cfapi as well as with the explorer integration
 void VfsWinPrivate::registerFolder(const VfsSetupParams &params)
 {
@@ -607,7 +609,7 @@ void VfsWinPrivate::registerFolder(const VfsSetupParams &params)
     // A Uri to a cloud storage recycle bin.
     //providerInfo.RecycleBinUri(L"recycle bin");
 
-    providerInfo.ShowSiblingsAsGroup(params.groupInSidebar());
+    providerInfo.ShowSiblingsAsGroup(true);
 
     // Prepage the key from the shell property store we'll use to determine
     // availability.
@@ -638,17 +640,9 @@ void VfsWinPrivate::registerFolder(const VfsSetupParams &params)
             providerInfo.Path(f);
         } catch (winrt::hresult_error const& ex) {
             qCWarning(lcVfs) << "Could not retrieve StorageFolder for" << syncRoot << "error:" << ex.code() << hstringToQString(ex.message());
-            Q_EMIT q->error(tr("Could not retrieve StorageFolder for %1 %2").arg(syncRoot, hstringToQString(ex.message())));
+            Q_EMIT q->error(tr("Could not retrieve StorageFolder for %1 %2 (0x%3)").arg(syncRoot, hstringToQString(ex.message()), QString::number(ex.code(), 16)));
             return;
         }
-
-        // Code below this point cannot run in parallel: the calls below will first search for existing sync root
-        // information, and as a second step it will register the new provider for the folder. If multiple
-        // sync connections are being created in short order (e.g. when setting up a new account), it is possible
-        // that a second call to `registerFolder` will start running this registration. This can result in
-        // multiple side-bar entries in the windows explorer.
-        static QMutex registrationMutex;
-        QMutexLocker registrationLock(&registrationMutex);
 
         try {
             auto previousInfo = StorageProviderSyncRootManager::GetSyncRootInformationForFolder(f);
@@ -680,7 +674,7 @@ void VfsWinPrivate::registerFolder(const VfsSetupParams &params)
                         }
                     } else {
                         qCWarning(lcVfs) << "Id did not match" << hstringToQString(previousInfo.Id()) << "!=" << oldId;
-                        Q_EMIT q->error(tr("The folder is used by a different client %1").arg(hstringToQString(previousInfo.DisplayNameResource())));
+                        Q_EMIT q->error(tr("The folder is used by a different client: %1").arg(hstringToQString(previousInfo.DisplayNameResource())));
                         return;
                     }
                     _registrationId = previousInfo.Id();
@@ -699,10 +693,11 @@ void VfsWinPrivate::registerFolder(const VfsSetupParams &params)
         }
 
         try {
+            QMutexLocker registrationLock(&registrationMutex);
             StorageProviderSyncRootManager::Register(providerInfo);
         } catch (winrt::hresult_error const& ex) {
             qCWarning(lcVfs) << "Error registering StorageProvider for" << params.filesystemPath << QString::number(ex.code()) << hstringToQString(ex.message());
-            Q_EMIT q->error(tr("Error registering StorageProvider for %1: %2 %3").arg(params.filesystemPath, QString::number(ex.code()), hstringToQString(ex.message())));
+            Q_EMIT q->error(tr("Error registering StorageProvider for %1: %2 (0x%3)").arg(params.filesystemPath, hstringToQString(ex.message()), QString::number(ex.code(), 16)));
             return;
         }
 
@@ -727,15 +722,17 @@ void VfsWinPrivate::registerFolder(const VfsSetupParams &params)
         };
         // clang-format on
 
-        HRESULT ok = CfConnectSyncRoot(
-            syncRootW.c_str(),
-            callbacks,
-            this, // use VfsWinPrivate as callback context
-            CF_CONNECT_FLAG_BLOCK_SELF_IMPLICIT_HYDRATION // don't let antivirus implicitly hydrate (or something, a bit unclear)
-                | CF_CONNECT_FLAG_REQUIRE_FULL_FILE_PATH, // request that callbacks get the full path
-            &_connectionKey);
+        HRESULT ok;
+        {
+            QMutexLocker registrationLock(&registrationMutex);
+            ok = CfConnectSyncRoot(syncRootW.c_str(), callbacks,
+                this, // use VfsWinPrivate as callback context
+                CF_CONNECT_FLAG_BLOCK_SELF_IMPLICIT_HYDRATION // don't let antivirus implicitly hydrate (or something, a bit unclear)
+                    | CF_CONNECT_FLAG_REQUIRE_FULL_FILE_PATH, // request that callbacks get the full path
+                &_connectionKey);
+        }
         if (FAILED(ok)) {
-            Q_EMIT q->error(tr("CfConnectSyncRoot: %1 error: %2").arg(syncRoot, Utility::formatWinError(ok)));
+            Q_EMIT q->error(tr("Unable to connect sync root: %1 error: %2").arg(syncRoot, Utility::formatWinError(ok)));
             return;
         }
         // We have not discovered what the status ends up being used for
@@ -809,20 +806,18 @@ void VfsWin::stop()
         wait.processEvents(QEventLoop::AllEvents, 100);
     }
 
+    QMutexLocker registrationLock(&d->registrationMutex);
     CfDisconnectSyncRoot(d->_connectionKey);
 }
 
 void VfsWin::unregisterFolder()
 {
     Q_D(VfsWin);
-    using SyncRootManager = winrt::Windows::Storage::Provider::StorageProviderSyncRootManager;
-    try {
-        SyncRootManager::Unregister(d->_registrationId);
-    } catch (winrt::hresult_error const &ex) {
-        qCWarning(lcVfs) << "Could not Unregister() sync root:" << hstringToQString(ex.message());
-    }
 
-    // Remove the folder from the search index
+    if (d->_registrationState == VfsWinPrivate::Unregistered)
+        return;
+
+    // First step: remove the folder from the search index
     const std::wstring url(convertFullNativePathToFullyDecodedUrlW(d->syncRootPath()));
     winrt::com_ptr<ISearchCrawlScopeManager> searchCrawlScopeManager = getSearchCrawlScopeManager();
 
@@ -834,6 +829,15 @@ void VfsWin::unregisterFolder()
         }
     } else {
         qCWarning(lcVfs) << "Unable to get the SearchCrawlScopeManager to remove the path" << url;
+    }
+
+    // Final step: unregister the path. We're now completely done with it.
+    using SyncRootManager = winrt::Windows::Storage::Provider::StorageProviderSyncRootManager;
+    try {
+        QMutexLocker registrationLock(&d->registrationMutex);
+        SyncRootManager::Unregister(d->_registrationId);
+    } catch (winrt::hresult_error const &ex) {
+        qCWarning(lcVfs) << "Could not Unregister() sync root:" << hstringToQString(ex.message());
     }
 }
 

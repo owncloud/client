@@ -44,22 +44,27 @@ namespace GraphApi {
         // by passing the value for hasManyPersonalSpaces to this via ctr
         Account *account() const;
 
-        /**
-         * Only relevant during bootstraping or when disconnected
-         */
-        void checkReady();
+        bool isReady() const { return _ready; }
+        int spacesCount() const { return _spaces.count(); }
 
     Q_SIGNALS:
         void spaceChanged(Space *space) const;
-        void updated();
+        // I think this will go
+        void updated(Account *account);
         void ready() const;
+        void spaceAdded(QUuid accountId, OCC::GraphApi::Space *space);
+        void spaceAboutToBeRemoved(QUuid accountId, OCC::GraphApi::Space *space);
+        // these are emitted after any/all processing of active spaces is complete, so eg for the space deleted
+        // we can only provide space id's since the pointers are gone.
+        void spacesAdded(QUuid accountId, QList<OCC::GraphApi::Space *> spaces, int totalSpaceCount);
+        void spacesRemoved(QUuid accountId, QList<QString> deletedSpaces, int totalSpaceCount);
 
     private:
         void refresh();
 
         QPointer<Account> _account;
         QTimer *_refreshTimer;
-        QMap<QString, Space *> _spacesMap;
+        QHash<QString, Space *> _spaces;
         bool _ready = false;
     };
 

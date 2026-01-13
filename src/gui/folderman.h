@@ -85,7 +85,6 @@ public:
      * Or in case of a space folder, that if the new folder is in a Space sync root, it is the sync root of the same account.
      */
     enum class NewFolderType {
-        OC10SyncRoot, // todo: #43
         SpacesSyncRoot,
         SpacesFolder,
     };
@@ -123,15 +122,29 @@ public:
          */
         bool useVirtualFiles;
 
-        uint32_t priority;
+        uint32_t sortPriority;
 
         QSet<QString> selectiveSyncBlackList;
     };
 
     static QString suggestSyncFolder(NewFolderType folderType, const QUuid &accountUuid);
 
-
-    static QString checkPathValidityRecursive(const QString &path, FolderMan::NewFolderType folderType, const QUuid &accountUuid);
+    /**
+     * @brief Check a path for a new spaces sync root or spaces folder for validity.
+     *
+     * @param path The path to check
+     * @param folderType The kind of folder that is to be created (Folder or Spaces sync root)
+     * @param the account UUID for the which the folder is created
+     * @return an error string if there is a problem, or an null string if the path is valid
+     *
+     * Checks:
+     *  - spaces sync root not in a syncdb folder (a space folder)
+     *  - spaces sync root not in another spaces sync root
+     *  - space folder not in a syncdb folder (another space folder)
+     *  - space folder *can* be in sync root, if:
+     *  - space folder not in a spaces sync root of other account (check with account uuid) or (possibly branded) client
+     */
+    QString checkPathValidity(const QString &path, NewFolderType folderType, const QUuid &accountUuid) const;
 
     static std::unique_ptr<FolderMan> createInstance();
 
@@ -198,27 +211,12 @@ public:
 
 
     /**
-     *  Removes a folder sync permanently in response to user request
-     *  Not for general folder cleanup
-     *  it is caller's responsibility to remove folder from settings if necessary.
-     */
-    // Refactoring todo: this is called directly from the AccountSettings gui - instead the gui should signal a request to
-    // remove the folder.
-    // also, this function *is* used for general folder cleanup when an account is removed.
-    // we must develop concise, SINGLE impls for eg adding or removing folders instead of spreading the handling over multiple
-    // locations.
-    void removeFolderSync(Folder *);
-
-    /**
      * Returns the folder which the file or directory stored in path is in
      *
      * Optionally, the path relative to the found folder is returned in
      * relativePath.
      */
-    Folder *folderForPath(const QString &path, QString *relativePath = nullptr);
-
-    /** Returns the folder by id or NULL if no folder with the id exists. */
-    [[deprecated("directly reference the folder")]] Folder *folder(const QByteArray &id);
+    Folder *folderForPath(const QString &path, QString *relativePath = nullptr) const;
 
     /**
      * Ensures that a given directory does not contain a sync journal file.
@@ -231,14 +229,6 @@ public:
     SocketApi *socketApi();
 
     /**
-     * Check if @a path is a valid path for a new folder considering the already sync'ed items.
-     * Make sure that this folder, or any subfolder is not sync'ed already.
-     *
-     * @returns an empty string if it is allowed, or an error if it is not allowed
-     */
-    QString checkPathValidityForNewFolder(const QString &path, NewFolderType folderType, const QUuid &accountUuid) const;
-
-    /**
      * Attempts to find a non-existing, acceptable path for creating a new sync folder.
      *
      * Uses \a basePath as the baseline. It'll return this path if it's acceptable.
@@ -247,7 +237,7 @@ public:
      * subfolder of ~ would be a good candidate. When that happens \a basePath
      * is returned.
      */
-    static QString findGoodPathForNewSyncFolder(const QString &basePath, const QString &newFolder, NewFolderType folderType, const QUuid &accountUuid);
+    QString findGoodPathForNewSyncFolder(const QString &basePath, const QString &newFolder, NewFolderType folderType, const QUuid &accountUuid) const;
 
     bool ignoreHiddenFiles() const;
     void setIgnoreHiddenFiles(bool ignore);
@@ -292,6 +282,11 @@ public:
     // todo: #3
     void removeFolderSettings(Folder *folder);
 
+    /**
+     * @brief folder retrieves the folder given the spaceId, or null if no folder exists for the account and space combo
+     */
+    Folder *folder(const QUuid &accountId, const QString &spaceId) const;
+
 Q_SIGNALS:
     /**
       * signal to indicate a folder has changed its sync state.
@@ -310,6 +305,15 @@ Q_SIGNALS:
     void folderAdded(const QUuid &accountId, Folder *folder);
     // emitted on incremental folder removal (eg when the user deletes a sync connection via gui)
     void folderRemoved(const QUuid &accountId, Folder *folder);
+
+    // still working these out but generally this belongs in folderman more than anywhere else as it can cross ref
+    // existing folders and track unsynced spaces
+    // still need to figure out how to "track" synced folder count when a space had a folder but was deleted
+    // server side. we show these as "unavailable" in the folder list but really not sure how the effectively dead folder
+    // is "counted"
+    // void syncedSpaceCountChanged(QUuid accountId, int syncedCount);
+    // void unsyncedSpacesChanged(QUuid accountId, QSet<GraphApi::Space *> unsyncedSpaces, int totalSpaceCount);
+    void unsyncedSpaceCountChanged(QUuid accountId, int unsyncedCount, int totalSpaces);
 
 public Q_SLOTS:
 
@@ -335,6 +339,7 @@ public Q_SLOTS:
     void forceFolderSync(Folder *f);
 
 private Q_SLOTS:
+
     void slotFolderSyncPauseChanged(Folder *, bool paused);
     void slotFolderCanSyncChanged();
     void slotFolderSyncStarted();
@@ -374,7 +379,29 @@ private:
      *
      *  emits folderListChanged
      */
-    void loadSpacesWhenReady(AccountState *accountState, bool useVfs);
+    void loadSpaces(AccountState *accountState, bool useVfs);
+
+    /**
+     * @brief onSpacesAdded - handles notice from spaces manager that spaces were added
+     * @param accountId - account the new spaces live in
+     * @param spaces - the new spaces
+     * @param totalSpaceCount - total space count after new spaces added
+     *
+     * important change: the spaces manager now filters out disabled spaces automatically so no one else should be trying to figure out
+     * if a space is disabled or not - they will not be part of the active space set from now on
+     */
+    void onSpacesAdded(const QUuid &accountId, QList<GraphApi::Space *> spaces, int totalSpaceCount);
+
+    /**
+     * @brief onSpacesRemoved - handles notice from spaces manager that spaces were removed
+     * @param accountId - account the spaces lived in
+     * @param spaceIds - these are the spoace id's of removed spaces since the pointers are already gone
+     * @param totalSpaceCount - the number of spaces available after removal
+     *
+     * important change: spaces that have been disabled will now appear in the "removed" collection because the spaces manager filters
+     * them out from the start, now.
+     */
+    void onSpacesRemoved(const QUuid &accountId, QList<QString> spaceIds, int totalSpaceCount);
 
     /**
      *  reads the folder defs from the config for a single account.
@@ -417,6 +444,13 @@ private:
     // impl detail: we also disconnect the folder from autosave here!
     void removeFolderSettings(Folder *folder, QSettings &settings);
 
+    /**
+     *  Removes a folder sync permanently and deletes the folder
+     *  Not for general folder cleanup
+     *  it is caller's responsibility to remove folder from settings if necessary.
+     */
+    void deleteFolderSync(Folder *);
+
     /** Queues all folders for syncing. */
     void scheduleAllFolders();
 
@@ -428,7 +462,15 @@ private:
     // pair this with _socketApi->slotUnregisterPath(folder);
     void registerFolderWithSocketApi(Folder *folder);
 
-    QSet<Folder *> _disabledFolders;
+    // Helper for `checkPathValidity`. It first checks if the folder `path` exists, and if not recusively checks its parent. When a folder
+    // is found, it checks for sync root markers. See the documentation of `checkPathValidity` for when a path is valid. If the path
+    // is valid, a null-string is returned. When a path is invalid, an error string is returned.
+    //
+    // For example: start with /x/y/z
+    // First check is if z exists. If not, retry with /x/y.
+    // Now if /x/y exists, check for markers wether this is used as a spaces folder, or a sync root for another account. If it is, return an error message. If
+    // not, check /x. When a path is valid, the null string is returned.
+    static QString findExistingFolderAndCheckValidity(const QString &path, NewFolderType folderType, const QUuid &accountUuid);
 
     QString _folderConfigPath;
     bool _ignoreHiddenFiles = true;
@@ -448,18 +490,28 @@ private:
 
     static FolderMan *_instance;
 
-    // todo: find a way to separate the folders by account id since we often need to filter them that way
-    // I would love to use QMultiHash with key == account uuid but docs say the values() are returnd in most recently added order, which is
-    // basically backwards. Eg we'd have to reverse the list of values in so many cases (to read it or write it or show it etc)
-    // I don't understand this impl choice at all, Qt!!!
-    // QList<Folder *> _folders;
-    QMultiHash<QUuid, Folder *> _folders;
+    // the inner hash contains the folder pointers hashed against their spaceId which makes any kind if retrieval *much*
+    // faster. the folders need to be split by account id for a variety of reasons, but a very important factor is that the "shares" space
+    // always has the same space id even across accounts.
+    // uuid is the account id, qstring is the folder's space id, folder is obvious I hope
+    QHash<QUuid, QHash<QString, Folder *>> _folders;
 
+
+    // similar to the _folders container, unsynced spaces need to be split by account id primarily because the "shares" space
+    // always has the same space id even across accounts.
+    // inner hash contains the unsynced spaces hashed by spaceid
+    // uuid is the account id, qstring is the space id, space is self explanatory
+    QHash<QUuid, QHash<QString, GraphApi::Space *>> _unsyncedSpaces;
+
+    // as far as I can tell these are paused folders, not to be confused with folders whose space is disabled. We add and remove folders to this
+    // set when they are paused/resumed but aside from that we don't really do anything with it.
+    QSet<Folder *> _disabledFolders;
 
     friend class OCC::Application;
 
     // the literal is needed to get the tests to build
     inline static const QString IgnoreHiddenFilesKey = QStringLiteral("ignoreHiddenFiles");
+    void scheduleFoldersForAccount(const QUuid &accountId);
 };
 
 } // namespace OCC

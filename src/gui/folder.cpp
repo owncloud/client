@@ -21,7 +21,6 @@
 #include "accountstate.h"
 #include "application.h"
 #include "common/checksums.h"
-#include "common/depreaction.h"
 #include "common/filesystembase.h"
 #include "common/syncjournalfilerecord.h"
 #include "common/version.h"
@@ -74,7 +73,8 @@ auto displayNameC()
     return QLatin1String("displayString");
 }
 
-auto deployedC()
+// todo #52 - eliminate this config value and scrub configs next major release
+[[deprecated("deployed concept is no longer supported and will be removed in client 8.0")]] auto deployedC()
 {
     return QStringLiteral("deployed");
 }
@@ -193,7 +193,7 @@ GraphApi::Space *Folder::space() const
 bool Folder::checkLocalPath()
 {
 #ifdef Q_OS_WIN
-    Utility::NtfsPermissionLookupRAII ntfs_perm;
+    QNtfsPermissionCheckGuard ntfs_perm;
 #endif
     const QFileInfo fi(_definition.localPath());
     _canonicalLocalPath = fi.canonicalFilePath();
@@ -330,7 +330,7 @@ QUrl Folder::webDavUrl() const
 {
     GraphApi::Space *sp = space();
     if (sp)
-        return QUrl(sp->drive().getRoot().getWebDavUrl());
+        return sp->webDavUrl();
     return _definition.webDavUrl();
 }
 
@@ -351,7 +351,7 @@ bool Folder::canSync() const
 {
     if (!_engine || !_accountState || !_accountState->account() || !_folderWatcher)
         return false;
-    return !syncPaused() && _accountState->readyForSync() && isReady() && _accountState->account()->hasCapabilities();
+    return isAvailable() && !syncPaused() && _accountState->readyForSync() && isReady() && _accountState->account()->hasCapabilities();
 }
 
 bool Folder::isReady() const
@@ -377,6 +377,24 @@ void Folder::setSyncPaused(bool paused)
         setSyncState(SyncResult::Paused);
     }
     Q_EMIT canSyncChanged();
+}
+
+void Folder::setAvailable(bool available)
+{
+    if (available != (space() != nullptr))
+        return;
+
+    _available = available;
+    _syncResult.reset();
+    if (!_available) {
+        _syncResult.setStatus(SyncResult::Status::Unavailable);
+        _syncResult.appendErrorString(tr("The folder has been disabled or removed from the server"));
+    } else {
+        _syncResult.setStatus(SyncResult::Status::NotYetStarted);
+    }
+
+    emit syncStateChange();
+    emit canSyncChanged();
 }
 
 void Folder::setSyncState(SyncResult::Status state)
@@ -502,7 +520,7 @@ void Folder::startVfs()
         return;
     }
 
-    VfsSetupParams vfsParams(_accountState->account(), webDavUrl(), groupInSidebar(), _engine.get());
+    VfsSetupParams vfsParams(_accountState->account(), webDavUrl(), _engine.get());
     vfsParams.filesystemPath = path();
     vfsParams.remotePath = remotePathTrailingSlash();
     vfsParams.journal = &_journal;
@@ -849,7 +867,6 @@ bool Folder::reloadExcludes()
 
 void Folder::startSync()
 {
-    Q_ASSERT(isReady() && _folderWatcher);
     if (!isReady() || !_folderWatcher) {
         qCWarning(lcFolder) << "Folder sync attempted before ready and/or without valid folder watcher";
         return;
@@ -1130,6 +1147,11 @@ FolderDefinition::FolderDefinition(const QByteArray &id, const QUrl &davUrl, con
 {
 }
 
+FolderDefinition::FolderDefinition(const QUrl &davUrl, const QString &spaceId, const QString &displayName)
+    : FolderDefinition(QUuid::createUuid().toByteArray(QUuid::WithoutBraces), davUrl, spaceId, displayName)
+{
+}
+
 void FolderDefinition::setPriority(uint32_t newPriority)
 {
     _priority = newPriority;
@@ -1222,17 +1244,6 @@ QString FolderDefinition::displayName() const
         }
     }
     return _displayName;
-}
-
-bool Folder::groupInSidebar() const
-{
-    if (_accountState && _accountState->account() && _accountState->account()->hasDefaultSyncRoot()) {
-        // QFileInfo is horrible and "/foo/" is treated different to "/foo"
-        const QString parentDir = QFileInfo(Utility::stripTrailingSlash(path())).dir().path();
-        // If parentDir == home, we would add the home dir to the sidebar.
-        return QFileInfo(parentDir) != QFileInfo(QDir::homePath()) && FileSystem::isChildPathOf(parentDir, _accountState->account()->defaultSyncRoot());
-    }
-    return false;
 }
 
 } // namespace OCC

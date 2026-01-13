@@ -247,7 +247,7 @@ QString ConfigFile::configPath()
 QString ConfigFile::excludeFile(Scope scope) const
 {
 #ifdef Q_OS_WIN
-    Utility::NtfsPermissionLookupRAII ntfs_perm;
+    QNtfsPermissionCheckGuard ntfs_perm;
 #endif
     // prefer sync-exclude.lst, but if it does not exist, check for
     // exclude.lst for compatibility reasons in the user writeable

@@ -36,7 +36,7 @@ void ETagWatcher::slotSpaceChanged(GraphApi::Space *space)
     QString spaceId = space->id();
     QUuid account = space->accountId();
     if (_lastEtagJobForSpace.contains(account) && _lastEtagJobForSpace[account].contains(spaceId)) {
-        QString etag = Utility::normalizeEtag(space->drive().getRoot().getETag());
+        QString etag = Utility::normalizeEtag(space->eTag());
         updateEtag(account, spaceId, etag);
     }
 }
@@ -60,14 +60,14 @@ void ETagWatcher::onFolderAdded(const QUuid &accountId, Folder *folder)
 {
     Q_UNUSED(accountId);
 
-    QString spaceId = folder->definition().spaceId();
+    QString spaceId = folder->spaceId();
     if (_lastEtagJobForSpace.contains(accountId) && _lastEtagJobForSpace[accountId].contains(spaceId))
         return;
 
     _lastEtagJobForSpace[accountId].insert(spaceId, ETagInfo{{}, folder});
 
     connect(&folder->syncEngine(), &SyncEngine::rootEtag, this, [accountId, folder, this](const QString &etag, const QDateTime &time) {
-        QString spaceId = folder->definition().spaceId();
+        QString spaceId = folder->spaceId();
         if (_lastEtagJobForSpace.contains(accountId) && _lastEtagJobForSpace[accountId].contains(spaceId)) {
             auto &info = _lastEtagJobForSpace[accountId][spaceId];
             info.etag = etag;
@@ -82,7 +82,7 @@ void ETagWatcher::onFolderRemoved(const QUuid &accountId, Folder *folder)
 {
     Q_UNUSED(accountId);
     if (folder && _lastEtagJobForSpace.contains(accountId))
-        _lastEtagJobForSpace[accountId].remove(folder->definition().spaceId());
+        _lastEtagJobForSpace[accountId].remove(folder->spaceId());
 }
 
 void ETagWatcher::updateEtag(const QUuid &accountId, const QString &spaceId, const QString &etag)

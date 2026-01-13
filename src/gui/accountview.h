@@ -51,9 +51,7 @@ class OWNCLOUDGUI_EXPORT AccountView : public QWidget
 {
     Q_OBJECT
     Q_PROPERTY(AccountState *accountState MEMBER _accountState CONSTANT)
-    Q_PROPERTY(QSortFilterProxyModel *model MEMBER _sortModel CONSTANT)
-    Q_PROPERTY(uint unsyncedSpaces READ unsyncedSpaces NOTIFY unsyncedSpacesChanged)
-    Q_PROPERTY(uint syncedSpaces READ syncedSpaces NOTIFY syncedSpacesChanged)
+
     OC_DECLARE_WIDGET_FOCUS
     QML_ELEMENT
     QML_UNCREATABLE("C++ only")
@@ -68,36 +66,29 @@ public:
     void addModalLegacyDialog(QWidget *widget, ModalWidgetSizePolicy sizePolicy);
     void addModalAccountWidget(AccountModalWidget *widget);
 
-    uint unsyncedSpaces() const;
-    uint syncedSpaces() const;
+    //   uint unsyncedSpaces() const;
+    //   uint syncedSpaces() const;
 
-    QSortFilterProxyModel *model() { return _sortModel; }
+    // QSortFilterProxyModel *model() { return _sortModel; }
 
 Q_SIGNALS:
     void showIssuesList();
-    void unsyncedSpacesChanged();
-    void syncedSpacesChanged();
-    void removeFolderFromGui(Folder *f);
+
 
 public Q_SLOTS:
     void slotAccountStateChanged(AccountState::State state);
-    void slotSpacesUpdated();
-    void slotAddFolder();
 
 protected Q_SLOTS:
-    void slotEnableCurrentFolder(Folder *folder, bool terminate = false);
-    void slotForceSyncCurrentFolder(Folder *folder);
-    void slotRemoveCurrentFolder(Folder *folder);
-    void slotEnableVfsCurrentFolder(Folder *folder);
-    void slotDisableVfsCurrentFolder(Folder *folder);
-    void slotFolderWizardAccepted();
     void slotDeleteAccount();
     void slotOpenAccountInBrowser();
     void slotToggleSignInState();
-    void slotCustomContextMenuRequested(Folder *folder);
 
 protected:
     void accountSettingUpChanged(bool settingUp);
+
+private slots:
+    void onRequestShowModalWidget(QWidget *widget) { addModalLegacyDialog(widget, ModalWidgetSizePolicy::Expanding); }
+    void onRequestAccountModalWidget(OCC::AccountModalWidget *widget);
 
 private:
     void showSelectiveSyncDialog(Folder *folder);
@@ -105,7 +96,6 @@ private:
     enum class StatusIcon { None, Connected, Disconnected, Info, Warning };
     void showConnectionLabel(const QString &message, StatusIcon statusIcon, QStringList errors = QStringList());
 
-    void doForceSyncCurrentFolder(Folder *selectedFolder);
 
     void buildManageAccountMenu();
 

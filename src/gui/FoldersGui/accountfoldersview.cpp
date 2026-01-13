@@ -11,7 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  */
-#include "accountfolderview.h"
+#include "accountfoldersview.h"
 
 #include <QHBoxLayout>
 #include <QLabel>
@@ -24,13 +24,14 @@
 
 namespace OCC {
 
-AccountFolderView::AccountFolderView(QWidget *parent)
+
+AccountFoldersView::AccountFoldersView(QWidget *parent)
     : QWidget{parent}
 {
     buildView();
 }
 
-void AccountFolderView::buildView()
+void AccountFoldersView::buildView()
 {
     QVBoxLayout *mainLayout = new QVBoxLayout();
     QLabel *titleLabel = new QLabel(tr("Folder sync"), this);
@@ -44,7 +45,7 @@ void AccountFolderView::buildView()
 
     _addFolderButton = new QPushButton(tr("Add new folder sync…"), this);
     _addFolderButton->setObjectName("addAccountFolderButton");
-    connect(_addFolderButton, &QPushButton::clicked, this, &AccountFolderView::addFolderTriggered);
+    connect(_addFolderButton, &QPushButton::clicked, this, &AccountFoldersView::addFolderTriggered);
     buttonLineLayout->addStretch(1);
     buttonLineLayout->addWidget(_addFolderButton, 0, Qt::AlignRight);
     mainLayout->addLayout(buttonLineLayout);
@@ -58,6 +59,7 @@ void AccountFolderView::buildView()
     _treeView->setLineWidth(2);
     mainLayout->addWidget(_treeView);
 
+
     _syncedFolderCountLabel = new QLabel("placeholder for sync count", this);
     _syncedFolderCountLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     mainLayout->addWidget(_syncedFolderCountLabel, 0, Qt::AlignLeft);
@@ -65,10 +67,18 @@ void AccountFolderView::buildView()
     setLayout(mainLayout);
 }
 
-void AccountFolderView::setItemModel(QStandardItemModel *model)
+void AccountFoldersView::setItemModel(QStandardItemModel *model)
 {
     _treeView->setModel(model);
 }
 
-void AccountFolderView::setSyncedFolderCount(int synced, int total) { }
+void AccountFoldersView::setSyncedFolderCount(int synced, int total)
+{
+    _syncedFolderCountLabel->setText(tr("Syncing %1 out of %2 spaces").arg(QString::number(synced), QString::number(total)));
+}
+
+void AccountFoldersView::enableAddFolder(bool enableAdd)
+{
+    _addFolderButton->setEnabled(enableAdd);
+}
 }

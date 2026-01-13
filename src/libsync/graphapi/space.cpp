@@ -51,17 +51,12 @@ Space::Space(SpacesManager *spacesManager, const OpenAPI::OAIDrive &drive, const
     connect(_image, &SpaceImage::imageChanged, this, &Space::imageChanged);
 }
 
-OpenAPI::OAIDrive Space::drive() const
-{
-    return _drive;
-}
-
 QUuid Space::accountId() const
 {
     return _accountId;
 }
 
-void Space::setDrive(const OpenAPI::OAIDrive &drive)
+bool Space::setDrive(const OpenAPI::OAIDrive &drive)
 {
 
     // first config naturally has an empty drive - reality check that updated drives are always valid
@@ -74,10 +69,11 @@ void Space::setDrive(const OpenAPI::OAIDrive &drive)
     // as on changing the space image so we may have further wrinkles if there is an error in logic server side, but for now
     // we want to reduce updates to "only when something changed" else everything is auto-refreshed periodically (eg every 30s)
     if (curTag == newTag)
-        return;
+        return false;
 
     _drive = drive;
     _image->update();
+    return true;
 }
 
 QString Space::displayName() const
@@ -97,7 +93,13 @@ QString Space::displayName() const
     return _drive.getName();
 }
 
-uint32_t Space::priority() const
+QString Space::description() const
+{
+    return _drive.getDescription();
+}
+
+
+uint32_t Space::sortPriority() const
 {
     if (_drive.getDriveType() == personalC) {
         return 100;
@@ -123,9 +125,29 @@ QString Space::id() const
     return _drive.getRoot().getId();
 }
 
-QUrl Space::webdavUrl() const
+QUrl Space::webDavUrl() const
 {
     return QUrl(_drive.getRoot().getWebDavUrl());
+}
+
+QUrl Space::webUrl() const
+{
+    return QUrl(_drive.getRoot().getWebUrl());
+}
+
+QString Space::eTag() const
+{
+    return _drive.getETag();
+}
+
+QList<OpenAPI::OAIDriveItem> Space::getSpecialItems() const
+{
+    return _drive.getSpecial();
+}
+
+OpenAPI::OAIQuota Space::quota() const
+{
+    return _drive.getQuota();
 }
 
 SpaceImage::SpaceImage(Space *space)
@@ -154,7 +176,7 @@ QUrl SpaceImage::qmlImageUrl() const
 
 void SpaceImage::update()
 {
-    const auto &special = _space->drive().getSpecial();
+    const auto &special = _space->getSpecialItems();
     const auto img = std::find_if(special.cbegin(), special.cend(), [](const auto &it) { return it.getSpecialFolder().getName() == QLatin1String("image"); });
     if (img != special.cend())
     {

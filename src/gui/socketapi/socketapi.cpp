@@ -360,6 +360,8 @@ void SocketApi::slotUpdateFolderView(Folder *f)
         }
         case SyncResult::SetupError:
             [[fallthrough]];
+        case SyncResult::Unavailable:
+            [[fallthrough]];
         case OCC::SyncResult::Undefined:
             Q_FALLTHROUGH();
         case OCC::SyncResult::NotYetStarted:
@@ -1007,5 +1009,3 @@ void SocketApiJobV2::setWarning(const QString &warning)
 }
 
 } // namespace OCC
-
-#include "socketapi.moc"
