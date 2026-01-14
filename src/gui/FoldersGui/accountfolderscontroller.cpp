@@ -236,7 +236,8 @@ void AccountFoldersController::onEnableVfs()
                "The only advantage of disabling virtual file support is that the selective sync feature "
                "will become available again."
                "\n\n"
-               "This action will abort any currently running synchronization."));
+               "This action will abort any currently running synchronization."),
+            QMessageBox::Yes | QMessageBox::No, ocApp()->gui()->settingsDialog());
         msgBox.button(QMessageBox::Yes)->setText(tr("Disable support"));
         msgBox.button(QMessageBox::No)->setText(tr("Cancel"));
 
