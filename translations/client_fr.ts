@@ -1355,47 +1355,47 @@ Cela veut dire que le client de synchronisation ne peut pas téléverser les cha
     <message>
         <location filename="../src/gui/folderman.cpp" line="918"/>
         <source>The selected path is not a folder.</source>
-        <translation type="unfinished"/>
+        <translation>Le chemin sélectionné n&apos;est pas un dossier.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="922"/>
         <source>The folder %1 is used in a folder sync connection.</source>
-        <translation type="unfinished"/>
+        <translation>Le dossier %1 est utilisé dans une connexion de dossier synchronisé.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="930"/>
         <source>Folder &apos;%1&apos; is already in use by application %2.</source>
-        <translation type="unfinished"/>
+        <translation>Le dossier &apos;%1&apos; est déjà utilisé par l&apos;application %2</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="977"/>
         <source>There is already a sync from the server to this local folder.</source>
-        <translation type="unfinished"/>
+        <translation>Il y a déjà une synchronisation du serveur vers ce dossier local.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="980"/>
         <source>The local folder %1 already contains a folder used in a folder sync connection.</source>
-        <translation type="unfinished"/>
+        <translation>Le dossier local %1 contient déjà un dossier utilisé dans une connexion de dossier synchronisé.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="985"/>
         <source>The local folder %1 is already contained in a folder used in a folder sync connection.</source>
-        <translation type="unfinished"/>
+        <translation>Le dossier local %1 est déjà contenu dans un dossier utilisé dans une connexion de dossier synchronisé.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="997"/>
         <source>No valid folder selected.</source>
-        <translation type="unfinished"/>
+        <translation>Pas de dossier valide sélectionné.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="1016"/>
         <source>The selected path does not exist.</source>
-        <translation type="unfinished"/>
+        <translation>Le chemin sélectionné n&apos;existe pas. </translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="1022"/>
         <source>You have no permission to write to the selected folder.</source>
-        <translation type="unfinished"/>
+        <translation>Vous n&apos;avez pas l&apos;autorisation d&apos;écrire dans le dossier sélectionné.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="943"/>
