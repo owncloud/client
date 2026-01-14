@@ -551,7 +551,7 @@ private:
     QScopedPointer<LocalDiscoveryTracker> _localDiscoveryTracker;
 
     /**
-     * The vfs mode instance (created by plugin) to use. Never null. When vfs is not im play, vfs_off is the impl used.
+     * The vfs mode instance (created by plugin) to use. Never null. When vfs is not in play, vfs_off is the impl used.
      */
     // Refactoring todo: this is shared with the SyncOptions that are passed to the engine. This needs reevaluation and cleanup
     // to ensure we don't keep it alive outside of usable scope. Would probably be simplest to make it a QPointer for use with the
