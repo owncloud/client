@@ -1355,47 +1355,47 @@ Cela veut dire que le client de synchronisation ne peut pas téléverser les cha
     <message>
         <location filename="../src/gui/folderman.cpp" line="918"/>
         <source>The selected path is not a folder.</source>
-        <translation type="unfinished"/>
+        <translation>Le chemin sélectionné n&apos;est pas un dossier.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="922"/>
         <source>The folder %1 is used in a folder sync connection.</source>
-        <translation type="unfinished"/>
+        <translation>Le dossier %1 est utilisé dans une connexion de dossier synchronisé.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="930"/>
         <source>Folder &apos;%1&apos; is already in use by application %2.</source>
-        <translation type="unfinished"/>
+        <translation>Le dossier &apos;%1&apos; est déjà utilisé par l&apos;application %2</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="977"/>
         <source>There is already a sync from the server to this local folder.</source>
-        <translation type="unfinished"/>
+        <translation>Il y a déjà une synchronisation du serveur vers ce dossier local.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="980"/>
         <source>The local folder %1 already contains a folder used in a folder sync connection.</source>
-        <translation type="unfinished"/>
+        <translation>Le dossier local %1 contient déjà un dossier utilisé dans une connexion de dossier synchronisé.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="985"/>
         <source>The local folder %1 is already contained in a folder used in a folder sync connection.</source>
-        <translation type="unfinished"/>
+        <translation>Le dossier local %1 est déjà contenu dans un dossier utilisé dans une connexion de dossier synchronisé.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="997"/>
         <source>No valid folder selected.</source>
-        <translation type="unfinished"/>
+        <translation>Pas de dossier valide sélectionné.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="1016"/>
         <source>The selected path does not exist.</source>
-        <translation type="unfinished"/>
+        <translation>Le chemin sélectionné n&apos;existe pas. </translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="1022"/>
         <source>You have no permission to write to the selected folder.</source>
-        <translation type="unfinished"/>
+        <translation>Vous n&apos;avez pas l&apos;autorisation d&apos;écrire dans le dossier sélectionné.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="943"/>
@@ -3299,48 +3299,48 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
 <context>
     <name>OCC::VfsWinPrivate</name>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="580"/>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="583"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="582"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="585"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
     </message>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="617"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="619"/>
         <source>Could not find StorageProviderState property %1</source>
         <translation>Impossible de trouver la propriété StorageProviderState %1</translation>
     </message>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="631"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="633"/>
         <source>Could not find StorageFolder for %1 error: %2</source>
         <translation>Impossible de trouver StorageFolder pour %1. Erreur : %2</translation>
     </message>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="641"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="643"/>
         <source>Could not retrieve StorageFolder for %1 %2 (0x%3)</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="683"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="677"/>
         <source>The folder is used by a different client: %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="705"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="700"/>
         <source>Error registering StorageProvider for %1: %2 (0x%3)</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="738"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="735"/>
         <source>Unable to connect sync root: %1 error: %2</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="678"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="672"/>
         <source>%1 is managed by another sync client</source>
         <translation>%1 est géré par un autre client de synchronisation.</translation>
     </message>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="693"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="687"/>
         <source>Downgrading the folder from %1 to %2 is not supported</source>
         <translation>La rétrogradation du dossier de %1 à %2 n&apos;est pas prise en charge.</translation>
     </message>

@@ -1120,8 +1120,7 @@ Folder *FolderMan::addFolderFromScratch(AccountState *accountState, FolderDefini
     auto newFolder = addFolder(accountState, folderDefinition);
 
     if (newFolder) {
-        // With spaces we only handle the main folder
-        if (!newFolder->groupInSidebar()) {
+        if (newFolder->vfs().mode() != Vfs::WindowsCfApi) {
             Utility::setupFavLink(folderDefinition.localPath());
         }
         qCDebug(lcFolderMan) << "Local sync folder" << folderDefinition.localPath() << "successfully created!";
