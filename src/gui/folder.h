@@ -477,8 +477,10 @@ private:
      * May be called several times.
      */
     // Refactoring todo: I would expect a "registration" function to take an arg for the thing that is supposed to be registered
-    // I also do not see evidence that this is called "several times" aside from the fact that it's called any time the
-    //
+    // I also do not see evidence that this is called "several times" aside from the fact that it's called in relation to vfs::started()
+    // so if vfs is in play, any time you turn vfs on or off for an existing folder, yes it can be called again. Under normal circumstances
+    // I don't expect it to be very common for it to get called multiple times, though. Part of the todo is to evaluate whether it makes sense
+    // to re/build the watcher relative to vfs state as I don't see any connection conceptually (yet, at least).
     void registerFolderWatcher();
 
     enum LogStatus {
@@ -526,7 +528,7 @@ private:
     /**
      * Setting up vfs can be an async operation which is triggered by vfs::startImpl
      * this bool is set to true once vfs is fully started as notified via the started() signal
-     * when a "real" vfs impl is in play, started is emitted after the async setup is complete
+     * when a "real" vfs impl is in play, started() is emitted after the async setup is complete
      * when vfs is effectively "off", started() is emitted immediately by startImpl
      * main point is that even when vfs is not actually in play we pretend it's "started" -> _vfsIsReady will be true
      */

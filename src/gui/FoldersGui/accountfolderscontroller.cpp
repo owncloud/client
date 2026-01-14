@@ -28,6 +28,8 @@
 #include "networkjobs.h"
 #include "openfilemanager.h"
 
+#include "theme.h"
+
 #include <QMessageBox>
 #include <QtWidgets/qabstractbutton.h>
 
@@ -154,13 +156,34 @@ void AccountFoldersController::buildMenuActions()
     itemActions.push_back(_removeSync);
     connect(_removeSync, &QAction::triggered, this, &AccountFoldersController::onRemoveSync);
 
-    // we may want to treat this similar to the enable vfs option, because choose sync can only be activated
-    // if the folder is not using vfs. So the idea is if force vfs is on the user will never be able to choose
-    // so showing the option at all is probably not great
     _chooseSync = new QAction(tr("Choose what to sync"), this);
-    itemActions.push_back(_chooseSync);
-    connect(_chooseSync, &QAction::triggered, this, &AccountFoldersController::onChooseSync);
 
+    Vfs::Mode mode = VfsPluginManager::instance().bestAvailableVfsMode();
+    if (mode == Vfs::WindowsCfApi) {
+        // need extra checks:
+        if (Theme::instance()->forceVirtualFilesOption()) {
+            // get rid of choose sync action as it can never be enabled
+            // yes this is a slightly strange way to do this but think of the alternative code...blech.
+            delete _chooseSync;
+            _chooseSync = nullptr;
+            // don't create the enable vfs action as user can't turn vfs off:
+            return;
+        }
+
+        // todo: #54 - we may need to handle value of Theme::showVirtualFilesOption here too. I already think it should be handled
+        // by bestAvailableVfsMode but maybe we need something more here. future worry.
+
+        _enableVfs = new QAction(this);
+        itemActions.push_back(_enableVfs);
+        connect(_enableVfs, &QAction::triggered, this, &AccountFoldersController::onEnableVfs);
+    }
+
+    if (_chooseSync) {
+        itemActions.push_back(_chooseSync);
+        connect(_chooseSync, &QAction::triggered, this, &AccountFoldersController::onChooseSync);
+    }
+
+    // original enableVfs action "logic"
     /* auto maybeShowEnableVfs = [folder, menu, this]() {
         // Only show "Enable VFS" if a VFS mode is available
           const auto mode = VfsPluginManager::instance().bestAvailableVfsMode();
@@ -188,7 +211,6 @@ void AccountFoldersController::buildMenuActions()
                       maybeShowEnableVfs();
                   }
               }
-          _enableVfs = new QAction(this);
         */
 
     connect(_view, &AccountFoldersView::requestActionsUpdate, this, &AccountFoldersController::updateActions);
@@ -196,74 +218,37 @@ void AccountFoldersController::buildMenuActions()
 }
 
 
-/*void AccountView::slotCustomContextMenuRequested(Folder *folder)
-{
-
-            auto maybeShowEnableVfs = [folder, menu, this]() {
-                // Only show "Enable VFS" if a VFS mode is available
-                const auto mode = VfsPluginManager::instance().bestAvailableVfsMode();
-                if (FolderMan::instance()->checkVfsAvailability(folder->path(), mode)) {
-                    if (mode == Vfs::WindowsCfApi) {
-                        QAction *enableVfsAction = menu->addAction(tr("Enable virtual file support"));
-                        connect(enableVfsAction, &QAction::triggered, this, [folder, this] { slotEnableVfsCurrentFolder(folder); });
-                    }
-                }
-            };
-
-            if (Theme::instance()->showVirtualFilesOption()) {
-                if (Theme::instance()->forceVirtualFilesOption()) {
-                    if (!folder->virtualFilesEnabled()) {
-                        // VFS is currently disabled, but is forced on by theming (e.g. due to a theme change)
-                        maybeShowEnableVfs();
-                    }
-                } else {
-                    if (folder->virtualFilesEnabled()) {
-                        menu->addAction(tr("Disable virtual file support"), this, [folder, this] { slotDisableVfsCurrentFolder(folder); });
-                    } else {
-                        maybeShowEnableVfs();
-                    }
-                }
-            }
-
-    }
-}*/
-
-
 void AccountFoldersController::onEnableVfs()
 {
-    if (!_currentFolder || _currentFolder->virtualFilesEnabled() || VfsPluginManager::instance().bestAvailableVfsMode() != Vfs::WindowsCfApi)
+    if (!_currentFolder || VfsPluginManager::instance().bestAvailableVfsMode() != Vfs::WindowsCfApi)
         return;
 
-    qCInfo(lcAccountFoldersController) << "Enabling vfs support for folder" << _currentFolder->path();
+    if (!_currentFolder->virtualFilesEnabled()) {
+        qCInfo(lcAccountFoldersController) << "Enabling vfs support for folder" << _currentFolder->path();
 
-    // Change the folder vfs mode and load the plugin
-    _currentFolder->setVirtualFilesEnabled(true);
-}
+        // Change the folder vfs mode and load the plugin
+        _currentFolder->setVirtualFilesEnabled(true);
+    } else {
+        QMessageBox msgBox(QMessageBox::Question, tr("Disable virtual file support?"),
+            tr("This action will disable virtual file support. As a consequence contents of folders that "
+               "are currently marked as 'available online only' will be downloaded."
+               "\n\n"
+               "The only advantage of disabling virtual file support is that the selective sync feature "
+               "will become available again."
+               "\n\n"
+               "This action will abort any currently running synchronization."));
+        msgBox.button(QMessageBox::Yes)->setText(tr("Disable support"));
+        msgBox.button(QMessageBox::No)->setText(tr("Cancel"));
 
-void AccountFoldersController::onDisableVfs()
-{
-    if (!_currentFolder)
-        return;
+        int result = msgBox.exec();
+        if (result == QDialog::Rejected)
+            return;
 
-    QMessageBox msgBox(QMessageBox::Question, tr("Disable virtual file support?"),
-        tr("This action will disable virtual file support. As a consequence contents of folders that "
-           "are currently marked as 'available online only' will be downloaded."
-           "\n\n"
-           "The only advantage of disabling virtual file support is that the selective sync feature "
-           "will become available again."
-           "\n\n"
-           "This action will abort any currently running synchronization."));
-    msgBox.button(QMessageBox::Yes)->setText(tr("Disable support"));
-    msgBox.button(QMessageBox::No)->setText(tr("Cancel"));
+        qCInfo(lcAccountFoldersController) << "Disabling vfs support for folder" << _currentFolder->path();
 
-    int result = msgBox.exec();
-    if (result == QDialog::Rejected)
-        return;
-
-    qCInfo(lcAccountFoldersController) << "Disabling vfs support for folder" << _currentFolder->path();
-
-    // Also wipes virtual files, schedules remote discovery
-    _currentFolder->setVirtualFilesEnabled(false);
+        // Also wipes virtual files, schedules remote discovery
+        _currentFolder->setVirtualFilesEnabled(false);
+    }
 }
 
 
@@ -290,10 +275,14 @@ void AccountFoldersController::updateActions()
 
     if (_enableVfs) {
         _enableVfs->setText(_currentFolder && _currentFolder->virtualFilesEnabled() ? tr("Disable virtual file support") : tr("Enable virtual file support"));
-        _enableVfs->setEnabled(_currentFolder->canSync());
+        // we can't block existence of the action when the folder path doesn't support vfs, so disable it here just in case
+        // todo: DC-219 hopefully this check can go away
+        QString pathError = Vfs::pathSupportDetail(_currentFolder->path(), Vfs::WindowsCfApi);
+        _enableVfs->setEnabled(pathError.isEmpty() && _currentFolder->canSync());
     }
 
-    _chooseSync->setEnabled(_currentFolder && _currentFolder->isAvailable() && !_currentFolder->virtualFilesEnabled());
+    if (_chooseSync)
+        _chooseSync->setEnabled(_currentFolder && _currentFolder->isAvailable() && !_currentFolder->virtualFilesEnabled());
 }
 
 void OCC::AccountFoldersController::onShowInSystemFolder()

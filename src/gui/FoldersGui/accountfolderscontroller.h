@@ -56,6 +56,7 @@ private:
     FolderModelController *_modelController = nullptr;
 
     void buildMenuActions();
+
     void updateActions();
 
     // menu actions:
@@ -75,7 +76,6 @@ private:
     void onTogglePauseSync();
     void onRemoveSync();
     void onChooseSync();
-    void onDisableVfs();
     void onEnableVfs();
 };
 }
