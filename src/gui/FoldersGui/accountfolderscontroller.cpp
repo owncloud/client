@@ -167,10 +167,10 @@ void AccountFoldersController::buildMenuActions()
             delete _chooseSync;
             _chooseSync = nullptr;
             // don't create the enable vfs action as user can't turn vfs off:
-        }
 
-        // todo: #54 - we may need to handle value of Theme::showVirtualFilesOption here too. I already think it should be handled
-        // by bestAvailableVfsMode but maybe we need something more here. future worry.
+            // todo: #54 - we may need to handle value of Theme::showVirtualFilesOption here too. I already think it should be handled
+            // by bestAvailableVfsMode but maybe we need something more here. future worry.
+        }
         else {
             _enableVfs = new QAction(this);
             itemActions.push_back(_enableVfs);
@@ -182,36 +182,6 @@ void AccountFoldersController::buildMenuActions()
         itemActions.push_back(_chooseSync);
         connect(_chooseSync, &QAction::triggered, this, &AccountFoldersController::onChooseSync);
     }
-
-    // original enableVfs action "logic"
-    /* auto maybeShowEnableVfs = [folder, menu, this]() {
-        // Only show "Enable VFS" if a VFS mode is available
-          const auto mode = VfsPluginManager::instance().bestAvailableVfsMode();
-          if (mode == Vfs::WindowsCfApi) {
-              _enableVfs = new QAction(tr("Enable virtual file support"), this);
-
-              if (FolderMan::instance()->checkVfsAvailability(folder->path(), mode)) {
-                  if (mode == Vfs::WindowsCfApi) {
-                      QAction *enableVfsAction = menu->addAction(tr("Enable virtual file support"));
-                      connect(enableVfsAction, &QAction::triggered, this, [folder, this] { slotEnableVfsCurrentFolder(folder); });
-                  }
-              }
-          };
-
-          if (Theme::instance()->showVirtualFilesOption()) {
-              if (Theme::instance()->forceVirtualFilesOption()) {
-                  if (!folder->virtualFilesEnabled()) {
-                      // VFS is currently disabled, but is forced on by theming (e.g. due to a theme change)
-                      maybeShowEnableVfs();
-                  }
-              } else {
-                  if (folder->virtualFilesEnabled()) {
-                      menu->addAction(tr("Disable virtual file support"), this, [folder, this] { slotDisableVfsCurrentFolder(folder); });
-                  } else {
-                      maybeShowEnableVfs();
-                  }
-              }
-        */
 
     connect(_view, &AccountFoldersView::requestActionsUpdate, this, &AccountFoldersController::updateActions);
     _view->setFolderActions(itemActions);
