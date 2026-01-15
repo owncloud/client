@@ -505,7 +505,7 @@ Utilitário de sincronização de arquivos na área de trabalho. </translation>
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="77"/>
         <source>Syncing %1 out of %2 spaces</source>
-        <translation type="unfinished"/>
+        <translation>Você está sincronizando %1 de %2 espaços</translation>
     </message>
 </context>
 <context>
@@ -1223,7 +1223,7 @@ A atualização será executada em segundo plano e substituirá o arquivo AppIma
     <message>
         <location filename="../src/gui/folder.cpp" line="391"/>
         <source>The folder has been disabled or removed from the server</source>
-        <translation type="unfinished"/>
+        <translation>A pasta foi desabilitada ou removida do servidor</translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="460"/>
@@ -1355,47 +1355,47 @@ Isso significa que o cliente de sincronização pode não fazer envios de altera
     <message>
         <location filename="../src/gui/folderman.cpp" line="918"/>
         <source>The selected path is not a folder.</source>
-        <translation type="unfinished"/>
+        <translation>O caminho selecionado não é uma pasta!</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="922"/>
         <source>The folder %1 is used in a folder sync connection.</source>
-        <translation type="unfinished"/>
+        <translation>A pasta %1 é usada em uma conexão de sincronização de pasta!</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="930"/>
         <source>Folder &apos;%1&apos; is already in use by application %2.</source>
-        <translation type="unfinished"/>
+        <translation>A pasta &apos;%1&apos; já está em uso pelo aplicativo %2!</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="977"/>
         <source>There is already a sync from the server to this local folder.</source>
-        <translation type="unfinished"/>
+        <translation>Já existe uma sincronização do servidor para esta pasta local. </translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="980"/>
         <source>The local folder %1 already contains a folder used in a folder sync connection.</source>
-        <translation type="unfinished"/>
+        <translation>A pasta local %1 já contém uma pasta utilizada numa ligação de sincronização de pasta. </translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="985"/>
         <source>The local folder %1 is already contained in a folder used in a folder sync connection.</source>
-        <translation type="unfinished"/>
+        <translation>A pasta local %1 já contém uma pasta utilizada numa ligação de sincronização de pasta. </translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="997"/>
         <source>No valid folder selected.</source>
-        <translation type="unfinished"/>
+        <translation>Nenhuma pasta válida selecionada!</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="1016"/>
         <source>The selected path does not exist.</source>
-        <translation type="unfinished"/>
+        <translation>O caminho selecionado não existe!</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="1022"/>
         <source>You have no permission to write to the selected folder.</source>
-        <translation type="unfinished"/>
+        <translation>Voce não tem permissão para escrita na pasta selecionada!</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="943"/>
@@ -3317,22 +3317,22 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="643"/>
         <source>Could not retrieve StorageFolder for %1 %2 (0x%3)</source>
-        <translation type="unfinished"/>
+        <translation>Não foi possível recuperar a pasta de armazenamento para %1 %2 (0x%3)</translation>
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="677"/>
         <source>The folder is used by a different client: %1</source>
-        <translation type="unfinished"/>
+        <translation>A pasta é usada por um cliente diferente %1</translation>
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="700"/>
         <source>Error registering StorageProvider for %1: %2 (0x%3)</source>
-        <translation type="unfinished"/>
+        <translation>Erro ao registrar a Pasta de Armazenamento para %1: %2 %3</translation>
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="735"/>
         <source>Unable to connect sync root: %1 error: %2</source>
-        <translation type="unfinished"/>
+        <translation>Impossível se conectar a %1 erro: %2</translation>
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="672"/>
