@@ -212,10 +212,6 @@ QVariant FolderStatusModel::data(const QModelIndex &index, int role) const
 
     auto getErrors = [f] {
         auto errors = f->syncResult().errorStrings();
-        const Result<void, QString> notLegacyError = FolderMan::instance()->unsupportedConfiguration(f->path());
-        if (!notLegacyError) {
-            errors.append(notLegacyError.error());
-        }
         if (f->syncResult().hasUnresolvedConflicts()) {
             errors.append(tr("There are unresolved conflicts."));
         }

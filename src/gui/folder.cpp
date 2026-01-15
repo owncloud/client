@@ -513,9 +513,14 @@ void Folder::startVfs()
     OC_ENFORCE(_vfs);
     OC_ENFORCE(_vfs->mode() == _definition.virtualFilesMode());
 
-    const auto result = Vfs::checkAvailability(path(), _vfs->mode());
-    if (!result) {
-        _syncResult.appendErrorString(result.error());
+    // todo: DC-219 check to see if this sync error makes it to the gui or not. We need to more clearly inform the user that they should
+    // create a new sync connection to the remote folder, and use improved checks in the folder wizard to make sure vfs is supported
+    // on the chosen path.
+    // ideally we want a check like this before we even get here, eg in the area of load folder from config - but need to be sure there is
+    // a place to clearly instruct the user that the folder sync needs to be re-built with a valid local path
+    QString result = Vfs::pathSupportDetail(path(), _vfs->mode());
+    if (!result.isEmpty()) {
+        _syncResult.appendErrorString(result);
         setSyncState(SyncResult::SetupError);
         return;
     }
@@ -772,11 +777,6 @@ void Folder::changeVfsMode(Vfs::Mode newMode)
     startVfs();
 
     Q_EMIT vfsModeChanged(this, newMode);
-}
-
-bool Folder::supportsSelectiveSync() const
-{
-    return !virtualFilesEnabled() && isReady();
 }
 
 bool Folder::isDeployed() const

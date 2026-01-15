@@ -68,7 +68,7 @@ QString Utility::enumToString(Vfs::Mode mode)
     }
 }
 
-Result<void, QString> Vfs::checkAvailability(const QString &path, Vfs::Mode mode)
+QString Vfs::pathSupportDetail(const QString &path, Vfs::Mode mode)
 {
 #ifdef Q_OS_WIN
     if (mode == Mode::WindowsCfApi) {
@@ -226,6 +226,9 @@ bool OCC::VfsPluginManager::isVfsPluginAvailable(Vfs::Mode mode) const
 
 Vfs::Mode OCC::VfsPluginManager::bestAvailableVfsMode() const
 {
+    // todo: #54 if we keep some theming option to block use of vfs, currently indicated by Theme::showVirtualFilesOption == false,
+    // we should check that here and return Vfs::off
+    // we should also take care to block loading the vfs plugin, below, if branding doesn't want to allow using vfs - be really consistent here.
     if (isVfsPluginAvailable(Vfs::WindowsCfApi)) {
         return Vfs::WindowsCfApi;
     }

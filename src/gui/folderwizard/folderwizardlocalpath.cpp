@@ -63,6 +63,10 @@ QString FolderWizardLocalPath::localPath() const
 
 bool FolderWizardLocalPath::isComplete() const
 {
+    // todo: DC-219 we need a check here to see if the chosen local folder path supports vfs, provided vfs is generally available,
+    // and reject the path with reason it failed if it's no good. Regardless of whether the user currently wants to use vfs or not,
+    // we should not accept local paths that *can't* support vfs if they change their mind later.
+    // use Vfs::pathSupportDetail to get the reason vfs is not supported (path is supported if the return string is empty)
     auto folderType = FolderMan::NewFolderType::SpacesFolder;
     auto accountUuid = folderWizardPrivate()->uuid();
     QString errorStr = FolderMan::instance()->checkPathValidity(localPath(), folderType, accountUuid);

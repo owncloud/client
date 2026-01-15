@@ -54,7 +54,10 @@ private:
     QPointer<Folder> _currentFolder = nullptr;
     AccountFoldersView *_view = nullptr;
     FolderModelController *_modelController = nullptr;
+
     void buildMenuActions();
+
+    void updateActions();
 
     // menu actions:
     QAction *_showInSystemFolder = nullptr;
@@ -73,6 +76,6 @@ private:
     void onTogglePauseSync();
     void onRemoveSync();
     void onChooseSync();
-    void updateActions();
+    void onEnableVfs();
 };
 }
