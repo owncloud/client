@@ -14,7 +14,6 @@
 
 #include "accessmanager.h"
 #include "application.h"
-#include "common/restartmanager.h"
 #include "common/utility.h"
 #include "common/version.h"
 #include "configfile.h"
@@ -108,12 +107,6 @@ OCUpdater::OCUpdater(const QUrl &url)
     , _timeoutWatchdog(new QTimer(this))
 {
 }
-
-void OCUpdater::setUpdateUrl(const QUrl &url)
-{
-    _updateUrl = url;
-}
-
 
 void OCUpdater::backgroundCheckForUpdate()
 {
