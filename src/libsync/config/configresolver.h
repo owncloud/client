@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include "../theme.h"
@@ -22,6 +21,9 @@ public:
     // account setup
     static bool allowServerUrlChange();
     static QString serverUrl();
+
+    // Return true if update checks should be skipped (e.g., via env or system config)
+    static bool skipUpdateCheck();
 
     // OAuth/OpenID Connect
     static OpenIdConfig openIdConfig();

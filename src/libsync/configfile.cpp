@@ -15,6 +15,9 @@
 #include "common/asserts.h"
 #include "common/utility.h"
 #include "common/version.h"
+
+#include "config/configresolver.h"
+#include "config/systemconfig.h"
 #ifdef Q_OS_WIN
 #include "common/utility_win.h"
 #endif
@@ -209,27 +212,6 @@ bool ConfigFile::restoreGeometryHeader(QHeaderView *header)
         return true;
     }
     return false;
-}
-
-// TODO: remove this in favor of SystemConfig
-QVariant ConfigFile::getPolicySetting(const QString &setting, const QVariant &defaultValue) const
-{
-    if (Utility::isWindows()) {
-        // check for policies first and return immediately if a value is found.
-        QSettings userPolicy(QStringLiteral("HKEY_CURRENT_USER\\Software\\Policies\\%1\\%2").arg(Theme::instance()->vendor(), Theme::instance()->appNameGUI()),
-            QSettings::NativeFormat);
-        if (userPolicy.contains(setting)) {
-            return userPolicy.value(setting);
-        }
-
-        QSettings machinePolicy(
-            QStringLiteral("HKEY_LOCAL_MACHINE\\Software\\Policies\\%1\\%2").arg(Theme::instance()->vendor(), Theme::instance()->appNameGUI()),
-            QSettings::NativeFormat);
-        if (machinePolicy.contains(setting)) {
-            return machinePolicy.value(setting);
-        }
-    }
-    return defaultValue;
 }
 
 QString ConfigFile::configPath()
@@ -464,16 +446,15 @@ chrono::milliseconds ConfigFile::updateCheckInterval(const QString &connection) 
     return interval;
 }
 
-bool ConfigFile::skipUpdateCheck(const QString &connection) const
+bool ConfigFile::skipUpdateCheck() const
 {
-    QString con(connection);
-    if (connection.isEmpty())
-        con = defaultConnection();
+    if (ConfigResolver::skipUpdateCheck()) {
+        return true;
+    }
+    auto con = defaultConnection();
 
     QVariant fallback = getValue(skipUpdateCheckC(), con, false);
-    fallback = getValue(skipUpdateCheckC(), QString(), fallback);
-
-    QVariant value = getPolicySetting(skipUpdateCheckC(), fallback);
+    QVariant value = getValue(skipUpdateCheckC(), QString(), fallback);
     return value.toBool();
 }
 
@@ -539,37 +520,14 @@ void ConfigFile::setProxyType(QNetworkProxy::ProxyType proxyType, const QString 
     settings.sync();
 }
 
-// TODO: remove this in favor of SystemConfig
 QVariant ConfigFile::getValue(const QString &param, const QString &group,
     const QVariant &defaultValue) const
 {
-    QVariant systemSetting;
-    if (Utility::isMac()) {
-        QSettings systemSettings(QStringLiteral("/Library/Preferences/%1.plist").arg(Theme::instance()->orgDomainName()), QSettings::NativeFormat);
-        if (!group.isEmpty()) {
-            systemSettings.beginGroup(group);
-        }
-        systemSetting = systemSettings.value(param, defaultValue);
-    } else if (Utility::isUnix()) {
-        QSettings systemSettings(QStringLiteral(SYSCONFDIR "/%1/%1.conf").arg(Theme::instance()->appName()), QSettings::NativeFormat);
-        if (!group.isEmpty()) {
-            systemSettings.beginGroup(group);
-        }
-        systemSetting = systemSettings.value(param, defaultValue);
-    } else { // Windows
-        QSettings systemSettings(
-            QStringLiteral("HKEY_LOCAL_MACHINE\\Software\\%1\\%2").arg(Theme::instance()->vendor(), Theme::instance()->appNameGUI()), QSettings::NativeFormat);
-        if (!group.isEmpty()) {
-            systemSettings.beginGroup(group);
-        }
-        systemSetting = systemSettings.value(param, defaultValue);
-    }
-
     auto settings = makeQSettings();
     if (!group.isEmpty())
         settings.beginGroup(group);
 
-    return settings.value(param, systemSetting);
+    return settings.value(param, defaultValue);
 }
 
 void ConfigFile::setValue(const QString &key, const QVariant &value)
@@ -619,6 +577,11 @@ void ConfigFile::setPauseSyncWhenMetered(bool isChecked)
 
 bool ConfigFile::moveToTrash() const
 {
+    // system config has precedence
+    if (SystemConfig::moveToTrash()) {
+        return true;
+    }
+
     auto defaultValue = Theme::instance()->moveToTrashDefaultValue();
     return getValue(moveToTrashC(), QString(), defaultValue).toBool();
 }

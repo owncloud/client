@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include "../theme.h"
@@ -26,6 +25,12 @@ public:
 
     // section: OpenID Connect
     static OpenIdConfig openIdConfig();
+
+    // section: updater
+    static bool skipUpdateCheck();
+
+    // section: trash handling
+    static bool moveToTrash();
 
     // General purpose function
     static QVariant value(QAnyStringView key, const QVariant &defaultValue);

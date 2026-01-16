@@ -20,6 +20,12 @@ QString ConfigResolver::serverUrl()
     return SystemConfig::serverUrl();;
 }
 
+bool ConfigResolver::skipUpdateCheck()
+{
+    // only in SystemConfig - this is not a Theme option
+    return SystemConfig::skipUpdateCheck();
+}
+
 OpenIdConfig ConfigResolver::openIdConfig()
 {
     // TODO: shall we fill values in from the Theme in case not set within SystemConfig?

@@ -22,9 +22,12 @@ QVariant SystemConfig::value(QAnyStringView key, const QVariant &defaultValue)
 QString SystemConfig::configPath(const QOperatingSystemVersion::OSType& os, const Theme& theme)
 {
     if (os == QOperatingSystemVersion::Windows) {
-        return QString("HKEY_LOCAL_MACHINE\\Software\\%1\\%2").arg(theme.vendor(), theme.appNameGUI());
+        // we use HKEY_LOCAL_MACHINE\Software\Policies since this is the location whe GPO operates
+        return QString("HKEY_LOCAL_MACHINE\\Software\\Policies\\%1\\%2").arg(theme.vendor(), theme.appNameGUI());
     }
     if (os == QOperatingSystemVersion::MacOS) {
+        // we use a subfolder to have one common location where in the future more files can be stored (like icons, images and such)
+        // ini is used on macOS in contrary to plist because they are easier to maintain
         return QString("/Library/Preferences/%1/%2.ini").arg(theme.orgDomainName(), theme.appName());
     }
 
@@ -39,6 +42,22 @@ bool SystemConfig::allowServerUrlChange()
 QString SystemConfig::serverUrl()
 {
     return value("Setup/ServerUrl", QString()).toString();
+}
+
+bool SystemConfig::skipUpdateCheck()
+{
+    return value("Updater/SkipUpdateCheck", false).toBool();
+}
+
+bool SystemConfig::moveToTrash()
+{
+    // check settings first; if not present, fall back to the Theme default
+    QVariant v = value("Setup/MoveToTrash", QVariant());
+    if (v.isValid()) {
+        return v.toBool();
+    }
+
+    return Theme::instance()->moveToTrashDefaultValue();
 }
 
 OpenIdConfig SystemConfig::openIdConfig()
