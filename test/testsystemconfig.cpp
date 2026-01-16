@@ -15,7 +15,7 @@ private Q_SLOTS:
     void testConfigPath()
     {
         auto t = OCC::ownCloudTheme();
-        QCOMPARE(OCC::SystemConfig::configPath(QOperatingSystemVersion::Windows, t), QString("HKEY_LOCAL_MACHINE\\Software\\ownCloud\\ownCloud"));
+        QCOMPARE(OCC::SystemConfig::configPath(QOperatingSystemVersion::Windows, t), QString("HKEY_LOCAL_MACHINE\\Software\\Policies\\ownCloud\\ownCloud"));
         QCOMPARE(OCC::SystemConfig::configPath(QOperatingSystemVersion::MacOS, t), QString("/Library/Preferences/com.owncloud.desktopclient/ownCloud.ini"));
         QCOMPARE(OCC::SystemConfig::configPath(QOperatingSystemVersion::Unknown, t), QString("/etc/ownCloud/ownCloud.ini"));
     }
