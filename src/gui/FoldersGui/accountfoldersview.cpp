@@ -21,6 +21,7 @@
 #include <QTreeView>
 #include <QVBoxLayout>
 
+#include "folderitemdelegate.h"
 #include "theme.h"
 
 namespace OCC {
@@ -59,6 +60,9 @@ void AccountFoldersView::buildView()
     // I'm not sure always off is good but that's what we currently have
     _treeView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     _treeView->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    _treeView->setIndentation(0);
+    FolderItemDelegate *delegate = new FolderItemDelegate(_treeView);
+    _treeView->setItemDelegate(delegate);
 
     _treeView->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(_treeView, &QWidget::customContextMenuRequested, this, &AccountFoldersView::popItemMenu);

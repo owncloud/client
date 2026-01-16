@@ -1,6 +1,8 @@
 target_sources(owncloudGui PRIVATE
     folderitem.cpp
     folderitem.h
+    folderitemdelegate.cpp
+    folderitemdelegate.h
     foldererroritem.cpp
     foldererroritem.h
     foldermodelcontroller.cpp
