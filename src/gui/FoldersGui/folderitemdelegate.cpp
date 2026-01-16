@@ -15,7 +15,8 @@
 #include "folderitemdelegate.h"
 
 #include "folderitem.h"
-#include <qpainter.h>
+#include <QPainter>
+
 
 namespace OCC {
 FolderItemDelegate::FolderItemDelegate(QObject *parent)
@@ -25,20 +26,42 @@ FolderItemDelegate::FolderItemDelegate(QObject *parent)
 
 void FolderItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    QStyleOptionViewItem opt = setOptions(index, option);
     drawBackground(painter, option, index);
 
-    //  QSize iconSize = opt.decorationSize; comes back as 16x16 - I think this options thing is fairly useless aside from providing the
-    // basic rect we have to paint into for the item, which is based on size
+    // calculate the line heights using current font - yes again, as we can't "store" the sizes calculated in sizeHint :/
+    int firstLineHeight = 0;
+    int secondLineHeight = 0;
+    calculateLineHeights(option, firstLineHeight, secondLineHeight);
 
-    QPixmap decoration = index.data(Qt::DecorationRole).value<QIcon>().pixmap(option.rect.height(), option.rect.height());
-    // see the d
-    //  Q_ASSERT(!decoration.isNull());
-    QRect iconRect(option.rect.topLeft(), decoration.size());
+    QRect paintableArea(
+        option.rect.left() + _cellBorder, option.rect.top() + _cellBorder, option.rect.width() - 2 * _cellBorder, firstLineHeight + secondLineHeight);
+    QPixmap decoration = index.data(Qt::DecorationRole).value<QIcon>().pixmap(paintableArea.height(), paintableArea.height());
+    QRect iconRect(paintableArea.topLeft(), decoration.size());
     drawDecoration(painter, option, iconRect, decoration);
+
     painter->save();
-    painter->drawText(QPoint(iconRect.right(), iconRect.top()), index.data(Qt::DisplayRole).toString());
+
+    QFont f = option.font;
+    f.setPixelSize(14);
+    painter->setFont(f);
+    // inportant point -> painter::drawText, when using just a point to position it, the y position is used as baseline. as that is super helpful?
+    // so we should set up a rect instead:
+    QRect firstLineRect(iconRect.right(), iconRect.top(), paintableArea.width() - iconRect.width(), firstLineHeight);
+    QRect actualFirstLineRect;
+    painter->drawText(firstLineRect, Qt::TextSingleLine, index.data(Qt::DisplayRole).toString(), &actualFirstLineRect);
+
+    painter->setFont(option.font);
+    QRect statusIconRect(iconRect.right(), firstLineRect.bottom(), secondLineHeight, secondLineHeight);
+    QIcon statusIcon = index.data(FolderItemRoles::StatusIconRole).value<QIcon>();
+    painter->drawPixmap(statusIconRect, statusIcon.pixmap(statusIconRect.size()));
+    QRect secondLineRect(
+        statusIconRect.right() + 2, firstLineRect.bottom(), paintableArea.width() - iconRect.width() - statusIconRect.width() - 2, secondLineHeight);
+    painter->drawText(secondLineRect, Qt::TextSingleLine, "Statuspqy", nullptr);
+
+    painter->setPen(QPen(QBrush(_separatorColor), _cellSeparatorWidth));
+    painter->drawLine(paintableArea.left(), option.rect.bottom(), paintableArea.right(), option.rect.bottom());
     painter->restore();
+
     // do the custom text painting using the painter
     drawFocus(painter, option, option.rect);
 }
@@ -46,9 +69,23 @@ void FolderItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
 QSize FolderItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     QSize defaultSize = QItemDelegate::sizeHint(option, index);
-    // this is super optimistic :D
-    defaultSize.setHeight(defaultSize.height() * 2);
+    int firstLineHeight = 0;
+    int secondLineHeight = 0;
+    calculateLineHeights(option, firstLineHeight, secondLineHeight);
+    int totalHeight = _cellBorder * 2 + _cellSeparatorWidth + firstLineHeight + secondLineHeight;
+    defaultSize.setHeight(totalHeight);
     return defaultSize;
 }
 
+void FolderItemDelegate::calculateLineHeights(const QStyleOptionViewItem &option, int &firstLineHeight, int &secondLineHeight) const
+{
+    QFont f1 = option.font;
+    f1.setPixelSize(14);
+    QFontMetrics metrics1(f1);
+    firstLineHeight = metrics1.height();
+
+    QFont f2 = option.font;
+    QFontMetrics metrics2(f2);
+    secondLineHeight = metrics2.height();
+}
 }

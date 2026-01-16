@@ -14,6 +14,7 @@
 
 #pragma once
 
+#include <QColor>
 #include <QItemDelegate>
 
 namespace OCC {
@@ -26,6 +27,12 @@ public:
 
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
     QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const override;
-};
 
+private:
+    const int _cellBorder = 5;
+    const int _cellSeparatorWidth = 1;
+    // we need a gray that works with light and dark mode so this needs to be refined
+    const QColor _separatorColor = "#807F7F7F";
+    void calculateLineHeights(const QStyleOptionViewItem &option, int &firstLineHeight, int &secondLineHeight) const;
+};
 }

@@ -26,12 +26,15 @@
 
 namespace OCC {
 
+class FolderItemUpdater;
+
 enum FolderItemRoles { DataRole = Qt::UserRole, StatusIconRole, StatusInfoRole };
 
 class FolderItem : public QStandardItem
 {
 public:
     FolderItem(Folder *folder);
+    ~FolderItem() override;
 
     QVariant data(int role) const override;
 
@@ -43,6 +46,7 @@ public:
 
 private:
     QPointer<Folder> _folder;
+    FolderItemUpdater *_updater = nullptr;
 
     void updateProgress(OCC::Folder *folder, const OCC::ProgressInfo &progress);
 

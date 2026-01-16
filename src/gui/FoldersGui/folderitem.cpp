@@ -15,6 +15,7 @@
 #include "folderitem.h"
 
 #include "configfile.h"
+#include "folderitemupdater.h"
 #include "progressdispatcher.h"
 #include "theme.h"
 
@@ -29,9 +30,19 @@ FolderItem::FolderItem(Folder *folder)
         return;
 
     setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+
+    _updater = new FolderItemUpdater(this, nullptr);
     // this is really messed up -> Folder emits this signal using the progress dispatcher. imo this should be reworked so we can just listen to the
     // folder for this info directly. todo: soon.
     // QObject::connect(ProgressDispatcher::instance(), &ProgressDispatcher::progressInfo, this, &FolderItem::updateProgress);
+}
+
+FolderItem::~FolderItem()
+{
+    if (_updater) {
+        delete _updater;
+        _updater = nullptr;
+    }
 }
 
 void FolderItem::refresh()
@@ -93,7 +104,7 @@ QVariant FolderItem::data(int role) const
          }*/
         return Theme::instance()->applicationIcon();
     case FolderItemRoles::StatusIconRole:
-        return QIcon(statusIconName());
+        return Resources::getCoreIcon(statusIconName());
         // case ItemRoles::StatusInfoRole:
         //   return _progress._progressString;
         /*case Roles::SyncProgressOverallPercent:

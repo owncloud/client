@@ -60,7 +60,7 @@ void AccountFoldersView::buildView()
     // I'm not sure always off is good but that's what we currently have
     _treeView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     _treeView->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    _treeView->setLineWidth(2);
+    _treeView->setIndentation(0);
     FolderItemDelegate *delegate = new FolderItemDelegate(_treeView);
     _treeView->setItemDelegate(delegate);
 
