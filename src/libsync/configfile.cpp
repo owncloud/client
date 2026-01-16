@@ -211,6 +211,7 @@ bool ConfigFile::restoreGeometryHeader(QHeaderView *header)
     return false;
 }
 
+// TODO: remove this in favor of SystemConfig
 QVariant ConfigFile::getPolicySetting(const QString &setting, const QVariant &defaultValue) const
 {
     if (Utility::isWindows()) {
@@ -538,6 +539,7 @@ void ConfigFile::setProxyType(QNetworkProxy::ProxyType proxyType, const QString 
     settings.sync();
 }
 
+// TODO: remove this in favor of SystemConfig
 QVariant ConfigFile::getValue(const QString &param, const QString &group,
     const QVariant &defaultValue) const
 {

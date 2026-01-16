@@ -1,12 +1,12 @@
-
-#include "common/asserts.h"
-#include "common/utility.h"
 #include "systemconfig.h"
-#include "theme.h"
+
+#include "../theme.h"
+#include "common/utility.h"
+#include "openidconfig.h"
 
 #include <QFile>
-#include <QSettings>
 #include <QOperatingSystemVersion>
+#include <QSettings>
 
 namespace OCC {
 
@@ -39,5 +39,27 @@ bool SystemConfig::allowServerUrlChange()
 QString SystemConfig::serverUrl()
 {
     return value("Setup/ServerUrl", QString()).toString();
+}
+
+OpenIdConfig SystemConfig::openIdConfig()
+{
+    auto clientId = value("OpenIDConnect/ClientId", QString()).toString();
+    auto clientSecret = value("OpenIDConnect/ClientSecret", QString()).toString();
+
+    QVariant portsVar = value("OpenIDConnect/Ports", "0").toString();
+    QList<quint16> ports;
+    const auto parts = portsVar.toString().split(QLatin1Char(','), Qt::SkipEmptyParts);
+    for (const QString &p : parts) {
+        bool ok = false;
+        const quint16 val = static_cast<quint16>(p.trimmed().toUInt(&ok));
+        if (ok) {
+            ports.append(val);
+        }
+    }
+
+    QString scopes = value("OpenIDConnect/Scopes", QString()).toString();
+    QString prompt = value("OpenIDConnect/Prompt", QString()).toString();
+
+    return OpenIdConfig(clientId, clientSecret, ports, scopes, prompt);
 }
 }

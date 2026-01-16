@@ -1,8 +1,9 @@
 
 #pragma once
 
+#include "../theme.h"
 #include "owncloudlib.h"
-#include "theme.h"
+#include "openidconfig.h"
 
 #include <QOperatingSystemVersion>
 #include <QString>
@@ -19,12 +20,15 @@ class OWNCLOUDSYNC_EXPORT SystemConfig
 {
 public:
     // Access system configuration
+    // section: account setup
     static bool allowServerUrlChange();
     static QString serverUrl();
+
+    // section: OpenID Connect
+    static OpenIdConfig openIdConfig();
 
     // General purpose function
     static QVariant value(QAnyStringView key, const QVariant &defaultValue);
     static QString configPath(const QOperatingSystemVersion::OSType& os, const Theme& theme);
-
 };
 }
