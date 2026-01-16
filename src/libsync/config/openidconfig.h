@@ -1,0 +1,27 @@
+#pragma once
+#include "owncloudlib.h"
+
+#include <QString>
+#include <QList>
+#include <QtGlobal>
+
+namespace OCC {
+class OWNCLOUDSYNC_EXPORT OpenIdConfig
+{
+public:
+    explicit OpenIdConfig(const QString &clientId, const QString &clientSecret, const QList<quint16> &ports, const QString &scopes, const QString &prompt);
+
+    QString clientId() const;
+    QString clientSecret() const;
+    QList<quint16> ports() const;
+    QString scopes() const;
+    QString prompt() const;
+
+private:
+    QString _clientId;
+    QString _clientSecret;
+    QList<quint16> _ports;
+    QString _scopes;
+    QString _prompt;
+};
+}
