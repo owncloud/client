@@ -28,6 +28,7 @@ FolderItem::FolderItem(Folder *folder)
     if (_folder == nullptr)
         return;
 
+    setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
     // this is really messed up -> Folder emits this signal using the progress dispatcher. imo this should be reworked so we can just listen to the
     // folder for this info directly. todo: soon.
     // QObject::connect(ProgressDispatcher::instance(), &ProgressDispatcher::progressInfo, this, &FolderItem::updateProgress);
@@ -82,11 +83,17 @@ QVariant FolderItem::data(int role) const
     case Qt::DisplayRole:
         return _folder->displayName();
     case Qt::DecorationRole:
-        if (_folder && _folder->space() && _folder->space()->image())
-            return _folder->space()->image()->image();
-        return {};
-    case ItemRoles::StatusIconRole:
-        return statusIconName();
+        /* if (_folder && _folder->space() && _folder->space()->image()) {
+             // this is not working but I have no idea why!
+             // the image is not null but won't paint, even in the default impl
+             // so just using the app icon to get the delegate working
+             QIcon spaceIcon = _folder->space()->image()->image();
+             if (!spaceIcon.isNull())
+                 return spaceIcon;
+         }*/
+        return Theme::instance()->applicationIcon();
+    case FolderItemRoles::StatusIconRole:
+        return QIcon(statusIconName());
         // case ItemRoles::StatusInfoRole:
         //   return _progress._progressString;
         /*case Roles::SyncProgressOverallPercent:

@@ -14,38 +14,18 @@
 
 #pragma once
 
-#include "QStandardItem"
-
-// #include "foldererroritem.h"
-#include "folder.h"
-
-#include <QList>
-#include <QPointer>
-
-#include "folderstatusupdater.h"
+#include <QItemDelegate>
 
 namespace OCC {
 
-enum FolderItemRoles { DataRole = Qt::UserRole, StatusIconRole, StatusInfoRole };
 
-class FolderItem : public QStandardItem
+class FolderItemDelegate : public QItemDelegate
 {
 public:
-    FolderItem(Folder *folder);
+    explicit FolderItemDelegate(QObject *parent = nullptr);
 
-    QVariant data(int role) const override;
-
-    void refresh();
-
-    SyncProgress _progress;
-
-    Folder *folder();
-
-private:
-    QPointer<Folder> _folder;
-
-    void updateProgress(OCC::Folder *folder, const OCC::ProgressInfo &progress);
-
-    QString statusIconName() const;
+    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
+    QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 };
+
 }

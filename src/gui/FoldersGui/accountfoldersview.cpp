@@ -20,6 +20,7 @@
 #include <QTreeView>
 #include <QVBoxLayout>
 
+#include "folderitemdelegate.h"
 #include "theme.h"
 
 namespace OCC {
@@ -57,6 +58,8 @@ void AccountFoldersView::buildView()
     _treeView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     _treeView->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     _treeView->setLineWidth(2);
+    FolderItemDelegate *delegate = new FolderItemDelegate(_treeView);
+    _treeView->setItemDelegate(delegate);
     mainLayout->addWidget(_treeView);
 
 
