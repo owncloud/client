@@ -5,7 +5,7 @@
 #include "testutils/testutils.h"
 
 #include "libsync/owncloudtheme.h"
-#include "libsync/systemconfig.h"
+#include "libsync/config/systemconfig.h"
 
 class TestSystemConfig : public QObject
 {
