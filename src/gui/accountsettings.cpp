@@ -226,7 +226,7 @@ void AccountSettings::slotCustomContextMenuRequested(Folder *folder)
             auto maybeShowEnableVfs = [folder, menu, this]() {
                 // Only show "Enable VFS" if a VFS mode is available
                 const auto mode = VfsPluginManager::instance().bestAvailableVfsMode();
-                if (FolderMan::instance()->checkVfsAvailability(folder->path(), mode)) {
+                if (Vfs::pathSupportDetail(folder->path(), mode).isEmpty()) {
                     if (mode == Vfs::WindowsCfApi) {
                         QAction *enableVfsAction = menu->addAction(tr("Enable virtual file support"));
                         connect(enableVfsAction, &QAction::triggered, this, [folder, this] { slotEnableVfsCurrentFolder(folder); });

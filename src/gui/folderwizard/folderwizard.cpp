@@ -102,7 +102,7 @@ FolderWizardPrivate::FolderWizardPrivate(FolderWizard *q, Account *account)
 QString FolderWizardPrivate::initialLocalPath() const
 {
     return FolderMan::instance()->findGoodPathForNewSyncFolder(
-        defaultSyncRoot(), _spacesPage->currentSpace()->displayName(), FolderMan::NewFolderType::SpacesSyncRoot, _account->uuid());
+        defaultSyncRoot(), _spacesPage->currentSpace()->displayName(), FolderMan::NewFolderType::SpacesFolder, _account->uuid());
 }
 
 uint32_t FolderWizardPrivate::priority() const
@@ -131,12 +131,16 @@ QString FolderWizardPrivate::displayName() const
 
 bool FolderWizardPrivate::useVirtualFiles() const
 {
+    // todo: see other todo's related to DC-219. Basically we should simply not allow user to pick a local path that is not supported
+    // for vfs if vfs is generally available. "Use virtual files" should not rely on the folder path check at all, as we should
+    // block use of unsupported paths from the start (generally via account wizard and folder wizard gui's)
     const auto mode = VfsPluginManager::instance().bestAvailableVfsMode();
     const bool useVirtualFiles = (Theme::instance()->forceVirtualFilesOption() && mode == Vfs::WindowsCfApi) || (_folderWizardSelectiveSyncPage && _folderWizardSelectiveSyncPage->useVirtualFiles());
     if (useVirtualFiles) {
-        const auto availability = Vfs::checkAvailability(initialLocalPath(), mode);
-        if (!availability) {
-            auto msg = new QMessageBox(QMessageBox::Warning, FolderWizard::tr("Virtual files are not available for the selected folder"), availability.error(), QMessageBox::Ok, ocApp()->gui()->settingsDialog());
+        QString vfsSupported = Vfs::pathSupportDetail(initialLocalPath(), mode);
+        if (!vfsSupported.isEmpty()) {
+            auto msg = new QMessageBox(QMessageBox::Warning, FolderWizard::tr("Virtual files are not available for the selected folder"), vfsSupported,
+                QMessageBox::Ok, ocApp()->gui()->settingsDialog());
             msg->setAttribute(Qt::WA_DeleteOnClose);
             msg->open();
             return false;
@@ -166,8 +170,11 @@ void FolderWizard::sendResult()
 FolderMan::SyncConnectionDescription FolderWizard::result()
 {
     Q_D(FolderWizard);
-
+    // DC-219 todo:
+    // check this local path to see if it supports vfs if vfs is in play - this check should happen before the wizard is completed,
+    //     eg validate whatever page has the user choice of local path
     const QString localPath = d->_folderWizardSourcePage->localPath();
+    // leave this until we fix the weird handling in account wizard that leaves the sync root empty if selective sync is chosen
     if (!d->_account->hasDefaultSyncRoot()) {
         if (FileSystem::isChildPathOf(localPath, d->defaultSyncRoot())) {
             d->_account->setDefaultSyncRoot(d->defaultSyncRoot());

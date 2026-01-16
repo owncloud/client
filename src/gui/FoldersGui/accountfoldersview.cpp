@@ -15,6 +15,7 @@
 
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QMenu>
 #include <QPushButton>
 #include <QStandardItemModel>
 #include <QTreeView>
@@ -30,6 +31,8 @@ AccountFoldersView::AccountFoldersView(QWidget *parent)
     : QWidget{parent}
 {
     buildView();
+    _itemMenu = new QMenu(this);
+    _itemMenu->setAccessibleName(tr("Sync options menu"));
 }
 
 void AccountFoldersView::buildView()
@@ -60,6 +63,10 @@ void AccountFoldersView::buildView()
     _treeView->setLineWidth(2);
     FolderItemDelegate *delegate = new FolderItemDelegate(_treeView);
     _treeView->setItemDelegate(delegate);
+
+    _treeView->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(_treeView, &QWidget::customContextMenuRequested, this, &AccountFoldersView::popItemMenu);
+
     mainLayout->addWidget(_treeView);
 
 
@@ -70,9 +77,14 @@ void AccountFoldersView::buildView()
     setLayout(mainLayout);
 }
 
-void AccountFoldersView::setItemModel(QStandardItemModel *model)
+void AccountFoldersView::setItemModels(QStandardItemModel *model, QItemSelectionModel *selectionModel)
 {
+    // order here is important, if you set the selection model before the main model the selection model for the view
+    // reverts to the "default" selectionModel.
+    // also the tree view doesn't manage the lifetime of the selection  model so we could/possibly should delete the default here
+    // I'll check that out
     _treeView->setModel(model);
+    _treeView->setSelectionModel(selectionModel);
 }
 
 void AccountFoldersView::setSyncedFolderCount(int synced, int total)
@@ -83,5 +95,20 @@ void AccountFoldersView::setSyncedFolderCount(int synced, int total)
 void AccountFoldersView::enableAddFolder(bool enableAdd)
 {
     _addFolderButton->setEnabled(enableAdd);
+}
+
+void AccountFoldersView::setFolderActions(QList<QAction *> actions)
+{
+    if (_itemMenu) {
+        _itemMenu->clear();
+        _itemMenu->addActions(actions);
+    }
+}
+
+void AccountFoldersView::popItemMenu(const QPoint &pos)
+{
+    emit requestActionsUpdate();
+
+    _itemMenu->exec(_treeView->viewport()->mapToGlobal(pos));
 }
 }
