@@ -433,7 +433,7 @@ Mjet njëkohësimi kartelash për desktop.</translation>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="202"/>
         <source>Disable virtual file support?</source>
-        <translation type="unfinished"/>
+        <translation>Të çaktivizohet mbulimi për kartela virtuale?</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="203"/>
@@ -442,17 +442,21 @@ Mjet njëkohësimi kartelash për desktop.</translation>
 The only advantage of disabling virtual file support is that the selective sync feature will become available again.
 
 This action will abort any currently running synchronization.</source>
-        <translation type="unfinished"/>
+        <translation>Ky veprim do të çaktivizojë mbulimin për kartela virtuale. Si pasojë, do të shkarkohet lëndë e dosjeve të cilave u është vënë shenjë si “të passhme vetëm në linjë”.
+
+Përfitimi i vetëm i çaktivizimit të mbulimit për kartela virtuale është se veçoria e njëkohësimit përzgjedhës do të jetë sërish e përdorshme.
+
+Ky veprim do të shkaktojë ndërprerjen e çfarëdo njëkohësimi në kryerje e sipër atë çast.</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="211"/>
         <source>Disable support</source>
-        <translation type="unfinished"/>
+        <translation>Çaktivizoje mbulimin</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="238"/>
         <source>Restart sync</source>
-        <translation type="unfinished"/>
+        <translation>Rinise njëkohësimin</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="240"/>
@@ -467,12 +471,12 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="248"/>
         <source>Disable virtual file support</source>
-        <translation type="unfinished"/>
+        <translation>Çaktivizo mbulim për kartela virtuale</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="248"/>
         <source>Enable virtual file support</source>
-        <translation type="unfinished"/>
+        <translation>Aktivizo mbulim kartelash virtuale</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="284"/>
@@ -526,7 +530,7 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="34"/>
         <source>Sync options menu</source>
-        <translation type="unfinished"/>
+        <translation>Menu mundësish njëkohësimi</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="40"/>
@@ -1010,7 +1014,7 @@ Ky veprim do të shkaktojë ndërprerjen e çfarëdo njëkohësimi në kryerje e
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="242"/>
         <source>selected path does not support using virtual file system. %1</source>
-        <translation type="unfinished"/>
+        <translation>shtegu i përzgjedhur s’mbulon përdorim sistemi virtual kartelash. %1</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="258"/>
