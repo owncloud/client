@@ -30,6 +30,7 @@ namespace OCC {
  * [Setup]
  * ServerUrl=https://cloud.example.com
  * AllowServerUrlChange=false
+ * MoveToTrash=true
  *
  * [Updater]
  * SkipUpdateCheck=true
@@ -41,9 +42,6 @@ namespace OCC {
  * Scopes=openid,email,profile
  * Prompt=consent
  *
- * [Behavior]
- * MoveToTrash=true
- *
  * @example owncloud.reg (Windows Registry)
  * Windows Registry Editor Version 5.00
  *
@@ -52,6 +50,7 @@ namespace OCC {
  * [HKEY_LOCAL_MACHINE\Software\Policies\ownCloud\ownCloud\Setup]
  * "ServerUrl"="https://cloud.example.com"
  * "AllowServerUrlChange"=dword:00000000
+ * "MoveToTrash"=dword:00000001
  *
  * [HKEY_LOCAL_MACHINE\Software\Policies\ownCloud\ownCloud\Updater]
  * "SkipUpdateCheck"=dword:00000001
@@ -62,9 +61,6 @@ namespace OCC {
  * "Ports"="8080,8443"
  * "Scopes"="openid,email,profile"
  * "Prompt"="consent"
- *
- * [HKEY_LOCAL_MACHINE\Software\Policies\ownCloud\ownCloud\Behavior]
- * "MoveToTrash"=dword:00000001
  *
  */
 class OWNCLOUDSYNC_EXPORT SystemConfig
