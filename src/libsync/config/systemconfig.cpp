@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+// SPDX-FileCopyrightText: 2026 Thomas Müller <thomas.mueller@tmit.eu>
+
 #include "systemconfig.h"
 
 #include "../theme.h"
@@ -57,7 +60,7 @@ bool SystemConfig::moveToTrash()
         return v.toBool();
     }
 
-    return Theme::instance()->moveToTrashDefaultValue();
+    return false;
 }
 
 OpenIdConfig SystemConfig::openIdConfig()

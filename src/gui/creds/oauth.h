@@ -92,10 +92,9 @@ protected:
 
     QUrl _serverUrl;
     QString _davUser;
+    OpenIdConfig _openIdConfig;
     QNetworkAccessManager *_networkAccessManager;
     bool _isRefreshingToken = false;
-
-    OpenIdConfig _openIdConfig;
 
     virtual void fetchWellKnown();
 

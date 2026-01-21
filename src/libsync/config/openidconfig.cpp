@@ -1,6 +1,5 @@
-//
-// Created by deepdiver on 16/01/2026.
-//
+// SPDX-License-Identifier: GPL-2.0-or-later
+// SPDX-FileCopyrightText: 2026 Thomas Müller <thomas.mueller@tmit.eu>
 
 #include "openidconfig.h"
 
