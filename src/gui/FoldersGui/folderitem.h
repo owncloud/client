@@ -18,17 +18,18 @@
 
 // #include "foldererroritem.h"
 #include "folder.h"
+#include "progressdispatcher.h"
 
 #include <QList>
 #include <QPointer>
 
-#include "folderstatusupdater.h"
+// #include "folderstatusupdater.h"
 
 namespace OCC {
 
 class FolderItemUpdater;
 
-enum FolderItemRoles { DataRole = Qt::UserRole, StatusIconRole, StatusInfoRole };
+enum FolderItemRoles { DataRole = Qt::UserRole, StatusIconRole, StatusStringRole, StatusInfoRole };
 
 class FolderItem : public QStandardItem
 {
@@ -40,7 +41,9 @@ public:
 
     void refresh();
 
-    SyncProgress _progress;
+    void setProgress(const ProgressInfo &progress);
+
+    // SyncProgress _progress;
 
     Folder *folder();
 
@@ -48,8 +51,14 @@ private:
     QPointer<Folder> _folder;
     FolderItemUpdater *_updater = nullptr;
 
-    void updateProgress(OCC::Folder *folder, const OCC::ProgressInfo &progress);
+    quint64 _totalSize = 0;
+    quint64 _completedSize = 0;
+    QString _statusString;
+    // ProgressInfo _progress;
+    //  void updateProgress(OCC::Folder *folder, const OCC::ProgressInfo &progress);
 
     QString statusIconName() const;
+    QString statusAsString() const;
+    void updateStatusString();
 };
 }

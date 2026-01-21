@@ -56,7 +56,7 @@ void FolderItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
     painter->drawPixmap(statusIconRect, statusIcon.pixmap(statusIconRect.size()));
     QRect secondLineRect(
         statusIconRect.right() + 2, firstLineRect.bottom(), paintableArea.width() - iconRect.width() - statusIconRect.width() - 2, secondLineHeight);
-    painter->drawText(secondLineRect, Qt::TextSingleLine, "Statuspqy", nullptr);
+    painter->drawText(secondLineRect, Qt::TextSingleLine, index.data(FolderItemRoles::StatusStringRole).toString(), nullptr);
 
     painter->setPen(QPen(QBrush(_separatorColor), _cellSeparatorWidth));
     painter->drawLine(paintableArea.left(), option.rect.bottom(), paintableArea.right(), option.rect.bottom());

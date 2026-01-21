@@ -152,10 +152,6 @@ void AccountFoldersController::buildMenuActions()
     itemActions.push_back(_pauseSync);
     connect(_pauseSync, &QAction::triggered, this, &AccountFoldersController::onTogglePauseSync);
 
-    _removeSync = new QAction(tr("Remove folder sync connection"), this);
-    itemActions.push_back(_removeSync);
-    connect(_removeSync, &QAction::triggered, this, &AccountFoldersController::onRemoveSync);
-
     _chooseSync = new QAction(tr("Choose what to sync"), this);
 
     Vfs::Mode mode = VfsPluginManager::instance().bestAvailableVfsMode();
@@ -182,6 +178,10 @@ void AccountFoldersController::buildMenuActions()
         itemActions.push_back(_chooseSync);
         connect(_chooseSync, &QAction::triggered, this, &AccountFoldersController::onChooseSync);
     }
+
+    _removeSync = new QAction(tr("Remove folder sync connection"), this);
+    itemActions.push_back(_removeSync);
+    connect(_removeSync, &QAction::triggered, this, &AccountFoldersController::onRemoveSync);
 
     connect(_view, &AccountFoldersView::requestActionsUpdate, this, &AccountFoldersController::updateActions);
     _view->setFolderActions(itemActions);

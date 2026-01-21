@@ -49,35 +49,35 @@ void FolderStatusUpdater::updateProgress(OCC::Folder *folder, const ProgressInfo
      }h
      const auto &folder = _folders.at(folderIndex);
  */
-    SyncProgress pr = _item->_progress;
-    // depending on the use of virtual files or small files this slot might be called very often.
-    // throttle the model updates to prevent a needlessly high cpu usage used on ui updates.
-    if (pr._lastProgressUpdateStatus != progress.status() || (std::chrono::steady_clock::now() - pr._lastProgressUpdated > progressUpdateTimeOutC)) {
-        pr._lastProgressUpdateStatus = progress.status();
+    /* SyncProgress pr = _item->_progress;
+     // depending on the use of virtual files or small files this slot might be called very often.
+     // throttle the model updates to prevent a needlessly high cpu usage used on ui updates.
+     if (pr._lastProgressUpdateStatus != progress.status() || (std::chrono::steady_clock::now() - pr._lastProgressUpdated > progressUpdateTimeOutC)) {
+         pr._lastProgressUpdateStatus = progress.status();
 
-        switch (progress.status()) {
-        case ProgressInfo::None:
-            Q_UNREACHABLE();
-            break;
-        case ProgressInfo::Discovery:
-            if (!progress._currentDiscoveredRemoteFolder.isEmpty()) {
-                pr._overallSyncString = tr("Checking for changes in remote '%1'").arg(progress._currentDiscoveredRemoteFolder);
-            } else if (!progress._currentDiscoveredLocalFolder.isEmpty()) {
-                pr._overallSyncString = tr("Checking for changes in local '%1'").arg(progress._currentDiscoveredLocalFolder);
-            }
-            break;
-        case ProgressInfo::Reconcile:
-            pr._overallSyncString = tr("Reconciling changes");
-            break;
-        case ProgressInfo::Propagation:
-            Q_FALLTHROUGH();
-        case ProgressInfo::Done: {
-            //  computeProgress(progress, pr);
-        }
-        }
-        // Q_EMIT dataChanged(index(folderIndex, 0), index(folderIndex, 0));
-        pr._lastProgressUpdated = std::chrono::steady_clock::now();
-    }
+         switch (progress.status()) {
+         case ProgressInfo::None:
+             Q_UNREACHABLE();
+             break;
+         case ProgressInfo::Discovery:
+             if (!progress._currentDiscoveredRemoteFolder.isEmpty()) {
+                 pr._overallSyncString = tr("Checking for changes in remote '%1'").arg(progress._currentDiscoveredRemoteFolder);
+             } else if (!progress._currentDiscoveredLocalFolder.isEmpty()) {
+                 pr._overallSyncString = tr("Checking for changes in local '%1'").arg(progress._currentDiscoveredLocalFolder);
+             }
+             break;
+         case ProgressInfo::Reconcile:
+             pr._overallSyncString = tr("Reconciling changes");
+             break;
+         case ProgressInfo::Propagation:
+             Q_FALLTHROUGH();
+         case ProgressInfo::Done: {
+             //  computeProgress(progress, pr);
+         }
+         }
+         // Q_EMIT dataChanged(index(folderIndex, 0), index(folderIndex, 0));
+         pr._lastProgressUpdated = std::chrono::steady_clock::now();
+     }*/
 }
 
 }
