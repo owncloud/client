@@ -89,7 +89,7 @@ jobs:
         run: |
           mkdir -p build
           cd build
-          cmake -G"Ninja" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DBUILD_TESTING=OFF -S ..
+          cmake -G"Ninja" -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=OFF -S ..
           ninja
 
       - name: Install Python Modules
