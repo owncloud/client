@@ -14,6 +14,10 @@
 
 #pragma once
 
+#include <QStandardItem>
+
+namespace OCC {
+
 class FolderItem;
 
 /**
@@ -22,12 +26,11 @@ class FolderItem;
  * the error items will be children of the related FolderItem
  *
  */
-class FolderErrorItem
+class FolderErrorItem : public QStandardItem
 {
     FolderErrorItem(FolderItem *parent);
 
 private:
     FolderItem *_parent;
 };
-
-
+}

@@ -7,8 +7,6 @@ target_sources(owncloudGui PRIVATE
     foldererroritem.h
     foldermodelcontroller.cpp
     foldermodelcontroller.h
-    folderstatusupdater.cpp
-    folderstatusupdater.h
     accountfoldersview.cpp
     accountfoldersview.h
     folderitemupdater.cpp

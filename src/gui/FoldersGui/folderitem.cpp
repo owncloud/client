@@ -129,6 +129,8 @@ QString FolderItem::statusAsString() const
         return QString("Syncing %1 of %2").arg(completedFormatted, totalFormatted);
     }
     };
+
+    return {};
 }
 
 void FolderItem::updateStatusString()
@@ -184,39 +186,37 @@ QVariant FolderItem::data(int role) const
         /*case Roles::SyncProgressOverallPercent:
             return folderInfo->_progress._overallPercent / 100.0;
         case Roles::SyncProgressOverallString:
-            return folderInfo->_progress._overallSyncString;
-        case Roles::Priority:
-            // everything will be sorted in descending order, multiply the priority by 100 and prefer A over Z by applying a negative factor
-            return QVariant::fromValue(
-                _folder->priority() * 100 - (f->displayName().isEmpty() ? 0 : static_cast<int64_t>(f->displayName().at(0).toLower().unicode())));
-        case Roles::Quota: {
-            qint64 used{};
-            qint64 total{};
+            return folderInfo->_progress._overallSyncString; */
+    case FolderItemRoles::SortPriorityRole:
+        // everything will be sorted in descending order, multiply the priority by 100 and prefer A over Z by applying a negative factor
+        return QVariant::fromValue(
+            _folder->sortPriority() * 100 - (_folder->displayName().isEmpty() ? 0 : static_cast<int64_t>(_folder->displayName().at(0).toLower().unicode())));
+        /*   case Roles::Quota: {
+               qint64 used{};
+               qint64 total{};
 
-            if (auto *space = f->space()) {
-                const auto quota = space->drive().getQuota();
-                if (quota.isValid()) {
-                    used = quota.getUsed();
-                    total = quota.getTotal();
-                }
-            }
+               if (auto *space = f->space()) {
+                   const auto quota = space->drive().getQuota();
+                   if (quota.isValid()) {
+                       used = quota.getUsed();
+                       total = quota.getTotal();
+                   }
+               }
 
-            if (total <= 0) {
-                return {};
-            }
-            return tr("%1 of %2 used").arg(Utility::octetsToString(used), Utility::octetsToString(total));
-        }
-        case Roles::Folder:
-            return QVariant::fromValue(f);
-        case Roles::AccessibleDescriptionRole: {
-            QStringList desc = {f->displayName(), Utility::enumToDisplayName(f->syncResult().status())};
-            desc << getErrors();
-            if (f->syncResult().status() == SyncResult::SyncRunning) {
-                desc << folderInfo->_progress._overallSyncString << QStringLiteral("%1%").arg(QString::number(folderInfo->_progress._overallPercent));
-            }
-            desc << getDescription();
-            return desc.join(QLatin1Char(','));
-        }*/
+               if (total <= 0) {
+                   return {};
+               }
+               return tr("%1 of %2 used").arg(Utility::octetsToString(used), Utility::octetsToString(total));
+           }
+           case Roles::AccessibleDescriptionRole: {
+               QStringList desc = {f->displayName(), Utility::enumToDisplayName(f->syncResult().status())};
+               desc << getErrors();
+               if (f->syncResult().status() == SyncResult::SyncRunning) {
+                   desc << folderInfo->_progress._overallSyncString << QStringLiteral("%1%").arg(QString::number(folderInfo->_progress._overallPercent));
+               }
+               desc << getDescription();
+               return desc.join(QLatin1Char(','));
+           }*/
     }
     return QStandardItem::data(role);
 }

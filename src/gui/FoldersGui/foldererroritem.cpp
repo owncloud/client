@@ -15,5 +15,12 @@
 #include "foldererroritem.h"
 #include "folderitem.h"
 
+namespace OCC {
 
-FolderErrorItem::FolderErrorItem(FolderItem *parent) { }
+FolderErrorItem::FolderErrorItem(FolderItem *parent)
+    : QStandardItem()
+    , _parent(parent)
+{
+}
+
+}

@@ -67,14 +67,10 @@ AccountFoldersController::AccountFoldersController(AccountState *state, AccountF
     buildMenuActions();
 
     connect(_view, &AccountFoldersView::addFolderTriggered, this, &AccountFoldersController::slotAddFolder);
-    // ui->quickWidget->engine()->addImageProvider(QStringLiteral("space"), new Spaces::SpaceImageProvider(_accountState->account()->spacesManager()));
-    // ui->quickWidget->setOCContext(QUrl(QStringLiteral("qrc:/qt/qml/org/ownCloud/gui/qml/FolderDelegate.qml")), this);
-
 
     FolderMan *folderMan = FolderMan::instance();
     modelController->connectSignals(folderMan);
-    // next step: move the synced folder watching out of folder man and put it in a separate class. this can be used
-    // for updating the synced folder count and for managing the unsynced list in the folder wizard
+
     connect(folderMan, &FolderMan::unsyncedSpaceCountChanged, this, &AccountFoldersController::onUnsyncedSpaceCountChanged);
 }
 

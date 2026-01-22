@@ -29,6 +29,7 @@ FolderModelController::FolderModelController(const QUuid &accountId, QObject *pa
     , _accountId(accountId)
 {
     _model = new QStandardItemModel(this);
+    _model->setSortRole(FolderItemRoles::SortPriorityRole);
     _selectionModel = new QItemSelectionModel(_model, this);
     connect(_selectionModel, &QItemSelectionModel::currentChanged, this, &FolderModelController::onCurrentChanged);
 }
@@ -63,6 +64,8 @@ void FolderModelController::onFolderListChanged(const QUuid &accountId, const QL
 
     for (const auto &f : folders)
         onFolderAdded(accountId, f);
+
+    _model->sort(0, Qt::DescendingOrder);
 }
 
 void FolderModelController::onFolderAdded(const QUuid &accountId, Folder *folder)
@@ -73,6 +76,9 @@ void FolderModelController::onFolderAdded(const QUuid &accountId, Folder *folder
     FolderItem *item = new FolderItem(folder);
     _model->appendRow(item);
     _items.insert(folder->spaceId(), item);
+
+    _model->sort(0, Qt::DescendingOrder);
+    _selectionModel->setCurrentIndex(item->index(), QItemSelectionModel::SelectCurrent);
 }
 
 void FolderModelController::onFolderRemoved(const QUuid &accountId, Folder *folder)
@@ -91,6 +97,7 @@ void FolderModelController::onFolderRemoved(const QUuid &accountId, Folder *fold
             _model->removeRow(it->index().row());
         _items.remove(id);
     }
+    // should not need to sort on remove
 }
 
 void FolderModelController::connectSignals(FolderMan *folderMan)
@@ -100,7 +107,5 @@ void FolderModelController::connectSignals(FolderMan *folderMan)
     connect(folderMan, &FolderMan::folderRemoved, this, &FolderModelController::onFolderRemoved);
 
     onFolderListChanged(_accountId, folderMan->foldersForAccount(_accountId));
-
-    // connect(folderMan, &FolderMan::folderSyncStateChange, _model, &FolderStatusModel::slotFolderSyncStateChange);
 }
 }

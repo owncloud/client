@@ -29,7 +29,7 @@ namespace OCC {
 
 class FolderItemUpdater;
 
-enum FolderItemRoles { DataRole = Qt::UserRole, StatusIconRole, StatusStringRole, StatusInfoRole };
+enum FolderItemRoles { DataRole = Qt::UserRole, StatusIconRole, StatusStringRole, StatusInfoRole, SortPriorityRole };
 
 class FolderItem : public QStandardItem
 {
