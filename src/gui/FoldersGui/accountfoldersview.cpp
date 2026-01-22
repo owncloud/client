@@ -61,6 +61,9 @@ void AccountFoldersView::buildView()
     _treeView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     _treeView->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     _treeView->setIndentation(0);
+    _treeView->setSelectionMode(QAbstractItemView::SingleSelection);
+    _treeView->setSelectionBehavior(QAbstractItemView::SelectRows);
+
     FolderItemDelegate *delegate = new FolderItemDelegate(_treeView);
     _treeView->setItemDelegate(delegate);
 

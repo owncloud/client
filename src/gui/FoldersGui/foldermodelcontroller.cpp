@@ -78,7 +78,7 @@ void FolderModelController::onFolderAdded(const QUuid &accountId, Folder *folder
     _items.insert(folder->spaceId(), item);
 
     _model->sort(0, Qt::DescendingOrder);
-    _selectionModel->setCurrentIndex(item->index(), QItemSelectionModel::SelectCurrent);
+    _selectionModel->select(item->index(), QItemSelectionModel::ClearAndSelect); // QItemSelectionModel::SelectCurrent);
 }
 
 void FolderModelController::onFolderRemoved(const QUuid &accountId, Folder *folder)
