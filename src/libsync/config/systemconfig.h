@@ -39,8 +39,8 @@ namespace OCC {
  * ClientId=your-client-id
  * ClientSecret=your-client-secret
  * Ports=8080,8443
- * Scopes=openid,email,profile
- * Prompt=consent
+ * Scopes=openid offline_access email profile
+ * Prompt=select_account consent
  *
  * @example owncloud.reg (Windows Registry)
  * Windows Registry Editor Version 5.00
@@ -59,8 +59,8 @@ namespace OCC {
  * "ClientId"="your-client-id"
  * "ClientSecret"="your-client-secret"
  * "Ports"="8080,8443"
- * "Scopes"="openid,email,profile"
- * "Prompt"="consent"
+ * "Scopes"="openid offline_access email profile"
+ * "Prompt"="select_account consent"
  *
  */
 class OWNCLOUDSYNC_EXPORT SystemConfig
