@@ -434,7 +434,7 @@ Utilitário de sincronização de arquivos na área de trabalho. </translation>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="202"/>
         <source>Disable virtual file support?</source>
-        <translation type="unfinished"/>
+        <translation>Desativar o suporte a arquivos virtuais?</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="203"/>
@@ -443,17 +443,21 @@ Utilitário de sincronização de arquivos na área de trabalho. </translation>
 The only advantage of disabling virtual file support is that the selective sync feature will become available again.
 
 This action will abort any currently running synchronization.</source>
-        <translation type="unfinished"/>
+        <translation>Esta ação desativará o suporte a arquivos virtuais. Como consequência, o conteúdo das pastas que estão marcadas como &quot;disponíveis somente online&quot; será baixado.
+
+A única vantagem de desativar o suporte a arquivos virtuais é que o recurso de sincronização seletiva voltará a estar disponível.
+
+Esta ação interromperá qualquer sincronização em andamento.</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="211"/>
         <source>Disable support</source>
-        <translation type="unfinished"/>
+        <translation>Desativar suporte</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="238"/>
         <source>Restart sync</source>
-        <translation type="unfinished"/>
+        <translation>Reiniciar sincronização</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="240"/>
@@ -468,12 +472,12 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="248"/>
         <source>Disable virtual file support</source>
-        <translation type="unfinished"/>
+        <translation>Desativar suporte a arquivos virtuais</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="248"/>
         <source>Enable virtual file support</source>
-        <translation type="unfinished"/>
+        <translation>Ativar suporte a arquivos virtuais</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="284"/>
@@ -527,7 +531,7 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="34"/>
         <source>Sync options menu</source>
-        <translation type="unfinished"/>
+        <translation>Menu de opções de sincronização</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="40"/>

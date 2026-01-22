@@ -433,7 +433,7 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="202"/>
         <source>Disable virtual file support?</source>
-        <translation type="unfinished"/>
+        <translation>ປິດການຮອງຮັບໄຟລ໌ສະເໝືອນບໍ່?</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="203"/>
@@ -442,17 +442,21 @@ File synchronization desktop utility.</source>
 The only advantage of disabling virtual file support is that the selective sync feature will become available again.
 
 This action will abort any currently running synchronization.</source>
-        <translation type="unfinished"/>
+        <translation>ການກະທຳນີ້ຈະປິດການຮອງຮັບໄຟລ໌ສະເໝືອນ. ຜົນທີ່ຕາມມາຄືເນື້ອໃນຂອງໂຟນເດີທີ່ກຳລັງໝາຍວ່າ &apos;ມີສະເພາະອອນລາຍ&apos; ຈະຖືກດາວໂຫຼດ.
+
+ຂໍ້ດີພຽງຢ່າງດຽວຂອງການປິດການຮອງຮັບໄຟລ໌ສະເໝືອນແມ່ນຄຸນສົມບັດການຊິງແບບເລືອກໄດ້ຈະກັບມາໃຊ້ງານໄດ້ອີກຄັ້ງ.
+
+ການກະທຳນີ້ຈະຍົກເລີກການຊິງໂຄໄນທີ່ກຳລັງເຮັດວຽກຢູ່ທັງໝົດ.</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="211"/>
         <source>Disable support</source>
-        <translation type="unfinished"/>
+        <translation>ປິດການຮອງຮັບ</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="238"/>
         <source>Restart sync</source>
-        <translation type="unfinished"/>
+        <translation>ເລີ່ມການຊິງໃໝ່</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="240"/>
@@ -467,12 +471,12 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="248"/>
         <source>Disable virtual file support</source>
-        <translation type="unfinished"/>
+        <translation>ປິດການຮອງຮັບໄຟລ໌ສະເໝືອນ</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="248"/>
         <source>Enable virtual file support</source>
-        <translation type="unfinished"/>
+        <translation>ເປີດການຮອງຮັບໄຟລ໌ສະເໝືອນ</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="284"/>
@@ -526,7 +530,7 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="34"/>
         <source>Sync options menu</source>
-        <translation type="unfinished"/>
+        <translation>ເມນູຕົວເລືອກການຊິງ</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="40"/>

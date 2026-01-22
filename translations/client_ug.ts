@@ -432,7 +432,7 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="202"/>
         <source>Disable virtual file support?</source>
-        <translation type="unfinished"/>
+        <translation>مەۋھۇم ھۆججەت قوللاشنى چەكلەمسىز؟</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="203"/>
@@ -441,17 +441,21 @@ File synchronization desktop utility.</source>
 The only advantage of disabling virtual file support is that the selective sync feature will become available again.
 
 This action will abort any currently running synchronization.</source>
-        <translation type="unfinished"/>
+        <translation>بۇ ھەرىكەت مەۋھۇم ھۆججەت قوللاشنى چەكلەيدۇ. نەتىجىدە نۆۋەتتە «پەقەت توردىلا بار» دەپ بەلگە قويۇلغان ھۆججەت قىسقۇچلارنىڭ مەزمۇنى چۈشۈرۈلىدۇ.
+
+مەۋھۇم ھۆججەت قوللاشنى چەكلەشنىڭ بىردىنبىر ئارتۇقچىلىقى شۇكى ، ماس قەدەملىك ئىقتىدار يەنە بىر قېتىم بارلىققا كېلىدۇ.
+
+بۇ ھەرىكەت نۆۋەتتە ئىجرا قىلىنىۋاتقان ماس قەدەمنى ئەمەلدىن قالدۇرىدۇ.</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="211"/>
         <source>Disable support</source>
-        <translation type="unfinished"/>
+        <translation>قوللاشنى چەكلەڭ</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="238"/>
         <source>Restart sync</source>
-        <translation type="unfinished"/>
+        <translation>ماسقەدەملەشنى قايتا قوزغىتىڭ</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="240"/>
@@ -466,12 +470,12 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="248"/>
         <source>Disable virtual file support</source>
-        <translation type="unfinished"/>
+        <translation>مەۋھۇم ھۆججەت قوللاشنى چەكلەڭ</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="248"/>
         <source>Enable virtual file support</source>
-        <translation type="unfinished"/>
+        <translation>مەۋھۇم ھۆججەت قوللاشنى قوزغىتىڭ</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="284"/>
@@ -525,7 +529,7 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="34"/>
         <source>Sync options menu</source>
-        <translation type="unfinished"/>
+        <translation>ماسقەدەملەش تىزىملىكى</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="40"/>

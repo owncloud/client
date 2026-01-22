@@ -433,7 +433,7 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="202"/>
         <source>Disable virtual file support?</source>
-        <translation type="unfinished"/>
+        <translation>仮想ファイルを無効にしますか？</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="203"/>
@@ -442,17 +442,21 @@ File synchronization desktop utility.</source>
 The only advantage of disabling virtual file support is that the selective sync feature will become available again.
 
 This action will abort any currently running synchronization.</source>
-        <translation type="unfinished"/>
+        <translation>この操作により、仮想ファイルが無効になります。その結果、現在「オンラインでのみ利用可能」とマークされているフォルダーのコンテンツがダウンロードされます。
+
+仮想ファイルを無効にすることの唯一の利点は、選択的同期機能が再び利用可能になることです。
+
+この操作を行うと、現在実行中の同期が中止されます。</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="211"/>
         <source>Disable support</source>
-        <translation type="unfinished"/>
+        <translation>サポートを無効にする</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="238"/>
         <source>Restart sync</source>
-        <translation type="unfinished"/>
+        <translation>同期を再実行</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="240"/>
@@ -467,12 +471,12 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="248"/>
         <source>Disable virtual file support</source>
-        <translation type="unfinished"/>
+        <translation>仮想ファイルのサポートを無効にする.</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="248"/>
         <source>Enable virtual file support</source>
-        <translation type="unfinished"/>
+        <translation>仮想ファイルのサポートを有効にする</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="284"/>
@@ -526,7 +530,7 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="34"/>
         <source>Sync options menu</source>
-        <translation type="unfinished"/>
+        <translation>同期オプションメニュー</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="40"/>
