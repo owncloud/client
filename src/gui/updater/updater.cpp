@@ -36,6 +36,13 @@ Q_LOGGING_CATEGORY(lcUpdater, "gui.updater", QtInfoMsg)
 
 QString updateChannel()
 {
+    // remove deprecated updateChannel setting
+    auto settings = ConfigFile::makeQSettings();
+    QString updateChannelKey = "updateChannel";
+    if (settings.contains(updateChannelKey)) {
+        settings.remove(updateChannelKey);
+    }
+
     // By now only two channels are supported: ocis and beta-ocis
     const QString suffix = OCC::Version::suffix();
     if (suffix.startsWith(QLatin1String("daily"))
