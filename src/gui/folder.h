@@ -341,14 +341,13 @@ public:
     bool virtualFilesEnabled() const;
     void setVirtualFilesEnabled(bool enabled);
 
-    /** Whether this folder should show selective sync ui */
-    bool supportsSelectiveSync() const;
-
     /**
      * The folder is deployed by an admin
      * We will hide the remove option and the disable/enable vfs option.
+     *
+     * see FolderDefinition isDeployed - this concept was oc10 related so it needs to go
      */
-    bool isDeployed() const;
+    [[deprecated("see FolderDefinition::isDeployed")]] bool isDeployed() const;
 
     uint32_t sortPriority() const { return _definition.priority(); }
 
@@ -470,8 +469,10 @@ private:
      * May be called several times.
      */
     // Refactoring todo: I would expect a "registration" function to take an arg for the thing that is supposed to be registered
-    // I also do not see evidence that this is called "several times" aside from the fact that it's called any time the
-    //
+    // I also do not see evidence that this is called "several times" aside from the fact that it's called in relation to vfs::started()
+    // so if vfs is in play, any time you turn vfs on or off for an existing folder, yes it can be called again. Under normal circumstances
+    // I don't expect it to be very common for it to get called multiple times, though. Part of the todo is to evaluate whether it makes sense
+    // to re/build the watcher relative to vfs state as I don't see any connection conceptually (yet, at least).
     void registerFolderWatcher();
 
     enum LogStatus {
@@ -517,11 +518,16 @@ private:
     QTimer _scheduleSelfTimer;
 
     /**
-     * Setting up vfs is an async operation
+     * Setting up vfs can be an async operation which is triggered by vfs::startImpl
+     * this bool is set to true once vfs is fully started as notified via the started() signal
+     * when a "real" vfs impl is in play, started() is emitted after the async setup is complete
+     * when vfs is effectively "off", started() is emitted immediately by startImpl
+     * main point is that even when vfs is not actually in play we pretend it's "started" -> _vfsIsReady will be true
      */
     bool _vfsIsReady = false;
 
-    // does the folder have a corresponding space on the server? folderman will update the value if not
+    // does the folder have a corresponding space on the server? folderman will update the value based on info we get
+    // from spaces manager.
     bool _available = true;
 
     /**
@@ -545,7 +551,7 @@ private:
     QScopedPointer<LocalDiscoveryTracker> _localDiscoveryTracker;
 
     /**
-     * The vfs mode instance (created by plugin) to use. Never null.
+     * The vfs mode instance (created by plugin) to use. Never null. When vfs is not in play, vfs_off is the impl used.
      */
     // Refactoring todo: this is shared with the SyncOptions that are passed to the engine. This needs reevaluation and cleanup
     // to ensure we don't keep it alive outside of usable scope. Would probably be simplest to make it a QPointer for use with the
@@ -554,7 +560,5 @@ private:
     // extra fun is I have no idea what happens to the instance in the SyncOptions - is it still alive relative to the engine?
     // I don't see any handling of the engine or SyncOptions whatsoever in wipeForRemoval so we'll need to go spelunking.
     QSharedPointer<Vfs> _vfs;
-
-    friend class SpaceMigration;
 };
 }

@@ -414,73 +414,113 @@ Utilità desktop per la sincronizzazione dei file.</translation>
 <context>
     <name>OCC::AccountFoldersController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="135"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="147"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="238"/>
         <source>Force sync now</source>
         <translation>Forza ora la sincronizzazione</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="141"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="155"/>
         <source>Remove folder sync connection</source>
         <translation>Rimuovi connessione di sincronizzazione cartelle</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="147"/>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="462"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="159"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="362"/>
         <source>Choose what to sync</source>
         <translation>Scegli cosa sincronizzare</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="350"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="202"/>
+        <source>Disable virtual file support?</source>
+        <translation>Disabilitare supporto per file virtuali?</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="203"/>
+        <source>This action will disable virtual file support. As a consequence contents of folders that are currently marked as 'available online only' will be downloaded.
+
+The only advantage of disabling virtual file support is that the selective sync feature will become available again.
+
+This action will abort any currently running synchronization.</source>
+        <translation>Questa azione disabilita il supporto per i file virtuali. Di conseguenza, il contenuto delle cartelle attualmente contrassegnate come &quot;disponibile solo online&quot; verrà scaricato.
+
+L&apos;unico vantaggio di disabilitare il supporto file virtuale è che la funzione di sincronizzazione selettiva sarà nuovamente disponibile.
+
+Questa azione interromperà qualsiasi sincronizzazione in corso.</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="211"/>
+        <source>Disable support</source>
+        <translation>Disabilita supporto</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="238"/>
+        <source>Restart sync</source>
+        <translation>Riavvia sincronizzazione</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="240"/>
         <source>Resume sync</source>
         <translation>Riprendi la sincronizzazione</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="350"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="240"/>
         <source>Pause sync</source>
         <translation>Sospendi la sincronizzazione</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="383"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="248"/>
+        <source>Disable virtual file support</source>
+        <translation>Disabilita supporto per file virtuali</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="248"/>
+        <source>Enable virtual file support</source>
+        <translation>Abilita supporto per file virtuali</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="284"/>
         <source>Internet connection is metered</source>
         <translation>La connessione Internet è a consumo</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="384"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="285"/>
         <source>Synchronization is paused because the Internet connection is a metered connection&lt;p&gt;Do you really want to force a Synchronization now?</source>
         <translation>La sincronizzazione è sospesa perché la connessione Internet è una connessione a consumo&lt;p&gt;Vuoi davvero forzare una sincronizzazione adesso?</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="405"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="305"/>
         <source>Sync Running</source>
         <translation>La sincronizzazione è in corso</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="405"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="305"/>
         <source>The sync operation is running.&lt;br/&gt;Do you want to stop it?</source>
         <translation>L&apos;operazione di sincronizzazione è in esecuzione.&lt;br/&gt;Vuoi fermarla?</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="411"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="311"/>
         <source>Sync paused by user</source>
         <translation>Sincronizzazione interrotta dall&apos;utente</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="429"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="329"/>
         <source>Confirm Folder Sync Connection Removal</source>
         <translation>Conferma rimozione connessione di sincronizzazione cartelle</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="430"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="330"/>
         <source>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Vuoi davvero fermare la sincronizzazione della cartella &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Nota:&lt;/b&gt; ciò &lt;b&gt;non&lt;/b&gt; eliminerà alcun file.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="434"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="334"/>
         <source>Remove Folder Sync Connection</source>
         <translation>Rimuovi connessione di sincronizzazione cartelle</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="435"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="212"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="335"/>
         <source>Cancel</source>
         <translation>Annulla</translation>
     </message>
@@ -488,22 +528,27 @@ Utilità desktop per la sincronizzazione dei file.</translation>
 <context>
     <name>OCC::AccountFoldersView</name>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="37"/>
+        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="34"/>
+        <source>Sync options menu</source>
+        <translation>Menu delle opzioni di sincronizzazione</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="40"/>
         <source>Folder sync</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="42"/>
+        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="45"/>
         <source>Manage your synced folders</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="46"/>
+        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="49"/>
         <source>Add new folder sync…</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="77"/>
+        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="88"/>
         <source>Syncing %1 out of %2 spaces</source>
         <translation type="unfinished"/>
     </message>
@@ -967,12 +1012,12 @@ Questa azione interromperà qualsiasi sincronizzazione in corso.</translation>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="239"/>
-        <source>selected path does not support using virtual file system.</source>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="242"/>
+        <source>selected path does not support using virtual file system. %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="254"/>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="258"/>
         <source>Select sync root</source>
         <translation type="unfinished"/>
     </message>
@@ -1277,7 +1322,7 @@ L&apos;aggiornamento verrà eseguito in background e sovrascriverà il file AppI
         <translation>Sincronizza attività</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="701"/>
+        <location filename="../src/gui/folder.cpp" line="706"/>
         <source>Switching VFS mode on folder &apos;%1&apos;</source>
         <translation>Cambio della modalità VFS sulla cartella &apos;%1&apos;</translation>
     </message>
@@ -1407,50 +1452,41 @@ Ciò significa che il client di sincronizzazione potrebbe non inviare le modific
         <source>On macOS, only the Apple File System is supported.</source>
         <translation>In macOS, solo i file di sistema Apple sono supportati.</translation>
     </message>
-    <message>
-        <location filename="../src/gui/folderman.cpp" line="1094"/>
-        <source>Multiple accounts are sharing the folder %1.
-This configuration is know to lead to dataloss and is no longer supported.
-Please consider removing this folder from the account and adding it again.</source>
-        <translation>Più profili stanno condividendo la cartella %1.
-Questa configurazione porta a perdite di dati e non è più supportata.
-Considera di rimuovere questa cartella dal profilo e riaggiungerla.</translation>
-    </message>
 </context>
 <context>
     <name>OCC::FolderStatusModel</name>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="220"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="216"/>
         <source>There are unresolved conflicts.</source>
         <translation>Ci sono dei conflitti irrisolti.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="267"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="263"/>
         <source>%1 of %2 used</source>
         <translation>%1% di %2 utilizzati</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="347"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="343"/>
         <source>Checking for changes in remote &apos;%1&apos;</source>
         <translation>Controllo per cambiamenti in &apos;%1&apos; remoto</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="349"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="345"/>
         <source>Checking for changes in local &apos;%1&apos;</source>
         <translation>Controllo cambiamenti in  &apos;%1 &apos; locale</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="353"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="349"/>
         <source>Reconciling changes</source>
         <translation>Riconciliazione dei cambiamenti</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="393"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="389"/>
         <source>Queued</source>
         <translation>In coda</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="231"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="227"/>
         <source>Local folder: %1</source>
         <translation>Cartella locale: %1</translation>
     </message>
@@ -1492,17 +1528,17 @@ Considera di rimuovere questa cartella dal profilo e riaggiungerla.</translation
 <context>
     <name>OCC::FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="139"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="142"/>
         <source>Virtual files are not available for the selected folder</source>
         <translation>I file virtuali non sono disponibili per la cartella selezionata</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="152"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="156"/>
         <source>Add Folder Sync Connection</source>
         <translation>Aggiungi connessioni di sincronizzazione cartelle</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="155"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="159"/>
         <source>Add Sync Connection</source>
         <translation>Aggiungi connessione di sincronizzazione</translation>
     </message>
@@ -1520,7 +1556,7 @@ Considera di rimuovere questa cartella dal profilo e riaggiungerla.</translation
         <translation>Digita il percorso della cartella locale.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizardlocalpath.cpp" line="102"/>
+        <location filename="../src/gui/folderwizard/folderwizardlocalpath.cpp" line="106"/>
         <source>Select the local folder</source>
         <translation>Seleziona la cartella locale</translation>
     </message>

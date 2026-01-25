@@ -414,73 +414,113 @@ File synchronization desktop utility.</source>
 <context>
     <name>OCC::AccountFoldersController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="135"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="147"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="238"/>
         <source>Force sync now</source>
         <translation>今すぐ強制的に同期</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="141"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="155"/>
         <source>Remove folder sync connection</source>
         <translation>同期フォルダー接続を削除</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="147"/>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="462"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="159"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="362"/>
         <source>Choose what to sync</source>
         <translation>同期フォルダーを選択</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="350"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="202"/>
+        <source>Disable virtual file support?</source>
+        <translation>仮想ファイルを無効にしますか？</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="203"/>
+        <source>This action will disable virtual file support. As a consequence contents of folders that are currently marked as 'available online only' will be downloaded.
+
+The only advantage of disabling virtual file support is that the selective sync feature will become available again.
+
+This action will abort any currently running synchronization.</source>
+        <translation>この操作により、仮想ファイルが無効になります。その結果、現在「オンラインでのみ利用可能」とマークされているフォルダーのコンテンツがダウンロードされます。
+
+仮想ファイルを無効にすることの唯一の利点は、選択的同期機能が再び利用可能になることです。
+
+この操作を行うと、現在実行中の同期が中止されます。</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="211"/>
+        <source>Disable support</source>
+        <translation>サポートを無効にする</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="238"/>
+        <source>Restart sync</source>
+        <translation>同期を再実行</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="240"/>
         <source>Resume sync</source>
         <translation>再開</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="350"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="240"/>
         <source>Pause sync</source>
         <translation>一時停止</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="383"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="248"/>
+        <source>Disable virtual file support</source>
+        <translation>仮想ファイルのサポートを無効にする.</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="248"/>
+        <source>Enable virtual file support</source>
+        <translation>仮想ファイルのサポートを有効にする</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="284"/>
         <source>Internet connection is metered</source>
         <translation>インターネット接続は従量制です</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="384"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="285"/>
         <source>Synchronization is paused because the Internet connection is a metered connection&lt;p&gt;Do you really want to force a Synchronization now?</source>
         <translation>インターネット接続が従量制プランのため、&lt;p&gt;同期は一時停止中です。強制的に同期を開始しますか？ </translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="405"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="305"/>
         <source>Sync Running</source>
         <translation>同期を実行中</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="405"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="305"/>
         <source>The sync operation is running.&lt;br/&gt;Do you want to stop it?</source>
         <translation>同期ジョブが実行中です。&lt;br/&gt;停止しますか？</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="411"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="311"/>
         <source>Sync paused by user</source>
         <translation>ユーザーにより同期が一時停止されました</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="429"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="329"/>
         <source>Confirm Folder Sync Connection Removal</source>
         <translation>同期フォルダー接続の削除を確認</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="430"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="330"/>
         <source>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
         <translation>&lt;p&gt;フォルダー&lt;i&gt;%1&lt;/i&gt;の同期を本当に止めますか？&lt;/p&gt;&lt;p&gt;&lt;b&gt;注:&lt;/b&gt; これによりファイルが一切削除されることはありません。&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="434"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="334"/>
         <source>Remove Folder Sync Connection</source>
         <translation>同期フォルダー接続を削除</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="435"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="212"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="335"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
@@ -488,22 +528,27 @@ File synchronization desktop utility.</source>
 <context>
     <name>OCC::AccountFoldersView</name>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="37"/>
+        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="34"/>
+        <source>Sync options menu</source>
+        <translation>同期オプションメニュー</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="40"/>
         <source>Folder sync</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="42"/>
+        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="45"/>
         <source>Manage your synced folders</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="46"/>
+        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="49"/>
         <source>Add new folder sync…</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="77"/>
+        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="88"/>
         <source>Syncing %1 out of %2 spaces</source>
         <translation type="unfinished"/>
     </message>
@@ -967,12 +1012,12 @@ This action will abort any currently running synchronization.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="239"/>
-        <source>selected path does not support using virtual file system.</source>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="242"/>
+        <source>selected path does not support using virtual file system. %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="254"/>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="258"/>
         <source>Select sync root</source>
         <translation type="unfinished"/>
     </message>
@@ -1277,7 +1322,7 @@ AppImage の更新はバックグラウンドプロセスで実行され、現�
         <translation>同期アクティビティ</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="701"/>
+        <location filename="../src/gui/folder.cpp" line="706"/>
         <source>Switching VFS mode on folder &apos;%1&apos;</source>
         <translation>フォルダー &apos;%1&apos; の VFS モードを切り替えています</translation>
     </message>
@@ -1407,50 +1452,41 @@ This means that the synchronization client might not upload local changes immedi
         <source>On macOS, only the Apple File System is supported.</source>
         <translation>macOS では、Apple ファイルシステムのみサポートしています。</translation>
     </message>
-    <message>
-        <location filename="../src/gui/folderman.cpp" line="1094"/>
-        <source>Multiple accounts are sharing the folder %1.
-This configuration is know to lead to dataloss and is no longer supported.
-Please consider removing this folder from the account and adding it again.</source>
-        <translation>複数のアカウントがフォルダ %1 を共有しています。
-この設定はデータ損失につながることが知られており、サポートされなくなりました。
-このフォルダをアカウントから削除し、再度追加することを検討してください。</translation>
-    </message>
 </context>
 <context>
     <name>OCC::FolderStatusModel</name>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="220"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="216"/>
         <source>There are unresolved conflicts.</source>
         <translation>未解決の競合があります。</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="267"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="263"/>
         <source>%1 of %2 used</source>
         <translation>%2 の %1 を使用</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="347"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="343"/>
         <source>Checking for changes in remote &apos;%1&apos;</source>
         <translation>リモートの &apos;%1&apos; の変更を確認しています。</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="349"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="345"/>
         <source>Checking for changes in local &apos;%1&apos;</source>
         <translation>ローカルの &apos;%1&apos; の変更を確認しています。</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="353"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="349"/>
         <source>Reconciling changes</source>
         <translation>変更の調整</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="393"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="389"/>
         <source>Queued</source>
         <translation>キューに入れられました</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="231"/>
+        <location filename="../src/gui/folderstatusmodel.cpp" line="227"/>
         <source>Local folder: %1</source>
         <translation>Local folder: %1</translation>
     </message>
@@ -1492,17 +1528,17 @@ Please consider removing this folder from the account and adding it again.</sour
 <context>
     <name>OCC::FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="139"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="142"/>
         <source>Virtual files are not available for the selected folder</source>
         <translation>選択したフォルダーで仮想ファイルが利用できません</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="152"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="156"/>
         <source>Add Folder Sync Connection</source>
         <translation>同期フォルダーを追加</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="155"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="159"/>
         <source>Add Sync Connection</source>
         <translation>同期接続を追加</translation>
     </message>
@@ -1520,7 +1556,7 @@ Please consider removing this folder from the account and adding it again.</sour
         <translation>ローカルフォルダーのパスを入力してください。</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizardlocalpath.cpp" line="102"/>
+        <location filename="../src/gui/folderwizard/folderwizardlocalpath.cpp" line="106"/>
         <source>Select the local folder</source>
         <translation>ローカルフォルダーを選択</translation>
     </message>

@@ -39,6 +39,7 @@ public:
    explicit FolderModelController(const QUuid &accountId, QObject *parent);
 
    QStandardItemModel *itemModel() const { return _model; }
+   QItemSelectionModel *selectionModel() const { return _selectionModel; }
 
    // getting creative to allow connecting to folderman via dependency injection. its a bit weird but let's see how it is
    // note we don't want to pass folderman to the ctr as we only need to connect to it, don't want it to be a member,
