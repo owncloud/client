@@ -36,12 +36,16 @@ Q_LOGGING_CATEGORY(lcUpdater, "gui.updater", QtInfoMsg)
 
 QString updateChannel()
 {
-    // remove deprecated updateChannel setting
+    // remove deprecated updateChannel setting once we hit 8.0
     auto settings = ConfigFile::makeQSettings();
     QString updateChannelKey = "updateChannel";
+    /*
     if (settings.contains(updateChannelKey)) {
         settings.remove(updateChannelKey);
     }
+    */
+    // until then, migrate old setting if present
+    settings.setValue(updateChannelKey, "ocis");
 
     // By now only two channels are supported: ocis and beta-ocis
     const QString suffix = OCC::Version::suffix();
