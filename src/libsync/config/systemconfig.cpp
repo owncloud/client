@@ -30,13 +30,37 @@ namespace {
     static constexpr auto KEY_OIDC_PROMPT = "OpenIDConnect/Prompt";
 } // anonymous namespace
 
-QVariant SystemConfig::value(QAnyStringView key, const QVariant &defaultValue)
+SystemConfig::SystemConfig()
 {
     auto format = Utility::isWindows() ? QSettings::NativeFormat : QSettings::IniFormat;
     QSettings system(configPath(QOperatingSystemVersion::currentType(), *Theme::instance()), format);
 
-    return system.value(key, defaultValue);
+    _allowServerURLChange = system.value(KEY_SETUP_ALLOW_SERVER_URL_CHANGE, true).toBool();
+    _serverUrl = system.value(KEY_SETUP_SERVER_URL, QString()).toString();
+    _skipUpdateCheck = system.value(KEY_UPDATER_SKIP_UPDATE_CHECK, false).toBool();
+    _moveToTrash = system.value(KEY_SETUP_MOVE_TO_TRASH, false).toBool();
+
+    // read OpenID Connect configuration
+    auto clientId = system.value(KEY_OIDC_CLIENT_ID, QString()).toString();
+    auto clientSecret = system.value(KEY_OIDC_CLIENT_SECRET, QString()).toString();
+
+    QVariant portsVar = system.value(KEY_OIDC_PORTS, "0").toString();
+    QList<quint16> ports;
+    const auto parts = portsVar.toString().split(QLatin1Char(','), Qt::SkipEmptyParts);
+    for (const QString &p : parts) {
+        bool ok = false;
+        const quint16 val = static_cast<quint16>(p.trimmed().toUInt(&ok));
+        if (ok) {
+            ports.append(val);
+        }
+    }
+
+    QString scopes = system.value(KEY_OIDC_SCOPES, QString()).toString();
+    QString prompt = system.value(KEY_OIDC_PROMPT, QString()).toString();
+
+    _openIdConfig = OpenIdConfig(clientId, clientSecret, ports, scopes, prompt);
 }
+
 QString SystemConfig::configPath(const QOperatingSystemVersion::OSType& os, const Theme& theme)
 {
     if (os == QOperatingSystemVersion::Windows) {
@@ -52,51 +76,48 @@ QString SystemConfig::configPath(const QOperatingSystemVersion::OSType& os, cons
     return QString("/etc/%1/%1.ini").arg(theme.appName());
 }
 
-bool SystemConfig::allowServerUrlChange()
+bool SystemConfig::allowServerUrlChange() const
 {
-    return value(KEY_SETUP_ALLOW_SERVER_URL_CHANGE, true).toBool();
+    return _allowServerURLChange;
 }
 
-QString SystemConfig::serverUrl()
+QString SystemConfig::serverUrl() const
 {
-    return value(KEY_SETUP_SERVER_URL, QString()).toString();
-}
-
-bool SystemConfig::skipUpdateCheck()
-{
-    return value(KEY_UPDATER_SKIP_UPDATE_CHECK, false).toBool();
-}
-
-bool SystemConfig::moveToTrash()
-{
-    // check settings first; if not present, fall back to the Theme default
-    QVariant v = value(KEY_SETUP_MOVE_TO_TRASH, QVariant());
-    if (v.isValid()) {
-        return v.toBool();
+    // a theme can provide a hardcoded url which is not subject of change by definition
+    auto serverUrl = Theme::instance()->overrideServerUrlV2();
+    if (!serverUrl.isEmpty()) {
+        return serverUrl;
     }
 
-    return false;
+    return _serverUrl;
 }
 
-OpenIdConfig SystemConfig::openIdConfig()
+bool SystemConfig::skipUpdateCheck() const
 {
-    auto clientId = value(KEY_OIDC_CLIENT_ID, QString()).toString();
-    auto clientSecret = value(KEY_OIDC_CLIENT_SECRET, QString()).toString();
+    return _skipUpdateCheck;
+}
 
-    QVariant portsVar = value(KEY_OIDC_PORTS, "0").toString();
-    QList<quint16> ports;
-    const auto parts = portsVar.toString().split(QLatin1Char(','), Qt::SkipEmptyParts);
-    for (const QString &p : parts) {
-        bool ok = false;
-        const quint16 val = static_cast<quint16>(p.trimmed().toUInt(&ok));
-        if (ok) {
-            ports.append(val);
-        }
+bool SystemConfig::moveToTrash() const
+{
+    return _moveToTrash;
+}
+
+OpenIdConfig SystemConfig::openIdConfig() const
+{
+    // system config has precedence here
+    if (!_openIdConfig.clientId().isEmpty()) {
+        return _openIdConfig;
     }
 
-    QString scopes = value(KEY_OIDC_SCOPES, QString()).toString();
-    QString prompt = value(KEY_OIDC_PROMPT, QString()).toString();
+    // load config from theme
+    QString clientId = Theme::instance()->oauthClientId();
+    QString clientSecret = Theme::instance()->oauthClientSecret();
+
+    const auto ports = Theme::instance()->oauthPorts();
+    QString scopes = Theme::instance()->openIdConnectScopes();
+    QString prompt = Theme::instance()->openIdConnectPrompt();
 
     return OpenIdConfig(clientId, clientSecret, ports, scopes, prompt);
+
 }
 }

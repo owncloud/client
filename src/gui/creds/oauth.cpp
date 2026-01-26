@@ -15,7 +15,7 @@
 #include "oauth.h"
 
 #include "accessmanager.h"
-#include "config/configresolver.h"
+#include "config/systemconfig.h"
 #include "creds/credentialssupport.h"
 #include "gui/networkadapters/userinfoadapter.h"
 #include "libsync/creds/credentialmanager.h"
@@ -478,8 +478,8 @@ void OAuth::openBrowser()
 // todo: I was contemplating how we can make sure the passed account isn't null before we use it
 // to seed the OAuth ctr, and really, I'm not sure this should be a subclass of oauth in the first place. Instead it could simply use an
 // oauth instance to complete the tasks it can't do itself -> this could possibly be a "has a" not an "is a" impl
-AccountBasedOAuth::AccountBasedOAuth(Account *account, QObject *parent)
-    : OAuth(account->url(), account->davUser(), ConfigResolver::openIdConfig(), account->accessManager(), parent)
+AccountBasedOAuth::AccountBasedOAuth(Account *account, const OpenIdConfig& openIdConfig, QObject *parent)
+    : OAuth(account->url(), account->davUser(), openIdConfig, account->accessManager(), parent)
     , _account(account)
 {
 }

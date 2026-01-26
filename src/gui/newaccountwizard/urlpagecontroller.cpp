@@ -13,7 +13,6 @@
  */
 #include "urlpagecontroller.h"
 
-#include "../../libsync/config/configresolver.h"
 #include "../../libsync/config/systemconfig.h"
 #include "accessmanager.h"
 #include "configfile.h"
@@ -41,7 +40,8 @@ UrlPageController::UrlPageController(QWizardPage *page, AccessManager *accessMan
         return;
     }
 
-    QString serverUrl = ConfigResolver::serverUrl();
+    SystemConfig systemConfig;
+    QString serverUrl = systemConfig.serverUrl();
     // no server url was given by any means, so the user has to provide one
     if (serverUrl.isEmpty()) {
         return;
@@ -49,7 +49,7 @@ UrlPageController::UrlPageController(QWizardPage *page, AccessManager *accessMan
     setUrl(serverUrl);
 
     // The system admin provides the url, don't let the user change it!
-    bool allowServerUrlChange = ConfigResolver::allowServerUrlChange();
+    bool allowServerUrlChange = systemConfig.allowServerUrlChange();
     if (!allowServerUrlChange) {
         _urlField->setEnabled(false);
         _instructionLabel->setText(tr("Your web browser will be opened to complete sign in."));

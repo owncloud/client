@@ -18,6 +18,7 @@ namespace OCC {
 class OWNCLOUDSYNC_EXPORT OpenIdConfig
 {
 public:
+    OpenIdConfig();
     explicit OpenIdConfig(const QString &clientId, const QString &clientSecret, const QList<quint16> &ports, const QString &scopes, const QString &prompt);
 
     QString clientId() const;

@@ -15,6 +15,7 @@
 #pragma once
 
 #include "owncloudlib.h"
+#include "config/systemconfig.h"
 
 #include <QNetworkProxy>
 #include <QSettings>
@@ -178,6 +179,7 @@ private:
     void setValue(const QString &key, const QVariant &value);
 
 private:
+    SystemConfig _systemConfig;
     typedef QSharedPointer<AbstractCredentials> SharedCreds;
 
     static QString _oCVersion;

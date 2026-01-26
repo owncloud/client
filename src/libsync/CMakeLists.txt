@@ -53,7 +53,6 @@ set(libsync_SRCS
 
     appprovider.cpp
     config/systemconfig.cpp
-    config/configresolver.cpp
     config/openidconfig.cpp
 )
 

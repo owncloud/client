@@ -16,7 +16,6 @@
 #include "common/utility.h"
 #include "common/version.h"
 
-#include "config/configresolver.h"
 #include "config/systemconfig.h"
 #ifdef Q_OS_WIN
 #include "common/utility_win.h"
@@ -448,7 +447,7 @@ chrono::milliseconds ConfigFile::updateCheckInterval(const QString &connection) 
 
 bool ConfigFile::skipUpdateCheck() const
 {
-    if (ConfigResolver::skipUpdateCheck()) {
+    if (_systemConfig.skipUpdateCheck()) {
         return true;
     }
     auto con = defaultConnection();
@@ -578,7 +577,7 @@ void ConfigFile::setPauseSyncWhenMetered(bool isChecked)
 bool ConfigFile::moveToTrash() const
 {
     // system config has precedence
-    if (SystemConfig::moveToTrash()) {
+    if (_systemConfig.moveToTrash()) {
         return true;
     }
 

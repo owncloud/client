@@ -66,53 +66,54 @@ namespace OCC {
 class OWNCLOUDSYNC_EXPORT SystemConfig
 {
 public:
+    explicit SystemConfig();
     /**
      * Determine if changing the server URL is allowed based on system configuration.
      * This value is only relevant if SystemConfig::serverUrl() returns a non-empty string.
      * @return True if changing the server URL is allowed, false otherwise.
      */
+    bool allowServerUrlChange() const;
 
-    static bool allowServerUrlChange();
     /**
-     * Retrieve the server URL from the system configuration.
+     * Retrieve the server URL from the system configuration or theme.
      * @return The server URL as a QString. If not set, returns an empty string.
      */
-    static QString serverUrl();
+    QString serverUrl() const;
 
     /**
-     * Retrieve the OpenID Connect configuration from the system configuration.
+     * Retrieve the OpenID Connect configuration from the system configuration or the theme.
      * The configuration includes client ID, client secret, ports, scopes, and prompt settings.
      * The returned OpenIdConfig object may have empty values if not set in the system configuration.
      * @return An OpenIdConfig object containing the OpenID Connect settings.
      */
-    static OpenIdConfig openIdConfig();
+    OpenIdConfig openIdConfig() const;
 
     /**
      * Determine if update checks should be skipped based on system configuration.
      * @return True if update checks should be skipped, false otherwise.
      */
-    static bool skipUpdateCheck();
+    bool skipUpdateCheck() const;
 
     /**
      * Determine if files should be moved to trash based on system configuration.
      * @return True if files should be moved to trash, false otherwise.
      */
-    static bool moveToTrash();
+    bool moveToTrash() const;
 
-    // General purpose function
-    /**
-     * Retrieve a configuration value from the system configuration.
-     * @param key The key of the configuration value to retrieve.
-     * @param defaultValue The default value to return if the key is not found.
-     * @return The configuration value associated with the key, or the default value if the key is not found.
-     */
-    static QVariant value(QAnyStringView key, const QVariant &defaultValue);
     /**
      * Get the path to the system configuration file or registry path based on the operating system and theme.
      * @param os operating system type
      * @param theme the theme instance
      * @return the path to the system configuration file or registry path
+     * @internal kept public for testing purposes
      */
     static QString configPath(const QOperatingSystemVersion::OSType& os, const Theme& theme);
+
+private:
+    bool _allowServerURLChange;
+    QString _serverUrl;
+    bool _skipUpdateCheck;
+    OpenIdConfig _openIdConfig;
+    bool _moveToTrash;
 };
 }

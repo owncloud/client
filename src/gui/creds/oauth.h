@@ -146,7 +146,7 @@ class AccountBasedOAuth : public OAuth
     Q_OBJECT
 
 public:
-    explicit AccountBasedOAuth(Account *account, QObject *parent);
+    explicit AccountBasedOAuth(Account *account, const OpenIdConfig& openIdConfig, QObject *parent);
 
     void startAuthentication() override;
 

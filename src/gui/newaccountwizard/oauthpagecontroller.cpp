@@ -15,7 +15,7 @@
 
 #include "accessmanager.h"
 #include "accountmanager.h"
-#include "config/configresolver.h"
+#include "config/systemconfig.h"
 #include "networkadapters/fetchcapabilitiesadapter.h"
 #include "networkadapters/userinfoadapter.h"
 #include "networkadapters/webfingerlookupadapter.h"
@@ -209,7 +209,8 @@ bool OAuthPageController::validate()
     _authEndpoint.clear();
     _urlField->clear();
 
-    _oauth = new OAuth(_authUrl, {}, ConfigResolver::openIdConfig(), _accessManager.get(), this);
+    SystemConfig systemConfig;
+    _oauth = new OAuth(_authUrl, {}, systemConfig.openIdConfig(), _accessManager.get(), this);
     // if we ever need to split out the auth link calculation, it's coming from fetchWellKnown which is a subset of
     // the "full" authentication routine in the oauth impl
     connect(_oauth, &OAuth::authorisationLinkChanged, this, &OAuthPageController::authUrlReady);

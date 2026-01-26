@@ -5,6 +5,10 @@
 
 namespace OCC {
 
+OpenIdConfig::OpenIdConfig()
+{
+}
+
 OpenIdConfig::OpenIdConfig(const QString &clientId, const QString &clientSecret, const QList<quint16> &ports, const QString &scopes, const QString &prompt)
     : _clientId(clientId)
     , _clientSecret(clientSecret)
