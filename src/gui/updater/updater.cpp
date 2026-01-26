@@ -34,11 +34,14 @@ namespace OCC {
 
 Q_LOGGING_CATEGORY(lcUpdater, "gui.updater", QtInfoMsg)
 
+[[deprecated("updateChannel is no longer supported. the key will be removed in 8.0")]]
+const QString updateChannelC() { return QStringLiteral("updateChannel"); }
+
 QString updateChannel()
 {
     // remove deprecated updateChannel setting once we hit 8.0
     auto settings = ConfigFile::makeQSettings();
-    QString updateChannelKey = "updateChannel";
+    QString updateChannelKey = updateChannelC();
     /*
     if (settings.contains(updateChannelKey)) {
         settings.remove(updateChannelKey);

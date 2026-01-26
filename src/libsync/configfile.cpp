@@ -59,8 +59,6 @@ const QString optionalDesktopNotificationsC()
 }
 const QString skipUpdateCheckC() { return QStringLiteral("skipUpdateCheck"); }
 const QString updateCheckIntervalC() { return QStringLiteral("updateCheckInterval"); }
-// deprecated - will be removed in 8.0
-// const QString updateChannelC() { return QStringLiteral("updateChannel"); }
 const QString uiLanguageC() { return QStringLiteral("uiLanguage"); }
 const QString geometryC() { return QStringLiteral("geometry"); }
 const QString timeoutC() { return QStringLiteral("timeout"); }
