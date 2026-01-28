@@ -107,12 +107,7 @@ Utilitário de sincronização de arquivos na área de trabalho. </translation>
         <translation>Ative o modo de depuração. </translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="134"/>
-        <source>Forward all arguments to the cmd client. This argument must be the first.</source>
-        <translation>Encaminhe todos os argumentos para o cliente cmd. Este argumento deve ser o primeiro.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/main.cpp" line="150"/>
+        <location filename="../src/gui/main.cpp" line="149"/>
         <source>--logfile and --logdir are mutually exclusive</source>
         <translation>--logfile e --logdir são mutuamente exclusivos</translation>
     </message>
@@ -1048,7 +1043,7 @@ A atualização será executada em segundo plano e substituirá o arquivo AppIma
 <context>
     <name>OCC::Application</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="175"/>
+        <location filename="../src/gui/main.cpp" line="174"/>
         <source>Quit</source>
         <translation>Sair</translation>
     </message>
@@ -3668,12 +3663,12 @@ Verifique a disponibilidade do servidor e execute o assistente novamente.</trans
 <context>
     <name>account loading</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="470"/>
+        <location filename="../src/gui/main.cpp" line="433"/>
         <source>Error accessing the configuration file</source>
         <translation>Erro acessando o arquivo de configuração</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="471"/>
+        <location filename="../src/gui/main.cpp" line="434"/>
         <source>There was an error while accessing the configuration file at %1.</source>
         <translation>Ocorreu um erro ao acessar o arquivo de configuração em %1.</translation>
     </message>
@@ -3855,7 +3850,7 @@ Verifique a disponibilidade do servidor e execute o assistente novamente.</trans
 <context>
     <name>version check</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="172"/>
+        <location filename="../src/gui/main.cpp" line="171"/>
         <source>Some settings were configured in newer versions of this client and use features that are not available in this version</source>
         <translation>Algumas configurações foram definidas em versões mais recentes deste cliente e utilizam recursos que não estão disponíveis nesta versão</translation>
     </message>

@@ -107,12 +107,7 @@ Utilità desktop per la sincronizzazione dei file.</translation>
         <translation>Abilita la modalità di debug.</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="134"/>
-        <source>Forward all arguments to the cmd client. This argument must be the first.</source>
-        <translation>Inoltra tutti gli argomenti al client cmd. Questo argomento deve essere il primo.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/main.cpp" line="150"/>
+        <location filename="../src/gui/main.cpp" line="149"/>
         <source>--logfile and --logdir are mutually exclusive</source>
         <translation>--logfile e --logdir si escludono a vicenda</translation>
     </message>
@@ -1047,7 +1042,7 @@ L&apos;aggiornamento verrà eseguito in background e sovrascriverà il file AppI
 <context>
     <name>OCC::Application</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="175"/>
+        <location filename="../src/gui/main.cpp" line="174"/>
         <source>Quit</source>
         <translation>Esci</translation>
     </message>
@@ -3664,12 +3659,12 @@ Please check the server&apos;s availability then run the wizard again.</source>
 <context>
     <name>account loading</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="470"/>
+        <location filename="../src/gui/main.cpp" line="433"/>
         <source>Error accessing the configuration file</source>
         <translation>Errore accedendo al file di configurazione</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="471"/>
+        <location filename="../src/gui/main.cpp" line="434"/>
         <source>There was an error while accessing the configuration file at %1.</source>
         <translation>Si è verificato un errore durante l&apos;accesso al file di configurazione su %1.</translation>
     </message>
@@ -3851,7 +3846,7 @@ Please check the server&apos;s availability then run the wizard again.</source>
 <context>
     <name>version check</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="172"/>
+        <location filename="../src/gui/main.cpp" line="171"/>
         <source>Some settings were configured in newer versions of this client and use features that are not available in this version</source>
         <translation>Alcune impostazioni configurate nelle versioni più recenti di questo client utilizzano delle funzionalità che non sono disponibili in questa versione</translation>
     </message>

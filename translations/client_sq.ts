@@ -107,12 +107,7 @@ Mjet njëkohësimi kartelash për desktop.</translation>
         <translation>Aktivizo mënyrën diagnostikim.</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="134"/>
-        <source>Forward all arguments to the cmd client. This argument must be the first.</source>
-        <translation>Përcilli krejt argumentet te klienti cmd. Ky argument duhet të jetë i pari.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/main.cpp" line="150"/>
+        <location filename="../src/gui/main.cpp" line="149"/>
         <source>--logfile and --logdir are mutually exclusive</source>
         <translation>--logfile dhe --logdir përjashtojnë reciprokisht njëra-tjetrën</translation>
     </message>
@@ -1047,7 +1042,7 @@ Përditësimi do të kryhet në prapaskenë dhe do të mbishkruajë kartelën e 
 <context>
     <name>OCC::Application</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="175"/>
+        <location filename="../src/gui/main.cpp" line="174"/>
         <source>Quit</source>
         <translation>Dilni</translation>
     </message>
@@ -3666,12 +3661,12 @@ Ju lutemi, kontrolloni qenien në punë të shërbyesit dhe rixhironi ndihmësin
 <context>
     <name>account loading</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="470"/>
+        <location filename="../src/gui/main.cpp" line="433"/>
         <source>Error accessing the configuration file</source>
         <translation>Gabim gjatë hyrjes në kartelën e formësimit</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="471"/>
+        <location filename="../src/gui/main.cpp" line="434"/>
         <source>There was an error while accessing the configuration file at %1.</source>
         <translation>Pati një gabim teksa hyhej te kartela e formësimit në %1.</translation>
     </message>
@@ -3853,7 +3848,7 @@ Ju lutemi, kontrolloni qenien në punë të shërbyesit dhe rixhironi ndihmësin
 <context>
     <name>version check</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="172"/>
+        <location filename="../src/gui/main.cpp" line="171"/>
         <source>Some settings were configured in newer versions of this client and use features that are not available in this version</source>
         <translation>Disa rregullime qenë formësuar në versione më të rinj të këtij klienti dhe përdorin veçori që s’janë të pranishme në këtë version</translation>
     </message>
