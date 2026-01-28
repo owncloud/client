@@ -49,19 +49,19 @@ QString updateChannel()
     }
     */
     // until then, migrate old setting if present
-    settings.setValue(updateChannelKey, "ocis");
+    settings.setValue(updateChannelKey, "stable");
 
-    // By now only two channels are supported: ocis and beta-ocis
+    // By now only two channels are supported: stabe and stable-beta
     const QString suffix = OCC::Version::suffix();
     if (suffix.startsWith(QLatin1String("daily"))
         || suffix.startsWith(QLatin1String("nightly"))
         || suffix.startsWith(QLatin1String("alpha"))
         || suffix.startsWith(QLatin1String("rc"))
         || suffix.startsWith(QLatin1String("beta"))) {
-        return "ocis-beta";
+        return "stable-beta";
         }
 
-    return "ocis";
+    return "stable";
 }
 
 Updater *Updater::_instance = nullptr;
