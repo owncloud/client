@@ -46,25 +46,14 @@ AccountFoldersController::AccountFoldersController(AccountState *state, AccountF
         return;
 
     _accountId = _accountState->account()->uuid();
+
+    buildMenuActions();
+
     FolderModelController *modelController = new FolderModelController(_accountId, this);
     connect(modelController, &FolderModelController::currentFolderChanged, this, &AccountFoldersController::onFolderChanged);
 
     QStandardItemModel *model = modelController->itemModel();
-
-    /*   we should probably simplify to use QStandardItemModel::sort with the sort
-     *   data role on the folder item specialized to do the calc.
-     *
-     *   auto weightedModel = new QSortFilterProxyModel(this);
-       weightedModel->setSourceModel(model);
-       weightedModel->setSortRole(static_cast<int>(FolderStatusModel::Roles::Priority));
-       weightedModel->sort(0, Qt::DescendingOrder);
-
-         _sortModel = weightedModel;
-     */
-
     _view->setItemModels(model, modelController->selectionModel());
-
-    buildMenuActions();
 
     connect(_view, &AccountFoldersView::addFolderTriggered, this, &AccountFoldersController::slotAddFolder);
 
@@ -88,7 +77,14 @@ void AccountFoldersController::onUnsyncedSpaceCountChanged(const QUuid &accountI
 
 void AccountFoldersController::onFolderChanged(OCC::Folder *folder)
 {
+    if (_currentFolder == folder)
+        return;
+
     _currentFolder = folder;
+    // thought to only do this here instead of trying to trigger the refresh before showing the menu since it's more complicated
+    // to trigger the refresh from the menu button.
+    // this doesn't really work eg if you use the menu to pause sync, then open the menu again - it won't get refreshed to show resume sync
+    updateActions();
 }
 
 void AccountFoldersController::slotAddFolder()
@@ -225,6 +221,7 @@ void AccountFoldersController::updateActions()
     // obvs we don't want to try to access values that aren't there
     // furthermore, we do need to disable if the current folder selection
     // is empty so it's actually a key part of the evaluation for action state here
+    // so doing a general if(!_curentFolder) return; handling is not correct
     _showInSystemFolder->setEnabled(_currentFolder && QFileInfo::exists(_currentFolder->path()));
 
     if (_showInBrowser)

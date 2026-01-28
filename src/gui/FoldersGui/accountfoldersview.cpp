@@ -14,6 +14,7 @@
 #include "accountfoldersview.h"
 
 #include <QHBoxLayout>
+#include <QHeaderView>
 #include <QLabel>
 #include <QMenu>
 #include <QPushButton>
@@ -21,6 +22,7 @@
 #include <QTreeView>
 #include <QVBoxLayout>
 
+#include "buttondelegate.h"
 #include "folderitemdelegate.h"
 #include "theme.h"
 
@@ -30,9 +32,10 @@ namespace OCC {
 AccountFoldersView::AccountFoldersView(QWidget *parent)
     : QWidget{parent}
 {
-    buildView();
     _itemMenu = new QMenu(this);
     _itemMenu->setAccessibleName(tr("Sync options menu"));
+
+    buildView();
 }
 
 void AccountFoldersView::buildView()
@@ -55,7 +58,6 @@ void AccountFoldersView::buildView()
     mainLayout->addLayout(buttonLineLayout);
 
     _treeView = new QTreeView(this);
-    _treeView->setHeaderHidden(true);
     _treeView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     // I'm not sure always off is good but that's what we currently have
     _treeView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -63,15 +65,32 @@ void AccountFoldersView::buildView()
     _treeView->setIndentation(0);
     _treeView->setSelectionMode(QAbstractItemView::SingleSelection);
     _treeView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    _treeView->setAllColumnsShowFocus(true);
+
+    // I think this needs to move to a slot connected to QHeaderView::sectionCountChanged  - in theory the logical indexes
+    // will have been created by that point?!
+    QHeaderView *header = _treeView->header();
+    header->setSectionsMovable(false);
+    header->setStretchLastSection(false); // this is useless - so far the last section still stretches
+    //_treeView->header()->setSectionResizeMode(0, QHeaderView::Stretch); // ->this does not work/crashes.I think the "logical index" does not yet exist but
+    // WHEN does it get created?! I try updating the header after the model is set and it crashes there too. I do not get it.
+    header->setSectionResizeMode(QHeaderView::Stretch); // this at least splits the available space between first and second column.
+    _treeView->setHeaderHidden(true);
+
 
     FolderItemDelegate *delegate = new FolderItemDelegate(_treeView);
-    _treeView->setItemDelegate(delegate);
+    _treeView->setItemDelegateForColumn(0, delegate);
+    ButtonDelegate *buttonDel = new ButtonDelegate(_treeView);
+    buttonDel->setMenu(_itemMenu);
+    _treeView->setItemDelegateForColumn(1, buttonDel);
 
+    // this works but only when the button item is current. this means I have to set the button column to current each time row selection
+    // changes but it works well so far.
+    _treeView->setEditTriggers(QAbstractItemView::CurrentChanged);
     _treeView->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(_treeView, &QWidget::customContextMenuRequested, this, &AccountFoldersView::popItemMenu);
 
     mainLayout->addWidget(_treeView);
-
 
     _syncedFolderCountLabel = new QLabel("placeholder for sync count", this);
     _syncedFolderCountLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -87,7 +106,7 @@ void AccountFoldersView::setItemModels(QStandardItemModel *model, QItemSelection
     // also the tree view doesn't manage the lifetime of the selection  model so we could/possibly should delete the default here
     // I'll check that out
     _treeView->setModel(model);
-    _treeView->setSelectionModel(selectionModel);
+    _treeView->setSelectionModel(selectionModel);    
 }
 
 void AccountFoldersView::setSyncedFolderCount(int synced, int total)

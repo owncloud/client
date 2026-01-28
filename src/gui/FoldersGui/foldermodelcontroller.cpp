@@ -29,20 +29,26 @@ FolderModelController::FolderModelController(const QUuid &accountId, QObject *pa
     , _accountId(accountId)
 {
     _model = new QStandardItemModel(this);
+    // first column is the real data, which is in a FolderItem, the second item is just a dumb QStandardItem that is basically
+    // a placeholder that can host the ButtonDelegate.
+    _model->setColumnCount(2);
     _model->setSortRole(FolderItemRoles::SortPriorityRole);
     _selectionModel = new QItemSelectionModel(_model, this);
-    connect(_selectionModel, &QItemSelectionModel::currentChanged, this, &FolderModelController::onCurrentChanged);
+    connect(_selectionModel, &QItemSelectionModel::currentRowChanged, this, &FolderModelController::onCurrentChanged);
 }
 
 void FolderModelController::onCurrentChanged(const QModelIndex &current, const QModelIndex &previous)
 {
     Q_UNUSED(previous);
 
-    QStandardItem *item = _model->itemFromIndex(current);
+    QStandardItem *item = _model->item(current.row(), 0);
     FolderItem *folderItem = dynamic_cast<FolderItem *>(item);
-    if (folderItem)
+    if (folderItem) {
         emit currentFolderChanged(folderItem->folder());
-    else
+        // set the row's button item as current to ensure the delegate goes straight into "edit" mode, which
+        // provides a real menu button for accessibility
+        _selectionModel->setCurrentIndex(_model->index(folderItem->row(), 1), QItemSelectionModel::Current);
+    } else
         // at the moment we won't support a "current folder" value if a child error is current/focused -> this will ensure no context menu can pop outside of a
         // normal folder row. revisit if we need to expand this concept
         emit currentFolderChanged(nullptr);
@@ -74,11 +80,11 @@ void FolderModelController::onFolderAdded(const QUuid &accountId, Folder *folder
         return;
 
     FolderItem *item = new FolderItem(folder);
-    _model->appendRow(item);
+    _model->appendRow({item, new QStandardItem()});
     _items.insert(folder->spaceId(), item);
 
     _model->sort(0, Qt::DescendingOrder);
-    _selectionModel->select(item->index(), QItemSelectionModel::ClearAndSelect); // QItemSelectionModel::SelectCurrent);
+    _selectionModel->select(item->index(), QItemSelectionModel::Rows | QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
 }
 
 void FolderModelController::onFolderRemoved(const QUuid &accountId, Folder *folder)
@@ -94,6 +100,7 @@ void FolderModelController::onFolderRemoved(const QUuid &accountId, Folder *fold
         QStandardItem *it = _items.value(folder->spaceId());
         QModelIndex index = it->index();
         if (index.isValid())
+            // note that removeRow(s) takes care of deleting the items in the row
             _model->removeRow(it->index().row());
         _items.remove(id);
     }

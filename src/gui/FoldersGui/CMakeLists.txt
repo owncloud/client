@@ -13,5 +13,7 @@ target_sources(owncloudGui PRIVATE
     folderitemupdater.h
     accountfolderscontroller.cpp
     accountfolderscontroller.h
+    buttondelegate.cpp
+    buttondelegate.h
 )
 
