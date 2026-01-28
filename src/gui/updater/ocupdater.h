@@ -117,8 +117,6 @@ public:
 
     explicit OCUpdater(const QUrl &url);
 
-    void setUpdateUrl(const QUrl &url);
-
     void checkForUpdate() override;
 
     QString statusString() const;
