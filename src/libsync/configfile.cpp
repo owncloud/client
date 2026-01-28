@@ -59,7 +59,6 @@ const QString optionalDesktopNotificationsC()
 }
 const QString skipUpdateCheckC() { return QStringLiteral("skipUpdateCheck"); }
 const QString updateCheckIntervalC() { return QStringLiteral("updateCheckInterval"); }
-const QString updateChannelC() { return QStringLiteral("updateChannel"); }
 const QString uiLanguageC() { return QStringLiteral("uiLanguage"); }
 const QString geometryC() { return QStringLiteral("geometry"); }
 const QString timeoutC() { return QStringLiteral("timeout"); }
@@ -487,28 +486,6 @@ void ConfigFile::setSkipUpdateCheck(bool skip, const QString &connection)
 
     settings.setValue(skipUpdateCheckC(), QVariant(skip));
     settings.sync();
-}
-
-QString ConfigFile::updateChannel() const
-{
-    QString defaultUpdateChannel = QStringLiteral("stable");
-    const QString suffix = OCC::Version::suffix();
-    if (suffix.startsWith(QLatin1String("daily"))
-        || suffix.startsWith(QLatin1String("nightly"))
-        || suffix.startsWith(QLatin1String("alpha"))
-        || suffix.startsWith(QLatin1String("rc"))
-        || suffix.startsWith(QLatin1String("beta"))) {
-        defaultUpdateChannel = QStringLiteral("beta");
-    }
-
-    auto settings = makeQSettings();
-    return settings.value(updateChannelC(), defaultUpdateChannel).toString();
-}
-
-void ConfigFile::setUpdateChannel(const QString &channel)
-{
-    auto settings = makeQSettings();
-    settings.setValue(updateChannelC(), channel);
 }
 
 QString ConfigFile::uiLanguage() const
