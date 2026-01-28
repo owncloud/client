@@ -107,12 +107,7 @@ Utilitaire de synchronisation de fichiers pour ordinateur de bureau. </translati
         <translation>Activer le mode débogage.</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="134"/>
-        <source>Forward all arguments to the cmd client. This argument must be the first.</source>
-        <translation>Transmettre tous les arguments au client cmd. Cet argument doit être le premier.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/main.cpp" line="150"/>
+        <location filename="../src/gui/main.cpp" line="149"/>
         <source>--logfile and --logdir are mutually exclusive</source>
         <translation>--logfile et --logdir sont mutuellement exclusifs</translation>
     </message>
@@ -1047,7 +1042,7 @@ La mise à jour sera effectuée en arrière-plan et va écraser le fichier Appim
 <context>
     <name>OCC::Application</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="175"/>
+        <location filename="../src/gui/main.cpp" line="174"/>
         <source>Quit</source>
         <translation>Quitter</translation>
     </message>
@@ -3666,12 +3661,12 @@ Veuillez vérifier la disponibilité du serveur, puis relancez l&apos;assistant.
 <context>
     <name>account loading</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="470"/>
+        <location filename="../src/gui/main.cpp" line="433"/>
         <source>Error accessing the configuration file</source>
         <translation>Erreur lors de l&apos;accès au fichier de configuration</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="471"/>
+        <location filename="../src/gui/main.cpp" line="434"/>
         <source>There was an error while accessing the configuration file at %1.</source>
         <translation>Une erreur s&apos;est produite lors de l&apos;accès au fichier de configuration situé dans %1.</translation>
     </message>
@@ -3853,7 +3848,7 @@ Veuillez vérifier la disponibilité du serveur, puis relancez l&apos;assistant.
 <context>
     <name>version check</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="172"/>
+        <location filename="../src/gui/main.cpp" line="171"/>
         <source>Some settings were configured in newer versions of this client and use features that are not available in this version</source>
         <translation>Certains paramètres ont été configurés dans une version ultérieure de ce client et utilisent des fonctionnalités qui ne sont pas disponibles dans cette version.</translation>
     </message>
