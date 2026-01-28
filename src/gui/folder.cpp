@@ -129,6 +129,10 @@ Folder::Folder(const FolderDefinition &definition, AccountState *accountState, s
 
         connect(_engine.data(), &SyncEngine::transmissionProgress, this,
             [this](const ProgressInfo &pi) { Q_EMIT ProgressDispatcher::instance()->progressInfo(this, pi); });
+
+        connect(_engine.data(), &SyncEngine::transmissionProgress, this, &Folder::progressUpdate);
+        //  [this](const ProgressInfo &pi) { Q_EMIT ProgressDispatcher::instance()->progressInfo(this, pi); });
+
         connect(_engine.data(), &SyncEngine::itemCompleted, this, &Folder::slotItemCompleted);
         connect(_engine.data(), &SyncEngine::seenLockedFile, FolderMan::instance(), &FolderMan::slotSyncOnceFileUnlocks);
         connect(_engine.data(), &SyncEngine::aboutToPropagate,

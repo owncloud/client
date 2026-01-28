@@ -245,6 +245,10 @@ bool FolderMan::addFoldersFromConfigByAccount(QSettings &settings, AccountState 
             continue;
         }
 
+        // this is checked before the spaces manager has loaded the spaces so it will always be null.
+        // this is a bit odd for now as in the gui it shows the unavailable state until after login. I think
+        // in most cases this will be ok as it's not a common workflow, we just have it on demo
+        // if we don't set this here a sync will be attempted, then it just shows as failed.
         folder->setAvailable(folder->space() != nullptr);
 
         settings.endGroup(); // folderAlias

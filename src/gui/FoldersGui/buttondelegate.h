@@ -14,23 +14,25 @@
 
 #pragma once
 
-#include <QStandardItem>
+#include <QItemDelegate>
+
+class QPushButton;
 
 namespace OCC {
 
-class FolderItem;
-
-/**
- * @brief The FolderErrorItem class will present any errors that arise on sync
- *
- * the error items will be children of the related FolderItem
- *
- */
-class FolderErrorItem : public QStandardItem
+class ButtonDelegate : public QItemDelegate
 {
-    FolderErrorItem(FolderItem *parent);
+public:
+    ButtonDelegate(QObject *parent);
+
+    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
+    QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const override;
+
+    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
+    void destroyEditor(QWidget *editor, const QModelIndex &index) const override;
+    void setMenu(QMenu *menu);
 
 private:
-    FolderItem *_parent;
+    QPushButton *_button = nullptr;
 };
 }
