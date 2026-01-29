@@ -42,12 +42,6 @@ QString updateChannel()
     // remove deprecated updateChannel setting once we hit 8.0
     auto settings = ConfigFile::makeQSettings();
     QString updateChannelKey = updateChannelC();
-    // todo: #52
-    /*
-    if (settings.contains(updateChannelKey)) {
-        settings.remove(updateChannelKey);
-    }
-    */
     // until then, migrate old setting if present
     settings.setValue(updateChannelKey, QStringLiteral("stable"));
 
