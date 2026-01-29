@@ -334,49 +334,14 @@ File synchronization desktop utility.</source>
         <translation>ھەققىدە</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.ui" line="108"/>
-        <source>&amp;Update Channel</source>
-        <translation>&amp; Channel نى يېڭىلاش</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/aboutdialog.ui" line="137"/>
+        <location filename="../src/gui/aboutdialog.ui" line="111"/>
         <source>&amp;Restart &amp;&amp; Update</source>
         <translation>&amp; قايتا قوزغىتىش &amp;&amp; يېڭىلاش</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.ui" line="148"/>
+        <location filename="../src/gui/aboutdialog.ui" line="122"/>
         <source>Versions</source>
         <translation>نەشرى</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="93"/>
-        <source>beta</source>
-        <translation>beta</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="161"/>
-        <source>Change update channel?</source>
-        <translation>يېڭىلاش قانىلىنى ئۆزگەرتەمسىز؟</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="162"/>
-        <source>&lt;html&gt;The update channel determines which client updates will be offered for installation.&lt;ul&gt;&lt;li&gt;&quot;ownCloud 10 LTS&quot; contains only upgrades that are considered reliable&lt;/li&gt;&lt;li&gt;&quot;ownCloud Infinite Scale stable&quot; contains only upgrades that are considered reliable but &lt;b&gt;removes support for &quot;ownCloud 10&quot;&lt;/b&gt;&lt;/li&gt;%1&lt;/ul&gt;&lt;br&gt;⚠️Downgrades are not supported. If you switch to a stable channel this change will only be applied with the next major release.&lt;/html&gt;</source>
-        <translation>&lt;html&gt; يېڭىلاش قانىلى خېرىدارلارنىڭ قايسى يېڭىلانمىلارنىڭ ئورنىتىلىدىغانلىقىنى بەلگىلەيدۇ. &lt;ul&gt; &lt;li&gt; &quot;ownCloud 10 LTS&quot; پەقەت ئىشەنچلىك دەپ قارالغان يېڭىلاشلارنىلا ئۆز ئىچىگە ئالىدۇ &lt;/ li&gt; بۇ ئىشەنچلىك دەپ قارىلىدۇ ، ئەمما &lt;b&gt; &quot;ownCloud 10&quot; &lt;/b&gt; &lt;/li&gt;% 1 &lt;/ul&gt; &lt;br&gt; owDowngrades نى قوللىمايدۇ. ئەگەر مۇقىم قانالغا ئالماشتۇرسىڭىز ، بۇ ئۆزگىرىش پەقەت كېيىنكى ئاساسلىق تارقىتىلىش بىلەنلا قوللىنىلىدۇ. &lt;/html&gt;</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="169"/>
-        <source>&lt;li&gt;&quot;beta&quot; may contain newer features and bugfixes, but have not yet been tested thoroughly&lt;/li&gt;</source>
-        <translation>&lt;li&gt; &quot;beta&quot; بەلكىم يېڭى ئىقتىدار ۋە كەمتۈكلۈكلەرنى ئۆز ئىچىگە ئالغان بولۇشى مۇمكىن ، ئەمما تېخى تولۇق سىناقتىن ئۆتمىگەن &lt;/li&gt;</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="171"/>
-        <source>Change update channel</source>
-        <translation>يېڭىلاش قانىلىنى ئۆزگەرتىڭ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="172"/>
-        <source>Cancel</source>
-        <translation>ۋازكەچ</translation>
     </message>
 </context>
 <context>
@@ -2218,52 +2183,52 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OCUpdater</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="154"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="147"/>
         <source>Could not download update. Please click &lt;a href=&apos;%1&apos;&gt;here&lt;/a&gt; to download the update manually.</source>
         <translation>يېڭىلاشنى چۈشۈرەلمىدى. يېڭىلاشنى قولدا چۈشۈرۈش ئۈچۈن &lt;a href = &apos;% 1&apos;&gt; بۇ يەرنى چېكىڭ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="156"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="149"/>
         <source>Could not check for new updates.</source>
         <translation>يېڭى يېڭىلانمىلارنى تەكشۈرەلمىدى.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="146"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="139"/>
         <source>Downloading %1. Please wait…</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="149"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="142"/>
         <source>%1 installed successfully. Restart the application to finish installing the update.</source>
         <translation>% 1 مۇۋەپپەقىيەتلىك ئورنىتىلدى. يېڭىلاشنى قاچىلاشنى تاماملاش ئۈچۈن پروگراممىنى قايتا قوزغىتىڭ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="151"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="144"/>
         <source>%1 available. Restart application to start the update.</source>
         <translation>% 1 ئىشلەتكىلى بولىدۇ. يېڭىلاشنى باشلاش ئۈچۈن پروگراممىنى قايتا قوزغىتىڭ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="162"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="155"/>
         <source>New %1 available. Please click &lt;a href=&apos;%2&apos;&gt;here&lt;/a&gt; to download the new AppImage manually.</source>
         <translation>يېڭى% 1 ئىشلەتكىلى بولىدۇ. يېڭى AppImage نى قولدا چۈشۈرۈش ئۈچۈن بۇ يەردىكى &lt;a href = &apos;% 2&apos;&gt; نى چېكىڭ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="165"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="158"/>
         <source>New %1 available. Please use the system&apos;s update tool to install it.</source>
         <translation>يېڭى% 1 ئىشلەتكىلى بولىدۇ. ئۇنى قاچىلاش ئۈچۈن سىستېمىنىڭ يېڭىلاش قورالىنى ئىشلىتىڭ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="167"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="160"/>
         <source>Checking update server…</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="169"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="162"/>
         <source>Update status is unknown: Did not check for new updates.</source>
         <translation>يېڭىلاش ھالىتى نامەلۇم: يېڭى يېڭىلانمىلارنى تەكشۈرمىدىڭىز.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="173"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="166"/>
         <source>No updates available. Your installation is at the latest version.</source>
         <translation>ھېچقانداق يېڭىلاش يوق. قاچىلاش ئەڭ يېڭى نەشرىدە.</translation>
     </message>
@@ -3219,7 +3184,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::UpdaterScheduler</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="50"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="49"/>
         <source>Update available</source>
         <translation>يېڭىلاشنى ئىشلەتكىلى بولىدۇ</translation>
     </message>
@@ -3391,37 +3356,37 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::WindowsUpdater</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="380"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="373"/>
         <source>&lt;p&gt;A new version of the %1 Client is available.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; is available for download. The installed version is %3.&lt;/p&gt;</source>
         <translation>&lt;p&gt;% 1 خېرىدارنىڭ يېڭى نەشرى بار. &lt;/p&gt; &lt;p&gt; &lt;b&gt;% 2 &lt;/b&gt; چۈشۈرگىلى بولىدۇ. قاچىلانغان نەشرى% 3. &lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="426"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="419"/>
         <source>Skip this version</source>
         <translation>بۇ نەشرىنى ئاتلاڭ</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="407"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="400"/>
         <source>Update Failed</source>
         <translation>يېڭىلاش مەغلۇب بولدى</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="413"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="406"/>
         <source>&lt;p&gt;A new version of the %1 Client is available but the updating process failed.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; has been downloaded. The installed version is %3.&lt;/p&gt;</source>
         <translation>&lt;p&gt;% 1 خېرىدارنىڭ يېڭى نەشرى بار ، ئەمما يېڭىلاش جەريانى مەغلۇپ بولدى. &lt;/p&gt; &lt;p&gt; &lt;b&gt;% 2 &lt;/b&gt; چۈشۈرۈلدى. قاچىلانغان نەشرى% 3. &lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="427"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="420"/>
         <source>Ask again later</source>
         <translation>كېيىن قايتا سوراڭ</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="428"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="421"/>
         <source>Restart and update</source>
         <translation>قايتا قوزغىتىپ يېڭىلاڭ</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="429"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="422"/>
         <source>Update manually</source>
         <translation>قولدا يېڭىلاش</translation>
     </message>
