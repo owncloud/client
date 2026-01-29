@@ -49,19 +49,19 @@ QString updateChannel()
     }
     */
     // until then, migrate old setting if present
-    settings.setValue(updateChannelKey, "stable");
+    settings.setValue(updateChannelKey, QStringLiteral("stable"));
 
-    // By now only two channels are supported: stabe and stable-beta
+    // By now only two channels are supported: stable and stable-beta
     const QString suffix = OCC::Version::suffix();
     if (suffix.startsWith(QLatin1String("daily"))
         || suffix.startsWith(QLatin1String("nightly"))
         || suffix.startsWith(QLatin1String("alpha"))
         || suffix.startsWith(QLatin1String("rc"))
         || suffix.startsWith(QLatin1String("beta"))) {
-        return "stable-beta";
+        return QStringLiteral("stable-beta");
         }
 
-    return "stable";
+    return QStringLiteral("stable");
 }
 
 Updater *Updater::_instance = nullptr;
@@ -137,7 +137,7 @@ QUrlQuery Updater::getQueryParams()
     query.addQueryItem(QStringLiteral("versionsuffix"), OCC::Version::suffix());
 
     auto channel = updateChannel();
-    query.addQueryItem("channel", channel);
+    query.addQueryItem(QStringLiteral("channel"), channel);
 
     // requested by #11328
     // we use the names Qt gives us instead of inventing our own labels
