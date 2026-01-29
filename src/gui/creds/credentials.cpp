@@ -288,7 +288,8 @@ void Credentials::refreshAccessTokenInternal()
         return;
     // parent with nam to ensure we reset when the nam is reset
     // todo: #22 - the parenting here is highly questionable, as is the use of the shared account ptr
-    _oAuthJob = new AccountBasedOAuth(_account, this);
+    SystemConfig systemConfig;
+    _oAuthJob = new AccountBasedOAuth(_account, systemConfig.openIdConfig(), this);
     connect(_oAuthJob, &AccountBasedOAuth::refreshError, this, &Credentials::handleRefreshError);
     connect(_oAuthJob, &AccountBasedOAuth::refreshFinished, this, &Credentials::handleRefreshSuccess);
 
