@@ -183,7 +183,7 @@ QString Status::versionString() const
 
 TusSupport::TusSupport(const QVariantMap &tus_support)
 {
-    if (tus_support.isEmpty() || qEnvironmentVariableIsSet("OWNCLOUD_NO_TUS")) {
+    if (tus_support.isEmpty()) {
         return;
     }
     version = QVersionNumber::fromString(tus_support.value(QStringLiteral("version")).toString());
