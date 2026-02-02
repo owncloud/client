@@ -11,6 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  */
+
 #include "accountfoldersview.h"
 
 #include <QHBoxLayout>
@@ -67,26 +68,22 @@ void AccountFoldersView::buildView()
     _treeView->setSelectionBehavior(QAbstractItemView::SelectRows);
     _treeView->setAllColumnsShowFocus(true);
 
-    // I think this needs to move to a slot connected to QHeaderView::sectionCountChanged  - in theory the logical indexes
-    // will have been created by that point?!
-    QHeaderView *header = _treeView->header();
-    header->setSectionsMovable(false);
-    header->setStretchLastSection(false); // this is useless - so far the last section still stretches
-    //_treeView->header()->setSectionResizeMode(0, QHeaderView::Stretch); // ->this does not work/crashes.I think the "logical index" does not yet exist but
-    // WHEN does it get created?! I try updating the header after the model is set and it crashes there too. I do not get it.
-    header->setSectionResizeMode(QHeaderView::Stretch); // this at least splits the available space between first and second column.
+    _treeView->header()->setSectionsMovable(false);
     _treeView->setHeaderHidden(true);
 
 
     FolderItemDelegate *delegate = new FolderItemDelegate(_treeView);
     _treeView->setItemDelegateForColumn(0, delegate);
-    ButtonDelegate *buttonDel = new ButtonDelegate(_treeView);
+    // note this is not the normal ellipses character, it's vertically centered instead of positioned at font baseline. This is better
+    // for this button than normal ellipses
+    ButtonDelegate *buttonDel = new ButtonDelegate("⋯", _treeView);
     buttonDel->setMenu(_itemMenu);
     _treeView->setItemDelegateForColumn(1, buttonDel);
-
     // this works but only when the button item is current. this means I have to set the button column to current each time row selection
-    // changes but it works well so far.
+    // changes but it works well so far. Still needs some tweaks to ensure the edit mode stays active when you click around in the same row.
+    // sometimes the button disappears. Note that using AllEditTriggers does not improve things
     _treeView->setEditTriggers(QAbstractItemView::CurrentChanged);
+
     _treeView->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(_treeView, &QWidget::customContextMenuRequested, this, &AccountFoldersView::popItemMenu);
 
@@ -104,9 +101,16 @@ void AccountFoldersView::setItemModels(QStandardItemModel *model, QItemSelection
     // order here is important, if you set the selection model before the main model the selection model for the view
     // reverts to the "default" selectionModel.
     // also the tree view doesn't manage the lifetime of the selection  model so we could/possibly should delete the default here
-    // I'll check that out
     _treeView->setModel(model);
-    _treeView->setSelectionModel(selectionModel);    
+    _treeView->setSelectionModel(selectionModel);
+
+    // these settings can only work if/when the model has been added to the view because the header "data" comes from the model.
+    // without the header data the logical indexes do not exist so...we can't do it in the ctr unless we inject the models there.
+    // but we can't do that either as the view is currently created by the .ui impl, which can't take those params.
+    QHeaderView *header = _treeView->header();
+    header->setStretchLastSection(false);
+    header->setSectionResizeMode(0, QHeaderView::Stretch);
+    header->setSectionResizeMode(1, QHeaderView::Fixed);
 }
 
 void AccountFoldersView::setSyncedFolderCount(int synced, int total)
@@ -124,13 +128,17 @@ void AccountFoldersView::setFolderActions(QList<QAction *> actions)
     if (_itemMenu) {
         _itemMenu->clear();
         _itemMenu->addActions(actions);
+        connect(_itemMenu, &QMenu::aboutToShow, this, &AccountFoldersView::refreshMenu);
     }
+}
+
+void AccountFoldersView::refreshMenu()
+{
+    emit requestActionsUpdate();
 }
 
 void AccountFoldersView::popItemMenu(const QPoint &pos)
 {
-    emit requestActionsUpdate();
-
     _itemMenu->exec(_treeView->viewport()->mapToGlobal(pos));
 }
 }

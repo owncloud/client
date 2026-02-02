@@ -36,34 +36,38 @@ void FolderItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
     QRect paintableArea(
         option.rect.left() + _cellBorder, option.rect.top() + _cellBorder, option.rect.width() - 2 * _cellBorder, firstLineHeight + secondLineHeight);
     QPixmap decoration = index.data(Qt::DecorationRole).value<QIcon>().pixmap(paintableArea.height(), paintableArea.height());
-    QRect iconRect(paintableArea.topLeft(), decoration.size());
-    drawDecoration(painter, option, iconRect, decoration);
+    QRect iconRect(paintableArea.topLeft(), decoration.deviceIndependentSize().toSize()); // else the size is very wrong, given mac uses "special" dpi
+    // drawDecoration gives very very strange results on mac when the deviceIndependentSize is used - the paint location is way off, "up" and
+    // to the left - it looks like it may be adjusting location using dpr? Anyway it works better if we just paint it ourselves.
+    // drawDecoration(painter, option, iconRect, decoration);
+    painter->drawPixmap(iconRect, decoration);
 
     painter->save();
 
     QFont f = option.font;
     f.setPixelSize(14);
     painter->setFont(f);
+
     // inportant point -> painter::drawText, when using just a point to position it, the y position is used as baseline. as that is super helpful?
-    // so we should set up a rect instead:
-    QRect firstLineRect(iconRect.right(), iconRect.top(), paintableArea.width() - iconRect.width(), firstLineHeight);
+    // so we have to set up a rect instead to make positioning easier:
+    QRect firstLineRect(iconRect.right() + _cellBorder, iconRect.top(), paintableArea.width() - iconRect.width() - _cellBorder, firstLineHeight);
     QRect actualFirstLineRect;
     painter->drawText(firstLineRect, Qt::TextSingleLine, index.data(Qt::DisplayRole).toString(), &actualFirstLineRect);
 
     painter->setFont(option.font);
-    QRect statusIconRect(iconRect.right(), firstLineRect.bottom(), secondLineHeight, secondLineHeight);
+    QRect statusIconRect(iconRect.right() + _cellBorder, firstLineRect.bottom(), secondLineHeight, secondLineHeight);
     QIcon statusIcon = index.data(FolderItemRoles::StatusIconRole).value<QIcon>();
     painter->drawPixmap(statusIconRect, statusIcon.pixmap(statusIconRect.size()));
-    QRect secondLineRect(
-        statusIconRect.right() + 2, firstLineRect.bottom(), paintableArea.width() - iconRect.width() - statusIconRect.width() - 2, secondLineHeight);
+    QRect secondLineRect(statusIconRect.right() + _cellBorder, firstLineRect.bottom(),
+        paintableArea.width() - iconRect.width() - _cellBorder - statusIconRect.width() - _cellBorder, secondLineHeight);
     painter->drawText(secondLineRect, Qt::TextSingleLine, index.data(FolderItemRoles::StatusStringRole).toString(), nullptr);
 
     painter->setPen(QPen(QBrush(_separatorColor), _cellSeparatorWidth));
-    painter->drawLine(paintableArea.left(), option.rect.bottom(), paintableArea.right(), option.rect.bottom());
+    painter->drawLine(option.rect.left(), option.rect.bottom(), option.rect.right(), option.rect.bottom());
     painter->restore();
 
     // do the custom text painting using the painter
-    drawFocus(painter, option, option.rect);
+    // drawFocus(painter, option, option.rect);
 }
 
 QSize FolderItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const

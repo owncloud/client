@@ -19,19 +19,34 @@
 
 namespace OCC {
 
-ButtonDelegate::ButtonDelegate(QObject *parent)
+ButtonDelegate::ButtonDelegate(const QString &text, QObject *parent)
     : QItemDelegate{parent}
+    , _buttonText(text)
 {
-    _button = new QPushButton("...");
+    // note we will update the widget parent in the first createEditor as that passes the correct parent for the pop
+    // trying to set this manually is error prone
+    _button = new QPushButton(_buttonText);
+    _button->setObjectName("buttonDelegateButton");
+    _button->setAccessibleName("Folder options");
+    _button->setAccessibleDescription("Menu button with folder options");
+
+    _button->setAutoFillBackground(true);
+    // have to explicitly align center or the text goes left when a menu is added
+    // also the font size is set based on the idea that the text is "..." - we may want to adapt this in future
+    _button->setStyleSheet({"font: bold 18px; text-align:center;"});
+    _button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 }
 
 void ButtonDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     drawBackground(painter, option, index);
-    drawDisplay(painter, option, option.rect, "...");
+
     painter->save();
-    // QRect dotsRect = option.rect;
-    // painter->drawLine()
+    QFont f = painter->font();
+    f.setBold(true);
+    f.setPixelSize(18);
+    painter->setFont(f);
+    painter->drawText(option.rect, Qt::AlignCenter, _buttonText);
     painter->setPen(QPen(QBrush("#807F7F7F"), 1));
     painter->drawLine(option.rect.bottomLeft(), option.rect.bottomRight());
     painter->restore();
@@ -41,13 +56,13 @@ void ButtonDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option
 
 QSize ButtonDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    return QSize(75, option.rect.height());
+    QSize size = QItemDelegate::sizeHint(option, index);
+    return QSize(75, size.height());
 }
 
 QWidget *ButtonDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     Q_UNUSED(index);
-
     if (_button->parent() != parent)
         // the parent is actually the scroll area viewport. don't ask :D
         _button->setParent(parent);

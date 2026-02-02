@@ -32,14 +32,29 @@ FolderModelController::FolderModelController(const QUuid &accountId, QObject *pa
     // first column is the real data, which is in a FolderItem, the second item is just a dumb QStandardItem that is basically
     // a placeholder that can host the ButtonDelegate.
     _model->setColumnCount(2);
+    // we have to add something to the model header to allow us to pretend we can manipulate the logical indexes before real data has been added
+    // to the model. Just setting the column count does nothing. Also note these get deleted on model clear so DON'T USE CLEAR
+    _model->setHorizontalHeaderItem(0, new QStandardItem("bling"));
+    _model->setHorizontalHeaderItem(1, new QStandardItem("boop"));
+    Q_ASSERT(_model->columnCount() == 2);
     _model->setSortRole(FolderItemRoles::SortPriorityRole);
+
+    // you can't get the selection model from the model. you have to get it from the view. this creates dependency ick so instead just create
+    // our own selection model and set it on the view via setModels
     _selectionModel = new QItemSelectionModel(_model, this);
+    connect(_selectionModel, &QItemSelectionModel::currentColumnChanged, this, &FolderModelController::onCurrentChanged);
     connect(_selectionModel, &QItemSelectionModel::currentRowChanged, this, &FolderModelController::onCurrentChanged);
 }
 
 void FolderModelController::onCurrentChanged(const QModelIndex &current, const QModelIndex &previous)
 {
-    Q_UNUSED(previous);
+    // this will happen if the user clicks around in the row, eg from second to first column. just update current to be the second col so the button stays
+    // visible
+    // in this case we do not want to update the current folder, as the row has not changed
+    if (current.row() == previous.row()) {
+        _selectionModel->setCurrentIndex(_model->index(current.row(), 1), QItemSelectionModel::Current);
+        return;
+    }
 
     QStandardItem *item = _model->item(current.row(), 0);
     FolderItem *folderItem = dynamic_cast<FolderItem *>(item);
@@ -56,17 +71,20 @@ void FolderModelController::onCurrentChanged(const QModelIndex &current, const Q
 
 void FolderModelController::onFolderListChanged(const QUuid &accountId, const QList<Folder *> folders)
 {
+    // first check is just the identify whether new folder set is associated with the current account, which should not be null
     if (!accountId.isNull() && _accountId != accountId)
         return;
-    // important to understand: the first check is just the identify whether we are associated with a non-null account
-    // the change was related it.
 
-    // if the accountId is null it means that ALL folders, regardless of account, were removed, eg on shutdown
-    // so we still need to reset the model even if the accountId is null
-    _model->clear();
-
-    if (folders.isEmpty())
+    // if the accountId is null it should mean that ALL folders in the system, regardless of account id, were removed, eg on shutdown
+    // so we still need to clear the model even if the accountId is null. In this case the whole model needs to be cleared
+    if (accountId.isNull()) {
+        Q_ASSERT(folders.isEmpty());
+        _model->clear();
         return;
+    }
+
+    // otherwise we *can't* reset the model or we lose the headers and the associated column sizing >:|
+    _model->invisibleRootItem()->removeRows(0, _model->rowCount());
 
     for (const auto &f : folders)
         onFolderAdded(accountId, f);
@@ -80,6 +98,7 @@ void FolderModelController::onFolderAdded(const QUuid &accountId, Folder *folder
         return;
 
     FolderItem *item = new FolderItem(folder);
+    // we need a dummy item for the second column to host the button delegate for the row
     _model->appendRow({item, new QStandardItem()});
     _items.insert(folder->spaceId(), item);
 
@@ -113,6 +132,8 @@ void FolderModelController::connectSignals(FolderMan *folderMan)
     connect(folderMan, &FolderMan::folderAdded, this, &FolderModelController::onFolderAdded);
     connect(folderMan, &FolderMan::folderRemoved, this, &FolderModelController::onFolderRemoved);
 
+    // normally the folder list is updated after the views have been created but just in case it
+    // happened sooner:
     onFolderListChanged(_accountId, folderMan->foldersForAccount(_accountId));
 }
 }

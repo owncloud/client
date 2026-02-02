@@ -23,7 +23,7 @@ namespace OCC {
 class ButtonDelegate : public QItemDelegate
 {
 public:
-    ButtonDelegate(QObject *parent);
+    ButtonDelegate(const QString &text, QObject *parent);
 
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
     QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const override;
@@ -34,5 +34,6 @@ public:
 
 private:
     QPushButton *_button = nullptr;
+    QString _buttonText;
 };
 }
