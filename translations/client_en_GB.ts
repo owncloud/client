@@ -107,12 +107,7 @@ File synchronisation desktop utility.</translation>
         <translation>Enable debug mode.</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="134"/>
-        <source>Forward all arguments to the cmd client. This argument must be the first.</source>
-        <translation>Forward all arguments to the cmd client. This argument must be the first.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/main.cpp" line="150"/>
+        <location filename="../src/gui/main.cpp" line="149"/>
         <source>--logfile and --logdir are mutually exclusive</source>
         <translation>--logfile and --logdir are mutually exclusive</translation>
     </message>
@@ -301,7 +296,7 @@ File synchronisation desktop utility.</translation>
     <message>
         <location filename="../src/gui/folderwizard/folderwizardsourcepage.ui" line="32"/>
         <source>Browse…</source>
-        <translation type="unfinished"/>
+        <translation>Browse…</translation>
     </message>
 </context>
 <context>
@@ -340,49 +335,14 @@ File synchronisation desktop utility.</translation>
         <translation>About</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.ui" line="108"/>
-        <source>&amp;Update Channel</source>
-        <translation>&amp;Update Channel</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/aboutdialog.ui" line="137"/>
+        <location filename="../src/gui/aboutdialog.ui" line="111"/>
         <source>&amp;Restart &amp;&amp; Update</source>
         <translation>&amp;Restart &amp;&amp; Update</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.ui" line="148"/>
+        <location filename="../src/gui/aboutdialog.ui" line="122"/>
         <source>Versions</source>
         <translation>Versions</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="93"/>
-        <source>beta</source>
-        <translation>beta</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="161"/>
-        <source>Change update channel?</source>
-        <translation>Change update channel?</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="162"/>
-        <source>&lt;html&gt;The update channel determines which client updates will be offered for installation.&lt;ul&gt;&lt;li&gt;&quot;ownCloud 10 LTS&quot; contains only upgrades that are considered reliable&lt;/li&gt;&lt;li&gt;&quot;ownCloud Infinite Scale stable&quot; contains only upgrades that are considered reliable but &lt;b&gt;removes support for &quot;ownCloud 10&quot;&lt;/b&gt;&lt;/li&gt;%1&lt;/ul&gt;&lt;br&gt;⚠️Downgrades are not supported. If you switch to a stable channel this change will only be applied with the next major release.&lt;/html&gt;</source>
-        <translation>&lt;html&gt;The update channel determines which client updates will be offered for installation.&lt;ul&gt;&lt;li&gt;&quot;ownCloud 10 LTS&quot; contains only upgrades that are considered reliable&lt;/li&gt;&lt;li&gt;&quot;ownCloud Infinite Scale stable&quot; contains only upgrades that are considered reliable but &lt;b&gt;removes support for &quot;ownCloud 10&quot;&lt;/b&gt;&lt;/li&gt;%1&lt;/ul&gt;&lt;br&gt;⚠️Downgrades are not supported. If you switch to a stable channel this change will only be applied with the next major release.&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="169"/>
-        <source>&lt;li&gt;&quot;beta&quot; may contain newer features and bugfixes, but have not yet been tested thoroughly&lt;/li&gt;</source>
-        <translation>&lt;li&gt;&quot;beta&quot; may contain newer features and bugfixes, but have not yet been tested thoroughly&lt;/li&gt;</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="171"/>
-        <source>Change update channel</source>
-        <translation>Change update channel</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="172"/>
-        <source>Cancel</source>
-        <translation>Cancel</translation>
     </message>
 </context>
 <context>
@@ -535,22 +495,22 @@ This action will abort any currently running synchronisation.</translation>
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="40"/>
         <source>Folder sync</source>
-        <translation type="unfinished"/>
+        <translation>Folder sync</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="45"/>
         <source>Manage your synced folders</source>
-        <translation type="unfinished"/>
+        <translation>Manage your synced folders</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="49"/>
         <source>Add new folder sync…</source>
-        <translation type="unfinished"/>
+        <translation>Add new folder sync…</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="88"/>
         <source>Syncing %1 out of %2 spaces</source>
-        <translation type="unfinished"/>
+        <translation>Syncing %1 out of %2 spaces</translation>
     </message>
 </context>
 <context>
@@ -733,7 +693,7 @@ This action will abort any currently running synchronisation.</translation>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="559"/>
         <source>Updating credentials…</source>
-        <translation type="unfinished"/>
+        <translation>Updating credentials…</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="568"/>
@@ -882,7 +842,7 @@ This action will abort any currently running synchronisation.</translation>
     <message>
         <location filename="../src/gui/accountview.cpp" line="243"/>
         <source>Updating credentials…</source>
-        <translation type="unfinished"/>
+        <translation>Updating credentials…</translation>
     </message>
     <message>
         <location filename="../src/gui/accountview.cpp" line="252"/>
@@ -954,72 +914,72 @@ This action will abort any currently running synchronisation.</translation>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="55"/>
         <source>Sync and download options</source>
-        <translation type="unfinished"/>
+        <translation>Sync and download options</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="56"/>
         <source>Download location</source>
-        <translation type="unfinished"/>
+        <translation>Download location</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="74"/>
         <source>Sync and download files as you use them (saves hard drive space)</source>
-        <translation type="unfinished"/>
+        <translation>Sync and download files as you use them (saves hard drive space)</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="79"/>
         <source>Automatically sync and download folders and files</source>
-        <translation type="unfinished"/>
+        <translation>Automatically sync and download folders and files</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="85"/>
         <source>Sync and download folders manually</source>
-        <translation type="unfinished"/>
+        <translation>Sync and download folders manually</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="132"/>
         <source>Download location on the local machine</source>
-        <translation type="unfinished"/>
+        <translation>Download location on the local machine</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="140"/>
         <source>Browse…</source>
-        <translation type="unfinished"/>
+        <translation>Browse…</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="143"/>
         <source>Browse for a download location</source>
-        <translation type="unfinished"/>
+        <translation>Browse for a download location</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="210"/>
         <source>Invalid local download directory %1: %2</source>
-        <translation type="unfinished"/>
+        <translation>Invalid local download directory %1: %2</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="213"/>
         <source>your user directory may not be chosen as the sync root.</source>
-        <translation type="unfinished"/>
+        <translation>your user directory may not be chosen as the sync root.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="220"/>
         <source>path is not located on a supported Apple File System.</source>
-        <translation type="unfinished"/>
+        <translation>path is not located on a supported Apple File System.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="225"/>
         <source>path must be absolute.</source>
-        <translation type="unfinished"/>
+        <translation>path must be absolute.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="242"/>
         <source>selected path does not support using virtual file system. %1</source>
-        <translation type="unfinished"/>
+        <translation>selected path does not support using virtual file system. %1</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="258"/>
         <source>Select sync root</source>
-        <translation type="unfinished"/>
+        <translation>Select sync root</translation>
     </message>
 </context>
 <context>
@@ -1047,7 +1007,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::Application</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="175"/>
+        <location filename="../src/gui/main.cpp" line="174"/>
         <source>Quit</source>
         <translation>Quit</translation>
     </message>
@@ -1057,17 +1017,17 @@ The update will be performed in the background, and overwrite the current AppIma
     <message>
         <location filename="../src/gui/newaccountwizard/authsuccesspagecontroller.cpp" line="45"/>
         <source>Application Name Logo %1</source>
-        <translation type="unfinished"/>
+        <translation>Application Name Logo %1</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/authsuccesspagecontroller.cpp" line="47"/>
         <source>You&apos;re all set! Open %1 and get started.</source>
-        <translation type="unfinished"/>
+        <translation>You&apos;re all set! Open %1 and get started.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/authsuccesspagecontroller.cpp" line="64"/>
         <source>Additional logo defined by the organization</source>
-        <translation type="unfinished"/>
+        <translation>Additional logo defined by the organization</translation>
     </message>
 </context>
 <context>
@@ -1095,7 +1055,7 @@ The update will be performed in the background, and overwrite the current AppIma
     <message>
         <location filename="../src/gui/connectionvalidator.cpp" line="226"/>
         <source>No account configured</source>
-        <translation type="unfinished"/>
+        <translation>No account configured</translation>
     </message>
     <message>
         <location filename="../src/gui/connectionvalidator.cpp" line="261"/>
@@ -1121,7 +1081,7 @@ The update will be performed in the background, and overwrite the current AppIma
     <message>
         <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="63"/>
         <source>Server does not support OAuth</source>
-        <translation type="unfinished"/>
+        <translation>Server does not support OAuth</translation>
     </message>
     <message>
         <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="71"/>
@@ -1131,7 +1091,7 @@ The update will be performed in the background, and overwrite the current AppIma
     <message>
         <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="73"/>
         <source>Failed to determine authentication type: %1</source>
-        <translation type="unfinished"/>
+        <translation>Failed to determine authentication type: %1</translation>
     </message>
 </context>
 <context>
@@ -1139,7 +1099,7 @@ The update will be performed in the background, and overwrite the current AppIma
     <message>
         <location filename="../src/gui/networkadapters/discoverwebfingerserviceadapter.h" line="84"/>
         <source>Invalid reply received from server.</source>
-        <translation type="unfinished"/>
+        <translation>Invalid reply received from server.</translation>
     </message>
 </context>
 <context>
@@ -1147,7 +1107,7 @@ The update will be performed in the background, and overwrite the current AppIma
     <message>
         <location filename="../src/libsync/discoveryphase.cpp" line="276"/>
         <source>The account was deleted before we could start the propfind job</source>
-        <translation type="unfinished"/>
+        <translation>The account was deleted before we could start the propfind job</translation>
     </message>
     <message>
         <location filename="../src/libsync/discoveryphase.cpp" line="309"/>
@@ -1192,17 +1152,17 @@ The update will be performed in the background, and overwrite the current AppIma
     <message>
         <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="67"/>
         <source>server sent invalid content type: %1.</source>
-        <translation type="unfinished"/>
+        <translation>server sent invalid content type: %1.</translation>
     </message>
     <message>
         <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="73"/>
         <source>could not parse Capabilities from server.</source>
-        <translation type="unfinished"/>
+        <translation>could not parse Capabilities from server.</translation>
     </message>
     <message>
         <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="81"/>
         <source>reply sent for different subject (server): %1</source>
-        <translation type="unfinished"/>
+        <translation>reply sent for different subject (server): %1</translation>
     </message>
 </context>
 <context>
@@ -1268,7 +1228,7 @@ The update will be performed in the background, and overwrite the current AppIma
     <message>
         <location filename="../src/gui/folder.cpp" line="391"/>
         <source>The folder has been disabled or removed from the server</source>
-        <translation type="unfinished"/>
+        <translation>The folder has been disabled or removed from the server</translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="460"/>
@@ -1400,47 +1360,47 @@ This means that the synchronisation client might not upload local changes immedi
     <message>
         <location filename="../src/gui/folderman.cpp" line="918"/>
         <source>The selected path is not a folder.</source>
-        <translation type="unfinished"/>
+        <translation>The selected path is not a folder.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="922"/>
         <source>The folder %1 is used in a folder sync connection.</source>
-        <translation type="unfinished"/>
+        <translation>The folder %1 is used in a folder sync connection.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="930"/>
         <source>Folder &apos;%1&apos; is already in use by application %2.</source>
-        <translation type="unfinished"/>
+        <translation>Folder &apos;%1&apos; is already in use by application %2.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="977"/>
         <source>There is already a sync from the server to this local folder.</source>
-        <translation type="unfinished"/>
+        <translation>There is already a sync from the server to this local folder.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="980"/>
         <source>The local folder %1 already contains a folder used in a folder sync connection.</source>
-        <translation type="unfinished"/>
+        <translation>The local folder %1 already contains a folder used in a folder sync connection.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="985"/>
         <source>The local folder %1 is already contained in a folder used in a folder sync connection.</source>
-        <translation type="unfinished"/>
+        <translation>The local folder %1 is already contained in a folder used in a folder sync connection.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="997"/>
         <source>No valid folder selected.</source>
-        <translation type="unfinished"/>
+        <translation>No valid folder selected.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="1016"/>
         <source>The selected path does not exist.</source>
-        <translation type="unfinished"/>
+        <translation>The selected path does not exist.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="1022"/>
         <source>You have no permission to write to the selected folder.</source>
-        <translation type="unfinished"/>
+        <translation>You have no permission to write to the selected folder.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="943"/>
@@ -2005,12 +1965,12 @@ Note that using any logging command line options will override the settings.</tr
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountbuilder.cpp" line="50"/>
         <source>no error details are available</source>
-        <translation type="unfinished"/>
+        <translation>no error details are available</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountbuilder.cpp" line="51"/>
         <source>Unable to connect to server during account creation: %1.</source>
-        <translation type="unfinished"/>
+        <translation>Unable to connect to server during account creation: %1.</translation>
     </message>
 </context>
 <context>
@@ -2031,7 +1991,7 @@ Note that using any logging command line options will override the settings.</tr
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="55"/>
         <source>Add account…</source>
-        <translation type="unfinished"/>
+        <translation>Add account…</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="63"/>
@@ -2051,7 +2011,7 @@ Note that using any logging command line options will override the settings.</tr
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="211"/>
         <source>Open sign in again</source>
-        <translation type="unfinished"/>
+        <translation>Open sign in again</translation>
     </message>
 </context>
 <context>
@@ -2077,12 +2037,12 @@ Note that using any logging command line options will override the settings.</tr
     <message>
         <location filename="../src/gui/creds/oauth.cpp" line="156"/>
         <source>Successfully signed in</source>
-        <translation type="unfinished"/>
+        <translation>Successfully signed in</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/oauth.cpp" line="157"/>
         <source>Now, explore %1 on desktop.</source>
-        <translation type="unfinished"/>
+        <translation>Now, explore %1 on desktop.</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/oauth.cpp" line="268"/>
@@ -2125,7 +2085,7 @@ Note that using any logging command line options will override the settings.</tr
     <message>
         <location filename="../src/gui/creds/oauth.cpp" line="310"/>
         <source>You logged-in with user &lt;em&gt;%1&lt;/em&gt;, but must login with user &lt;em&gt;%2&lt;/em&gt;.&lt;br&gt;Please return to the %3 client and restart the authentication.</source>
-        <translation type="unfinished"/>
+        <translation>You logged-in with user &lt;em&gt;%1&lt;/em&gt;, but must login with user &lt;em&gt;%2&lt;/em&gt;.&lt;br&gt;Please return to the %3 client and restart the authentication.</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/oauth.cpp" line="313"/>
@@ -2138,37 +2098,37 @@ Note that using any logging command line options will override the settings.</tr
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="60"/>
         <source>Application Name Logo %1</source>
-        <translation type="unfinished"/>
+        <translation>Application Name Logo %1</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="63"/>
         <source>Leave this screen open. A sign in prompt will appear in your web browser to connect you to the following address.</source>
-        <translation type="unfinished"/>
+        <translation>Leave this screen open. A sign in prompt will appear in your web browser to connect you to the following address.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="75"/>
         <source>Sign in URL</source>
-        <translation type="unfinished"/>
+        <translation>Sign in URL</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="76"/>
         <source>To copy the sign in URL to the clipboard, use the copy button</source>
-        <translation type="unfinished"/>
+        <translation>To copy the sign in URL to the clipboard, use the copy button</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="83"/>
         <source>Copy URL to sign in</source>
-        <translation type="unfinished"/>
+        <translation>Copy URL to sign in</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="103"/>
         <source>Additional logo defined by the organization</source>
-        <translation type="unfinished"/>
+        <translation>Additional logo defined by the organization</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="180"/>
         <source>URL copied</source>
-        <translation type="unfinished"/>
+        <translation>URL copied</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="182"/>
@@ -2178,98 +2138,98 @@ Note that using any logging command line options will override the settings.</tr
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="237"/>
         <source>Please copy the authentication URL using the button above, and provide this information to support.</source>
-        <translation type="unfinished"/>
+        <translation>Please copy the authentication URL using the button above, and provide this information to support.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="251"/>
         <source>Failed to look up WebFinger instances: %1</source>
-        <translation type="unfinished"/>
+        <translation>Failed to look up WebFinger instances: %1</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="268"/>
         <source>You are already connected to an account with these credentials.</source>
-        <translation type="unfinished"/>
+        <translation>You are already connected to an account with these credentials.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="286"/>
         <source>Unable to retrieve capabilities from server.</source>
-        <translation type="unfinished"/>
+        <translation>Unable to retrieve capabilities from server.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="290"/>
         <source>The server is not supported by this client.</source>
-        <translation type="unfinished"/>
+        <translation>The server is not supported by this client.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="300"/>
         <source>Error while trying to log in to OAuth2-enabled server. %1</source>
-        <translation type="unfinished"/>
+        <translation>Error while trying to log in to OAuth2-enabled server. %1</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="307"/>
         <source>Unable to open browser with provided URL. %1</source>
-        <translation type="unfinished"/>
+        <translation>Unable to open browser with provided URL. %1</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="311"/>
         <source>OAuth2 authentication requires a secured connection. %1</source>
-        <translation type="unfinished"/>
+        <translation>OAuth2 authentication requires a secured connection. %1</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="315"/>
         <source>Authorization server unreachable. %1</source>
-        <translation type="unfinished"/>
+        <translation>Authorization server unreachable. %1</translation>
     </message>
 </context>
 <context>
     <name>OCC::OCUpdater</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="154"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="147"/>
         <source>Could not download update. Please click &lt;a href=&apos;%1&apos;&gt;here&lt;/a&gt; to download the update manually.</source>
         <translation>Could not download update. Please click &lt;a href=&apos;%1&apos;&gt;here&lt;/a&gt; to download the update manually.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="156"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="149"/>
         <source>Could not check for new updates.</source>
         <translation>Could not check for new updates.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="146"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="139"/>
         <source>Downloading %1. Please wait…</source>
-        <translation type="unfinished"/>
+        <translation>Downloading %1. Please wait…</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="149"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="142"/>
         <source>%1 installed successfully. Restart the application to finish installing the update.</source>
         <translation>%1 installed successfully. Restart the application to finish installing the update.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="151"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="144"/>
         <source>%1 available. Restart application to start the update.</source>
         <translation>%1 available. Restart application to start the update.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="162"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="155"/>
         <source>New %1 available. Please click &lt;a href=&apos;%2&apos;&gt;here&lt;/a&gt; to download the new AppImage manually.</source>
         <translation>New %1 available. Please click &lt;a href=&apos;%2&apos;&gt;here&lt;/a&gt; to download the new AppImage manually.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="165"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="158"/>
         <source>New %1 available. Please use the system&apos;s update tool to install it.</source>
         <translation>New %1 available. Please use the system&apos;s update tool to install it.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="167"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="160"/>
         <source>Checking update server…</source>
-        <translation type="unfinished"/>
+        <translation>Checking update server…</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="169"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="162"/>
         <source>Update status is unknown: Did not check for new updates.</source>
         <translation>Update status is unknown: Did not check for new updates.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="173"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="166"/>
         <source>No updates available. Your installation is at the latest version.</source>
         <translation>No updates available. Your installation is at the latest version.</translation>
     </message>
@@ -2359,7 +2319,7 @@ Note that using any logging command line options will override the settings.</tr
         <location filename="../src/libsync/discovery.cpp" line="954"/>
         <location filename="../src/libsync/discovery.cpp" line="1316"/>
         <source>account was deleted. Unable to continue</source>
-        <translation type="unfinished"/>
+        <translation>account was deleted. Unable to continue</translation>
     </message>
     <message>
         <location filename="../src/libsync/discovery.cpp" line="1113"/>
@@ -2713,7 +2673,7 @@ Note that using any logging command line options will override the settings.</tr
     <message>
         <location filename="../src/libsync/propagateuploadfile.cpp" line="161"/>
         <source>The server did not acknowledge the file upload. (No e-tag was present)</source>
-        <translation type="unfinished"/>
+        <translation>The server did not acknowledge the file upload. (No e-tag was present)</translation>
     </message>
 </context>
 <context>
@@ -2782,7 +2742,7 @@ Note that using any logging command line options will override the settings.</tr
     <message>
         <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="97"/>
         <source>IdP is unreachable. Contact your system administrator or try again later.</source>
-        <translation type="unfinished"/>
+        <translation>IdP is unreachable. Contact your system administrator or try again later.</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="108"/>
@@ -2795,37 +2755,37 @@ Note that using any logging command line options will override the settings.</tr
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="43"/>
         <source>Application Name Logo %1</source>
-        <translation type="unfinished"/>
+        <translation>Application Name Logo %1</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="45"/>
         <source>Sign in required</source>
-        <translation type="unfinished"/>
+        <translation>Sign in required</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="53"/>
         <source>You may have been automatically disconnected due to a server issue or time out. Please sign in again.</source>
-        <translation type="unfinished"/>
+        <translation>You may have been automatically disconnected due to a server issue or time out. Please sign in again.</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="64"/>
         <source>Sign in URL</source>
-        <translation type="unfinished"/>
+        <translation>Sign in URL</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="65"/>
         <source>To copy the sign in URL to the clipboard, use the copy button</source>
-        <translation type="unfinished"/>
+        <translation>To copy the sign in URL to the clipboard, use the copy button</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="71"/>
         <source>Copy URL to sign in</source>
-        <translation type="unfinished"/>
+        <translation>Copy URL to sign in</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="92"/>
         <source>Additional logo defined by the organization</source>
-        <translation type="unfinished"/>
+        <translation>Additional logo defined by the organization</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="95"/>
@@ -2840,7 +2800,7 @@ Note that using any logging command line options will override the settings.</tr
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="179"/>
         <source>URL copied</source>
-        <translation type="unfinished"/>
+        <translation>URL copied</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="181"/>
@@ -2853,7 +2813,7 @@ Note that using any logging command line options will override the settings.</tr
     <message>
         <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="59"/>
         <source>SSL failure when connecting to server at %1</source>
-        <translation type="unfinished"/>
+        <translation>SSL failure when connecting to server at %1</translation>
     </message>
     <message>
         <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="63"/>
@@ -2863,12 +2823,12 @@ Note that using any logging command line options will override the settings.</tr
     <message>
         <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="68"/>
         <source>Resolved url is invalid %1</source>
-        <translation type="unfinished"/>
+        <translation>Resolved url is invalid %1</translation>
     </message>
     <message>
         <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="71"/>
         <source>Rejected redirect from %1 to %2</source>
-        <translation type="unfinished"/>
+        <translation>Rejected redirect from %1 to %2</translation>
     </message>
 </context>
 <context>
@@ -2978,13 +2938,13 @@ Note that using any logging command line options will override the settings.</tr
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="620"/>
         <source>Select new location…</source>
-        <translation type="unfinished"/>
+        <translation>Select new location…</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="708"/>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="737"/>
         <source>Share…</source>
-        <translation type="unfinished"/>
+        <translation>Share…</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="710"/>
@@ -3015,28 +2975,28 @@ Note that using any logging command line options will override the settings.</tr
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="843"/>
         <source>Rename…</source>
-        <translation type="unfinished"/>
+        <translation>Rename…</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="846"/>
         <source>Rename and upload…</source>
-        <translation type="unfinished"/>
+        <translation>Rename and upload…</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="851"/>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="855"/>
         <source>Move and rename…</source>
-        <translation type="unfinished"/>
+        <translation>Move and rename…</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="858"/>
         <source>Move, rename and upload…</source>
-        <translation type="unfinished"/>
+        <translation>Move, rename and upload…</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="866"/>
         <source>Move and upload…</source>
-        <translation type="unfinished"/>
+        <translation>Move and upload…</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="861"/>
@@ -3225,7 +3185,7 @@ Note that using any logging command line options will override the settings.</tr
 <context>
     <name>OCC::UpdaterScheduler</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="50"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="49"/>
         <source>Update available</source>
         <translation>Update available</translation>
     </message>
@@ -3235,7 +3195,7 @@ Note that using any logging command line options will override the settings.</tr
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="42"/>
         <source>Your web browser will be opened to complete sign in.</source>
-        <translation type="unfinished"/>
+        <translation>Your web browser will be opened to complete sign in.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="57"/>
@@ -3250,32 +3210,32 @@ Note that using any logging command line options will override the settings.</tr
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="67"/>
         <source>Enter your server address to get started. Your web browser will be opened to complete sign in.</source>
-        <translation type="unfinished"/>
+        <translation>Enter your server address to get started. Your web browser will be opened to complete sign in.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="83"/>
         <source>Server address field</source>
-        <translation type="unfinished"/>
+        <translation>Server address field</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="84"/>
         <source>Enter your server address here</source>
-        <translation type="unfinished"/>
+        <translation>Enter your server address here</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="105"/>
         <source>Additional logo defined by the organization</source>
-        <translation type="unfinished"/>
+        <translation>Additional logo defined by the organization</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="198"/>
         <source>Invalid server URL: %1</source>
-        <translation type="unfinished"/>
+        <translation>Invalid server URL: %1</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="202"/>
         <source>Invalid URL scheme. Only https is accepted.</source>
-        <translation type="unfinished"/>
+        <translation>Invalid URL scheme. Only https is accepted.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="230"/>
@@ -3288,22 +3248,22 @@ Note that using any logging command line options will override the settings.</tr
     <message>
         <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="64"/>
         <source>Network request to collect user info failed</source>
-        <translation type="unfinished"/>
+        <translation>Network request to collect user info failed</translation>
     </message>
     <message>
         <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="70"/>
         <source>Unable to retrieve user info: invalid credentials.</source>
-        <translation type="unfinished"/>
+        <translation>Unable to retrieve user info: invalid credentials.</translation>
     </message>
     <message>
         <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="72"/>
         <source>Unexpected network response when retrieving user info.</source>
-        <translation type="unfinished"/>
+        <translation>Unexpected network response when retrieving user info.</translation>
     </message>
     <message>
         <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="82"/>
         <source>Retrieving user info failed with JSON error.</source>
-        <translation type="unfinished"/>
+        <translation>Retrieving user info failed with JSON error.</translation>
     </message>
 </context>
 <context>
@@ -3343,42 +3303,42 @@ Note that using any logging command line options will override the settings.</tr
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="619"/>
         <source>Could not find StorageProviderState property %1</source>
-        <translation type="unfinished"/>
+        <translation>Could not find StorageProviderState property %1</translation>
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="633"/>
         <source>Could not find StorageFolder for %1 error: %2</source>
-        <translation type="unfinished"/>
+        <translation>Could not find StorageFolder for %1 error: %2</translation>
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="643"/>
         <source>Could not retrieve StorageFolder for %1 %2 (0x%3)</source>
-        <translation type="unfinished"/>
+        <translation>Could not retrieve StorageFolder for %1 %2 (0x%3)</translation>
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="677"/>
         <source>The folder is used by a different client: %1</source>
-        <translation type="unfinished"/>
+        <translation>The folder is used by a different client: %1</translation>
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="700"/>
         <source>Error registering StorageProvider for %1: %2 (0x%3)</source>
-        <translation type="unfinished"/>
+        <translation>Error registering StorageProvider for %1: %2 (0x%3)</translation>
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="735"/>
         <source>Unable to connect sync root: %1 error: %2</source>
-        <translation type="unfinished"/>
+        <translation>Unable to connect sync root: %1 error: %2</translation>
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="672"/>
         <source>%1 is managed by another sync client</source>
-        <translation type="unfinished"/>
+        <translation>%1 is managed by another sync client</translation>
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="687"/>
         <source>Downgrading the folder from %1 to %2 is not supported</source>
-        <translation type="unfinished"/>
+        <translation>Downgrading the folder from %1 to %2 is not supported</translation>
     </message>
 </context>
 <context>
@@ -3391,43 +3351,43 @@ Note that using any logging command line options will override the settings.</tr
     <message>
         <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="100"/>
         <source>WebFinger lookup returned no links</source>
-        <translation type="unfinished"/>
+        <translation>WebFinger lookup returned no links</translation>
     </message>
 </context>
 <context>
     <name>OCC::WindowsUpdater</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="380"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="373"/>
         <source>&lt;p&gt;A new version of the %1 Client is available.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; is available for download. The installed version is %3.&lt;/p&gt;</source>
         <translation>&lt;p&gt;A new version of the %1 Client is available.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; is available for download. The installed version is %3.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="426"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="419"/>
         <source>Skip this version</source>
         <translation>Skip this version</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="407"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="400"/>
         <source>Update Failed</source>
         <translation>Update Failed</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="413"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="406"/>
         <source>&lt;p&gt;A new version of the %1 Client is available but the updating process failed.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; has been downloaded. The installed version is %3.&lt;/p&gt;</source>
         <translation>&lt;p&gt;A new version of the %1 Client is available but the updating process failed.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; has been downloaded. The installed version is %3.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="427"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="420"/>
         <source>Ask again later</source>
         <translation>Ask again later</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="428"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="421"/>
         <source>Restart and update</source>
         <translation>Restart and update</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="429"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="422"/>
         <source>Update manually</source>
         <translation>Update manually</translation>
     </message>
@@ -3468,19 +3428,21 @@ Note that using any logging command line options will override the settings.</tr
         <location filename="../src/gui/owncloudgui.cpp" line="240"/>
         <location filename="../src/gui/owncloudgui.cpp" line="254"/>
         <source>New account failure</source>
-        <translation type="unfinished"/>
+        <translation>New account failure</translation>
     </message>
     <message>
         <location filename="../src/gui/owncloudgui.cpp" line="240"/>
         <source>The information required to create a new account is incomplete. Please run the wizard again.</source>
-        <translation type="unfinished"/>
+        <translation>The information required to create a new account is incomplete. Please run the wizard again.</translation>
     </message>
     <message>
         <location filename="../src/gui/owncloudgui.cpp" line="255"/>
         <source>The account could not be created due to an error:
 %1
 Please check the server&apos;s availability then run the wizard again.</source>
-        <translation type="unfinished"/>
+        <translation>The account could not be created due to an error:
+%1
+Please check the server&apos;s availability then run the wizard again.</translation>
     </message>
 </context>
 <context>
@@ -3664,12 +3626,12 @@ Please check the server&apos;s availability then run the wizard again.</source>
 <context>
     <name>account loading</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="470"/>
+        <location filename="../src/gui/main.cpp" line="433"/>
         <source>Error accessing the configuration file</source>
         <translation>Error accessing the configuration file</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="471"/>
+        <location filename="../src/gui/main.cpp" line="434"/>
         <source>There was an error while accessing the configuration file at %1.</source>
         <translation>There was an error while accessing the configuration file at %1.</translation>
     </message>
@@ -3851,7 +3813,7 @@ Please check the server&apos;s availability then run the wizard again.</source>
 <context>
     <name>version check</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="172"/>
+        <location filename="../src/gui/main.cpp" line="171"/>
         <source>Some settings were configured in newer versions of this client and use features that are not available in this version</source>
         <translation>Some settings were configured in newer versions of this client and use features that are not available in this version</translation>
     </message>
