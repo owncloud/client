@@ -63,21 +63,31 @@ SystemConfig::SystemConfig()
 
 QString SystemConfig::configPath(const QOperatingSystemVersion::OSType& os, const Theme& theme)
 {
+    // Important: these paths conform to how names typically work on the systems on which they are used. This includes usage of upper-/lowercase.
+
     if (os == QOperatingSystemVersion::Windows) {
-        // we use HKEY_LOCAL_MACHINE\Software\Policies since this is the location whe GPO operates
+        // We use HKEY_LOCAL_MACHINE\Software\Policies since this is the location where GPO operates.
+        // Note: use of uppercase/camelcase is common.
         return QString("HKEY_LOCAL_MACHINE\\Software\\Policies\\%1\\%2").arg(theme.vendor(), theme.appNameGUI());
     }
+
     if (os == QOperatingSystemVersion::MacOS) {
-        // we use a subfolder to have one common location where in the future more files can be stored (like icons, images and such)
-        // ini is used on macOS in contrary to plist because they are easier to maintain
+        // We use a subfolder to have one common location where in the future more files can be stored (like icons, images and such)
+        // ini is used on macOS in contrary to plist because they are easier to maintain.
+        // Note: rev-domain notation and lowercase is typically used.
         return QString("/Library/Preferences/%1/%2.ini").arg(theme.orgDomainName(), theme.appName());
     }
 
+    // On Unix style systems, the application name in lowercase is typically used.
     return QString("/etc/%1/%1.ini").arg(theme.appName());
 }
 
 bool SystemConfig::allowServerUrlChange() const
 {
+    // If a theme provides a hardcoded URL, do not allow for URL change.
+    QString overrideServerUrl = Theme::instance()->overrideServerUrlV2();
+    if (!overrideServerUrl.isEmpty())
+        return false;
     return _allowServerURLChange;
 }
 

@@ -13,9 +13,8 @@
  */
 #include "urlpagecontroller.h"
 
-#include "../../libsync/config/systemconfig.h"
 #include "accessmanager.h"
-#include "configfile.h"
+#include "config/systemconfig.h"
 #include "networkadapters/determineauthtypeadapter.h"
 #include "networkadapters/discoverwebfingerserviceadapter.h"
 #include "networkadapters/resolveurladapter.h"

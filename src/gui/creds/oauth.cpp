@@ -43,7 +43,7 @@ namespace {
 
 const QString wellKnownPathC = QStringLiteral("/.well-known/openid-configuration");
 
-auto defaultOauthPromptValue(const OpenIdConfig& config)
+OAuth::PromptValuesSupportedFlags defaultOauthPromptValue(const OpenIdConfig& config)
 {
     static const auto promptValue = [config] {
         auto prompt = config.prompt();
