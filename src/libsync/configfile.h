@@ -169,9 +169,6 @@ public:
     bool skipUpdateCheck(const QString &connection = QString()) const;
     void setSkipUpdateCheck(bool, const QString &);
 
-    QString updateChannel() const;
-    void setUpdateChannel(const QString &channel);
-
     QString uiLanguage() const;
     void setUiLanguage(const QString &uiLanguage);
 
