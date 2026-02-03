@@ -107,12 +107,7 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
         <translation>Luba silumisrežiim.</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="134"/>
-        <source>Forward all arguments to the cmd client. This argument must be the first.</source>
-        <translation>Edasta kõik argumendid cmd kliendile. See argument peab olema esimene.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/main.cpp" line="150"/>
+        <location filename="../src/gui/main.cpp" line="149"/>
         <source>--logfile and --logdir are mutually exclusive</source>
         <translation>--logfile ja --logdir välistavad üksteist.</translation>
     </message>
@@ -340,49 +335,14 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
         <translation>Info</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.ui" line="108"/>
-        <source>&amp;Update Channel</source>
-        <translation>&amp;Uuenda kanalit</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/aboutdialog.ui" line="137"/>
+        <location filename="../src/gui/aboutdialog.ui" line="111"/>
         <source>&amp;Restart &amp;&amp; Update</source>
         <translation>&amp;Taaskäivita &amp;&amp; Uuenda</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.ui" line="148"/>
+        <location filename="../src/gui/aboutdialog.ui" line="122"/>
         <source>Versions</source>
         <translation>Versioonid</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="93"/>
-        <source>beta</source>
-        <translation>beeta</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="161"/>
-        <source>Change update channel?</source>
-        <translation>Muuda uuenduskanalit?</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="162"/>
-        <source>&lt;html&gt;The update channel determines which client updates will be offered for installation.&lt;ul&gt;&lt;li&gt;&quot;ownCloud 10 LTS&quot; contains only upgrades that are considered reliable&lt;/li&gt;&lt;li&gt;&quot;ownCloud Infinite Scale stable&quot; contains only upgrades that are considered reliable but &lt;b&gt;removes support for &quot;ownCloud 10&quot;&lt;/b&gt;&lt;/li&gt;%1&lt;/ul&gt;&lt;br&gt;⚠️Downgrades are not supported. If you switch to a stable channel this change will only be applied with the next major release.&lt;/html&gt;</source>
-        <translation>&lt;html&gt;Uuenduste kanal otsustab, milliseid kliendiuuendusi paigaldamiseks pakutakse.&lt;ul&gt;&lt;li&gt;&quot;ownCloud 10 LTS&quot; sisaldab ainult uuendusi, mida peetakse töökindlateks&lt;/li&gt;&lt;li&gt;&quot;ownCloud Infinite Scale stable&quot; sisaldab ainult uuendusi, mida peetakse töökindlateks, kuid &lt;b&gt;eemaldab toe &quot;ownCloud 10&quot;-le&lt;/b&gt;&lt;/li&gt;%1&lt;/ul&gt;&lt;br&gt;⚠️Vanemale versioonile tagasiminek ei ole toetatud. Kui lülitud stabiilsele kanalile, siis rakendatakse see ainult koos järgmise suurema uuendusega.&lt;/html&gt;</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="169"/>
-        <source>&lt;li&gt;&quot;beta&quot; may contain newer features and bugfixes, but have not yet been tested thoroughly&lt;/li&gt;</source>
-        <translation>&lt;li&gt;&quot;beta&quot; võib sisaldada uuemaid võimalusi ja veaparandusi, kuid ei ole veel täielikult testitud&lt;/li&gt;</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="171"/>
-        <source>Change update channel</source>
-        <translation>Uuenduskanali muutmine</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="172"/>
-        <source>Cancel</source>
-        <translation>Loobu</translation>
     </message>
 </context>
 <context>
@@ -1047,7 +1007,7 @@ Uuendus toimub taustal ja kirjutab praeguse AppImage&apos;i faili üle. Uuendami
 <context>
     <name>OCC::Application</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="175"/>
+        <location filename="../src/gui/main.cpp" line="174"/>
         <source>Quit</source>
         <translation>Lõpeta</translation>
     </message>
@@ -2223,52 +2183,52 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
 <context>
     <name>OCC::OCUpdater</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="154"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="147"/>
         <source>Could not download update. Please click &lt;a href=&apos;%1&apos;&gt;here&lt;/a&gt; to download the update manually.</source>
         <translation>Ei suutnud uuendust alla laadida. Uuenduse käsitsi allalaadimiseks  klõpsa palun &lt;a href=&apos;%1&apos;&gt;siia&lt;/a&gt; %2</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="156"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="149"/>
         <source>Could not check for new updates.</source>
         <translation>Uuenduste kontrollimine ebaõnnestus.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="146"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="139"/>
         <source>Downloading %1. Please wait…</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="149"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="142"/>
         <source>%1 installed successfully. Restart the application to finish installing the update.</source>
         <translation>%1 paigaldati edukalt. Taaskäivitage rakendus, et lõpetada uuenduste paigaldamine.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="151"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="144"/>
         <source>%1 available. Restart application to start the update.</source>
         <translation>%1 saadaval. Uuendamise alustamiseks taaskäivitage rakendus.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="162"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="155"/>
         <source>New %1 available. Please click &lt;a href=&apos;%2&apos;&gt;here&lt;/a&gt; to download the new AppImage manually.</source>
         <translation>Uus %1 saadaval. Uue AppImage&apos;i käsitsi allalaadimiseks klõpsake &lt;a href=&apos;%2&apos;&gt;siin&lt;/a&gt;.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="165"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="158"/>
         <source>New %1 available. Please use the system&apos;s update tool to install it.</source>
         <translation>Uus %1 saadaval. Palun kasutage selle paigaldamiseks süsteemi uuendustööriista.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="167"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="160"/>
         <source>Checking update server…</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="169"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="162"/>
         <source>Update status is unknown: Did not check for new updates.</source>
         <translation>Uuenduse staatus on teadmata: uuendusi ei kontrollitud.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="173"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="166"/>
         <source>No updates available. Your installation is at the latest version.</source>
         <translation>Uuendusi pole saadaval. Kasutad kõige viimast versiooni.</translation>
     </message>
@@ -3224,7 +3184,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
 <context>
     <name>OCC::UpdaterScheduler</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="50"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="49"/>
         <source>Update available</source>
         <translation>Uuendus saadaval</translation>
     </message>
@@ -3396,37 +3356,37 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
 <context>
     <name>OCC::WindowsUpdater</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="380"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="373"/>
         <source>&lt;p&gt;A new version of the %1 Client is available.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; is available for download. The installed version is %3.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Uus versioon %1 kliendist on saadaval.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; on saadaval allalaadimiseks. Paigaldatud on versioon %3.&lt;p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="426"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="419"/>
         <source>Skip this version</source>
         <translation>Jäta see versioon vahele</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="407"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="400"/>
         <source>Update Failed</source>
         <translation>Uuendamine ebaõnnestus</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="413"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="406"/>
         <source>&lt;p&gt;A new version of the %1 Client is available but the updating process failed.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; has been downloaded. The installed version is %3.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Kliendi %1 uus versioon on saadaval, kuid värskendamine nurjus.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; on alla laaditud. Installitud versioon on %3.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="427"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="420"/>
         <source>Ask again later</source>
         <translation>Küsi hiljem uuesti</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="428"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="421"/>
         <source>Restart and update</source>
         <translation>Taaskäivita ja uuenda</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="429"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="422"/>
         <source>Update manually</source>
         <translation>Uuenda käsitsi</translation>
     </message>
@@ -3663,12 +3623,12 @@ Please check the server&apos;s availability then run the wizard again.</source>
 <context>
     <name>account loading</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="470"/>
+        <location filename="../src/gui/main.cpp" line="433"/>
         <source>Error accessing the configuration file</source>
         <translation>Viga seadete faili pääsemisel</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="471"/>
+        <location filename="../src/gui/main.cpp" line="434"/>
         <source>There was an error while accessing the configuration file at %1.</source>
         <translation>Tekkis viga pääsuga seadete faili aadressil %1.</translation>
     </message>
@@ -3850,7 +3810,7 @@ Please check the server&apos;s availability then run the wizard again.</source>
 <context>
     <name>version check</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="172"/>
+        <location filename="../src/gui/main.cpp" line="171"/>
         <source>Some settings were configured in newer versions of this client and use features that are not available in this version</source>
         <translation>Mõned sätted olid seadistatud selle kliendi uuemas versioonis ja kasutavad võimalusi, misa käesolevas versioonis ei ole saadaval</translation>
     </message>

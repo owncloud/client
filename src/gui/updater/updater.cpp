@@ -34,6 +34,36 @@ namespace OCC {
 
 Q_LOGGING_CATEGORY(lcUpdater, "gui.updater", QtInfoMsg)
 
+[[deprecated("updateChannel is no longer supported. the key will be removed in 8.0")]]
+const QString updateChannelC() { return QStringLiteral("updateChannel"); }
+
+QString updateChannel()
+{
+    // remove deprecated updateChannel setting once we hit 8.0
+    auto settings = ConfigFile::makeQSettings();
+    QString updateChannelKey = updateChannelC();
+    // todo: #52
+    /*
+    if (settings.contains(updateChannelKey)) {
+        settings.remove(updateChannelKey);
+    }
+    */
+    // until then, migrate old setting if present
+    settings.setValue(updateChannelKey, "ocis");
+
+    // By now only two channels are supported: ocis and beta-ocis
+    const QString suffix = OCC::Version::suffix();
+    if (suffix.startsWith(QLatin1String("daily"))
+        || suffix.startsWith(QLatin1String("nightly"))
+        || suffix.startsWith(QLatin1String("alpha"))
+        || suffix.startsWith(QLatin1String("rc"))
+        || suffix.startsWith(QLatin1String("beta"))) {
+        return "ocis-beta";
+        }
+
+    return "ocis";
+}
+
 Updater *Updater::_instance = nullptr;
 
 Updater *Updater::instance()
@@ -106,10 +136,8 @@ QUrlQuery Updater::getQueryParams()
 
     query.addQueryItem(QStringLiteral("versionsuffix"), OCC::Version::suffix());
 
-    auto channel = ConfigFile().updateChannel();
-    if (channel != QLatin1String("stable")) {
-        query.addQueryItem(QStringLiteral("channel"), channel);
-    }
+    auto channel = updateChannel();
+    query.addQueryItem("channel", channel);
 
     // requested by #11328
     // we use the names Qt gives us instead of inventing our own labels
@@ -126,7 +154,7 @@ QUrlQuery Updater::getQueryParams()
 Updater *Updater::create()
 {
     auto url = updateUrl();
-    qCDebug(lcUpdater) << url;
+    qCDebug(lcUpdater) << "Updater URL: "<< url.toDisplayString();
     if (url.isEmpty()) {
         qCWarning(lcUpdater) << "Not a valid updater URL, will not do update check";
         return nullptr;
