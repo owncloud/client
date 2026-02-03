@@ -24,7 +24,8 @@ FolderItemUpdater::FolderItemUpdater(FolderItem *item, QObject *parent)
     if (_item && _item->folder()) {
         connect(_item->folder(), &Folder::spaceChanged, this, &FolderItemUpdater::onFolderChanged);
         connect(_item->folder(), &Folder::syncStateChange, this, &FolderItemUpdater::onSyncStateChanged);
-        //       connect(_item->folder(), &Folder::progressUpdate, this, &FolderItemUpdater::onProgressUpdated);
+        if (item->folder()->accountState())
+            connect(item->folder()->accountState(), &AccountState::stateChanged, this, &FolderItemUpdater::onFolderChanged);
     }
 }
 

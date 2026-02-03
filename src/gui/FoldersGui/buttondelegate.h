@@ -30,6 +30,8 @@ public:
 
     QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
     void destroyEditor(QWidget *editor, const QModelIndex &index) const override;
+    void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
+
     void setMenu(QMenu *menu);
 
 private:

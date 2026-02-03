@@ -33,6 +33,10 @@ namespace OCC {
 AccountFoldersView::AccountFoldersView(QWidget *parent)
     : QWidget{parent}
 {
+    // important to know: the parent in this ctr is always null because the widget is instantiated by the ui impl. it leaves the parent
+    // null presumably because it adds it to a stacked widget after ctr which takes ownership. The issue with this is that you *can't*
+    // do anything relative to the parent in this construction setup because it is not known at time of construction.
+    // this makes setting the palette pretty icky
     _itemMenu = new QMenu(this);
     _itemMenu->setAccessibleName(tr("Sync options menu"));
 
@@ -71,7 +75,6 @@ void AccountFoldersView::buildView()
     _treeView->header()->setSectionsMovable(false);
     _treeView->setHeaderHidden(true);
 
-
     FolderItemDelegate *delegate = new FolderItemDelegate(_treeView);
     _treeView->setItemDelegateForColumn(0, delegate);
     // note this is not the normal ellipses character, it's vertically centered instead of positioned at font baseline. This is better
@@ -82,7 +85,7 @@ void AccountFoldersView::buildView()
     // this works but only when the button item is current. this means I have to set the button column to current each time row selection
     // changes but it works well so far. Still needs some tweaks to ensure the edit mode stays active when you click around in the same row.
     // sometimes the button disappears. Note that using AllEditTriggers does not improve things
-    _treeView->setEditTriggers(QAbstractItemView::CurrentChanged);
+    _treeView->setEditTriggers(QAbstractItemView::AllEditTriggers);
 
     _treeView->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(_treeView, &QWidget::customContextMenuRequested, this, &AccountFoldersView::popItemMenu);
@@ -111,6 +114,12 @@ void AccountFoldersView::setItemModels(QStandardItemModel *model, QItemSelection
     header->setStretchLastSection(false);
     header->setSectionResizeMode(0, QHeaderView::Stretch);
     header->setSectionResizeMode(1, QHeaderView::Fixed);
+
+    /*   QPalette pal = _treeView->palette();
+       QColor highlight = _treeView->parentWidget()->palette().color(QPalette::Highlight);
+       pal.setColor(QPalette::Highlight, highlight);
+       _treeView->setPalette(pal);
+      */
 }
 
 void AccountFoldersView::setSyncedFolderCount(int synced, int total)

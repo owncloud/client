@@ -33,6 +33,8 @@ enum FolderItemRoles { DataRole = Qt::UserRole, StatusIconRole, StatusStringRole
 
 class FolderItem : public QStandardItem
 {
+    Q_DECLARE_TR_FUNCTIONS(FolderItem)
+
 public:
     FolderItem(Folder *folder);
     ~FolderItem() override;

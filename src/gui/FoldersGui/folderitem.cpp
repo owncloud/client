@@ -33,9 +33,6 @@ FolderItem::FolderItem(Folder *folder)
 
     _updater = new FolderItemUpdater(this, nullptr);
     updateStatusString();
-    // this is really messed up -> Folder emits this signal using the progress dispatcher. imo this should be reworked so we can just listen to the
-    // folder for this info directly. todo: soon.
-    // QObject::connect(ProgressDispatcher::instance(), &ProgressDispatcher::progressInfo, this, &FolderItem::updateProgress);
 }
 
 FolderItem::~FolderItem()
@@ -82,7 +79,6 @@ QString FolderItem::statusIconName() const
 {
     if (!_folder || !_folder->accountState())
         return {};
-    //  QString foldername = _folder->displayName();
     SyncResult status = _folder->syncResult();
     if (!_folder->accountState()->isConnected()) {
         status.setStatus(SyncResult::Status::Offline);
@@ -90,7 +86,7 @@ QString FolderItem::statusIconName() const
         || (NetworkInformation::instance()->isMetered() && ConfigFile().pauseSyncWhenMetered())) {
         status.setStatus(SyncResult::Status::Paused);
     }
-    return QStringLiteral("states/%1").arg(Theme::instance()->syncStateIconName(status));
+    return QString("states/%1").arg(Theme::instance()->syncStateIconName(status));
 }
 
 QString FolderItem::statusAsString() const
@@ -98,35 +94,40 @@ QString FolderItem::statusAsString() const
     if (!_folder || !_folder->accountState())
         return {};
 
-    // if (!_folder->accountState()->isConnected())
-    //     return "Offline";
+    if (!_folder->accountState()->isConnected())
+        return tr("Offline");
+
+    // this can get out of sorts wrt sync state if we were offline then go on - no sync is ever attempted if the folder is already
+    // marked unavailable, so hopefully this catches the corner cases
+    if (!_folder->isAvailable())
+        return tr("Unavailable: the space is no longer available on the server");
 
     SyncResult status = _folder->syncResult();
 
     switch (status.status()) {
-    case SyncResult::NotYetStarted:
     case SyncResult::SyncPrepare:
     case SyncResult::Undefined:
     case SyncResult::SyncAbortRequested:
         return {};
     case SyncResult::Success:
         return QString("Synced");
-        // this is only working for existing folders at runtime. if an unavailable space is loaded at startup there is no text
     case SyncResult::Unavailable:
-        return "Unavailable: the corresponding space has been removed from the server";
+        return tr("Unavailable: the space is not longer available on the server");
     case SyncResult::Problem:
     case SyncResult::Error:
     case SyncResult::SetupError:
-        return "Sync failed"; // todo: I presume this collection of states needs refinement, will cover it when I get to the error handling
+        return tr("Sync failed"); // todo: I presume this collection of states needs refinement, will cover it when I get to the error handling
     case SyncResult::Paused:
-        return "Sync paused";
+        return tr("Sync paused");
     case SyncResult::Offline:
-        return "Offline";
+        return tr("Offline");
+    case SyncResult::NotYetStarted:
+        return tr("About to sync");
     case SyncResult::SyncRunning: {
         QString completedFormatted = Utility::octetsToString(_completedSize);
         QString totalFormatted = Utility::octetsToString(_totalSize);
 
-        return QString("Syncing %1 of %2").arg(completedFormatted, totalFormatted);
+        return tr("Syncing %1 of %2").arg(completedFormatted, totalFormatted);
     }
     };
 

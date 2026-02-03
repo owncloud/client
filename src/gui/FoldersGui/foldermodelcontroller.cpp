@@ -98,8 +98,12 @@ void FolderModelController::onFolderAdded(const QUuid &accountId, Folder *folder
         return;
 
     FolderItem *item = new FolderItem(folder);
+    QStandardItem *buttonItem = new QStandardItem();
+    buttonItem->setAccessibleText(tr("Folder options"));
+    buttonItem->setAccessibleDescription(tr("Menu button with folder options. Hit the space key to pop the folder options menu"));
+
     // we need a dummy item for the second column to host the button delegate for the row
-    _model->appendRow({item, new QStandardItem()});
+    _model->appendRow({item, buttonItem});
     _items.insert(folder->spaceId(), item);
 
     _model->sort(0, Qt::DescendingOrder);

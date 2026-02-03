@@ -26,7 +26,12 @@ FolderItemDelegate::FolderItemDelegate(QObject *parent)
 
 void FolderItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    drawBackground(painter, option, index);
+    // the key to getting rid of that default "dark blue" selection color that comes with tree view out of the box:
+    // we want the button highlight color so get the style for that, and update the local palette
+    QStyleOptionViewItem localOpt(option);
+    QStyleOptionButton buttonStyle;
+    localOpt.palette.setColor(QPalette::Highlight, buttonStyle.palette.color(QPalette::Highlight));
+    drawBackground(painter, localOpt, index);
 
     // calculate the line heights using current font - yes again, as we can't "store" the sizes calculated in sizeHint :/
     int firstLineHeight = 0;
@@ -64,10 +69,20 @@ void FolderItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
 
     painter->setPen(QPen(QBrush(_separatorColor), _cellSeparatorWidth));
     painter->drawLine(option.rect.left(), option.rect.bottom(), option.rect.right(), option.rect.bottom());
-    painter->restore();
 
-    // do the custom text painting using the painter
-    // drawFocus(painter, option, option.rect);
+    // create a better focus color here:
+
+    // QStyleOptionViewItem localOpt(option);
+    //  QPalette pal = option.palette;
+    //  this should take the palette from app if not explicitly initialized from existing widget
+    /* QStyleOptionButton buttonStyle;
+     QString highlightName = buttonStyle.palette.color(QPalette::Highlight).name(); // this appears to be the correct color!!!
+     localOpt.palette.setColor(QPalette::Highlight, buttonStyle.palette.color(QPalette::Highlight));
+     // localOpt.setPalette(pal);
+     //  painter->setBrush(buttonStyle.palette.color(QPalette::Highlight));*/
+    // drawFocus(painter, localOpt, option.rect);
+
+    painter->restore();
 }
 
 QSize FolderItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
