@@ -534,49 +534,14 @@ File synchronization desktop utility.</source>
         <translation>О программе</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.ui" line="108"/>
-        <source>&amp;Update Channel</source>
-        <translation>Канал обновлений:</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/aboutdialog.ui" line="137"/>
+        <location filename="../src/gui/aboutdialog.ui" line="111"/>
         <source>&amp;Restart &amp;&amp; Update</source>
         <translation>&amp;Перезапуск и обновление</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.ui" line="148"/>
+        <location filename="../src/gui/aboutdialog.ui" line="122"/>
         <source>Versions</source>
         <translation>Версии</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="91"/>
-        <source>beta</source>
-        <translation>бета</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="159"/>
-        <source>Change update channel?</source>
-        <translation>Изменить канал обновлений?</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="160"/>
-        <source>&lt;html&gt;The update channel determines which client updates will be offered for installation.&lt;ul&gt;&lt;li&gt;&quot;ownCloud 10 LTS&quot; contains only upgrades that are considered reliable&lt;/li&gt;&lt;li&gt;&quot;ownCloud Infinite Scale stable&quot; contains only upgrades that are considered reliable but &lt;b&gt;removes support for &quot;ownCloud 10&quot;&lt;/b&gt;&lt;/li&gt;%1&lt;/ul&gt;&lt;br&gt;⚠️Downgrades are not supported. If you switch to a stable channel this change will only be applied with the next major release.&lt;/html&gt;</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="167"/>
-        <source>&lt;li&gt;&quot;beta&quot; may contain newer features and bugfixes, but have not yet been tested thoroughly&lt;/li&gt;</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="169"/>
-        <source>Change update channel</source>
-        <translation>Изменить канал обновлений</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="170"/>
-        <source>Cancel</source>
-        <translation>Отмена</translation>
     </message>
 </context>
 <context>
@@ -2123,52 +2088,52 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OCUpdater</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="154"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="147"/>
         <source>Could not download update. Please click &lt;a href=&apos;%1&apos;&gt;here&lt;/a&gt; to download the update manually.</source>
         <translation>Не удалось загрузить обновление. Для скачивания файлов вручную, нажмите &lt;a href=&apos;%1&apos;&gt;здесь&lt;/a&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="156"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="149"/>
         <source>Could not check for new updates.</source>
         <translation>Не удалось проверить наличие новых обновлений.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="146"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="139"/>
         <source>Downloading %1. Please wait...</source>
         <translation>Скачивается %1. Пожалуйста, подождите…</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="149"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="142"/>
         <source>%1 installed successfully. Restart the application to finish installing the update.</source>
         <translation>%1 успешно установлено. Перезапустите приложение, чтобы завершить установку обновления.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="151"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="144"/>
         <source>%1 available. Restart application to start the update.</source>
         <translation>Доступно %1. Перезапустите приложение, чтобы начать обновление.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="162"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="155"/>
         <source>New %1 available. Please click &lt;a href=&apos;%2&apos;&gt;here&lt;/a&gt; to download the new AppImage manually.</source>
         <translation>Доступно обновление %1. Пожалуйста, нажмите &lt;a href=&apos;%2&apos;&gt;здесь&lt;/a&gt; чтобы скачать вручную новый AppImage.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="165"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="158"/>
         <source>New %1 available. Please use the system&apos;s update tool to install it.</source>
         <translation>Доступна новая версия %1. Для установки пожалуйста используйте системные средства обновления.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="167"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="160"/>
         <source>Checking update server...</source>
         <translation>Проверка наличия обновлений на сервере...</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="169"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="162"/>
         <source>Update status is unknown: Did not check for new updates.</source>
         <translation>Статус обновления неизвестен: Не удалось проверить наличие обновлений.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="173"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="166"/>
         <source>No updates available. Your installation is at the latest version.</source>
         <translation>Обновлений в настоящий момент нет. У вас установлена самая последняя версия программы.</translation>
     </message>
@@ -3453,7 +3418,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::UpdaterScheduler</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="50"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="49"/>
         <source>Update available</source>
         <translation>Доступно обновление</translation>
     </message>
@@ -3495,37 +3460,37 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::WindowsUpdater</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="380"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="373"/>
         <source>&lt;p&gt;A new version of the %1 Client is available.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; is available for download. The installed version is %3.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Доступна новая версия приложения %1.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; доступна для загрузки. Установленная версия: %3.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="426"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="419"/>
         <source>Skip this version</source>
         <translation>Пропустить эту версию</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="407"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="400"/>
         <source>Update Failed</source>
         <translation>Обновление не удалось</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="413"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="406"/>
         <source>&lt;p&gt;A new version of the %1 Client is available but the updating process failed.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; has been downloaded. The installed version is %3.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Доступна новая версия клиента %1, но процесс обновления не удался. &lt;/p&gt;&lt;p&gt;Было скачано &lt;b&gt;%2&lt;/b&gt;. Установленная версия — %3.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="427"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="420"/>
         <source>Ask again later</source>
         <translation>Попросить снова позже</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="428"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="421"/>
         <source>Restart and update</source>
         <translation>Перезапустить и продолжить</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="429"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="422"/>
         <source>Update manually</source>
         <translation>Обновить вручную</translation>
     </message>

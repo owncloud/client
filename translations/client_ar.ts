@@ -532,49 +532,14 @@ File synchronization desktop utility.</translation>
         <translation>عن</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.ui" line="108"/>
-        <source>&amp;Update Channel</source>
-        <translation>قناة التحديث</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/aboutdialog.ui" line="137"/>
+        <location filename="../src/gui/aboutdialog.ui" line="111"/>
         <source>&amp;Restart &amp;&amp; Update</source>
         <translation>إعادة التشغيل والتحديث</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.ui" line="148"/>
+        <location filename="../src/gui/aboutdialog.ui" line="122"/>
         <source>Versions</source>
         <translation>إصدارات</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="91"/>
-        <source>beta</source>
-        <translation>بيتا</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="159"/>
-        <source>Change update channel?</source>
-        <translation>هل ترغب في تغيير قناة التحديث؟</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="160"/>
-        <source>&lt;html&gt;The update channel determines which client updates will be offered for installation.&lt;ul&gt;&lt;li&gt;&quot;ownCloud 10 LTS&quot; contains only upgrades that are considered reliable&lt;/li&gt;&lt;li&gt;&quot;ownCloud Infinite Scale stable&quot; contains only upgrades that are considered reliable but &lt;b&gt;removes support for &quot;ownCloud 10&quot;&lt;/b&gt;&lt;/li&gt;%1&lt;/ul&gt;&lt;br&gt;⚠️Downgrades are not supported. If you switch to a stable channel this change will only be applied with the next major release.&lt;/html&gt;</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="167"/>
-        <source>&lt;li&gt;&quot;beta&quot; may contain newer features and bugfixes, but have not yet been tested thoroughly&lt;/li&gt;</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="169"/>
-        <source>Change update channel</source>
-        <translation>تغيير قناة التحديث</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/aboutdialog.cpp" line="170"/>
-        <source>Cancel</source>
-        <translation>إلغاء</translation>
     </message>
 </context>
 <context>
@@ -2120,52 +2085,52 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OCUpdater</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="154"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="147"/>
         <source>Could not download update. Please click &lt;a href=&apos;%1&apos;&gt;here&lt;/a&gt; to download the update manually.</source>
         <translation>تعذّر تنزيل التحديث. يُرجى النقر &lt;a href=&apos;%1&apos;&gt;هنا&lt;/a&gt; لتنزيل التحديث يدويًا.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="156"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="149"/>
         <source>Could not check for new updates.</source>
         <translation>تعذّر البحث عن تحديثات جديدة.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="146"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="139"/>
         <source>Downloading %1. Please wait...</source>
         <translation>تنزيل %1. يُرجى الانتظار…</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="149"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="142"/>
         <source>%1 installed successfully. Restart the application to finish installing the update.</source>
         <translation>%1 installed successfully. Restart the application to finish installing the update.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="151"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="144"/>
         <source>%1 available. Restart application to start the update.</source>
         <translation>%1 متوفر. أعد تشغيل التطبيق لبدء التحديث.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="162"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="155"/>
         <source>New %1 available. Please click &lt;a href=&apos;%2&apos;&gt;here&lt;/a&gt; to download the new AppImage manually.</source>
         <translation>New %1 available. Please click &lt;a href=&apos;%2&apos;&gt;here&lt;/a&gt; to download the new AppImage manually.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="165"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="158"/>
         <source>New %1 available. Please use the system&apos;s update tool to install it.</source>
         <translation>%1 جديد متوفر. يُرجى استخدام أداة تحديث النظام لتثبيته.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="167"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="160"/>
         <source>Checking update server...</source>
         <translation>جارٍ فحص خادم التحديث...</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="169"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="162"/>
         <source>Update status is unknown: Did not check for new updates.</source>
         <translation>حالة التحديث غير معروفة: لم يتم البحث عن وجود تحديثات جديدة.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="173"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="166"/>
         <source>No updates available. Your installation is at the latest version.</source>
         <translation>لا توجد تحديثات متوفرة. لديك أحدث إصدار.</translation>
     </message>
@@ -3448,7 +3413,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::UpdaterScheduler</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="50"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="49"/>
         <source>Update available</source>
         <translation>تحديث متوفر</translation>
     </message>
@@ -3490,37 +3455,37 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::WindowsUpdater</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="380"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="373"/>
         <source>&lt;p&gt;A new version of the %1 Client is available.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; is available for download. The installed version is %3.&lt;/p&gt;</source>
         <translation>&lt;p&gt;يتوفر إصدار جديد من عميل %1.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; متوفر للتنزيل. الإصدار المثبت هو %3.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="426"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="419"/>
         <source>Skip this version</source>
         <translation>تجاوز هذا الإصدار</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="407"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="400"/>
         <source>Update Failed</source>
         <translation>فشل التحديث</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="413"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="406"/>
         <source>&lt;p&gt;A new version of the %1 Client is available but the updating process failed.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; has been downloaded. The installed version is %3.&lt;/p&gt;</source>
         <translation>&lt;p&gt;يتوفر إصدار جديد من عميل %1، لكن فشلت عملية التحديث.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; متوفر للتنزيل. الإصدار المثبت هو %3.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="427"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="420"/>
         <source>Ask again later</source>
         <translation>الطلب مرة أخرى لاحقًا</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="428"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="421"/>
         <source>Restart and update</source>
         <translation>إعادة التشغيل والتحديث</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="429"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="422"/>
         <source>Update manually</source>
         <translation>التحديث يدويًا</translation>
     </message>
