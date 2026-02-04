@@ -553,12 +553,7 @@ void ConfigFile::setPauseSyncWhenMetered(bool isChecked)
 
 bool ConfigFile::moveToTrash() const
 {
-    // system config has precedence
-    if (_systemConfig.moveToTrash()) {
-        return true;
-    }
-
-    auto defaultValue = Theme::instance()->moveToTrashDefaultValue();
+    bool defaultValue = Theme::instance()->moveToTrashDefaultValue();
     return getValue(moveToTrashC(), QString(), defaultValue).toBool();
 }
 

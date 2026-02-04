@@ -95,12 +95,6 @@ public:
     bool skipUpdateCheck() const;
 
     /**
-     * Determine if files should be moved to trash based on system configuration.
-     * @return True if files should be moved to trash, false otherwise.
-     */
-    bool moveToTrash() const;
-
-    /**
      * Get the path to the system configuration file or registry path based on the operating system and theme.
      * @param os operating system type
      * @param theme the theme instance
@@ -109,11 +103,23 @@ public:
      */
     static QString configPath(const QOperatingSystemVersion::OSType& os, const Theme& theme);
 
+private: // System settings keys
+    // Setup related keys
+    inline static const QString SetupAllowServerUrlChangeKey = QStringLiteral("Setup/AllowServerUrlChange");
+    inline static const QString SetupServerUrlKey = QStringLiteral("Setup/ServerUrl");
+    // Updater related keys
+    inline static const QString UpdaterSkipUpdateCheckKey = QStringLiteral("Updater/SkipUpdateCheck");
+    // OpenID Connect related keys
+    inline static const QString OidcClientIdKey = QStringLiteral("OpenIDConnect/ClientId");
+    inline static const QString OidcClientSecretKey = QStringLiteral("OpenIDConnect/ClientSecret");
+    inline static const QString OidcPortsKey = QStringLiteral("OpenIDConnect/Ports");
+    inline static const QString OidcScopesKey = QStringLiteral("OpenIDConnect/Scopes");
+    inline static const QString OidcPromptKey = QStringLiteral("OpenIDConnect/Prompt");
+
 private:
     bool _allowServerURLChange;
     QString _serverUrl;
     bool _skipUpdateCheck;
     OpenIdConfig _openIdConfig;
-    bool _moveToTrash;
 };
 }

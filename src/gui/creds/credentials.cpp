@@ -85,6 +85,7 @@ Credentials::Credentials(const QString &token, const QString &refreshToken, Acco
     , _accessToken(token)
     , _refreshToken(refreshToken)
     , _ready(false)
+    , _openIdConfig(SystemConfig().openIdConfig())
 {
     if (!token.isEmpty() && !refreshToken.isEmpty())
         _ready = true;
@@ -286,10 +287,10 @@ void Credentials::refreshAccessTokenInternal()
 {
     if (!_account)
         return;
+
     // parent with nam to ensure we reset when the nam is reset
     // todo: #22 - the parenting here is highly questionable, as is the use of the shared account ptr
-    SystemConfig systemConfig;
-    _oAuthJob = new AccountBasedOAuth(_account, systemConfig.openIdConfig(), this);
+    _oAuthJob = new AccountBasedOAuth(_account, _openIdConfig, this);
     connect(_oAuthJob, &AccountBasedOAuth::refreshError, this, &Credentials::handleRefreshError);
     connect(_oAuthJob, &AccountBasedOAuth::refreshFinished, this, &Credentials::handleRefreshSuccess);
 

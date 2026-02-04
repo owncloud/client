@@ -15,36 +15,20 @@ namespace OCC {
 
 namespace chrono = std::chrono;
 
-namespace {
-    // Setup related keys
-    static constexpr auto KEY_SETUP_ALLOW_SERVER_URL_CHANGE = "Setup/AllowServerUrlChange";
-    static constexpr auto KEY_SETUP_SERVER_URL = "Setup/ServerUrl";
-    static constexpr auto KEY_SETUP_MOVE_TO_TRASH = "Setup/MoveToTrash";
-    // Updater related keys
-    static constexpr auto KEY_UPDATER_SKIP_UPDATE_CHECK = "Updater/SkipUpdateCheck";
-    // OpenID Connect related keys
-    static constexpr auto KEY_OIDC_CLIENT_ID = "OpenIDConnect/ClientId";
-    static constexpr auto KEY_OIDC_CLIENT_SECRET = "OpenIDConnect/ClientSecret";
-    static constexpr auto KEY_OIDC_PORTS = "OpenIDConnect/Ports";
-    static constexpr auto KEY_OIDC_SCOPES = "OpenIDConnect/Scopes";
-    static constexpr auto KEY_OIDC_PROMPT = "OpenIDConnect/Prompt";
-} // anonymous namespace
-
 SystemConfig::SystemConfig()
 {
     auto format = Utility::isWindows() ? QSettings::NativeFormat : QSettings::IniFormat;
     QSettings system(configPath(QOperatingSystemVersion::currentType(), *Theme::instance()), format);
 
-    _allowServerURLChange = system.value(KEY_SETUP_ALLOW_SERVER_URL_CHANGE, true).toBool();
-    _serverUrl = system.value(KEY_SETUP_SERVER_URL, QString()).toString();
-    _skipUpdateCheck = system.value(KEY_UPDATER_SKIP_UPDATE_CHECK, false).toBool();
-    _moveToTrash = system.value(KEY_SETUP_MOVE_TO_TRASH, false).toBool();
+    _allowServerURLChange = system.value(SetupAllowServerUrlChangeKey, true).toBool();
+    _serverUrl = system.value(SetupServerUrlKey, QString()).toString();
+    _skipUpdateCheck = system.value(UpdaterSkipUpdateCheckKey, false).toBool();
 
     // read OpenID Connect configuration
-    auto clientId = system.value(KEY_OIDC_CLIENT_ID, QString()).toString();
-    auto clientSecret = system.value(KEY_OIDC_CLIENT_SECRET, QString()).toString();
+    auto clientId = system.value(OidcClientIdKey, QString()).toString();
+    auto clientSecret = system.value(OidcClientSecretKey, QString()).toString();
 
-    QVariant portsVar = system.value(KEY_OIDC_PORTS, "0").toString();
+    QVariant portsVar = system.value(OidcPortsKey, "0").toString();
     QList<quint16> ports;
     const auto parts = portsVar.toString().split(QLatin1Char(','), Qt::SkipEmptyParts);
     for (const QString &p : parts) {
@@ -55,8 +39,8 @@ SystemConfig::SystemConfig()
         }
     }
 
-    QString scopes = system.value(KEY_OIDC_SCOPES, QString()).toString();
-    QString prompt = system.value(KEY_OIDC_PROMPT, QString()).toString();
+    QString scopes = system.value(OidcScopesKey, QString()).toString();
+    QString prompt = system.value(OidcPortsKey, QString()).toString();
 
     _openIdConfig = OpenIdConfig(clientId, clientSecret, ports, scopes, prompt);
 }
@@ -105,11 +89,6 @@ QString SystemConfig::serverUrl() const
 bool SystemConfig::skipUpdateCheck() const
 {
     return _skipUpdateCheck;
-}
-
-bool SystemConfig::moveToTrash() const
-{
-    return _moveToTrash;
 }
 
 OpenIdConfig SystemConfig::openIdConfig() const
