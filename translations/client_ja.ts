@@ -180,7 +180,7 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/main.cpp" line="135"/>
         <source>Enable debug mode.</source>
-        <translation>デバッグモードを有効にします</translation>
+        <translation>デバッグモードを有効にする</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="136"/>
@@ -274,7 +274,7 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/libsync/networkjobs/fetchuserinfojobfactory.cpp" line="67"/>
         <source>Failed to retrieve user info</source>
-        <translation>ユーザー情報の取得に失敗しました</translation>
+        <translation>ユーザー情報の取得に失敗した</translation>
     </message>
 </context>
 <context>
@@ -536,7 +536,7 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/aboutdialog.ui" line="111"/>
         <source>&amp;Restart &amp;&amp; Update</source>
-        <translation>再起動してアップデート(&amp;R)</translation>
+        <translation>再起動して更新(&amp;R)</translation>
     </message>
     <message>
         <location filename="../src/gui/aboutdialog.ui" line="122"/>
