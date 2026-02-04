@@ -15,6 +15,7 @@
 #pragma once
 
 #include "owncloudlib.h"
+#include "config/systemconfig.h"
 
 #include <QNetworkProxy>
 #include <QSettings>
@@ -144,7 +145,7 @@ public:
     // how often the check about new versions runs
     std::chrono::milliseconds updateCheckInterval(const QString &connection = QString()) const;
 
-    bool skipUpdateCheck(const QString &connection = QString()) const;
+    bool skipUpdateCheck() const;
     void setSkipUpdateCheck(bool, const QString &);
 
     QString uiLanguage() const;
@@ -165,7 +166,6 @@ public:
     static void setupDefaultExcludeFilePaths(ExcludedFiles &excludedFiles);
 
 protected:
-    QVariant getPolicySetting(const QString &policy, const QVariant &defaultValue = QVariant()) const;
     void storeData(const QString &group, const QString &key, const QVariant &value);
     void removeData(const QString &group, const QString &key);
     bool dataExists(const QString &group, const QString &key) const;
@@ -176,6 +176,7 @@ private:
     void setValue(const QString &key, const QVariant &value);
 
 private:
+    SystemConfig _systemConfig;
     typedef QSharedPointer<AbstractCredentials> SharedCreds;
 
     static QString _oCVersion;
