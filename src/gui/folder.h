@@ -369,6 +369,7 @@ Q_SIGNALS:
     void vfsModeChanged(Folder *f, Vfs::Mode newMode);
     void displayNameChanged();
     void imageChanged(); // probably part of space changed
+    void progressUpdate(const ProgressInfo &progress);
 
 
     /**
