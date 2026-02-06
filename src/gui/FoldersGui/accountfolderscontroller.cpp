@@ -81,10 +81,6 @@ void AccountFoldersController::onFolderChanged(OCC::Folder *folder)
         return;
 
     _currentFolder = folder;
-    // thought to only do this here instead of trying to trigger the refresh before showing the menu since it's more complicated
-    // to trigger the refresh from the menu button.
-    // this doesn't really work eg if you use the menu to pause sync, then open the menu again - it won't get refreshed to show resume sync
-    updateActions();
 }
 
 void AccountFoldersController::slotAddFolder()

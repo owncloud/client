@@ -102,6 +102,10 @@ QString FolderItem::statusAsString() const
     if (!_folder->isAvailable())
         return tr("Unavailable: the space is no longer available on the server");
 
+    // when reloading folders from config, no sync on paused folders is attempted, so we can't rely on the sync status
+    if (_folder->syncPaused())
+        return tr("Sync paused");
+
     SyncResult status = _folder->syncResult();
 
     switch (status.status()) {
@@ -112,7 +116,7 @@ QString FolderItem::statusAsString() const
     case SyncResult::Success:
         return QString("Synced");
     case SyncResult::Unavailable:
-        return tr("Unavailable: the space is not longer available on the server");
+        return tr("Unavailable: the space is no longer available on the server");
     case SyncResult::Problem:
     case SyncResult::Error:
     case SyncResult::SetupError:
