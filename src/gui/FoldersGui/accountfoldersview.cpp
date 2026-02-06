@@ -84,7 +84,8 @@ void AccountFoldersView::buildView()
     _treeView->setItemDelegateForColumn(1, buttonDel);
     // this works but only when the button item is current. this means I have to set the button column to current each time row selection
     // changes but it works well so far. Still needs some tweaks to ensure the edit mode stays active when you click around in the same row.
-    // sometimes the button disappears. Note that using AllEditTriggers does not improve things
+    // sometimes the button disappears. Note that using AllEditTriggers does not improve things but with all triggers you can trigger the menu
+    // on the button by hitting the space bar - this seems really weird but I'll take it? Needs testing on windows.
     _treeView->setEditTriggers(QAbstractItemView::AllEditTriggers);
 
     _treeView->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -114,12 +115,6 @@ void AccountFoldersView::setItemModels(QStandardItemModel *model, QItemSelection
     header->setStretchLastSection(false);
     header->setSectionResizeMode(0, QHeaderView::Stretch);
     header->setSectionResizeMode(1, QHeaderView::Fixed);
-
-    /*   QPalette pal = _treeView->palette();
-       QColor highlight = _treeView->parentWidget()->palette().color(QPalette::Highlight);
-       pal.setColor(QPalette::Highlight, highlight);
-       _treeView->setPalette(pal);
-      */
 }
 
 void AccountFoldersView::setSyncedFolderCount(int synced, int total)
