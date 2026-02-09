@@ -15,6 +15,8 @@
 
 #include <QObject>
 
+#include "progressdispatcher.h"
+
 namespace OCC {
 
 class FolderItem;
@@ -25,9 +27,15 @@ class FolderItemUpdater : public QObject
 public:
     explicit FolderItemUpdater(FolderItem *item, QObject *parent);
 
-    void onFolderChanged();
 
 private:
     FolderItem *_item;
+
+    // static const progressUpdateTimeOutC = 1s;
+    // std::chrono::steady_clock::time_point _lastProgressUpdated = std::chrono::steady_clock::now();
+    void onFolderChanged();
+    void onSyncStateChanged();
+    void onProgressUpdated(const ProgressInfo &progress);
+    QMetaObject::Connection _progressInfoConnection;
 };
 }
