@@ -423,12 +423,12 @@ void SocketApi::command_RETRIEVE_FILE_STATUS(const QString &argument, SocketList
 void SocketApi::command_SHARE(const QString &localFile, SocketListener *listener)
 {
     auto fileData = FileData::get(localFile);
-    auto shareFolder = fileData.folder;
+    Folder *shareFolder = fileData.folder;
     if (!shareFolder) {
         const QString message = QLatin1String("SHARE:NOP:") + QDir::toNativeSeparators(localFile);
         // files that are not within a sync folder are not synced.
         listener->sendMessage(message);
-    } else if (!shareFolder->accountState()->isConnected()) {
+    } else if (!shareFolder->isConnected()) {
         const QString message = QLatin1String("SHARE:NOTCONNECTED:") + QDir::toNativeSeparators(localFile);
         // if the folder isn't connected, don't open the share dialog
         listener->sendMessage(message);
@@ -798,7 +798,7 @@ void SocketApi::command_GET_MENU_ITEMS(const QString &argument, OCC::SocketListe
     // Some options only show for single files
     if (files.size() == 1) {
         const FileData fileData = FileData::get(files.first());
-        if (fileData.isValid() && fileData.folder->accountState()->isConnected()) {
+        if (fileData.isValid() && fileData.folder->isConnected()) {
             const auto &capabilities = fileData.folder->accountState()->account()->capabilities();
             if (!fileData.isSyncFolder()) {
                 const auto record = fileData.journalRecord();

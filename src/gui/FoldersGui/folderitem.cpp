@@ -82,7 +82,7 @@ QString FolderItem::statusIconName() const
     if (!_folder || !_folder->accountState())
         return {};
     SyncResult status = _folder->syncResult();
-    if (!_folder->accountState()->isConnected()) {
+    if (!_folder->isConnected()) {
         status.setStatus(SyncResult::Status::Offline);
     } else if (_folder->syncPaused() || NetworkInformation::instance()->isBehindCaptivePortal()
         || (NetworkInformation::instance()->isMetered() && ConfigFile().pauseSyncWhenMetered())) {
@@ -96,7 +96,7 @@ QString FolderItem::statusAsString() const
     if (!_folder || !_folder->accountState())
         return {};
 
-    if (!_folder->accountState()->isConnected())
+    if (!_folder->isConnected())
         return tr("Offline");
 
     // this can get out of sorts wrt sync state if we were offline then go on - no sync is ever attempted if the folder is already

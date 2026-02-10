@@ -70,7 +70,7 @@ void TrayOverallStatusResult::addResult(Folder *f)
         ? SyncResult::Paused
         : f->syncResult().status();
     // in case the linked account is not connected -> we are offline
-    if (!f->accountState()->isConnected()) {
+    if (!f->isConnected()) {
         status = SyncResult::Offline;
     }
     // undefined state means we are in trouble

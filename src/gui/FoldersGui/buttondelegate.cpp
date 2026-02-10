@@ -88,6 +88,7 @@ void ButtonDelegate::destroyEditor(QWidget *widget, const QModelIndex &index) co
 
 void ButtonDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
+    Q_UNUSED(index);
     Q_ASSERT(editor == _button);
     // make the button just a bit smaller so you can really see it's a button and not just a full cell "block".
     QRect adaptedRect(option.rect);
