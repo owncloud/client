@@ -84,8 +84,12 @@ void FolderItemUpdater::onProgressUpdated(const ProgressInfo &progress)
 
     // I don't think we need to worry about the other states - propagation is the state where progress data seems to be provided, but double check this
     if (progress.status() == ProgressInfo::Propagation) {
-        // if (progress.totalSize() > 0)
-        _item->setProgress(progress);
-    }
+        // slow down the updates just a bit - the default is too incremental
+        if (std::chrono::steady_clock::now() - _lastProgressUpdated > ProgressUpdateTimeout) {
+            _item->setProgress(progress);
+            _lastProgressUpdated = std::chrono::steady_clock::now();
+        }
+    } else
+        _lastProgressUpdated = {};
 }
 }
