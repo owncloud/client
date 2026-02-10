@@ -31,7 +31,7 @@ FolderItem::FolderItem(Folder *folder)
 
     setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
-    _updater = new FolderItemUpdater(this, nullptr);
+    _updater = new FolderItemUpdater(this);
     updateStatusString();
 }
 
@@ -58,9 +58,11 @@ void FolderItem::setProgress(const ProgressInfo &progress)
         return;
     }
 
-    if (progress.totalSize() == 0)
+    if (progress.totalSize() == 0) {
         // nothing is going to happen so ditch - with vfs this will always be the case?
         return;
+    }
+
     // completed size is literal - meaning if there was nothing to actually sync,
     // total size = 0
     // this can happen if there are no files/folders in a space

@@ -17,8 +17,8 @@
 #include "folderitem.h"
 
 namespace OCC {
-FolderItemUpdater::FolderItemUpdater(FolderItem *item, QObject *parent)
-    : QObject{parent}
+FolderItemUpdater::FolderItemUpdater(FolderItem *item)
+    : QObject{nullptr}
     , _item(item)
 {
     if (_item && _item->folder()) {
@@ -37,12 +37,35 @@ void FolderItemUpdater::onFolderChanged()
 
 void FolderItemUpdater::onSyncStateChanged()
 {
-    if (_item->folder() && _item->folder()->syncResult().status() == SyncResult::SyncRunning) {
+    if (!_item->folder())
+        return;
+
+    SyncResult::Status status = _item->folder()->syncResult().status();
+    if (status == SyncResult::SyncRunning) {
         Q_ASSERT(!_progressInfoConnection); // ie it should not be connected already
         _progressInfoConnection = connect(_item->folder(), &Folder::progressUpdate, this, &FolderItemUpdater::onProgressUpdated);
-    } else
+    } else {
         disconnect(_progressInfoConnection);
+    }
+
     _item->refresh();
+
+    if (status == SyncResult::Error || status == SyncResult::Problem || status == SyncResult::SetupError) {
+        QStringList errors = _item->folder()->syncResult().errorStrings();
+
+        if (_item->folder()->syncResult().hasUnresolvedConflicts())
+            errors.append(tr("There are unresolved conflicts."));
+
+        for (const QString &error : std::as_const(errors)) {
+            // QStandardItem *errorItem = new QStandardItem(error);
+            // errorItem->
+            _item->appendRow(new QStandardItem(error));
+        }
+
+    } else if (status == SyncResult::SyncPrepare) {
+        // I expect this check needs refinement - may want to wait until the sync has actually started before removing previous errors
+        _item->removeRows(0, _item->rowCount());
+    }
 }
 
 

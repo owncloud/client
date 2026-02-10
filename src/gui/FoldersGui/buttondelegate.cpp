@@ -57,8 +57,6 @@ void ButtonDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option
     painter->setPen(QPen(QBrush("#807F7F7F"), 1));
     painter->drawLine(option.rect.bottomLeft(), option.rect.bottomRight());
     painter->restore();
-
-    drawFocus(painter, option, option.rect);
 }
 
 QSize ButtonDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const

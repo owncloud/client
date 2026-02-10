@@ -63,6 +63,7 @@ void AccountFoldersView::buildView()
     mainLayout->addLayout(buttonLineLayout);
 
     _treeView = new QTreeView(this);
+    _treeView->setObjectName("accountFoldersTreeView");
     _treeView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     // I'm not sure always off is good but that's what we currently have
     _treeView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -94,6 +95,7 @@ void AccountFoldersView::buildView()
     mainLayout->addWidget(_treeView);
 
     _syncedFolderCountLabel = new QLabel("placeholder for sync count", this);
+    _syncedFolderCountLabel->setObjectName("syncedFolderCount");
     _syncedFolderCountLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     mainLayout->addWidget(_syncedFolderCountLabel, 0, Qt::AlignLeft);
 

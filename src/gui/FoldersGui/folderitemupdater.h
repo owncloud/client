@@ -25,7 +25,7 @@ class FolderItemUpdater : public QObject
 {
     Q_OBJECT
 public:
-    explicit FolderItemUpdater(FolderItem *item, QObject *parent);
+    explicit FolderItemUpdater(FolderItem *item);
 
 
 private:
