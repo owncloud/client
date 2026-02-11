@@ -211,7 +211,7 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="98"/>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="127"/>
         <source>Offline</source>
-        <translation type="unfinished"/>
+        <translation>Võrguühenduseta</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="103"/>
@@ -228,7 +228,7 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="123"/>
         <source>Sync failed</source>
-        <translation type="unfinished"/>
+        <translation>Sünkroniseerimine ebaõnnestus</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="129"/>
@@ -238,7 +238,7 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="134"/>
         <source>Syncing %1 of %2</source>
-        <translation type="unfinished"/>
+        <translation>Sünkroniseerimine %1 %2-st</translation>
     </message>
 </context>
 <context>
