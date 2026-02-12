@@ -1,0 +1,112 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+// SPDX-FileCopyrightText: 2026 Thomas Müller <thomas.mueller@tmit.eu>
+
+#include "systemconfig.h"
+
+#include "../theme.h"
+#include "common/utility.h"
+#include "openidconfig.h"
+
+#include <QFile>
+#include <QOperatingSystemVersion>
+#include <QSettings>
+
+namespace OCC {
+
+namespace chrono = std::chrono;
+
+SystemConfig::SystemConfig()
+{
+    auto format = Utility::isWindows() ? QSettings::NativeFormat : QSettings::IniFormat;
+    QSettings system(configPath(QOperatingSystemVersion::currentType(), *Theme::instance()), format);
+
+    _allowServerURLChange = system.value(SetupAllowServerUrlChangeKey, true).toBool();
+    _serverUrl = system.value(SetupServerUrlKey, QString()).toString();
+    _skipUpdateCheck = system.value(UpdaterSkipUpdateCheckKey, false).toBool();
+
+    // read OpenID Connect configuration
+    auto clientId = system.value(OidcClientIdKey, QString()).toString();
+    auto clientSecret = system.value(OidcClientSecretKey, QString()).toString();
+
+    QVariant portsVar = system.value(OidcPortsKey, "0").toString();
+    QList<quint16> ports;
+    const auto parts = portsVar.toString().split(QLatin1Char(','), Qt::SkipEmptyParts);
+    for (const QString &p : parts) {
+        bool ok = false;
+        const quint16 val = static_cast<quint16>(p.trimmed().toUInt(&ok));
+        if (ok) {
+            ports.append(val);
+        }
+    }
+
+    QString scopes = system.value(OidcScopesKey, QString()).toString();
+    QString prompt = system.value(OidcPortsKey, QString()).toString();
+
+    _openIdConfig = OpenIdConfig(clientId, clientSecret, ports, scopes, prompt);
+}
+
+QString SystemConfig::configPath(const QOperatingSystemVersion::OSType& os, const Theme& theme)
+{
+    // Important: these paths conform to how names typically work on the systems on which they are used. This includes usage of upper-/lowercase.
+
+    if (os == QOperatingSystemVersion::Windows) {
+        // We use HKEY_LOCAL_MACHINE\Software\Policies since this is the location where GPO operates.
+        // Note: use of uppercase/camelcase is common.
+        return QString("HKEY_LOCAL_MACHINE\\Software\\Policies\\%1\\%2").arg(theme.vendor(), theme.appNameGUI());
+    }
+
+    if (os == QOperatingSystemVersion::MacOS) {
+        // We use a subfolder to have one common location where in the future more files can be stored (like icons, images and such)
+        // ini is used on macOS in contrary to plist because they are easier to maintain.
+        // Note: rev-domain notation and lowercase is typically used.
+        return QString("/Library/Preferences/%1/%2.ini").arg(theme.orgDomainName(), theme.appName());
+    }
+
+    // On Unix style systems, the application name in lowercase is typically used.
+    return QString("/etc/%1/%1.ini").arg(theme.appName());
+}
+
+bool SystemConfig::allowServerUrlChange() const
+{
+    // If a theme provides a hardcoded URL, do not allow for URL change.
+    QString overrideServerUrl = Theme::instance()->overrideServerUrlV2();
+    if (!overrideServerUrl.isEmpty())
+        return false;
+    return _allowServerURLChange;
+}
+
+QString SystemConfig::serverUrl() const
+{
+    // a theme can provide a hardcoded url which is not subject of change by definition
+    auto serverUrl = Theme::instance()->overrideServerUrlV2();
+    if (!serverUrl.isEmpty()) {
+        return serverUrl;
+    }
+
+    return _serverUrl;
+}
+
+bool SystemConfig::skipUpdateCheck() const
+{
+    return _skipUpdateCheck;
+}
+
+OpenIdConfig SystemConfig::openIdConfig() const
+{
+    // system config has precedence here
+    if (!_openIdConfig.clientId().isEmpty()) {
+        return _openIdConfig;
+    }
+
+    // load config from theme
+    QString clientId = Theme::instance()->oauthClientId();
+    QString clientSecret = Theme::instance()->oauthClientSecret();
+
+    const auto ports = Theme::instance()->oauthPorts();
+    QString scopes = Theme::instance()->openIdConnectScopes();
+    QString prompt = Theme::instance()->openIdConnectPrompt();
+
+    return OpenIdConfig(clientId, clientSecret, ports, scopes, prompt);
+
+}
+}
