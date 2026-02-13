@@ -176,15 +176,15 @@ QVariant FolderItem::data(int role) const
     case Qt::DisplayRole:
         return _folder->displayName();
     case Qt::DecorationRole:
-        /* if (_folder && _folder->space() && _folder->space()->image()) {
-             // this is not working but I have no idea why!
-             // the image is not null but won't paint, even in the default impl
-             // so just using the app icon to get the delegate working for now
-             QIcon spaceIcon = _folder->space()->image()->image();
-             if (!spaceIcon.isNull())
-                 return spaceIcon;
-         }*/
-        return Theme::instance()->applicationIcon();
+        if (_folder && _folder->space() && _folder->space()->image()) {
+            // this is not working but I have no idea why!
+            // the image is not null but won't paint, even in the default impl
+            // so just using the app icon to get the delegate working for now
+            QIcon spaceIcon = _folder->space()->image()->image();
+            if (!spaceIcon.isNull())
+                return spaceIcon;
+        }
+        return Resources::getCoreIcon("folder-sync");
     case FolderItemRoles::StatusIconRole:
         return Resources::getCoreIcon(statusIconName());
     case FolderItemRoles::StatusStringRole:

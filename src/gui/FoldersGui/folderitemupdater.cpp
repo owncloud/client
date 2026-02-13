@@ -15,6 +15,7 @@
 
 #include "folder.h"
 #include "folderitem.h"
+#include "resources.h"
 
 namespace OCC {
 FolderItemUpdater::FolderItemUpdater(FolderItem *item)
@@ -57,12 +58,13 @@ void FolderItemUpdater::onSyncStateChanged()
             errors.append(tr("There are unresolved conflicts."));
 
         for (const QString &error : std::as_const(errors)) {
-            // QStandardItem *errorItem = new QStandardItem(error);
-            // errorItem->
-            _item->appendRow(new QStandardItem(error));
+            QIcon errorIcon = Resources::getCoreIcon("states/warning");
+            QStandardItem *errorItem = new QStandardItem(errorIcon, error);
+            errorItem->setData(error, Qt::AccessibleTextRole);
+            _item->appendRow(errorItem);
         }
 
-    } else if (status == SyncResult::SyncPrepare) {
+    } else if (status == SyncResult::SyncPrepare && _item->hasChildren()) {
         // I expect this check needs refinement - may want to wait until the sync has actually started before removing previous errors
         _item->removeRows(0, _item->rowCount());
     }

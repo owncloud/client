@@ -68,13 +68,24 @@ void AccountFoldersView::buildView()
     // I'm not sure always off is good but that's what we currently have
     _treeView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     _treeView->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    _treeView->setIndentation(0);
+    // indentation is "required" to show the expanders on folder when there are errors
+    // from experimentation, I think 10 is the min indent we can get away with
+    _treeView->setIndentation(10);
+    _treeView->setItemsExpandable(true);
+    _treeView->setExpandsOnDoubleClick(true);
     _treeView->setSelectionMode(QAbstractItemView::SingleSelection);
     _treeView->setSelectionBehavior(QAbstractItemView::SelectRows);
     _treeView->setAllColumnsShowFocus(true);
 
     _treeView->header()->setSectionsMovable(false);
     _treeView->setHeaderHidden(true);
+
+    QStyleOptionButton buttonStyle;
+    QPalette treePalette = _treeView->palette();
+    // get rid of the hideous default "medium blue" color on the tree selections
+    // note we *really* should set this for the whole app but so far I can't find where we set our colors overall.
+    treePalette.setColor(QPalette::Highlight, buttonStyle.palette.color(QPalette::Highlight));
+    _treeView->setPalette(treePalette);
 
     FolderItemDelegate *delegate = new FolderItemDelegate(_treeView);
     _treeView->setItemDelegateForColumn(0, delegate);
@@ -83,6 +94,8 @@ void AccountFoldersView::buildView()
     ButtonDelegate *buttonDel = new ButtonDelegate("⋯", _treeView);
     buttonDel->setMenu(_itemMenu);
     _treeView->setItemDelegateForColumn(1, buttonDel);
+
+    _treeView->setColumnWidth(1, 60);
     // this works but only when the button item is current. this means I have to set the button column to current each time row selection
     // changes but it works well so far. Still needs some tweaks to ensure the edit mode stays active when you click around in the same row.
     // sometimes the button disappears. Note that using AllEditTriggers does not improve things but with all triggers you can trigger the menu
@@ -116,7 +129,9 @@ void AccountFoldersView::setItemModels(QStandardItemModel *model, QItemSelection
     QHeaderView *header = _treeView->header();
     header->setStretchLastSection(false);
     header->setSectionResizeMode(0, QHeaderView::Stretch);
-    header->setSectionResizeMode(1, QHeaderView::Fixed);
+    // if the resize mode is Fixed, for inexplicable reasons the delegate size hint is completely ignored, and the cell
+    // width is fixed at 100px
+    header->setSectionResizeMode(1, QHeaderView::ResizeToContents);
 }
 
 void AccountFoldersView::setSyncedFolderCount(int synced, int total)

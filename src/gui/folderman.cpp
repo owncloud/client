@@ -371,7 +371,7 @@ void FolderMan::onSpacesAdded(const QUuid &accountId, QList<GraphApi::Space *> s
     }
 
     if (Theme::instance()->syncNewlyDiscoveredSpaces()) {
-        // Refactoring todo: why is this scheduled for "later" on the main event loop? aren't we already there?
+        // Refactoring todo: why was this scheduled for "later" on the main event loop? aren't we already there?
         // where does this slot run if not on the main thread?
         // what needs to be processed "before" this loading routine that requires scheduling it for later?
         // if anything we should consider running the loading routines in a worker thread to avoid *blocking* the main
