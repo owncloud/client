@@ -211,7 +211,7 @@ File synchronization desktop utility.</source>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="98"/>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="127"/>
         <source>Offline</source>
-        <translation type="unfinished"/>
+        <translation>オフライン</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="103"/>
@@ -228,7 +228,7 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="123"/>
         <source>Sync failed</source>
-        <translation type="unfinished"/>
+        <translation>同期の失敗</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="129"/>
@@ -238,7 +238,7 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="134"/>
         <source>Syncing %1 of %2</source>
-        <translation type="unfinished"/>
+        <translation>%2 の %1 を同期しています</translation>
     </message>
 </context>
 <context>

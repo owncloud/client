@@ -211,7 +211,7 @@ Datei Synchronisations-Applikation.</translation>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="98"/>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="127"/>
         <source>Offline</source>
-        <translation type="unfinished"/>
+        <translation>Offline</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="103"/>
@@ -228,7 +228,7 @@ Datei Synchronisations-Applikation.</translation>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="123"/>
         <source>Sync failed</source>
-        <translation type="unfinished"/>
+        <translation>Synchronisation fehlgeschlagen</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="129"/>
@@ -238,7 +238,7 @@ Datei Synchronisations-Applikation.</translation>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="134"/>
         <source>Syncing %1 of %2</source>
-        <translation type="unfinished"/>
+        <translation>Synchronisiere %1 von %2</translation>
     </message>
 </context>
 <context>

@@ -211,34 +211,34 @@ Mjet njëkohësimi kartelash për desktop.</translation>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="98"/>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="127"/>
         <source>Offline</source>
-        <translation type="unfinished"/>
+        <translation>Jashtë linje</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="103"/>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="119"/>
         <source>Unavailable: the space is no longer available on the server</source>
-        <translation type="unfinished"/>
+        <translation>S’mund të kihet: hapësira s’është më e pranishme te shërbyesi</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="107"/>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="125"/>
         <source>Sync paused</source>
-        <translation type="unfinished"/>
+        <translation>Njëkohësimi u ndal</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="123"/>
         <source>Sync failed</source>
-        <translation type="unfinished"/>
+        <translation>Njëkohësimi dështoi</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="129"/>
         <source>About to sync</source>
-        <translation type="unfinished"/>
+        <translation>Gati për njëkohësim</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="134"/>
         <source>Syncing %1 of %2</source>
-        <translation type="unfinished"/>
+        <translation>Po njëkohësohet %1 nga %2</translation>
     </message>
 </context>
 <context>
@@ -1454,12 +1454,12 @@ Kjo do të thotë që klienti i njëkohësimeve mund të mos ngarkojë menjëher
     <message>
         <location filename="../src/gui/FoldersGui/foldermodelcontroller.cpp" line="102"/>
         <source>Folder options</source>
-        <translation type="unfinished"/>
+        <translation>Mundësi dosjesh</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/foldermodelcontroller.cpp" line="103"/>
         <source>Menu button with folder options. Hit the space key to pop the folder options menu</source>
-        <translation type="unfinished"/>
+        <translation>Buton menuje me mundësi dosjeje. Që të shfaqet menuja e mundësive të dosjes, shtypni tastin Hapësirë</translation>
     </message>
 </context>
 <context>
