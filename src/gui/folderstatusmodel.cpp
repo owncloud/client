@@ -43,7 +43,7 @@ namespace {
     QString statusIconName(Folder *f)
     {
         auto status = f->syncResult();
-        if (!f->accountState()->isConnected()) {
+        if (!f->isConnected()) {
             status.setStatus(SyncResult::Status::Offline);
         } else if (f->syncPaused() || NetworkInformation::instance()->isBehindCaptivePortal() || NetworkInformation::instance()->isMetered()) {
             status.setStatus(SyncResult::Status::Paused);

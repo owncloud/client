@@ -260,6 +260,8 @@ public:
     bool isAvailable() const { return _available; }
     void setAvailable(bool available);
 
+    // is the folder connected (via the accountState)
+    bool isConnected();
     /**
      * Returns true when the folder may sync.
      */

@@ -196,7 +196,6 @@ void AccountView::buildManageAccountMenu()
     ui->manageAccountButton->setMenu(menu);
 }
 
-// Refactoring todo: the signal sends the new account state, refactor this to use that param
 void AccountView::slotAccountStateChanged(AccountState::State state)
 {
     if (!_accountState || !_accountState->account()) {
@@ -205,13 +204,6 @@ void AccountView::slotAccountStateChanged(AccountState::State state)
 
     Account *account = _accountState->account();
     qCDebug(lcAccountView) << "Account state changed to" << state << "for account" << account;
-
-    // FolderMan *folderMan = FolderMan::instance();
-    /*  I think the controller should be able to listen for folder state changes to determine if eg it went from paused to running, oder?
-     *  // anyway this doesn't belong in any gui, just a controller
-     *   for (auto *folder : folderMan->folders()) {
-           _model->slotUpdateFolderState(folder);
-       }*/
 
     switch (state) {
     case AccountState::Connected: {
@@ -222,12 +214,6 @@ void AccountView::slotAccountStateChanged(AccountState::State state)
             icon = StatusIcon::Warning;
         }
         showConnectionLabel(tr("Connected"), icon, errors);
-        // connect(_accountState->account()->spacesManager(), &GraphApi::SpacesManager::updated, this, &AccountView::slotSpacesUpdated, Qt::UniqueConnection);
-
-        // Refactoring todo: won't this get called every time the state changes to connected even if the spaces manager is already
-        // triggering the slot? ie duplicate call to slotSpacesUpdated?
-        // slotSpacesUpdated();
-
         break;
     }
     case AccountState::ServiceUnavailable:

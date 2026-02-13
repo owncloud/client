@@ -211,7 +211,7 @@ void AccountSettings::slotCustomContextMenuRequested(Folder *folder)
             if (folder->isSyncRunning()) {
                 forceSyncAction->setText(tr("Restart sync"));
             }
-            forceSyncAction->setEnabled(folder->accountState()->isConnected());
+            forceSyncAction->setEnabled(folder->isConnected());
             connect(forceSyncAction, &QAction::triggered, this, [folder, this] { slotForceSyncCurrentFolder(folder); });
         }
 

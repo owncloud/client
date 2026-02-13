@@ -221,15 +221,16 @@ void AccountFoldersController::updateActions()
     _showInSystemFolder->setEnabled(_currentFolder && QFileInfo::exists(_currentFolder->path()));
 
     if (_showInBrowser)
-        _showInBrowser->setEnabled(_currentFolder && _currentFolder->isAvailable());
+        _showInBrowser->setEnabled(_currentFolder && _currentFolder->isConnected() && _currentFolder->isAvailable());
 
     _forceSync->setEnabled(_currentFolder && _currentFolder->canSync());
     _forceSync->setText(_currentFolder && _currentFolder->isSyncRunning() ? tr("Restart sync") : tr("Force sync now"));
 
     _pauseSync->setText(_currentFolder && _currentFolder->syncPaused() ? tr("Resume sync") : tr("Pause sync"));
-    // is this enough? I think we need to keep it enabled even if sync is running so the user can effectively cancel it + pause. as who knows. maybe
-    // they made a mistake when adding the folder or whatever
-    _pauseSync->setEnabled(_currentFolder && _currentFolder->isAvailable());
+    // this is a bit nuanced: we want to enable pause if the folder is disconnected as this is always a safe operation. if it *is* connected
+    // we only want to enabled the action if the folder is available. If the folder is not available pause makes no sense as there is nothing to sync to
+    // as the space is missing, server side.
+    _pauseSync->setEnabled(_currentFolder && (!_currentFolder->isConnected() || _currentFolder->isAvailable()));
 
     _removeSync->setEnabled(_currentFolder);
 
@@ -242,7 +243,7 @@ void AccountFoldersController::updateActions()
     }
 
     if (_chooseSync)
-        _chooseSync->setEnabled(_currentFolder && _currentFolder->isAvailable() && !_currentFolder->virtualFilesEnabled());
+        _chooseSync->setEnabled(_currentFolder && _currentFolder->isConnected() && _currentFolder->isAvailable() && !_currentFolder->virtualFilesEnabled());
 }
 
 void OCC::AccountFoldersController::onShowInSystemFolder()

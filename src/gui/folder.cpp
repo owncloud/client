@@ -400,6 +400,11 @@ void Folder::setAvailable(bool available)
     emit canSyncChanged();
 }
 
+bool Folder::isConnected()
+{
+    return (_accountState && _accountState->isConnected());
+}
+
 void Folder::setSyncState(SyncResult::Status state)
 {
     if (state != _syncResult.status()) {
