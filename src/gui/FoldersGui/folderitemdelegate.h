@@ -30,6 +30,7 @@ public:
 
 private:
     const int _cellBorder = 10;
+    const int _horizontalSpacing = 10;
     const int _cellSeparatorWidth = 1;
     const int _namePixelSize = 14;
     const int _lineSpacing = 5;
@@ -38,5 +39,7 @@ private:
     const QColor _separatorColor = "#807F7F7F";
     void calculateLineHeights(const QStyleOptionViewItem &option, int &firstLineHeight, int &secondLineHeight) const;
     void paintError(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    int calculateErrorIndent(const QStyleOptionViewItem &option) const;
+    QRect calculateErrorTextRect(const QStyleOptionViewItem &option, const QModelIndex &index) const;
 };
 }

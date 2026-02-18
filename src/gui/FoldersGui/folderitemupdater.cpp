@@ -60,6 +60,14 @@ void FolderItemUpdater::onSyncStateChanged()
         for (const QString &error : std::as_const(errors)) {
             QIcon errorIcon = Resources::getCoreIcon("states/warning");
             QStandardItem *errorItem = new QStandardItem(errorIcon, error);
+
+            // just for testing to replace the normal error with something really long - will remove before merge
+            /*      QString longError =
+                      " I think trying to track overall total sizes using progress is just hopeless because a) when stuff is removed sync totals = 0. This means
+               we " "can't update a known total size using these progress values becausethey are never negative, to indicate a removal"; QStandardItem
+               *errorItem = new QStandardItem(errorIcon, longError);
+            */
+
             errorItem->setData(error, Qt::AccessibleTextRole);
             _item->appendRow(errorItem);
         }

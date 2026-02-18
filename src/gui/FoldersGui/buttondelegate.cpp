@@ -41,7 +41,10 @@ ButtonDelegate::ButtonDelegate(const QString &text, QObject *parent)
 
 void ButtonDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    drawBackground(painter, option, index);
+    QStyleOptionViewItem opt(option);
+    QStyleOptionButton buttonStyle;
+    opt.palette.setColor(QPalette::Highlight, buttonStyle.palette.color(QPalette::Highlight));
+    drawBackground(painter, opt, index);
 
     painter->save();
     QFont f = painter->font();

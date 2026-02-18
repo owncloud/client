@@ -34,9 +34,9 @@ AccountFoldersView::AccountFoldersView(QWidget *parent)
     : QWidget{parent}
 {
     // important to know: the parent in this ctr is always null because the widget is instantiated by the ui impl. it leaves the parent
-    // null presumably because it adds it to a stacked widget after ctr which takes ownership. The issue with this is that you *can't*
+    // null, presumably because it adds it to a stacked widget after ctr which takes ownership as parent. The issue with this is that you *can't*
     // do anything relative to the parent in this construction setup because it is not known at time of construction.
-    // this makes setting the palette pretty icky
+
     _itemMenu = new QMenu(this);
     _itemMenu->setAccessibleName(tr("Sync options menu"));
 
@@ -65,11 +65,10 @@ void AccountFoldersView::buildView()
     _treeView = new QTreeView(this);
     _treeView->setObjectName("accountFoldersTreeView");
     _treeView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    // I'm not sure always off is good but that's what we currently have
     _treeView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     _treeView->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     // indentation is "required" to show the expanders on folder when there are errors
-    // from experimentation, I think 10 is the min indent we can get away with
+    // from experimentation, I think 10 is the min indent we can get away with but I may increase it as it doesn't look quite right
     _treeView->setIndentation(10);
     _treeView->setItemsExpandable(true);
     _treeView->setExpandsOnDoubleClick(true);
@@ -77,15 +76,24 @@ void AccountFoldersView::buildView()
     _treeView->setSelectionBehavior(QAbstractItemView::SelectRows);
     _treeView->setAllColumnsShowFocus(true);
 
+    // this should allow error items to paint fully just using the default impl
+    //_treeView->setWordWrap(true);
+    // ha! no that does not work at all...google says it's been broken for at least 15 years.
+    // nice job guys.
+
     _treeView->header()->setSectionsMovable(false);
     _treeView->setHeaderHidden(true);
 
+    // this method of correcting the row selection color to match the app button highlight does not work when user has changed system settings (the color sticks
+    // with the color that matched the system settings on creation of the view, which is bad. this color correcion has been moved to the item delegates for now
+    // because we can always grab the true current color on paint.
+    // TODO: #60 - we really need to implement full palettes for both light and dark mode. my rec would be to use a QStyle sub but will
+    // make a decision when the time comes.
     QStyleOptionButton buttonStyle;
     QPalette treePalette = _treeView->palette();
-    // get rid of the hideous default "medium blue" color on the tree selections
-    // note we *really* should set this for the whole app but so far I can't find where we set our colors overall.
     treePalette.setColor(QPalette::Highlight, buttonStyle.palette.color(QPalette::Highlight));
     _treeView->setPalette(treePalette);
+
 
     FolderItemDelegate *delegate = new FolderItemDelegate(_treeView);
     _treeView->setItemDelegateForColumn(0, delegate);
