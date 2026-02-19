@@ -14,6 +14,7 @@
 
 #include "buttondelegate.h"
 
+#include "resources.h"
 #include <QPainter>
 #include <QPushButton>
 
@@ -26,45 +27,47 @@ ButtonDelegate::ButtonDelegate(const QString &text, QObject *parent)
     // note we will update the widget parent in the first createEditor as that passes the correct parent for the pop
     // we can't really get the "right" parent here, and reusing the button is simpler and I'd guess slightly more efficient
     // than creating it over and over in create editor.
+
     _button = new QPushButton(_buttonText);
     _button->setObjectName("buttonDelegateButton");
+    _button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     // I think this only needs to be set in the underlying item.
     //_button->setAccessibleName("Folder options");
     //_button->setAccessibleDescription("Menu button with folder options. Hit the space key to auto-pop the menu");
-
-    _button->setAutoFillBackground(true);
-    // have to explicitly align center or the text goes left when a menu is added
-    // also the font size is set based on the idea that the text is "..." - we may want to adapt this in future
-    _button->setStyleSheet({"font: bold 18px; text-align:center;"});
 }
 
 void ButtonDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    // we have to override the default selection color for item views which is "dark-blue"
-    // use the default button highlight color instead to make it more cohesive
-    // note we can't just set the palette on the tree view as that won't update automatically when system color changes :/
-    QStyleOptionViewItem localOpt(option);
+    QStyleOptionViewItem opt(option);
     QStyleOptionButton buttonStyle;
-    localOpt.palette.setColor(QPalette::Highlight, buttonStyle.palette.color(QPalette::Highlight));
-    drawBackground(painter, localOpt, index);
+    opt.palette.setColor(QPalette::Highlight, buttonStyle.palette.color(QPalette::Highlight));
+    drawBackground(painter, opt, index);
 
     painter->save();
-    QFont f = painter->font();
-    f.setBold(true);
-    f.setPixelSize(18);
-    painter->setFont(f);
-    painter->drawText(option.rect, Qt::AlignCenter, _buttonText);
-    painter->setPen(QPen(QBrush("#807F7F7F"), 1));
-    painter->drawLine(option.rect.bottomLeft(), option.rect.bottomRight());
-    painter->restore();
+    // this rigamarole is "needed" because if I set the button to autoFillBackground (which is super normal) there are weird artifacts of
+    // the window color above and below the button. No idea. This is on mac at least. The fix is to not paint the text dots if the button
+    // is showing on the current cell, as if we paint them there is bleed through visibility of the text under the button since we apparently
+    // autoFillBackground has to be off :/
+    if (!_button->isVisible() || !option.rect.contains(_button->pos())) {
+        QFont f = painter->font();
+        f.setBold(true);
+        f.setPixelSize(18);
+        painter->setFont(f);
+        painter->drawText(option.rect, Qt::AlignCenter, _buttonText);
+    }
 
-    drawFocus(painter, option, option.rect);
+    painter->setPen(QPen(QBrush("#807F7F7F"), 1));
+    QRect r = option.rect;
+    r.setRight(r.right() - 10);
+    painter->drawLine(r.bottomLeft(), r.bottomRight());
+    painter->restore();
 }
 
 QSize ButtonDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    QSize size = QItemDelegate::sizeHint(option, index);
-    return QSize(75, size.height());
+    QSize baseSize = QItemDelegate::sizeHint(option, index);
+    int width = _button->sizeHint().width();
+    return QSize(width + 20, baseSize.height());
 }
 
 QWidget *ButtonDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -90,11 +93,12 @@ void ButtonDelegate::destroyEditor(QWidget *widget, const QModelIndex &index) co
 
 void ButtonDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
+    Q_UNUSED(index);
     Q_ASSERT(editor == _button);
-    // make the button just a bit smaller so you can really see it's a button and not just a full cell "block".
-    QRect adaptedRect(option.rect);
-    adaptedRect.adjust(5, 5, -5, -5);
-    _button->setGeometry(adaptedRect);
+
+    int xOffset = (option.rect.width() - _button->width()) / 2;
+    int yOffset = (option.rect.height() - _button->height()) / 2;
+    _button->move(option.rect.left() + xOffset, option.rect.top() + yOffset);
 }
 
 void ButtonDelegate::setMenu(QMenu *menu)

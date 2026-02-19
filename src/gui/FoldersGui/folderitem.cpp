@@ -31,7 +31,7 @@ FolderItem::FolderItem(Folder *folder)
 
     setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 
-    _updater = new FolderItemUpdater(this, nullptr);
+    _updater = new FolderItemUpdater(this);
     updateStatusString();
 }
 
@@ -58,15 +58,18 @@ void FolderItem::setProgress(const ProgressInfo &progress)
         return;
     }
 
-    if (progress.totalSize() == 0)
+    if (progress.totalSize() == 0) {
         // nothing is going to happen so ditch - with vfs this will always be the case?
         return;
+    }
+
     // completed size is literal - meaning if there was nothing to actually sync,
     // total size = 0
     // this can happen if there are no files/folders in a space
     // or of the space is already 100% up to date, so no diffs, or if there is nothing to "move" between server/client (move or delete)
     _totalSize = progress.totalSize();
     _completedSize = progress.completedSize();
+    //_percentComplete = progress.refresh();
     refresh();
 }
 
@@ -80,7 +83,7 @@ QString FolderItem::statusIconName() const
     if (!_folder || !_folder->accountState())
         return {};
     SyncResult status = _folder->syncResult();
-    if (!_folder->accountState()->isConnected()) {
+    if (!_folder->isConnected()) {
         status.setStatus(SyncResult::Status::Offline);
     } else if (_folder->syncPaused() || NetworkInformation::instance()->isBehindCaptivePortal()
         || (NetworkInformation::instance()->isMetered() && ConfigFile().pauseSyncWhenMetered())) {
@@ -94,7 +97,7 @@ QString FolderItem::statusAsString() const
     if (!_folder || !_folder->accountState())
         return {};
 
-    if (!_folder->accountState()->isConnected())
+    if (!_folder->isConnected())
         return tr("Offline");
 
     // this can get out of sorts wrt sync state if we were offline then go on - no sync is ever attempted if the folder is already
@@ -126,7 +129,7 @@ QString FolderItem::statusAsString() const
     case SyncResult::Offline:
         return tr("Offline");
     case SyncResult::NotYetStarted:
-        return tr("About to sync");
+        return tr("Sync pending");
     case SyncResult::SyncRunning: {
         QString completedFormatted = Utility::octetsToString(_completedSize);
         QString totalFormatted = Utility::octetsToString(_totalSize);
@@ -173,15 +176,15 @@ QVariant FolderItem::data(int role) const
     case Qt::DisplayRole:
         return _folder->displayName();
     case Qt::DecorationRole:
-        /* if (_folder && _folder->space() && _folder->space()->image()) {
-             // this is not working but I have no idea why!
-             // the image is not null but won't paint, even in the default impl
-             // so just using the app icon to get the delegate working for now
-             QIcon spaceIcon = _folder->space()->image()->image();
-             if (!spaceIcon.isNull())
-                 return spaceIcon;
-         }*/
-        return Theme::instance()->applicationIcon();
+        if (_folder && _folder->space() && _folder->space()->image()) {
+            // this is not working but I have no idea why!
+            // the image is not null but won't paint, even in the default impl
+            // so just using the app icon to get the delegate working for now
+            QIcon spaceIcon = _folder->space()->image()->image();
+            if (!spaceIcon.isNull())
+                return spaceIcon;
+        }
+        return Resources::getCoreIcon("folder-sync");
     case FolderItemRoles::StatusIconRole:
         return Resources::getCoreIcon(statusIconName());
     case FolderItemRoles::StatusStringRole:
@@ -196,23 +199,8 @@ QVariant FolderItem::data(int role) const
         // everything will be sorted in descending order, multiply the priority by 100 and prefer A over Z by applying a negative factor
         return QVariant::fromValue(
             _folder->sortPriority() * 100 - (_folder->displayName().isEmpty() ? 0 : static_cast<int64_t>(_folder->displayName().at(0).toLower().unicode())));
-        /*   case Roles::Quota: {
-               qint64 used{};
-               qint64 total{};
+        /*
 
-               if (auto *space = f->space()) {
-                   const auto quota = space->drive().getQuota();
-                   if (quota.isValid()) {
-                       used = quota.getUsed();
-                       total = quota.getTotal();
-                   }
-               }
-
-               if (total <= 0) {
-                   return {};
-               }
-               return tr("%1 of %2 used").arg(Utility::octetsToString(used), Utility::octetsToString(total));
-           }
            case Roles::AccessibleDescriptionRole: {
                QStringList desc = {f->displayName(), Utility::enumToDisplayName(f->syncResult().status())};
                desc << getErrors();

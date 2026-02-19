@@ -15,10 +15,11 @@
 
 #include "folder.h"
 #include "folderitem.h"
+#include "resources.h"
 
 namespace OCC {
-FolderItemUpdater::FolderItemUpdater(FolderItem *item, QObject *parent)
-    : QObject{parent}
+FolderItemUpdater::FolderItemUpdater(FolderItem *item)
+    : QObject{nullptr}
     , _item(item)
 {
     if (_item && _item->folder()) {
@@ -37,12 +38,44 @@ void FolderItemUpdater::onFolderChanged()
 
 void FolderItemUpdater::onSyncStateChanged()
 {
-    if (_item->folder() && _item->folder()->syncResult().status() == SyncResult::SyncRunning) {
+    if (!_item->folder())
+        return;
+
+    SyncResult::Status status = _item->folder()->syncResult().status();
+    if (status == SyncResult::SyncRunning) {
         Q_ASSERT(!_progressInfoConnection); // ie it should not be connected already
         _progressInfoConnection = connect(_item->folder(), &Folder::progressUpdate, this, &FolderItemUpdater::onProgressUpdated);
-    } else
+    } else {
         disconnect(_progressInfoConnection);
+    }
+
     _item->refresh();
+
+    if (status == SyncResult::Error || status == SyncResult::Problem || status == SyncResult::SetupError) {
+        QStringList errors = _item->folder()->syncResult().errorStrings();
+
+        if (_item->folder()->syncResult().hasUnresolvedConflicts())
+            errors.append(tr("There are unresolved conflicts."));
+
+        for (const QString &error : std::as_const(errors)) {
+            QIcon errorIcon = Resources::getCoreIcon("states/warning");
+            QStandardItem *errorItem = new QStandardItem(errorIcon, error);
+
+            // just for testing to replace the normal error with something really long - will remove before merge
+            /*      QString longError =
+                      " I think trying to track overall total sizes using progress is just hopeless because a) when stuff is removed sync totals = 0. This means
+               we " "can't update a known total size using these progress values becausethey are never negative, to indicate a removal"; QStandardItem
+               *errorItem = new QStandardItem(errorIcon, longError);
+            */
+
+            errorItem->setData(error, Qt::AccessibleTextRole);
+            _item->appendRow(errorItem);
+        }
+
+    } else if (status == SyncResult::SyncPrepare && _item->hasChildren()) {
+        // I expect this check needs refinement - may want to wait until the sync has actually started before removing previous errors
+        _item->removeRows(0, _item->rowCount());
+    }
 }
 
 
@@ -61,8 +94,12 @@ void FolderItemUpdater::onProgressUpdated(const ProgressInfo &progress)
 
     // I don't think we need to worry about the other states - propagation is the state where progress data seems to be provided, but double check this
     if (progress.status() == ProgressInfo::Propagation) {
-        // if (progress.totalSize() > 0)
-        _item->setProgress(progress);
-    }
+        // slow down the updates just a bit - the default is too incremental
+        if (std::chrono::steady_clock::now() - _lastProgressUpdated > ProgressUpdateTimeout) {
+            _item->setProgress(progress);
+            _lastProgressUpdated = std::chrono::steady_clock::now();
+        }
+    } else
+        _lastProgressUpdated = {};
 }
 }
