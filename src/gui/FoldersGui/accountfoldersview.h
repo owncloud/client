@@ -43,6 +43,7 @@ signals:
 private:
     void buildView();
     void popItemMenu(const QPoint &pos);
+    void refreshMenu();
 
     QTreeView *_treeView = nullptr;
     QLabel *_syncedFolderCountLabel = nullptr;

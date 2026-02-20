@@ -46,35 +46,20 @@ AccountFoldersController::AccountFoldersController(AccountState *state, AccountF
         return;
 
     _accountId = _accountState->account()->uuid();
+
+    buildMenuActions();
+
     FolderModelController *modelController = new FolderModelController(_accountId, this);
     connect(modelController, &FolderModelController::currentFolderChanged, this, &AccountFoldersController::onFolderChanged);
 
     QStandardItemModel *model = modelController->itemModel();
-
-    /*   we should probably simplify to use QStandardItemModel::sort with the sort
-     *   data role on the folder item specialized to do the calc.
-     *
-     *   auto weightedModel = new QSortFilterProxyModel(this);
-       weightedModel->setSourceModel(model);
-       weightedModel->setSortRole(static_cast<int>(FolderStatusModel::Roles::Priority));
-       weightedModel->sort(0, Qt::DescendingOrder);
-
-         _sortModel = weightedModel;
-     */
-
     _view->setItemModels(model, modelController->selectionModel());
 
-    buildMenuActions();
-
     connect(_view, &AccountFoldersView::addFolderTriggered, this, &AccountFoldersController::slotAddFolder);
-    // ui->quickWidget->engine()->addImageProvider(QStringLiteral("space"), new Spaces::SpaceImageProvider(_accountState->account()->spacesManager()));
-    // ui->quickWidget->setOCContext(QUrl(QStringLiteral("qrc:/qt/qml/org/ownCloud/gui/qml/FolderDelegate.qml")), this);
-
 
     FolderMan *folderMan = FolderMan::instance();
     modelController->connectSignals(folderMan);
-    // next step: move the synced folder watching out of folder man and put it in a separate class. this can be used
-    // for updating the synced folder count and for managing the unsynced list in the folder wizard
+
     connect(folderMan, &FolderMan::unsyncedSpaceCountChanged, this, &AccountFoldersController::onUnsyncedSpaceCountChanged);
 }
 
@@ -92,6 +77,9 @@ void AccountFoldersController::onUnsyncedSpaceCountChanged(const QUuid &accountI
 
 void AccountFoldersController::onFolderChanged(OCC::Folder *folder)
 {
+    if (_currentFolder == folder)
+        return;
+
     _currentFolder = folder;
 }
 
@@ -152,10 +140,6 @@ void AccountFoldersController::buildMenuActions()
     itemActions.push_back(_pauseSync);
     connect(_pauseSync, &QAction::triggered, this, &AccountFoldersController::onTogglePauseSync);
 
-    _removeSync = new QAction(tr("Remove folder sync connection"), this);
-    itemActions.push_back(_removeSync);
-    connect(_removeSync, &QAction::triggered, this, &AccountFoldersController::onRemoveSync);
-
     _chooseSync = new QAction(tr("Choose what to sync"), this);
 
     Vfs::Mode mode = VfsPluginManager::instance().bestAvailableVfsMode();
@@ -182,6 +166,10 @@ void AccountFoldersController::buildMenuActions()
         itemActions.push_back(_chooseSync);
         connect(_chooseSync, &QAction::triggered, this, &AccountFoldersController::onChooseSync);
     }
+
+    _removeSync = new QAction(tr("Remove folder sync connection"), this);
+    itemActions.push_back(_removeSync);
+    connect(_removeSync, &QAction::triggered, this, &AccountFoldersController::onRemoveSync);
 
     connect(_view, &AccountFoldersView::requestActionsUpdate, this, &AccountFoldersController::updateActions);
     _view->setFolderActions(itemActions);
@@ -229,18 +217,20 @@ void AccountFoldersController::updateActions()
     // obvs we don't want to try to access values that aren't there
     // furthermore, we do need to disable if the current folder selection
     // is empty so it's actually a key part of the evaluation for action state here
+    // so doing a general if(!_curentFolder) return; handling is not correct
     _showInSystemFolder->setEnabled(_currentFolder && QFileInfo::exists(_currentFolder->path()));
 
     if (_showInBrowser)
-        _showInBrowser->setEnabled(_currentFolder && _currentFolder->isAvailable());
+        _showInBrowser->setEnabled(_currentFolder && _currentFolder->isConnected() && _currentFolder->isAvailable());
 
     _forceSync->setEnabled(_currentFolder && _currentFolder->canSync());
     _forceSync->setText(_currentFolder && _currentFolder->isSyncRunning() ? tr("Restart sync") : tr("Force sync now"));
 
     _pauseSync->setText(_currentFolder && _currentFolder->syncPaused() ? tr("Resume sync") : tr("Pause sync"));
-    // is this enough? I think we need to keep it enabled even if sync is running so the user can effectively cancel it + pause. as who knows. maybe
-    // they made a mistake when adding the folder or whatever
-    _pauseSync->setEnabled(_currentFolder && _currentFolder->isAvailable());
+    // this is a bit nuanced: we want to enable pause if the folder is disconnected as this is always a safe operation. if it *is* connected
+    // we only want to enabled the action if the folder is available. If the folder is not available pause makes no sense as there is nothing to sync to
+    // as the space is missing, server side.
+    _pauseSync->setEnabled(_currentFolder && (!_currentFolder->isConnected() || _currentFolder->isAvailable()));
 
     _removeSync->setEnabled(_currentFolder);
 
@@ -253,7 +243,7 @@ void AccountFoldersController::updateActions()
     }
 
     if (_chooseSync)
-        _chooseSync->setEnabled(_currentFolder && _currentFolder->isAvailable() && !_currentFolder->virtualFilesEnabled());
+        _chooseSync->setEnabled(_currentFolder && _currentFolder->isConnected() && _currentFolder->isAvailable() && !_currentFolder->virtualFilesEnabled());
 }
 
 void OCC::AccountFoldersController::onShowInSystemFolder()

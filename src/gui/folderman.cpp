@@ -70,7 +70,7 @@ void TrayOverallStatusResult::addResult(Folder *f)
         ? SyncResult::Paused
         : f->syncResult().status();
     // in case the linked account is not connected -> we are offline
-    if (!f->accountState()->isConnected()) {
+    if (!f->isConnected()) {
         status = SyncResult::Offline;
     }
     // undefined state means we are in trouble
@@ -245,6 +245,10 @@ bool FolderMan::addFoldersFromConfigByAccount(QSettings &settings, AccountState 
             continue;
         }
 
+        // this is checked before the spaces manager has loaded the spaces so it will always be null.
+        // this is a bit odd for now as in the gui it shows the unavailable state until after login. I think
+        // in most cases this will be ok as it's not a common workflow, we just have it on demo
+        // if we don't set this here a sync will be attempted, then it just shows as failed.
         folder->setAvailable(folder->space() != nullptr);
 
         settings.endGroup(); // folderAlias
@@ -367,7 +371,7 @@ void FolderMan::onSpacesAdded(const QUuid &accountId, QList<GraphApi::Space *> s
     }
 
     if (Theme::instance()->syncNewlyDiscoveredSpaces()) {
-        // Refactoring todo: why is this scheduled for "later" on the main event loop? aren't we already there?
+        // Refactoring todo: why was this scheduled for "later" on the main event loop? aren't we already there?
         // where does this slot run if not on the main thread?
         // what needs to be processed "before" this loading routine that requires scheduling it for later?
         // if anything we should consider running the loading routines in a worker thread to avoid *blocking* the main

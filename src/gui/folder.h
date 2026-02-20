@@ -260,6 +260,8 @@ public:
     bool isAvailable() const { return _available; }
     void setAvailable(bool available);
 
+    // is the folder connected (via the accountState)
+    bool isConnected();
     /**
      * Returns true when the folder may sync.
      */
@@ -369,6 +371,7 @@ Q_SIGNALS:
     void vfsModeChanged(Folder *f, Vfs::Mode newMode);
     void displayNameChanged();
     void imageChanged(); // probably part of space changed
+    void progressUpdate(const ProgressInfo &progress);
 
 
     /**
