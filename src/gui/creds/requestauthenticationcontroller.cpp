@@ -21,6 +21,8 @@
 #include "accountmodalwidget.h"
 #include "settingsdialog.h"
 
+#include <config/systemconfig.h>
+
 namespace OCC {
 
 /**
@@ -58,8 +60,9 @@ void RequestAuthenticationController::startAuthentication(Account *account)
         delete _oauth;
         _oauth = nullptr;
     }
+    SystemConfig systemConfig;
     _account = account;
-    _oauth = new AccountBasedOAuth(_account, this);
+    _oauth = new AccountBasedOAuth(_account, systemConfig.openIdConfig(), this);
     connect(_oauth, &OAuth::authorisationLinkChanged, this, &RequestAuthenticationController::authUrlReady);
     connect(_oauth, &OAuth::result, this, &RequestAuthenticationController::handleOAuthResult);
     if (_widget && _modalWidget == nullptr) { // first show of the gui

@@ -14,6 +14,7 @@
 #include "urlpagecontroller.h"
 
 #include "accessmanager.h"
+#include "config/systemconfig.h"
 #include "networkadapters/determineauthtypeadapter.h"
 #include "networkadapters/discoverwebfingerserviceadapter.h"
 #include "networkadapters/resolveurladapter.h"
@@ -34,10 +35,21 @@ UrlPageController::UrlPageController(QWizardPage *page, AccessManager *accessMan
 {
     buildPage();
 
-    QString themeUrl = Theme::instance()->overrideServerUrlV2();
-    if (_urlField && !themeUrl.isEmpty()) {
-        setUrl(themeUrl);
-        // The theme provides the url, don't let the user change it!
+    if (_urlField == nullptr) {
+        return;
+    }
+
+    SystemConfig systemConfig;
+    QString serverUrl = systemConfig.serverUrl();
+    // no server url was given by any means, so the user has to provide one
+    if (serverUrl.isEmpty()) {
+        return;
+    }
+    setUrl(serverUrl);
+
+    // The system admin provides the url, don't let the user change it!
+    bool allowServerUrlChange = systemConfig.allowServerUrlChange();
+    if (!allowServerUrlChange) {
         _urlField->setEnabled(false);
         _instructionLabel->setText(tr("Your web browser will be opened to complete sign in."));
     }
