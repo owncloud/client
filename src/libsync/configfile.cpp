@@ -59,7 +59,6 @@ const QString optionalDesktopNotificationsC()
 {
     return QStringLiteral("optionalDesktopNotifications");
 }
-const QString skipUpdateCheckC() { return QStringLiteral("skipUpdateCheck"); }
 const QString updateCheckIntervalC() { return QStringLiteral("updateCheckInterval"); }
 const QString uiLanguageC() { return QStringLiteral("uiLanguage"); }
 const QString geometryC() { return QStringLiteral("geometry"); }
@@ -442,31 +441,6 @@ chrono::milliseconds ConfigFile::updateCheckInterval(const QString &connection) 
         interval = minInterval;
     }
     return interval;
-}
-
-bool ConfigFile::skipUpdateCheck() const
-{
-    if (_systemConfig.skipUpdateCheck()) {
-        return true;
-    }
-    auto con = defaultConnection();
-
-    QVariant fallback = getValue(skipUpdateCheckC(), con, false);
-    QVariant value = getValue(skipUpdateCheckC(), QString(), fallback);
-    return value.toBool();
-}
-
-void ConfigFile::setSkipUpdateCheck(bool skip, const QString &connection)
-{
-    QString con(connection);
-    if (connection.isEmpty())
-        con = defaultConnection();
-
-    auto settings = makeQSettings();
-    settings.beginGroup(con);
-
-    settings.setValue(skipUpdateCheckC(), QVariant(skip));
-    settings.sync();
 }
 
 QString ConfigFile::uiLanguage() const

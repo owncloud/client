@@ -15,7 +15,6 @@
 #pragma once
 
 #include "owncloudlib.h"
-#include "config/systemconfig.h"
 
 #include <QNetworkProxy>
 #include <QSettings>
@@ -145,9 +144,6 @@ public:
     // how often the check about new versions runs
     std::chrono::milliseconds updateCheckInterval(const QString &connection = QString()) const;
 
-    bool skipUpdateCheck() const;
-    void setSkipUpdateCheck(bool, const QString &);
-
     QString uiLanguage() const;
     void setUiLanguage(const QString &uiLanguage);
 
@@ -176,7 +172,6 @@ private:
     void setValue(const QString &key, const QVariant &value);
 
 private:
-    SystemConfig _systemConfig;
     typedef QSharedPointer<AbstractCredentials> SharedCreds;
 
     static QString _oCVersion;

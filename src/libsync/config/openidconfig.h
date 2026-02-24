@@ -27,6 +27,8 @@ public:
     QString scopes() const;
     QString prompt() const;
 
+    bool isValid() const;
+
 private:
     QString _clientId;
     QString _clientSecret;

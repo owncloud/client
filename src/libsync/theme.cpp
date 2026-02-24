@@ -562,6 +562,11 @@ bool Theme::moveToTrashDefaultValue() const
     return false;
 }
 
+bool Theme::allowSystemConfigOverrides() const
+{
+    return false;
+}
+
 bool Theme::syncNewlyDiscoveredSpaces() const
 {
     return false;

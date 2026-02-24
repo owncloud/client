@@ -38,4 +38,9 @@ QString OpenIdConfig::prompt() const {
     return _prompt;
 }
 
+bool OpenIdConfig::isValid() const
+{
+    return !_clientId.isEmpty() && !_ports.isEmpty();
+}
+
 }

@@ -103,6 +103,9 @@ public:
      */
     static QString configPath(const QOperatingSystemVersion::OSType& os, const Theme& theme);
 
+private:
+    void loadOpenIdConfig(const QSettings &system);
+
 private: // System settings keys
     // Setup related keys
     inline static const QString SetupAllowServerUrlChangeKey = QStringLiteral("Setup/AllowServerUrlChange");
@@ -122,4 +125,5 @@ private:
     bool _skipUpdateCheck;
     OpenIdConfig _openIdConfig;
 };
-}
+
+} // OCC namespace

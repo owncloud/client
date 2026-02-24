@@ -482,6 +482,12 @@ public:
     virtual bool moveToTrashDefaultValue() const;
 
     /**
+     * @brief Allow the system configuration to override theme values.
+     * @default false
+     */
+    virtual bool allowSystemConfigOverrides() const;
+
+    /**
      * @brief Automatically add sync connections for newly discovered Spaces.
      *
      * Default: false
