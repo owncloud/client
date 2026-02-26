@@ -94,18 +94,18 @@ QString SystemConfig::configPath(const QOperatingSystemVersion::OSType& os, cons
     if (os == QOperatingSystemVersion::Windows) {
         // We use HKEY_LOCAL_MACHINE\Software\Policies since this is the location where GPO operates.
         // Note: use of uppercase/camelcase is common.
-        return QStringLiteral("HKEY_LOCAL_MACHINE\\Software\\Policies\\%1\\%2").arg(theme.vendor(), theme.appNameGUI());
+        return QString("HKEY_LOCAL_MACHINE\\Software\\Policies\\%1\\%2").arg(theme.vendor(), theme.appNameGUI());
     }
 
     if (os == QOperatingSystemVersion::MacOS) {
         // We use a subfolder to have one common location where in the future more files can be stored (like icons, images and such)
         // ini is used on macOS in contrary to plist because they are easier to maintain.
         // Note: rev-domain notation and lowercase is typically used.
-        return QStringLiteral("/Library/Preferences/%1/%2.ini").arg(theme.orgDomainName(), theme.appName());
+        return QString("/Library/Preferences/%1/%2.ini").arg(theme.orgDomainName(), theme.appName());
     }
 
     // On Unix style systems, the application name in lowercase is typically used.
-    return QStringLiteral("/etc/%1/%1.ini").arg(theme.appName());
+    return QString("/etc/%1/%1.ini").arg(theme.appName());
 }
 
 bool SystemConfig::allowServerUrlChange() const

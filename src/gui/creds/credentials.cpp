@@ -16,7 +16,6 @@
 #include "accessmanager.h"
 #include "account.h"
 #include "config/systemconfig.h"
-#include "configfile.h"
 #include "creds/credentialmanager.h"
 #include "oauth.h"
 #include "requestauthenticationcontroller.h"
