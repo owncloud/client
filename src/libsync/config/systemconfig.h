@@ -104,7 +104,8 @@ public:
     static QString configPath(const QOperatingSystemVersion::OSType& os, const Theme& theme);
 
 private:
-    void loadOpenIdConfig(const QSettings &system);
+    static OpenIdConfig loadOpenIdConfigFromTheme();
+    static OpenIdConfig loadOpenIdConfigFromSystemConfig(const QSettings &system);
 
 private: // System settings keys
     // Setup related keys

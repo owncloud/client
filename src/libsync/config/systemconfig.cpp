@@ -19,74 +19,72 @@ namespace chrono = std::chrono;
 
 SystemConfig::SystemConfig()
 {
-    const bool allowSystemConfigOverrides = Theme::instance()->allowSystemConfigOverrides();
-    auto format = Utility::isWindows() ? QSettings::NativeFormat : QSettings::IniFormat;
-    QSettings system(configPath(QOperatingSystemVersion::currentType(), *Theme::instance()), format);
+    _serverUrl = Theme::instance()->overrideServerUrlV2();
+    // If a theme provides a hardcoded URL, do not allow for URL change.
+    _allowServerURLChange = Theme::instance()->overrideServerUrlV2().isEmpty();
+    _skipUpdateCheck = false;
+    _openIdConfig = loadOpenIdConfigFromTheme();
 
-    if (allowSystemConfigOverrides && system.contains(SetupServerUrlKey)) {
-        _serverUrl = system.value(SetupServerUrlKey).toString();
-    } else {
-        _serverUrl = Theme::instance()->overrideServerUrlV2();
-    }
-    if (allowSystemConfigOverrides && system.contains(SetupAllowServerUrlChangeKey)) {
+    if (!Theme::instance()->allowSystemConfigOverrides())
+        return;
+
+    // Load all overrides
+
+    auto format = Utility::isWindows() ? QSettings::NativeFormat : QSettings::IniFormat;
+    const QSettings system(configPath(QOperatingSystemVersion::currentType(), *Theme::instance()), format);
+
+    _serverUrl = system.value(SetupServerUrlKey, QString()).toString();
+    if (system.contains(SetupAllowServerUrlChangeKey)) {
         _allowServerURLChange = system.value(SetupAllowServerUrlChangeKey).toBool();
-    } else {
-        // If a theme provides a hardcoded URL, do not allow for URL change.
-        _allowServerURLChange = Theme::instance()->overrideServerUrlV2().isEmpty();
     }
+
     _skipUpdateCheck = system.value(UpdaterSkipUpdateCheckKey, false).toBool();
 
-    loadOpenIdConfig(system);
+    OpenIdConfig systemConfig = loadOpenIdConfigFromSystemConfig(system);
+    if (systemConfig.isValid()) {
+        qCInfo(lcSystemConfig()) << "Using OpenID config from system config";
+        _openIdConfig = systemConfig;
+    }
 }
 
-void SystemConfig::loadOpenIdConfig(const QSettings &system)
+OpenIdConfig SystemConfig::loadOpenIdConfigFromTheme()
 {
-    QString clientId;
-    QString clientSecret;
+    Theme *theme = Theme::instance();
+
+    QString clientId = theme->oauthClientId();
+    QString clientSecret = theme->oauthClientSecret();
+    QVector<quint16> ports = theme->oauthPorts();
+    QString scopes = theme->openIdConnectScopes();
+    QString prompt = theme->openIdConnectPrompt();
+
+    OpenIdConfig cfg(clientId, clientSecret, ports, scopes, prompt);
+    OC_ASSERT(cfg.isValid());
+
+    return cfg;
+}
+
+OpenIdConfig SystemConfig::loadOpenIdConfigFromSystemConfig(const QSettings &system)
+{
+    QString clientId = system.value(OidcClientIdKey, QString()).toString();
+    QString clientSecret = system.value(OidcClientSecretKey, QString()).toString();
+    QString scopes = system.value(OidcScopesKey, QString()).toString();
+    QString prompt = system.value(OidcPortsKey, QString()).toString();
+
     QVector<quint16> ports;
-    QString scopes;
-    QString prompt;
-    auto theme = Theme::instance();
-
-    if (theme->allowSystemConfigOverrides()) {
-        if (system.contains(OidcClientIdKey) || system.contains(OidcClientSecretKey) || system.contains(OidcPortsKey) || system.contains(OidcScopesKey)
-            || system.contains(OidcPromptKey)) {
-            // Load *all* settings from the system config.
-            // When done, check if the config is valid. If it is not valid, fall back to the theme.
-            clientId = system.value(OidcClientIdKey).toString();
-            clientSecret = system.value(OidcClientSecretKey, QString()).toString();
-
-            if (system.contains(OidcPortsKey)) {
-                QVariant portsVar = system.value(OidcPortsKey).toString();
-                const auto parts = portsVar.toString().split(QLatin1Char(','), Qt::SkipEmptyParts);
-                for (const QString &p : parts) {
-                    bool ok = false;
-                    const quint16 val = static_cast<quint16>(p.trimmed().toUInt(&ok));
-                    if (ok) {
-                        ports.append(val);
-                    }
-                }
-            } else {
-                ports.append(0); // 0 means any port
-            }
-
-            scopes = system.value(OidcScopesKey, QString()).toString();
-            prompt = system.value(OidcPortsKey, QString()).toString();
-            _openIdConfig = OpenIdConfig(clientId, clientSecret, ports, scopes, prompt);
-            if (_openIdConfig.isValid())
-                return;
-            else
-                qCWarning(lcSystemConfig) << "Invalid OpenIDConnect configuration in system config, falling back to defaults";
+    QVariant portsVar = system.value(OidcPortsKey, QString()).toString();
+    const auto parts = portsVar.toString().split(QLatin1Char(','), Qt::SkipEmptyParts);
+    for (const QString &p : parts) {
+        bool ok = false;
+        const quint16 val = static_cast<quint16>(p.trimmed().toUInt(&ok));
+        if (ok) {
+            ports.append(val);
         }
     }
 
-    // Load *all* settings from the theme.
-    clientId = theme->oauthClientId();
-    clientSecret = theme->oauthClientSecret();
-    ports = theme->oauthPorts();
-    scopes = theme->openIdConnectScopes();
-    prompt = theme->openIdConnectPrompt();
-    _openIdConfig = OpenIdConfig(clientId, clientSecret, ports, scopes, prompt);
+    if (ports.isEmpty())
+        ports.append(0); // 0 means any port
+
+    return OpenIdConfig(clientId, clientSecret, ports, scopes, prompt);
 }
 
 QString SystemConfig::configPath(const QOperatingSystemVersion::OSType& os, const Theme& theme)
