@@ -217,13 +217,13 @@ File synchronisation desktop utility.</translation>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="106"/>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="122"/>
         <source>Unavailable: the space is no longer available on the server</source>
-        <translation type="unfinished"/>
+        <translation>Unavailable: the space is no longer available on the server</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="110"/>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="128"/>
         <source>Sync paused</source>
-        <translation type="unfinished"/>
+        <translation>Sync paused</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="126"/>
@@ -233,7 +233,7 @@ File synchronisation desktop utility.</translation>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="132"/>
         <source>Sync pending</source>
-        <translation type="unfinished"/>
+        <translation>Sync pending</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="137"/>
@@ -1462,12 +1462,12 @@ This means that the synchronisation client might not upload local changes immedi
     <message>
         <location filename="../src/gui/FoldersGui/foldermodelcontroller.cpp" line="102"/>
         <source>Folder options</source>
-        <translation type="unfinished"/>
+        <translation>Folder options</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/foldermodelcontroller.cpp" line="103"/>
         <source>Menu button with folder options. Hit the space key to pop the folder options menu</source>
-        <translation type="unfinished"/>
+        <translation>Menu button with folder options. Hit the space key to pop the folder options menu</translation>
     </message>
 </context>
 <context>

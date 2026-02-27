@@ -233,7 +233,7 @@ Mjet njëkohësimi kartelash për desktop.</translation>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="132"/>
         <source>Sync pending</source>
-        <translation type="unfinished"/>
+        <translation>Njëkohësim pezull</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="137"/>
