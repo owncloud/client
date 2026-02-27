@@ -16,6 +16,7 @@
 #include "application.h"
 #include "common/utility.h"
 #include "common/version.h"
+#include "config/systemconfig.h"
 #include "configfile.h"
 #include "theme.h"
 
@@ -39,6 +40,7 @@ namespace OCC {
 
 UpdaterScheduler::UpdaterScheduler(Application *app, QObject *parent)
     : QObject(parent)
+    , _skipUpdateCheck(SystemConfig().skipUpdateCheck())
 {
     connect(&_updateCheckTimer, &QTimer::timeout,
         this, &UpdaterScheduler::slotTimerFired);
@@ -85,8 +87,8 @@ void UpdaterScheduler::slotTimerFired()
     }
 
     // consider the skipUpdateCheck flag in the config.
-    if (cfg.skipUpdateCheck()) {
-        qCInfo(lcUpdater) << "Skipping update check because of config file";
+    if (_skipUpdateCheck) {
+        qCInfo(lcUpdater) << "Skipping update check because of system config";
         return;
     }
 
