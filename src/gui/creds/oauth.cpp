@@ -15,6 +15,7 @@
 #include "oauth.h"
 
 #include "accessmanager.h"
+#include "config/systemconfig.h"
 #include "creds/credentialssupport.h"
 #include "gui/networkadapters/userinfoadapter.h"
 #include "libsync/creds/credentialmanager.h"
@@ -42,12 +43,13 @@ namespace {
 
 const QString wellKnownPathC = QStringLiteral("/.well-known/openid-configuration");
 
-auto defaultOauthPromptValue()
+OAuth::PromptValuesSupportedFlags defaultOauthPromptValue(const OpenIdConfig& config)
 {
-    static const auto promptValue = [] {
+    static const auto promptValue = [config] {
+        auto prompt = config.prompt();
         OAuth::PromptValuesSupportedFlags out = OAuth::PromptValuesSupported::none;
         // convert the legacy openIdConnectPrompt() to QFlags
-        for (const auto &x : Theme::instance()->openIdConnectPrompt().split(QLatin1Char(' '))) {
+        for (const auto &x : prompt.split(QLatin1Char(' '))) {
             out |= Utility::stringToEnum<OAuth::PromptValuesSupported>(x);
         }
         return out;
@@ -77,15 +79,14 @@ QVariant getRequiredField(const QVariantMap &json, const QString &s, QString *er
 }
 }
 
-OAuth::OAuth(const QUrl &serverUrl, const QString &davUser, QNetworkAccessManager *networkAccessManager, QObject *parent)
+OAuth::OAuth(const QUrl &serverUrl, const QString &davUser, const OpenIdConfig& openIdConfig, QNetworkAccessManager *networkAccessManager, QObject *parent)
     : QObject(parent)
     , _serverUrl(serverUrl)
     , _davUser(davUser)
+    , _openIdConfig(openIdConfig)
     , _networkAccessManager(networkAccessManager)
-    , _clientId(Theme::instance()->oauthClientId())
-    , _clientSecret(Theme::instance()->oauthClientSecret())
     , _redirectUrl(QString("http://localhost"))
-    , _supportedPromptValues(defaultOauthPromptValue())
+    , _supportedPromptValues(defaultOauthPromptValue(openIdConfig))
 {
 }
 
@@ -96,8 +97,7 @@ void OAuth::startAuthentication()
     qCDebug(lcOauth) << "starting authentication";
 
     // Listen on the socket to get a port which will be used in the redirect_uri
-
-    QList<quint16> ports = Theme::instance()->oauthPorts();
+    QList<quint16> ports = _openIdConfig.ports();
     for (const auto port : std::as_const(ports)) {
         if (_server.listen(QHostAddress::LocalHost, port)) {
             break;
@@ -326,17 +326,17 @@ QNetworkReply *OAuth::postTokenRequest(QUrlQuery &&queryItems)
     req.setTransferTimeout(defaultTimeoutMs());
     switch (_endpointAuthMethod) {
     case TokenEndpointAuthMethods::client_secret_basic:
-        req.setRawHeader("Authorization", "Basic " + QStringLiteral("%1:%2").arg(_clientId, _clientSecret).toUtf8().toBase64());
+        req.setRawHeader("Authorization", "Basic " + QStringLiteral("%1:%2").arg(_openIdConfig.clientId(), _openIdConfig.clientSecret()).toUtf8().toBase64());
         break;
     case TokenEndpointAuthMethods::client_secret_post:
-        queryItems.addQueryItem(QStringLiteral("client_id"), _clientId);
-        queryItems.addQueryItem(QStringLiteral("client_secret"), _clientSecret);
+        queryItems.addQueryItem(QStringLiteral("client_id"), _openIdConfig.clientId());
+        queryItems.addQueryItem(QStringLiteral("client_secret"), _openIdConfig.clientSecret());
         break;
     }
     req.setHeader(QNetworkRequest::ContentTypeHeader, QStringLiteral("application/x-www-form-urlencoded; charset=UTF-8"));
     req.setAttribute(DontAddCredentialsAttribute, true);
 
-    queryItems.addQueryItem(QStringLiteral("scope"), QString::fromUtf8(QUrl::toPercentEncoding(Theme::instance()->openIdConnectScopes())));
+    queryItems.addQueryItem(QStringLiteral("scope"), QString::fromUtf8(QUrl::toPercentEncoding(_openIdConfig.scopes())));
     req.setUrl(requestTokenUrl);
     return _networkAccessManager->post(req, queryItems.toString(QUrl::FullyEncoded).toUtf8());
 }
@@ -360,10 +360,10 @@ QUrl OAuth::authorisationLink() const
 
     const QByteArray code_challenge =
         QCryptographicHash::hash(_pkceCodeVerifier, QCryptographicHash::Sha256).toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals);
-    QUrlQuery query{{QStringLiteral("response_type"), QStringLiteral("code")}, {QStringLiteral("client_id"), _clientId},
+    QUrlQuery query{{QStringLiteral("response_type"), QStringLiteral("code")}, {QStringLiteral("client_id"), _openIdConfig.clientId()},
         {QStringLiteral("redirect_uri"), QStringLiteral("%1:%2").arg(_redirectUrl, QString::number(_server.serverPort()))},
         {QStringLiteral("code_challenge"), QString::fromLatin1(code_challenge)}, {QStringLiteral("code_challenge_method"), QStringLiteral("S256")},
-        {QStringLiteral("scope"), QString::fromUtf8(QUrl::toPercentEncoding(Theme::instance()->openIdConnectScopes()))},
+        {QStringLiteral("scope"), QString::fromUtf8(QUrl::toPercentEncoding(_openIdConfig.scopes()))},
         {QStringLiteral("prompt"), QString::fromUtf8(QUrl::toPercentEncoding(toString(_supportedPromptValues)))},
         {QStringLiteral("state"), QString::fromUtf8(_state)}};
 
@@ -416,8 +416,8 @@ void OAuth::fetchWellKnown()
                 _supportedPromptValues = PromptValuesSupported::none;
                 for (const auto &x : promptValuesSupported) {
                     const auto flag = Utility::stringToEnum<PromptValuesSupported>(x.toString());
-                    // only use flags present in Theme::instance()->openIdConnectPrompt()
-                    if (flag & defaultOauthPromptValue())
+                    // only use flags present in _openIdConfig->openIdConnectPrompt()
+                    if (flag & defaultOauthPromptValue(_openIdConfig))
                         _supportedPromptValues |= flag;
                 }
             }
@@ -478,8 +478,8 @@ void OAuth::openBrowser()
 // todo: I was contemplating how we can make sure the passed account isn't null before we use it
 // to seed the OAuth ctr, and really, I'm not sure this should be a subclass of oauth in the first place. Instead it could simply use an
 // oauth instance to complete the tasks it can't do itself -> this could possibly be a "has a" not an "is a" impl
-AccountBasedOAuth::AccountBasedOAuth(Account *account, QObject *parent)
-    : OAuth(account->url(), account->davUser(), account->accessManager(), parent)
+AccountBasedOAuth::AccountBasedOAuth(Account *account, const OpenIdConfig& openIdConfig, QObject *parent)
+    : OAuth(account->url(), account->davUser(), openIdConfig, account->accessManager(), parent)
     , _account(account)
 {
 }

@@ -89,6 +89,7 @@ private Q_SLOTS:
     void slotTimerFired();
 
 private:
+    const bool skipUpdateCheck;
     QTimer _updateCheckTimer; /** Timer for the regular update check. */
 
     // make sure we are going to show only one of them at once

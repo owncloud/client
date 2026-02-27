@@ -32,5 +32,6 @@ public:
     QIcon wizardHeaderLogo() const override;
     QIcon aboutIcon() const override;
     bool moveToTrashDefaultValue() const override;
+    bool allowSystemConfigOverrides() const override;
 };
 }

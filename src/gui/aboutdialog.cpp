@@ -20,6 +20,7 @@
 #include <QMessageBox>
 
 #ifdef WITH_AUTO_UPDATER
+#include "config/systemconfig.h"
 #include "libsync/configfile.h"
 #include "updater/ocupdater.h"
 #ifdef Q_OS_MAC
@@ -80,7 +81,9 @@ void AboutDialog::setupUpdaterWidget()
         }
     }
 
-    if (!ConfigFile().skipUpdateCheck() && Updater::instance()) {
+    ConfigFile().makeQSettings().remove("skipUpdateCheck"); // remove old config key
+
+    if (!SystemConfig().skipUpdateCheck() && Updater::instance()) {
         // Note: the sparkle-updater is not an OCUpdater
         if (auto *ocupdater = qobject_cast<OCUpdater *>(Updater::instance())) {
             auto updateInfo = [ocupdater, this] {

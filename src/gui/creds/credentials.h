@@ -94,6 +94,7 @@ protected:
 
     QString _fetchErrorString;
     bool _ready = false;
+    const OpenIdConfig _openIdConfig;
     int _tokenRefreshRetriesCount = 0;
 
     QPointer<AccountBasedOAuth> _oAuthJob;
