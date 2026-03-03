@@ -177,7 +177,7 @@ jobs:
         Copy-Item "${env:GITHUB_WORKSPACE}/.craft.shelf" "${env:GITHUB_WORKSPACE}/binaries/"
 
     - name: Upload artifacts
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: ${{ matrix.name }}
         path: ${{ github.workspace }}/binaries/*
