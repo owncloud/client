@@ -83,7 +83,7 @@ void AboutDialog::setupUpdaterWidget()
 
     ConfigFile().makeQSettings().remove("skipUpdateCheck"); // remove old config key
 
-    if (!SystemConfig().skipUpdateCheck() && Updater::instance()) {
+    if (!AppConfig().skipUpdateCheck() && Updater::instance()) {
         // Note: the sparkle-updater is not an OCUpdater
         if (auto *ocupdater = qobject_cast<OCUpdater *>(Updater::instance())) {
             auto updateInfo = [ocupdater, this] {

@@ -40,7 +40,7 @@ namespace OCC {
 
 UpdaterScheduler::UpdaterScheduler(Application *app, QObject *parent)
     : QObject(parent)
-    , _skipUpdateCheck(SystemConfig().skipUpdateCheck())
+    , _skipUpdateCheck(AppConfig().skipUpdateCheck())
 {
     connect(&_updateCheckTimer, &QTimer::timeout,
         this, &UpdaterScheduler::slotTimerFired);
