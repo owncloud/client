@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 // SPDX-FileCopyrightText: 2026 Thomas Müller <thomas.mueller@tmit.eu>
 
-#include "systemconfig.h"
+#include "appconfig.h"
 
 #include "../theme.h"
 #include "common/utility.h"
@@ -17,7 +17,7 @@ Q_LOGGING_CATEGORY(lcSystemConfig, "sync.systemconfig", QtInfoMsg)
 
 namespace chrono = std::chrono;
 
-SystemConfig::SystemConfig()
+AppConfig::AppConfig()
 {
     _serverUrl = Theme::instance()->overrideServerUrlV2();
     // If a theme provides a hardcoded URL, do not allow for URL change.
@@ -47,7 +47,7 @@ SystemConfig::SystemConfig()
     }
 }
 
-OpenIdConfig SystemConfig::loadOpenIdConfigFromTheme()
+OpenIdConfig AppConfig::loadOpenIdConfigFromTheme()
 {
     Theme *theme = Theme::instance();
 
@@ -63,7 +63,7 @@ OpenIdConfig SystemConfig::loadOpenIdConfigFromTheme()
     return cfg;
 }
 
-OpenIdConfig SystemConfig::loadOpenIdConfigFromSystemConfig(const QSettings &system)
+OpenIdConfig AppConfig::loadOpenIdConfigFromSystemConfig(const QSettings &system)
 {
     QString clientId = system.value(OidcClientIdKey, QString()).toString();
     QString clientSecret = system.value(OidcClientSecretKey, QString()).toString();
@@ -87,7 +87,7 @@ OpenIdConfig SystemConfig::loadOpenIdConfigFromSystemConfig(const QSettings &sys
     return OpenIdConfig(clientId, clientSecret, ports, scopes, prompt);
 }
 
-QString SystemConfig::configPath(const QOperatingSystemVersion::OSType& os, const Theme& theme)
+QString AppConfig::configPath(const QOperatingSystemVersion::OSType& os, const Theme& theme)
 {
     // Important: these paths conform to how names typically work on the systems on which they are used. This includes usage of upper-/lowercase.
 
@@ -108,22 +108,22 @@ QString SystemConfig::configPath(const QOperatingSystemVersion::OSType& os, cons
     return QString("/etc/%1/%1.ini").arg(theme.appName());
 }
 
-bool SystemConfig::allowServerUrlChange() const
+bool AppConfig::allowServerUrlChange() const
 {
     return _allowServerURLChange;
 }
 
-QString SystemConfig::serverUrl() const
+QString AppConfig::serverUrl() const
 {
     return _serverUrl;
 }
 
-bool SystemConfig::skipUpdateCheck() const
+bool AppConfig::skipUpdateCheck() const
 {
     return _skipUpdateCheck;
 }
 
-OpenIdConfig SystemConfig::openIdConfig() const
+OpenIdConfig AppConfig::openIdConfig() const
 {
     return _openIdConfig;
 }

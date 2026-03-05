@@ -14,7 +14,7 @@
 #include "urlpagecontroller.h"
 
 #include "accessmanager.h"
-#include "config/systemconfig.h"
+#include "config/appconfig.h"
 #include "networkadapters/determineauthtypeadapter.h"
 #include "networkadapters/discoverwebfingerserviceadapter.h"
 #include "networkadapters/resolveurladapter.h"
@@ -39,7 +39,7 @@ UrlPageController::UrlPageController(QWizardPage *page, AccessManager *accessMan
         return;
     }
 
-    SystemConfig systemConfig;
+    AppConfig systemConfig;
     QString serverUrl = systemConfig.serverUrl();
     // no server url was given by any means, so the user has to provide one
     if (serverUrl.isEmpty()) {

@@ -15,7 +15,7 @@
 
 #include "accessmanager.h"
 #include "account.h"
-#include "config/systemconfig.h"
+#include "config/appconfig.h"
 #include "creds/credentialmanager.h"
 #include "oauth.h"
 #include "requestauthenticationcontroller.h"
@@ -85,7 +85,7 @@ Credentials::Credentials(const QString &token, const QString &refreshToken, Acco
     , _accessToken(token)
     , _refreshToken(refreshToken)
     , _ready(false)
-    , _openIdConfig(SystemConfig().openIdConfig())
+    , _openIdConfig(AppConfig().openIdConfig())
 {
     if (!token.isEmpty() && !refreshToken.isEmpty())
         _ready = true;

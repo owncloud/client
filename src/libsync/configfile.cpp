@@ -14,17 +14,14 @@
 
 #include "common/asserts.h"
 #include "common/utility.h"
-#include "common/version.h"
 
-#include "config/systemconfig.h"
+#include "config/appconfig.h"
 #ifdef Q_OS_WIN
 #include "common/utility_win.h"
 #endif
 #include "configfile.h"
 #include "logger.h"
 #include "theme.h"
-
-#include "creds/abstractcredentials.h"
 
 #include "csync_exclude.h"
 

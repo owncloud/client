@@ -21,7 +21,7 @@
 #include "accountmodalwidget.h"
 #include "settingsdialog.h"
 
-#include <config/systemconfig.h>
+#include <config/appconfig.h>
 
 namespace OCC {
 
@@ -60,7 +60,7 @@ void RequestAuthenticationController::startAuthentication(Account *account)
         delete _oauth;
         _oauth = nullptr;
     }
-    SystemConfig systemConfig;
+    AppConfig systemConfig;
     _account = account;
     _oauth = new AccountBasedOAuth(_account, systemConfig.openIdConfig(), this);
     connect(_oauth, &OAuth::authorisationLinkChanged, this, &RequestAuthenticationController::authUrlReady);

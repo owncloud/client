@@ -52,7 +52,7 @@ set(libsync_SRCS
     abstractcorejob.cpp
 
     appprovider.cpp
-    config/systemconfig.cpp
+    config/appconfig.cpp
     config/openidconfig.cpp
 )
 

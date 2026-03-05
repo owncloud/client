@@ -15,7 +15,7 @@
 namespace OCC {
 
 /**
- * @brief The SystemConfig class
+ * @brief The AppConfig class
  * @ingroup libsync
  * @note This class provides access to system-wide configuration settings.
  * These settings are typically read-only and affect the behavior of the application globally.
@@ -63,10 +63,10 @@ namespace OCC {
  * "Prompt"="select_account consent"
  *
  */
-class OWNCLOUDSYNC_EXPORT SystemConfig
+class OWNCLOUDSYNC_EXPORT AppConfig
 {
 public:
-    explicit SystemConfig();
+    explicit AppConfig();
     /**
      * Determine if changing the server URL is allowed based on system configuration.
      * This value is only relevant if SystemConfig::serverUrl() returns a non-empty string.

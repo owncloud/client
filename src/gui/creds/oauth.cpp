@@ -15,7 +15,6 @@
 #include "oauth.h"
 
 #include "accessmanager.h"
-#include "config/systemconfig.h"
 #include "creds/credentialssupport.h"
 #include "gui/networkadapters/userinfoadapter.h"
 #include "libsync/creds/credentialmanager.h"
