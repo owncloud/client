@@ -16,7 +16,7 @@
 #include "application.h"
 #include "common/utility.h"
 #include "common/version.h"
-#include "config/systemconfig.h"
+#include "config/appconfig.h"
 #include "configfile.h"
 #include "theme.h"
 

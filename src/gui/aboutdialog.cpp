@@ -20,7 +20,7 @@
 #include <QMessageBox>
 
 #ifdef WITH_AUTO_UPDATER
-#include "config/systemconfig.h"
+#include "config/appconfig.h"
 #include "libsync/configfile.h"
 #include "updater/ocupdater.h"
 #ifdef Q_OS_MAC
