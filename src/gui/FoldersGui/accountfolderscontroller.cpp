@@ -55,7 +55,7 @@ AccountFoldersController::AccountFoldersController(AccountState *state, AccountF
     QStandardItemModel *model = modelController->itemModel();
     _view->setItemModels(model, modelController->selectionModel());
 
-    connect(_view, &AccountFoldersView::addFolderTriggered, this, &AccountFoldersController::slotAddFolder);
+    connect(_view, &AccountFoldersView::addFolderTriggered, this, &AccountFoldersController::onAddFolder);
 
     FolderMan *folderMan = FolderMan::instance();
     modelController->connectSignals(folderMan);
@@ -83,7 +83,7 @@ void AccountFoldersController::onFolderChanged(OCC::Folder *folder)
     _currentFolder = folder;
 }
 
-void AccountFoldersController::slotAddFolder()
+void AccountFoldersController::onAddFolder()
 {
     if (!_accountState || !_accountState->account()) {
         return;
@@ -92,12 +92,12 @@ void AccountFoldersController::slotAddFolder()
     FolderWizard *folderWizard = new FolderWizard(_accountState->account(), nullptr);
     folderWizard->setAttribute(Qt::WA_DeleteOnClose);
 
-    connect(folderWizard, &FolderWizard::folderWizardAccepted, this, &AccountFoldersController::slotFolderWizardAccepted);
+    connect(folderWizard, &FolderWizard::folderWizardAccepted, this, &AccountFoldersController::onFolderWizardAccepted);
 
     emit requestShowModalWidget(folderWizard);
 }
 
-void AccountFoldersController::slotFolderWizardAccepted(OCC::FolderMan::SyncConnectionDescription result)
+void AccountFoldersController::onFolderWizardAccepted(OCC::FolderMan::SyncConnectionDescription result)
 {
     if (!_accountState) {
         return;

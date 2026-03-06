@@ -79,11 +79,6 @@ AccountView::AccountView(AccountState *accountState, QWidget *parent)
     connect(foldersController, &AccountFoldersController::requestShowModalWidget, this, &AccountView::onRequestShowModalWidget);
     connect(foldersController, &AccountFoldersController::requestAccountModalWidget, this, &AccountView::onRequestAccountModalWidget);
 
-
-    //   _model = new FolderStatusModel(_accountState, this);
-
-    //  connect(folderMan, &FolderMan::folderSyncStateChange, _model, &FolderStatusModel::slotFolderSyncStateChange);
-
     ui->connectionStatusLabel->clear();
 
     connect(_accountState, &AccountState::stateChanged, this, &AccountView::slotAccountStateChanged);

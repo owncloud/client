@@ -36,17 +36,15 @@ class AccountFoldersController : public QObject
 public:
     explicit AccountFoldersController(AccountState *state, AccountFoldersView *view, QObject *parent);
 
-    // void onUnsyncedSpacesChanged(const QUuid &accountId, QSet<GraphApi::Space *> unsyncedSpaces, int totalSpaceCount);
-    void onUnsyncedSpaceCountChanged(const QUuid &accountId, int unsyncedSpaceCount, int totalSpaceCount);
-
 signals:
     void removeFolderFromGui(OCC::Folder *f);
     void requestShowModalWidget(QWidget *widget);
     void requestAccountModalWidget(OCC::AccountModalWidget *widget);
 
-protected slots:
-    void slotAddFolder();
-    void slotFolderWizardAccepted(OCC::FolderMan::SyncConnectionDescription result);
+protected:
+    void onUnsyncedSpaceCountChanged(const QUuid &accountId, int unsyncedSpaceCount, int totalSpaceCount);
+    void onAddFolder();
+    void onFolderWizardAccepted(OCC::FolderMan::SyncConnectionDescription result);
 
 private:
     AccountState *_accountState = nullptr;
