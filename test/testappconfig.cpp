@@ -5,7 +5,7 @@
 #include "libsync/owncloudtheme.h"
 #include "libsync/config/appconfig.h"
 
-class TestSystemConfig : public QObject
+class TestAppConfig : public QObject
 {
     Q_OBJECT
 
@@ -19,5 +19,5 @@ private Q_SLOTS:
     }
 };
 
-QTEST_GUILESS_MAIN(TestSystemConfig)
-#include "testsystemconfig.moc"
+QTEST_GUILESS_MAIN(TestAppConfig)
+#include "testappconfig.moc"
