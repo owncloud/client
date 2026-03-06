@@ -17,6 +17,7 @@
 #include "owncloudlib.h"
 
 #include "account.h"
+#include "config/openidconfig.h"
 
 #include <QNetworkReply>
 #include <QPointer>
@@ -65,7 +66,7 @@ public:
     Q_ENUM(PromptValuesSupported)
     Q_DECLARE_FLAGS(PromptValuesSupportedFlags, PromptValuesSupported)
 
-    OAuth(const QUrl &serverUrl, const QString &davUser, QNetworkAccessManager *networkAccessManager, QObject *parent);
+    OAuth(const QUrl &serverUrl, const QString &davUser, const OpenIdConfig& openIdConfig, QNetworkAccessManager *networkAccessManager, QObject *parent);
     ~OAuth() override;
 
     virtual void startAuthentication();
@@ -91,12 +92,9 @@ protected:
 
     QUrl _serverUrl;
     QString _davUser;
+    OpenIdConfig _openIdConfig;
     QNetworkAccessManager *_networkAccessManager;
     bool _isRefreshingToken = false;
-
-    QString _clientId;
-    QString _clientSecret;
-
 
     virtual void fetchWellKnown();
 
@@ -148,7 +146,7 @@ class AccountBasedOAuth : public OAuth
     Q_OBJECT
 
 public:
-    explicit AccountBasedOAuth(Account *account, QObject *parent);
+    explicit AccountBasedOAuth(Account *account, const OpenIdConfig& openIdConfig, QObject *parent);
 
     void startAuthentication() override;
 

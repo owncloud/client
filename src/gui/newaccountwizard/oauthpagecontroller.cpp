@@ -15,10 +15,10 @@
 
 #include "accessmanager.h"
 #include "accountmanager.h"
+#include "config/appconfig.h"
 #include "networkadapters/fetchcapabilitiesadapter.h"
 #include "networkadapters/userinfoadapter.h"
 #include "networkadapters/webfingerlookupadapter.h"
-#include "resources.h"
 #include "template.h"
 #include "theme.h"
 
@@ -208,7 +208,8 @@ bool OAuthPageController::validate()
     _authEndpoint.clear();
     _urlField->clear();
 
-    _oauth = new OAuth(_authUrl, {}, _accessManager.get(), this);
+    AppConfig systemConfig;
+    _oauth = new OAuth(_authUrl, {}, systemConfig.openIdConfig(), _accessManager.get(), this);
     // if we ever need to split out the auth link calculation, it's coming from fetchWellKnown which is a subset of
     // the "full" authentication routine in the oauth impl
     connect(_oauth, &OAuth::authorisationLinkChanged, this, &OAuthPageController::authUrlReady);

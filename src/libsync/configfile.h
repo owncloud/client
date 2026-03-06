@@ -144,9 +144,6 @@ public:
     // how often the check about new versions runs
     std::chrono::milliseconds updateCheckInterval(const QString &connection = QString()) const;
 
-    bool skipUpdateCheck(const QString &connection = QString()) const;
-    void setSkipUpdateCheck(bool, const QString &);
-
     QString uiLanguage() const;
     void setUiLanguage(const QString &uiLanguage);
 
@@ -165,7 +162,6 @@ public:
     static void setupDefaultExcludeFilePaths(ExcludedFiles &excludedFiles);
 
 protected:
-    QVariant getPolicySetting(const QString &policy, const QVariant &defaultValue = QVariant()) const;
     void storeData(const QString &group, const QString &key, const QVariant &value);
     void removeData(const QString &group, const QString &key);
     bool dataExists(const QString &group, const QString &key) const;

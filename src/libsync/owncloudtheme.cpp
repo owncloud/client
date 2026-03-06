@@ -51,4 +51,9 @@ bool ownCloudTheme::moveToTrashDefaultValue() const
     // for the vanilla ownCloud client move-to-trash option is enabled by default
     return true;
 }
+
+bool ownCloudTheme::allowSystemConfigOverrides() const
+{
+    return true;
+}
 }
