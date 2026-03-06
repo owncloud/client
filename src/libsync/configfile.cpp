@@ -14,15 +14,14 @@
 
 #include "common/asserts.h"
 #include "common/utility.h"
-#include "common/version.h"
+
+#include "config/appconfig.h"
 #ifdef Q_OS_WIN
 #include "common/utility_win.h"
 #endif
 #include "configfile.h"
 #include "logger.h"
 #include "theme.h"
-
-#include "creds/abstractcredentials.h"
 
 #include "csync_exclude.h"
 
@@ -57,7 +56,6 @@ const QString optionalDesktopNotificationsC()
 {
     return QStringLiteral("optionalDesktopNotifications");
 }
-const QString skipUpdateCheckC() { return QStringLiteral("skipUpdateCheck"); }
 const QString updateCheckIntervalC() { return QStringLiteral("updateCheckInterval"); }
 const QString uiLanguageC() { return QStringLiteral("uiLanguage"); }
 const QString geometryC() { return QStringLiteral("geometry"); }
@@ -208,26 +206,6 @@ bool ConfigFile::restoreGeometryHeader(QHeaderView *header)
         return true;
     }
     return false;
-}
-
-QVariant ConfigFile::getPolicySetting(const QString &setting, const QVariant &defaultValue) const
-{
-    if (Utility::isWindows()) {
-        // check for policies first and return immediately if a value is found.
-        QSettings userPolicy(QStringLiteral("HKEY_CURRENT_USER\\Software\\Policies\\%1\\%2").arg(Theme::instance()->vendor(), Theme::instance()->appNameGUI()),
-            QSettings::NativeFormat);
-        if (userPolicy.contains(setting)) {
-            return userPolicy.value(setting);
-        }
-
-        QSettings machinePolicy(
-            QStringLiteral("HKEY_LOCAL_MACHINE\\Software\\Policies\\%1\\%2").arg(Theme::instance()->vendor(), Theme::instance()->appNameGUI()),
-            QSettings::NativeFormat);
-        if (machinePolicy.contains(setting)) {
-            return machinePolicy.value(setting);
-        }
-    }
-    return defaultValue;
 }
 
 QString ConfigFile::configPath()
@@ -462,32 +440,6 @@ chrono::milliseconds ConfigFile::updateCheckInterval(const QString &connection) 
     return interval;
 }
 
-bool ConfigFile::skipUpdateCheck(const QString &connection) const
-{
-    QString con(connection);
-    if (connection.isEmpty())
-        con = defaultConnection();
-
-    QVariant fallback = getValue(skipUpdateCheckC(), con, false);
-    fallback = getValue(skipUpdateCheckC(), QString(), fallback);
-
-    QVariant value = getPolicySetting(skipUpdateCheckC(), fallback);
-    return value.toBool();
-}
-
-void ConfigFile::setSkipUpdateCheck(bool skip, const QString &connection)
-{
-    QString con(connection);
-    if (connection.isEmpty())
-        con = defaultConnection();
-
-    auto settings = makeQSettings();
-    settings.beginGroup(con);
-
-    settings.setValue(skipUpdateCheckC(), QVariant(skip));
-    settings.sync();
-}
-
 QString ConfigFile::uiLanguage() const
 {
     auto settings = makeQSettings();
@@ -518,33 +470,11 @@ void ConfigFile::setProxyType(QNetworkProxy::ProxyType proxyType, const QString 
 QVariant ConfigFile::getValue(const QString &param, const QString &group,
     const QVariant &defaultValue) const
 {
-    QVariant systemSetting;
-    if (Utility::isMac()) {
-        QSettings systemSettings(QStringLiteral("/Library/Preferences/%1.plist").arg(Theme::instance()->orgDomainName()), QSettings::NativeFormat);
-        if (!group.isEmpty()) {
-            systemSettings.beginGroup(group);
-        }
-        systemSetting = systemSettings.value(param, defaultValue);
-    } else if (Utility::isUnix()) {
-        QSettings systemSettings(QStringLiteral(SYSCONFDIR "/%1/%1.conf").arg(Theme::instance()->appName()), QSettings::NativeFormat);
-        if (!group.isEmpty()) {
-            systemSettings.beginGroup(group);
-        }
-        systemSetting = systemSettings.value(param, defaultValue);
-    } else { // Windows
-        QSettings systemSettings(
-            QStringLiteral("HKEY_LOCAL_MACHINE\\Software\\%1\\%2").arg(Theme::instance()->vendor(), Theme::instance()->appNameGUI()), QSettings::NativeFormat);
-        if (!group.isEmpty()) {
-            systemSettings.beginGroup(group);
-        }
-        systemSetting = systemSettings.value(param, defaultValue);
-    }
-
     auto settings = makeQSettings();
     if (!group.isEmpty())
         settings.beginGroup(group);
 
-    return settings.value(param, systemSetting);
+    return settings.value(param, defaultValue);
 }
 
 void ConfigFile::setValue(const QString &key, const QVariant &value)
@@ -594,7 +524,7 @@ void ConfigFile::setPauseSyncWhenMetered(bool isChecked)
 
 bool ConfigFile::moveToTrash() const
 {
-    auto defaultValue = Theme::instance()->moveToTrashDefaultValue();
+    bool defaultValue = Theme::instance()->moveToTrashDefaultValue();
     return getValue(moveToTrashC(), QString(), defaultValue).toBool();
 }
 

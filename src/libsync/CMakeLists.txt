@@ -52,6 +52,8 @@ set(libsync_SRCS
     abstractcorejob.cpp
 
     appprovider.cpp
+    config/appconfig.cpp
+    config/openidconfig.cpp
 )
 
 if(WIN32)

@@ -13,6 +13,8 @@
 #include "testutils/syncenginetestutils.h"
 #include "theme.h"
 
+#include <config/appconfig.h>
+
 using namespace std::chrono_literals;
 using namespace OCC;
 
@@ -155,7 +157,8 @@ public:
 
         QObject::connect(&desktopServiceHook, &DesktopServiceHook::hooked, this, &OAuthTestCase::openBrowserHook);
 
-        auto out = std::make_unique<AccountBasedOAuth>(account, nullptr);
+        AppConfig config;
+        auto out = std::make_unique<AccountBasedOAuth>(account, config.openIdConfig(), nullptr);
         QObject::connect(out.get(), &OAuth::result, this, &OAuthTestCase::oauthResult);
         return out;
     }
