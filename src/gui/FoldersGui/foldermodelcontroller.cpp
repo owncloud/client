@@ -59,14 +59,16 @@ void FolderModelController::onCurrentChanged(const QModelIndex &current, const Q
     QStandardItem *item = _model->item(current.row(), 0);
     FolderItem *folderItem = dynamic_cast<FolderItem *>(item);
     if (folderItem) {
-        emit currentFolderChanged(folderItem->folder());
         // set the row's button item as current to ensure the delegate goes straight into "edit" mode, which
         // provides a real menu button for accessibility
-        _selectionModel->setCurrentIndex(_model->index(folderItem->row(), 1), QItemSelectionModel::Current);
-    } else
+        if (current.column() == 0)
+            _selectionModel->setCurrentIndex(_model->index(folderItem->row(), 1), QItemSelectionModel::Current);
+        emit currentFolderChanged(folderItem->folder());
+    } else {
         // at the moment we won't support a "current folder" value if a child error is current/focused -> this will ensure no context menu can pop outside of a
         // normal folder row. revisit if we need to expand this concept
         emit currentFolderChanged(nullptr);
+    }
 }
 
 void FolderModelController::onFolderListChanged(const QUuid &accountId, const QList<Folder *> folders)
@@ -86,10 +88,13 @@ void FolderModelController::onFolderListChanged(const QUuid &accountId, const QL
     // otherwise we *can't* reset the model or we lose the headers and the associated column sizing >:|
     _model->invisibleRootItem()->removeRows(0, _model->rowCount());
 
+    _multiLoad = true;
     for (const auto &f : folders)
         onFolderAdded(accountId, f);
+    _multiLoad = false;
 
     _model->sort(0, Qt::DescendingOrder);
+    _selectionModel->setCurrentIndex(_model->index(0, 0), QItemSelectionModel::Rows | QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Current);
 }
 
 void FolderModelController::onFolderAdded(const QUuid &accountId, Folder *folder)
@@ -99,6 +104,7 @@ void FolderModelController::onFolderAdded(const QUuid &accountId, Folder *folder
 
     FolderItem *item = new FolderItem(folder);
     QStandardItem *buttonItem = new QStandardItem();
+    buttonItem->setFlags(Qt::ItemIsEditable | Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     buttonItem->setAccessibleText(tr("Folder options"));
     buttonItem->setAccessibleDescription(tr("Menu button with folder options. Hit the space key to pop the folder options menu"));
 
@@ -106,8 +112,10 @@ void FolderModelController::onFolderAdded(const QUuid &accountId, Folder *folder
     _model->appendRow({item, buttonItem});
     _items.insert(folder->spaceId(), item);
 
-    _model->sort(0, Qt::DescendingOrder);
-    _selectionModel->select(item->index(), QItemSelectionModel::Rows | QItemSelectionModel::Current | QItemSelectionModel::ClearAndSelect);
+    if (!_multiLoad) {
+        _model->sort(0, Qt::DescendingOrder);
+        _selectionModel->setCurrentIndex(item->index(), QItemSelectionModel::Rows | QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Current);
+    }
 }
 
 void FolderModelController::onFolderRemoved(const QUuid &accountId, Folder *folder)
