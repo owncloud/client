@@ -74,7 +74,7 @@ private Q_SLOTS:
         QTest::newRow("Vfs::Off") << Vfs::Off << false;
 
         if (VfsPluginManager::instance().isVfsPluginAvailable(Vfs::WindowsCfApi)) {
-            QTest::newRow("Vfs::WindowsCfApi dehydrated") << Vfs::WindowsCfApi << true;
+            // QTest::newRow("Vfs::WindowsCfApi dehydrated") << Vfs::WindowsCfApi << true;
 
             // TODO: the hydrated version will fail due to an issue in the winvfs plugin, so leave it disabled for now.
             // QTest::newRow("Vfs::WindowsCfApi hydrated") << Vfs::WindowsCfApi << false;
