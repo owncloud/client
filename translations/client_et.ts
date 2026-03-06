@@ -208,35 +208,35 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
 <context>
     <name>FolderItem</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="98"/>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="127"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="101"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="130"/>
         <source>Offline</source>
         <translation>Võrguühenduseta</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="103"/>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="119"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="106"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="122"/>
         <source>Unavailable: the space is no longer available on the server</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="107"/>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="125"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="110"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="128"/>
         <source>Sync paused</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="123"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="126"/>
         <source>Sync failed</source>
         <translation>Sünkroniseerimine ebaõnnestus</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="129"/>
-        <source>About to sync</source>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="132"/>
+        <source>Sync pending</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="134"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="137"/>
         <source>Syncing %1 of %2</source>
         <translation>Sünkroniseerimine %1 %2-st</translation>
     </message>
@@ -422,7 +422,7 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="143"/>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="351"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="352"/>
         <source>Choose what to sync</source>
         <translation>Vali, mida sünkroniseerida</translation>
     </message>
@@ -465,58 +465,58 @@ See tegevus katkestab kõik käimasolevad sünkroniseerimised.</translation>
         <translation>Peata sünkroniseerimine</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="237"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="238"/>
         <source>Disable virtual file support</source>
         <translation>Keela virtuaalse faili tugi</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="237"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="238"/>
         <source>Enable virtual file support</source>
         <translation>Luba virtuaalse faili tugi</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="273"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="274"/>
         <source>Internet connection is metered</source>
         <translation>Internetiühendus on mahupõhine</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="274"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="275"/>
         <source>Synchronization is paused because the Internet connection is a metered connection&lt;p&gt;Do you really want to force a Synchronization now?</source>
         <translation>Sünkroniseerimine on peatatud, kuna interneti-ühendus on mahupõhine&lt;p&gt;Kas soovite tõesti sünkroniseerida?</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="294"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="295"/>
         <source>Sync Running</source>
         <translation>Sünkroniseerimine on käimas</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="294"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="295"/>
         <source>The sync operation is running.&lt;br/&gt;Do you want to stop it?</source>
         <translation>Sünkroniseerimine käib. &lt;br/&gt; Kas soovid katkestada?</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="300"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="301"/>
         <source>Sync paused by user</source>
         <translation>Sünkroniseerimine peatati kasutaja poolt</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="318"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="319"/>
         <source>Confirm Folder Sync Connection Removal</source>
         <translation>Kinnita kaustade sünkroniseerimise ühenduse kustutamine</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="319"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="320"/>
         <source>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Kas soovid tõesti katkestada kataloogi &lt;i&gt;%1&lt;/i&gt; sünkroniseerimist?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Märkus:&lt;/b&gt; See &lt;b&gt;ei&lt;/b&gt; kustuta ühtegi faili.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="323"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="324"/>
         <source>Remove Folder Sync Connection</source>
         <translation>Eemalda kaustade sünkroniseerimise ühendus</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="200"/>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="324"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="325"/>
         <source>Cancel</source>
         <translation>Loobu</translation>
     </message>
@@ -544,7 +544,7 @@ See tegevus katkestab kõik käimasolevad sünkroniseerimised.</translation>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="122"/>
+        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="147"/>
         <source>Syncing %1 out of %2 spaces</source>
         <translation type="unfinished"/>
     </message>
@@ -820,7 +820,7 @@ See tegevus katkestab kõik käimasolevad sünkroniseerimised.</translation>
         <translation>Sünkroniseeri ühendused</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="361"/>
+        <location filename="../src/gui/accountview.cpp" line="347"/>
         <source>Cancel</source>
         <translation>Loobu</translation>
     </message>
@@ -851,72 +851,72 @@ See tegevus katkestab kõik käimasolevad sünkroniseerimised.</translation>
         <translation>Eemalda</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="221"/>
+        <location filename="../src/gui/accountview.cpp" line="213"/>
         <source>The server version %1 is unsupported! Proceed at your own risk.</source>
         <translation>Serveri versioon %1 ei ole toetatud! Jätkake omal vastutusel.</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="224"/>
+        <location filename="../src/gui/accountview.cpp" line="216"/>
         <source>Connected</source>
         <translation>Ühendatud</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="234"/>
+        <location filename="../src/gui/accountview.cpp" line="220"/>
         <source>Server is temporarily unavailable</source>
         <translation>Server ei ole ajutiselt ligipääsetav</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="237"/>
+        <location filename="../src/gui/accountview.cpp" line="223"/>
         <source>Server is currently in maintenance mode</source>
         <translation>Server on hooldusrežiimil</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="240"/>
+        <location filename="../src/gui/accountview.cpp" line="226"/>
         <source>Signed out</source>
         <translation>Välja logitud</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="243"/>
+        <location filename="../src/gui/accountview.cpp" line="229"/>
         <source>Updating credentials…</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="252"/>
+        <location filename="../src/gui/accountview.cpp" line="238"/>
         <source>Connecting…</source>
         <translation>Ühendamine...</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="248"/>
+        <location filename="../src/gui/accountview.cpp" line="234"/>
         <source>Captive portal prevents connections to the server.</source>
         <translation>Piiratud portaal takistab ühendusi serverisse.</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="250"/>
+        <location filename="../src/gui/accountview.cpp" line="236"/>
         <source>Sync is paused due to metered internet connection</source>
         <translation>Sünkroniseerimine on peatatud mahupõhise internetiühenduse tõttu</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="256"/>
+        <location filename="../src/gui/accountview.cpp" line="242"/>
         <source>Server configuration error</source>
         <translation>Serveri seadete viga</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="262"/>
+        <location filename="../src/gui/accountview.cpp" line="248"/>
         <source>Disconnected</source>
         <translation>Lahti ühendatud</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="355"/>
+        <location filename="../src/gui/accountview.cpp" line="341"/>
         <source>Confirm Account Removal</source>
         <translation>Kinnita konto eemaldamine</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="356"/>
+        <location filename="../src/gui/accountview.cpp" line="342"/>
         <source>&lt;p&gt;Do you really want to remove the connection to the account &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Kas soovid tõesti ühenduse kontoga &lt;i&gt;%1&lt;/i&gt; eemaldada?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Märkus:&lt;/b&gt; See &lt;b&gt;ei&lt;/b&gt; kustuta ühtegi faili.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="360"/>
+        <location filename="../src/gui/accountview.cpp" line="346"/>
         <source>Remove connection</source>
         <translation>Eemalda ühendus</translation>
     </message>
@@ -1219,30 +1219,30 @@ Uuendus toimub taustal ja kirjutab praeguse AppImage&apos;i faili üle. Uuendami
         <translation>%1 pole loetav.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="458"/>
+        <location filename="../src/gui/folder.cpp" line="463"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 on eemaldatud.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="472"/>
+        <location filename="../src/gui/folder.cpp" line="477"/>
         <source>%1 has been updated.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 on uuendatud.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="479"/>
+        <location filename="../src/gui/folder.cpp" line="484"/>
         <source>%1 has been renamed to %2.</source>
         <comment>%1 and %2 name files.</comment>
         <translation>%1 on ümber nimetatud %2-ks.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="486"/>
+        <location filename="../src/gui/folder.cpp" line="491"/>
         <source>%1 has been moved to %2.</source>
         <translation>%1 on tõstetud %2.</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="456"/>
+        <location filename="../src/gui/folder.cpp" line="461"/>
         <source>%1 and %n other file(s) have been removed.</source>
         <translation><numerusform>%1 ja veel %n fail eemaldati</numerusform><numerusform>%1 ja veel %n faili eemaldati.</numerusform></translation>
     </message>
@@ -1267,78 +1267,78 @@ Uuendus toimub taustal ja kirjutab praeguse AppImage&apos;i faili üle. Uuendami
         <translation type="unfinished"/>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="463"/>
+        <location filename="../src/gui/folder.cpp" line="468"/>
         <source>%1 and %n other file(s) have been added.</source>
         <translation><numerusform>%1 ja veel %n fail lisati.</numerusform><numerusform>%1 ja veel %n faili lisati.</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="465"/>
+        <location filename="../src/gui/folder.cpp" line="470"/>
         <source>%1 has been added.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 on lisatud.</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="470"/>
+        <location filename="../src/gui/folder.cpp" line="475"/>
         <source>%1 and %n other file(s) have been updated.</source>
         <translation><numerusform>%1 ja veel %n fail uuendati.</numerusform><numerusform>%1 ja veel %n faili uuendati.</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="477"/>
+        <location filename="../src/gui/folder.cpp" line="482"/>
         <source>%1 has been renamed to %2 and %n other file(s) have been renamed.</source>
         <translation><numerusform>%1 nimetati ümber %2-ks ja veel %n fail nimetati ümber.</numerusform><numerusform>%1 nimetati ümber %2-ks ja veel %n faili nimetati ümber.</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="484"/>
+        <location filename="../src/gui/folder.cpp" line="489"/>
         <source>%1 has been moved to %2 and %n other file(s) have been moved.</source>
         <translation><numerusform>%1 liigutati %2 ja veel %n fail liigutati.</numerusform><numerusform>%1 liigutati %2 ja veel %n faili liigutati.</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="491"/>
+        <location filename="../src/gui/folder.cpp" line="496"/>
         <source>%1 and %n other file(s) have sync conflicts.</source>
         <translation><numerusform>%1-l ja veel %n-l failil on sünkroniseerimise konfliktid.</numerusform><numerusform>%1-l ja veel %n-l failil on sünkroniseerimise konfliktid.</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="493"/>
+        <location filename="../src/gui/folder.cpp" line="498"/>
         <source>%1 has a sync conflict. Please check the conflict file!</source>
         <translation>%1 on sünkroniseerimiskonflikt. Palun kontrollige konfliktifaili!</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="498"/>
+        <location filename="../src/gui/folder.cpp" line="503"/>
         <source>%1 and %n other file(s) could not be synced due to errors. See the log for details.</source>
         <translation><numerusform>%1 ja veel %n faili ei sünkroniseeritud vigade tõttu. Täpsemaks infoks vaata logisid.</numerusform><numerusform>%1 ja veel %n faili ei sünkroniseeritud vigade tõttu. Täpsemaks infoks vaata logisid.</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="500"/>
+        <location filename="../src/gui/folder.cpp" line="505"/>
         <source>%1 could not be synced due to an error. See the log for details.</source>
         <translation>%1 sünkroniseerimine ebaõnnestus vea tõttu. Lisainfot vaata logist.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="506"/>
+        <location filename="../src/gui/folder.cpp" line="511"/>
         <source>Sync Activity</source>
         <translation>Sünkroniseerimise tegevus</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="709"/>
+        <location filename="../src/gui/folder.cpp" line="714"/>
         <source>Switching VFS mode on folder &apos;%1&apos;</source>
         <translation>VFS režiimi vahetamine kaustas &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="898"/>
+        <location filename="../src/gui/folder.cpp" line="903"/>
         <source>Could not read system exclude file</source>
         <translation>Süsteemi väljajätmiste faili lugemine ebaõnnestus</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1093"/>
+        <location filename="../src/gui/folder.cpp" line="1098"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translation>Kaust %1 loodi, kuid oli varem sünkroniseerimisest välja jäetud. Selles olevaid andmeid ei sünkroniseerita.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1096"/>
+        <location filename="../src/gui/folder.cpp" line="1101"/>
         <source>The file %1 was created but was excluded from synchronization previously. It will not be synchronized.</source>
         <translation>Fail %1 loodi, kuid jäeti varem sünkroniseerimisest välja. Seda ei sünkroniseerita.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1108"/>
+        <location filename="../src/gui/folder.cpp" line="1113"/>
         <source>Changes in synchronized folders could not be tracked reliably.
 
 This means that the synchronization client might not upload local changes immediately and will instead only scan for local changes and upload them occasionally (every two hours by default).
@@ -1348,6 +1348,14 @@ This means that the synchronization client might not upload local changes immedi
 See tähendab, et sünkroniseerimisklient ei pruugi kohalikke muudatusi kohe üles laadida, vaid otsib ainult kohalikke muudatusi ja laadib need üles aeg-ajalt (vaikimisi iga kahe tunni järel).
 
 % 1</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::FolderItemUpdater</name>
+    <message>
+        <location filename="../src/gui/FoldersGui/folderitemupdater.cpp" line="58"/>
+        <source>There are unresolved conflicts.</source>
+        <translation>Mõned konfliktid on lahendamata.</translation>
     </message>
 </context>
 <context>
