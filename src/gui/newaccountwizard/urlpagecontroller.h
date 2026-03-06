@@ -95,9 +95,9 @@ private:
     QPointer<QWizardPage> _page;
     QPointer<AccessManager> _accessManager;
 
-    QLabel *_instructionLabel;
-    QLineEdit *_urlField;
-    QLabel *_errorField;
+    QLabel *_instructionLabel = nullptr;
+    QLineEdit *_urlField = nullptr;
+    QLabel *_errorField = nullptr;
 
     UrlPageResults _results;
     bool _urlValidated = false;
