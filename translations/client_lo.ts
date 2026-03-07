@@ -2074,60 +2074,60 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="156"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="155"/>
         <source>Successfully signed in</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="157"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="156"/>
         <source>Now, explore %1 on desktop.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="268"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="267"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
         <translation>ຂໍ້ຜິດພາດທີ່ສົ່ງຄືນຈາກເຊີບເວີ: &lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="270"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="269"/>
         <source>There was an error accessing the &apos;token&apos; endpoint: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</source>
         <translation>ເກີດຂໍ້ຜິດພາດໃນການເຂົ້າເຖິງຈຸດບໍລິການ &apos;token&apos;: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="272"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="271"/>
         <source>Could not parse the JSON returned from the server: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</source>
         <translation>ບໍ່ສາມາດວິເຄາະ JSON ທີ່ສົ່ງຄືນຈາກເຊີບເວີໄດ້: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="274"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="273"/>
         <source>Unsupported token type: %1</source>
         <translation>ປະເພດ token ບໍ່ຮອງຮັບ: %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="276"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="275"/>
         <source>The reply from the server did not contain all expected fields
 :%1</source>
         <translation>ການຕອບກັບຈາກເຊີບເວີບໍ່ມີຂໍ້ມູນຄົບຖ້ວນຕາມທີ່ຄາດໄວ້
 :%1</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="278"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="277"/>
         <source>Unknown Error</source>
         <translation>ຂໍ້ຜິດພາດທີ່ບໍ່ຮູ້ຈັກ</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="281"/>
-        <location filename="../src/gui/creds/oauth.cpp" line="304"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="280"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="303"/>
         <source>Login Error</source>
         <translation>ການເຂົ້າສູ່ລະບົບຜິດພາດ</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="310"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="309"/>
         <source>You logged-in with user &lt;em&gt;%1&lt;/em&gt;, but must login with user &lt;em&gt;%2&lt;/em&gt;.&lt;br&gt;Please return to the %3 client and restart the authentication.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="313"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="312"/>
         <source>Wrong user</source>
         <translation>ຜູ້ໃຊ້ບໍ່ຖືກຕ້ອງ</translation>
     </message>
@@ -2175,47 +2175,47 @@ Note that using any logging command line options will override the settings.</so
         <translation>ສຳເນົາ URL</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="237"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="238"/>
         <source>Please copy the authentication URL using the button above, and provide this information to support.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="251"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="252"/>
         <source>Failed to look up WebFinger instances: %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="268"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="269"/>
         <source>You are already connected to an account with these credentials.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="286"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="287"/>
         <source>Unable to retrieve capabilities from server.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="290"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="291"/>
         <source>The server is not supported by this client.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="300"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="301"/>
         <source>Error while trying to log in to OAuth2-enabled server. %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="307"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="308"/>
         <source>Unable to open browser with provided URL. %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="311"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="312"/>
         <source>OAuth2 authentication requires a secured connection. %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="315"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="316"/>
         <source>Authorization server unreachable. %1</source>
         <translation type="unfinished"/>
     </message>
@@ -2223,52 +2223,52 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OCUpdater</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="147"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="149"/>
         <source>Could not download update. Please click &lt;a href=&apos;%1&apos;&gt;here&lt;/a&gt; to download the update manually.</source>
         <translation>ບໍ່ສາມາດດາວໂຫຼດອັບເດດໄດ້. ກະລຸນາຄລິກ &lt;a href=&apos;%1&apos;&gt;ທີ່ນີ້&lt;/a&gt; ເພື່ອດາວໂຫຼດອັບເດດດ້ວຍຕົນເອງ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="149"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="151"/>
         <source>Could not check for new updates.</source>
         <translation>ບໍ່ສາມາດກວດສອບການອັບເດດໃໝ່ໄດ້.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="139"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="141"/>
         <source>Downloading %1. Please wait…</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="142"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="144"/>
         <source>%1 installed successfully. Restart the application to finish installing the update.</source>
         <translation>ຕິດຕັ້ງ %1 ສຳເລັດແລ້ວ. ກະລຸນາເລີ່ມໂປຣແກຣມໃໝ່ເພື່ອສິ້ນສຸດການຕິດຕັ້ງອັບເດດ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="144"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="146"/>
         <source>%1 available. Restart application to start the update.</source>
         <translation>ມີ %1 ໃຫ້ອັບເດດ. ກະລຸນາເລີ່ມໂປຣແກຣມໃໝ່ເພື່ອເລີ່ມການອັບເດດ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="155"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="157"/>
         <source>New %1 available. Please click &lt;a href=&apos;%2&apos;&gt;here&lt;/a&gt; to download the new AppImage manually.</source>
         <translation>ມີ %1 ເວີຊັນໃໝ່. ກະລຸນາຄລິກ &lt;a href=&apos;%2&apos;&gt;ທີ່ນີ້&lt;/a&gt; ເພື່ອດາວໂຫຼດ AppImage ໃໝ່ດ້ວຍຕົນເອງ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="158"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="160"/>
         <source>New %1 available. Please use the system&apos;s update tool to install it.</source>
         <translation>ມີ %1 ເວີຊັນໃໝ່. ກະລຸນາໃຊ້ເຄື່ອງມືອັບເດດຂອງລະບົບເພື່ອຕິດຕັ້ງ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="160"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="162"/>
         <source>Checking update server…</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="162"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="164"/>
         <source>Update status is unknown: Did not check for new updates.</source>
         <translation>ສະຖານະການອັບເດດບໍ່ຊັດເຈນ: ບໍ່ໄດ້ກວດສອບການອັບເດດໃໝ່.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="166"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="168"/>
         <source>No updates available. Your installation is at the latest version.</source>
         <translation>ບໍ່ມີການອັບເດດ. ໂປຣແກຣມຂອງທ່ານເປັນເວີຊັນຫຼ້າສຸດແລ້ວ.</translation>
     </message>
@@ -2779,12 +2779,12 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::RequestAuthenticationController</name>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="97"/>
+        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="100"/>
         <source>IdP is unreachable. Contact your system administrator or try again later.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="108"/>
+        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="111"/>
         <source>Authentication failed.</source>
         <translation type="unfinished"/>
     </message>
@@ -3224,7 +3224,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::UpdaterScheduler</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="49"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="51"/>
         <source>Update available</source>
         <translation>ມີອັບເດດ</translation>
     </message>
@@ -3232,52 +3232,52 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="42"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="54"/>
         <source>Your web browser will be opened to complete sign in.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="57"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="69"/>
         <source>%1 logo</source>
         <translation>ໂລໂກ້ %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="59"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="71"/>
         <source>Welcome to %1</source>
         <translation>ຍິນດີຕ້ອນຮັບສູ່ %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="67"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="79"/>
         <source>Enter your server address to get started. Your web browser will be opened to complete sign in.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="83"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="95"/>
         <source>Server address field</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="84"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="96"/>
         <source>Enter your server address here</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="105"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="117"/>
         <source>Additional logo defined by the organization</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="198"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="210"/>
         <source>Invalid server URL: %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="202"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="214"/>
         <source>Invalid URL scheme. Only https is accepted.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="230"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="242"/>
         <source>The requested URL failed with query value: %1</source>
         <translation>URL ທີ່ຮ້ອງຂໍລົ້ມເຫຼວດ້ວຍຄ່າ query: %1</translation>
     </message>
@@ -3396,37 +3396,37 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::WindowsUpdater</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="373"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="375"/>
         <source>&lt;p&gt;A new version of the %1 Client is available.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; is available for download. The installed version is %3.&lt;/p&gt;</source>
         <translation>&lt;p&gt;ມີໂປຣແກຣມ %1 Client ເວີຊັນໃໝ່ໃຫ້ອັບເດດ.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; ສາມາດດາວໂຫຼດໄດ້ແລ້ວ. ເວີຊັນທີ່ຕິດຕັ້ງຢູ່ແມ່ນ %3.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="419"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="421"/>
         <source>Skip this version</source>
         <translation>ຂ້າມເວີຊັນນີ້</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="400"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="402"/>
         <source>Update Failed</source>
         <translation>ການອັບເດດລົ້ມເຫຼວ</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="406"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="408"/>
         <source>&lt;p&gt;A new version of the %1 Client is available but the updating process failed.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; has been downloaded. The installed version is %3.&lt;/p&gt;</source>
         <translation>&lt;p&gt;ມີໂປຣແກຣມ %1 Client ເວີຊັນໃໝ່ ແຕ່ຂະບວນການອັບເດດລົ້ມເຫຼວ.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; ໄດ້ຖືກດາວໂຫຼດແລ້ວ. ເວີຊັນທີ່ຕິດຕັ້ງຢູ່ແມ່ນ %3.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="420"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="422"/>
         <source>Ask again later</source>
         <translation>ຖາມໃໝ່ພາຍຫຼັງ</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="421"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="423"/>
         <source>Restart and update</source>
         <translation>ເລີ່ມໃໝ່ ແລະ ອັບເດດ</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="422"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="424"/>
         <source>Update manually</source>
         <translation>ອັບເດດດ້ວຍຕົນເອງ</translation>
     </message>
