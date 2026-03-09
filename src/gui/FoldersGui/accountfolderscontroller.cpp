@@ -285,7 +285,7 @@ void AccountFoldersController::onForceSync()
                "<p>Do you really want to force a Synchronization now?"),
             QMessageBox::Yes | QMessageBox::No, ocApp()->gui()->settingsDialog());
         int result = messageBox.exec();
-        if (result == QDialog::Rejected)
+        if (result == QMessageBox::No)
             return;
     }
 
@@ -305,7 +305,7 @@ void AccountFoldersController::onTogglePauseSync()
                 QMessageBox::Yes | QMessageBox::No, ocApp()->gui()->settingsDialog());
             msgbox.setDefaultButton(QMessageBox::No);
             int result = msgbox.exec();
-            if (result == QDialog::Rejected)
+            if (result == QMessageBox::No)
                 return;
             _currentFolder->slotTerminateSync(tr("Sync paused by user"));
         }
@@ -334,7 +334,7 @@ void AccountFoldersController::onRemoveSync()
     msgBox.button(QMessageBox::No)->setText(tr("Cancel"));
 
     int result = msgBox.exec();
-    if (result == QDialog::Rejected)
+    if (result == QMessageBox::No)
         return;
     // todo: make it a signal
     FolderMan::instance()->removeFolderFromGui(_currentFolder);
