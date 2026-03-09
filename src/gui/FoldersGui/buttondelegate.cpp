@@ -117,11 +117,12 @@ bool ButtonDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const
             QModelIndex current = view->currentIndex();
             if (current != index)
                 view->setCurrentIndex(index);
+            _button->setVisible(true);
             _button->showMenu();
             return true;
         }
     }
-    return QItemDelegate::editorEvent(event, model, option, index); // ehhhh
+    return QItemDelegate::editorEvent(event, model, option, index);
 }
 
 void ButtonDelegate::setMenu(QMenu *menu)
