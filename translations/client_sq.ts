@@ -2074,60 +2074,60 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="156"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="155"/>
         <source>Successfully signed in</source>
         <translation>U hy me sukses</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="157"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="156"/>
         <source>Now, explore %1 on desktop.</source>
         <translation>Tani, eksploroni %1 në desktop.</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="268"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="267"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Gabim i kthyer nga shërbyesi: &lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="270"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="269"/>
         <source>There was an error accessing the &apos;token&apos; endpoint: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Pati një gabim në përdorimin e pikëmbarimit të &apos;tokenit&apos;: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="272"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="271"/>
         <source>Could not parse the JSON returned from the server: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</source>
         <translation>S’u përtyp dot JSON-i i kthyer nga shërbyesi: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="274"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="273"/>
         <source>Unsupported token type: %1</source>
         <translation>Lloj token-i i pambuluar: %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="276"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="275"/>
         <source>The reply from the server did not contain all expected fields
 :%1</source>
         <translation>Përgjigja prej shërbyesit s’përmbante krejt fushat e pritura
 :%1</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="278"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="277"/>
         <source>Unknown Error</source>
         <translation>Gabim i Panjohur</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="281"/>
-        <location filename="../src/gui/creds/oauth.cpp" line="304"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="280"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="303"/>
         <source>Login Error</source>
         <translation>Gabim Hyrjeje</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="310"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="309"/>
         <source>You logged-in with user &lt;em&gt;%1&lt;/em&gt;, but must login with user &lt;em&gt;%2&lt;/em&gt;.&lt;br&gt;Please return to the %3 client and restart the authentication.</source>
         <translation>Hytë si përdoruesi &lt;em&gt;%1&lt;/em&gt;, por duhet të hyni si përdoruesi &lt;em&gt;%2&lt;/em&gt;.&lt;br&gt;Ju lutemi, kthehuni te klienti %3 dhe rinisni mirëfilltësimin.</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="313"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="312"/>
         <source>Wrong user</source>
         <translation>Përdorues i gabuar</translation>
     </message>
@@ -2175,47 +2175,47 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
         <translation>Kopjoji URL-në</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="237"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="238"/>
         <source>Please copy the authentication URL using the button above, and provide this information to support.</source>
         <translation>Ju lutemi kopjoni URL-në e mirëfilltësimit duke përdorur butonin më sipër dhe jepeni këtë informacion për asistencën.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="251"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="252"/>
         <source>Failed to look up WebFinger instances: %1</source>
         <translation>S’u arrit të kërkohet për instanca WebFinger: %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="268"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="269"/>
         <source>You are already connected to an account with these credentials.</source>
         <translation>Jeni tashmë i lidhur te një llogari me këto kredenciale.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="286"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="287"/>
         <source>Unable to retrieve capabilities from server.</source>
         <translation>S’arrihet të merren aftësi prej shërbyesit.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="290"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="291"/>
         <source>The server is not supported by this client.</source>
         <translation>Shërbyesi nuk mbulohet nga ky klient.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="300"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="301"/>
         <source>Error while trying to log in to OAuth2-enabled server. %1</source>
         <translation>Gabim teksa provohej të bëhej hyrja te një shërbyes me OAuth2-të aktivizuar. %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="307"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="308"/>
         <source>Unable to open browser with provided URL. %1</source>
         <translation>S’arrihet të hapet shfletuesi me URL-në që u dha. %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="311"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="312"/>
         <source>OAuth2 authentication requires a secured connection. %1</source>
         <translation>Mirëfilltësimi OAuth2 lyp një lidhje të siguruar. %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="315"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="316"/>
         <source>Authorization server unreachable. %1</source>
         <translation>S’kapet dot shërbyes mirëfilltësimesh. %1</translation>
     </message>
@@ -2223,52 +2223,52 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::OCUpdater</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="147"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="149"/>
         <source>Could not download update. Please click &lt;a href=&apos;%1&apos;&gt;here&lt;/a&gt; to download the update manually.</source>
         <translation>S’u shkarkua dot përditësimi. Ju lutemi, klikoni &lt;a href=&apos;%1&apos;&gt;këtu&lt;/a&gt; që ta shkarkoni përditësimin dorazi.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="149"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="151"/>
         <source>Could not check for new updates.</source>
         <translation>S’u kontrollua dot për përditësime të reja.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="139"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="141"/>
         <source>Downloading %1. Please wait…</source>
         <translation>Po shkarkohet %1. Ju lutemi, prisni…</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="142"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="144"/>
         <source>%1 installed successfully. Restart the application to finish installing the update.</source>
         <translation>%1 u instalua me sukses. Rinisni aplikacioni, që të përfundohet instalimi i përditësimit.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="144"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="146"/>
         <source>%1 available. Restart application to start the update.</source>
         <translation>%1 i gatshëm. Rinisni aplikacionin që të nisë përditësimi.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="155"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="157"/>
         <source>New %1 available. Please click &lt;a href=&apos;%2&apos;&gt;here&lt;/a&gt; to download the new AppImage manually.</source>
         <translation>Ka gati %1 të ri. Ju lutemi, klikoni &lt;a href=&apos;%2&apos;&gt;këtu&lt;/a&gt; që të shkarkoni dorazi AppImage-in e ri.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="158"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="160"/>
         <source>New %1 available. Please use the system&apos;s update tool to install it.</source>
         <translation>%1 i ri i gatshëm. Ju lutemi, për ta instaluar, përdorni mjetin e sistemit për përditësime.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="160"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="162"/>
         <source>Checking update server…</source>
         <translation>Po kontrollohet shërbyesi i përditësimeve…</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="162"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="164"/>
         <source>Update status is unknown: Did not check for new updates.</source>
         <translation>Gjendja e përditësimit është e panjohur: S’u kontrollua për përditësime të rinj.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="166"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="168"/>
         <source>No updates available. Your installation is at the latest version.</source>
         <translation>S’ka përditësime gati. Instalimi juaj është versioni më i ri.</translation>
     </message>
@@ -2779,12 +2779,12 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::RequestAuthenticationController</name>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="97"/>
+        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="100"/>
         <source>IdP is unreachable. Contact your system administrator or try again later.</source>
         <translation>IdP s’kapet dot. Lidhuni me përgjegjësin e sistemit tuaj, ose riprovoni më vonë.</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="108"/>
+        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="111"/>
         <source>Authentication failed.</source>
         <translation>Mirëfilltësimi fështoi.</translation>
     </message>
@@ -3224,7 +3224,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::UpdaterScheduler</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="49"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="51"/>
         <source>Update available</source>
         <translation>Ka një përditësim gati</translation>
     </message>
@@ -3232,52 +3232,52 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="42"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="54"/>
         <source>Your web browser will be opened to complete sign in.</source>
         <translation>Shfletuesi juaj do të hapet që të plotësoni hyrjen.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="57"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="69"/>
         <source>%1 logo</source>
         <translation>Stemë e %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="59"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="71"/>
         <source>Welcome to %1</source>
         <translation>Mirë se vini te %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="67"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="79"/>
         <source>Enter your server address to get started. Your web browser will be opened to complete sign in.</source>
         <translation>Që t’ia filloni, jepni adresën e shërbyesit tuaj. Shfletuesi juaj do të hapet që të plotësoni hyrjen.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="83"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="95"/>
         <source>Server address field</source>
         <translation>Fushë adresë shërbyesi</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="84"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="96"/>
         <source>Enter your server address here</source>
         <translation>Jepni këtu adresën e shërbyesit tuaj</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="105"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="117"/>
         <source>Additional logo defined by the organization</source>
         <translation>Stemë shtesë e përcaktuar nga enti</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="198"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="210"/>
         <source>Invalid server URL: %1</source>
         <translation>URL e pavlefshme shërbyesi: %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="202"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="214"/>
         <source>Invalid URL scheme. Only https is accepted.</source>
         <translation>Skemë URL-sh e pavlefshme. Pranohet vetëm https.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="230"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="242"/>
         <source>The requested URL failed with query value: %1</source>
         <translation>URL-ja e kërkuar dështoi me vlerë kërkese: %1</translation>
     </message>
@@ -3396,37 +3396,37 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::WindowsUpdater</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="373"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="375"/>
         <source>&lt;p&gt;A new version of the %1 Client is available.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; is available for download. The installed version is %3.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Ka të gatshëm një version të ri të Klientit %1.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; është gati për shkarkim. Versioni i instaluar është %3.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="419"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="421"/>
         <source>Skip this version</source>
         <translation>Anashkaloje këtë version</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="400"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="402"/>
         <source>Update Failed</source>
         <translation>Përditësimi Dështoi</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="406"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="408"/>
         <source>&lt;p&gt;A new version of the %1 Client is available but the updating process failed.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; has been downloaded. The installed version is %3.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Ka të gatshëm një version të ri të Klientit %1, por procesi i përditësimit dështoi&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; është shkarkuar. Versioni i instaluar është %3.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="420"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="422"/>
         <source>Ask again later</source>
         <translation>Ripyet më vonë</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="421"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="423"/>
         <source>Restart and update</source>
         <translation>Rinise dhe përditësoje</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="422"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="424"/>
         <source>Update manually</source>
         <translation>Përditësojeni dorazi</translation>
     </message>

@@ -2074,60 +2074,60 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="156"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="155"/>
         <source>Successfully signed in</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="157"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="156"/>
         <source>Now, explore %1 on desktop.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="268"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="267"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Fout gemeld door de server: &lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="270"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="269"/>
         <source>There was an error accessing the &apos;token&apos; endpoint: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Er heeft zich een fout voorgedaan bij het verkrijgen van de &apos;token&apos; eindpunt: 1 2 %1 2</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="272"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="271"/>
         <source>Could not parse the JSON returned from the server: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Kon de JSON dat teruggekomen is van de server niet ontleden: 1 2 %1 2</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="274"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="273"/>
         <source>Unsupported token type: %1</source>
         <translation>Niet-ondersteund token type: %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="276"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="275"/>
         <source>The reply from the server did not contain all expected fields
 :%1</source>
         <translation>Het antwoord van de server bevat niet alle verwachte velden
 :%1</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="278"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="277"/>
         <source>Unknown Error</source>
         <translation>Onbekende fout</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="281"/>
-        <location filename="../src/gui/creds/oauth.cpp" line="304"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="280"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="303"/>
         <source>Login Error</source>
         <translation>Inlogfout</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="310"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="309"/>
         <source>You logged-in with user &lt;em&gt;%1&lt;/em&gt;, but must login with user &lt;em&gt;%2&lt;/em&gt;.&lt;br&gt;Please return to the %3 client and restart the authentication.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="313"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="312"/>
         <source>Wrong user</source>
         <translation>Verkeerde gebruiker</translation>
     </message>
@@ -2175,47 +2175,47 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
         <translation>Kopiëren URL </translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="237"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="238"/>
         <source>Please copy the authentication URL using the button above, and provide this information to support.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="251"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="252"/>
         <source>Failed to look up WebFinger instances: %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="268"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="269"/>
         <source>You are already connected to an account with these credentials.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="286"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="287"/>
         <source>Unable to retrieve capabilities from server.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="290"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="291"/>
         <source>The server is not supported by this client.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="300"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="301"/>
         <source>Error while trying to log in to OAuth2-enabled server. %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="307"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="308"/>
         <source>Unable to open browser with provided URL. %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="311"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="312"/>
         <source>OAuth2 authentication requires a secured connection. %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="315"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="316"/>
         <source>Authorization server unreachable. %1</source>
         <translation type="unfinished"/>
     </message>
@@ -2223,52 +2223,52 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
 <context>
     <name>OCC::OCUpdater</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="147"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="149"/>
         <source>Could not download update. Please click &lt;a href=&apos;%1&apos;&gt;here&lt;/a&gt; to download the update manually.</source>
         <translation>Kon de download niet bijwerken. Klik &lt;a href=&apos;%1&apos;&gt;hier&lt;/a&gt;  om de download handmatig bij te werken.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="149"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="151"/>
         <source>Could not check for new updates.</source>
         <translation>Kon niet controleren op updates.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="139"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="141"/>
         <source>Downloading %1. Please wait…</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="142"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="144"/>
         <source>%1 installed successfully. Restart the application to finish installing the update.</source>
         <translation>%1 succesvol geïnstalleerd. Start de applicatie opnieuw om de installatie van de update te voltooien.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="144"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="146"/>
         <source>%1 available. Restart application to start the update.</source>
         <translation>%1 is beschikbaar. Herstart de applicatie om de update te starten.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="155"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="157"/>
         <source>New %1 available. Please click &lt;a href=&apos;%2&apos;&gt;here&lt;/a&gt; to download the new AppImage manually.</source>
         <translation>Een nieuw(e) %1 is beschikbaar. Klik &lt;a href=&apos;%2&apos;&gt;here&lt;/a&gt; on het nieuwe AppImage handmatig te downloaden.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="158"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="160"/>
         <source>New %1 available. Please use the system&apos;s update tool to install it.</source>
         <translation>Nieuwe %1 beschikbaar. Gebruik de systeemupdate tool om te installeren.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="160"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="162"/>
         <source>Checking update server…</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="162"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="164"/>
         <source>Update status is unknown: Did not check for new updates.</source>
         <translation>Update status is onbekend: niet gecontroleerd op nieuwe updates.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="166"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="168"/>
         <source>No updates available. Your installation is at the latest version.</source>
         <translation>Geen updates beschikbaar. Uw installatie is al de laatste versie.</translation>
     </message>
@@ -2779,12 +2779,12 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
 <context>
     <name>OCC::RequestAuthenticationController</name>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="97"/>
+        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="100"/>
         <source>IdP is unreachable. Contact your system administrator or try again later.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="108"/>
+        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="111"/>
         <source>Authentication failed.</source>
         <translation>Authenticatie mislukt.</translation>
     </message>
@@ -3224,7 +3224,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
 <context>
     <name>OCC::UpdaterScheduler</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="49"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="51"/>
         <source>Update available</source>
         <translation>Update beschikbaar</translation>
     </message>
@@ -3232,52 +3232,52 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="42"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="54"/>
         <source>Your web browser will be opened to complete sign in.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="57"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="69"/>
         <source>%1 logo</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="59"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="71"/>
         <source>Welcome to %1</source>
         <translation>Welkom bij %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="67"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="79"/>
         <source>Enter your server address to get started. Your web browser will be opened to complete sign in.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="83"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="95"/>
         <source>Server address field</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="84"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="96"/>
         <source>Enter your server address here</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="105"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="117"/>
         <source>Additional logo defined by the organization</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="198"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="210"/>
         <source>Invalid server URL: %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="202"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="214"/>
         <source>Invalid URL scheme. Only https is accepted.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="230"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="242"/>
         <source>The requested URL failed with query value: %1</source>
         <translation type="unfinished"/>
     </message>
@@ -3396,37 +3396,37 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
 <context>
     <name>OCC::WindowsUpdater</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="373"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="375"/>
         <source>&lt;p&gt;A new version of the %1 Client is available.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; is available for download. The installed version is %3.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Er is een nieuwe versie van de %1 Client beschikbaar.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; is beschikbaar voor download. De geïnstalleerde versie is %3.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="419"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="421"/>
         <source>Skip this version</source>
         <translation>Deze versie overslaan</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="400"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="402"/>
         <source>Update Failed</source>
         <translation>Bijwerken mislukt</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="406"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="408"/>
         <source>&lt;p&gt;A new version of the %1 Client is available but the updating process failed.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; has been downloaded. The installed version is %3.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Een nieuwe versie van de %1 Applicatie is beschikbaar maar het updateproces is mislukt.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; is gedownload. De geïnstalleerde versie is %3.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="420"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="422"/>
         <source>Ask again later</source>
         <translation>Vraag later opnieuw</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="421"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="423"/>
         <source>Restart and update</source>
         <translation>Herstarten en bijwerken</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="422"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="424"/>
         <source>Update manually</source>
         <translation>Handmatig bijwerken</translation>
     </message>

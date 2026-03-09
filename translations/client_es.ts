@@ -2074,59 +2074,59 @@ Tenga en cuenta que el uso de cualquier opción de línea de comando de registro
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="156"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="155"/>
         <source>Successfully signed in</source>
         <translation>Inicio de sesión correcto</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="157"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="156"/>
         <source>Now, explore %1 on desktop.</source>
         <translation>Ahora, explore %1 en el escritorio.</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="268"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="267"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Error devuelto desde el servidor: &lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="270"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="269"/>
         <source>There was an error accessing the &apos;token&apos; endpoint: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Ha ocurrido un error accediendo al Token endpoint:: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="272"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="271"/>
         <source>Could not parse the JSON returned from the server: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</source>
         <translation>No puedo procesar el código JSON recibido del servidor: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="274"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="273"/>
         <source>Unsupported token type: %1</source>
         <translation>Tipo de token no soportado</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="276"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="275"/>
         <source>The reply from the server did not contain all expected fields
 :%1</source>
         <translation>La respuesta del servidor no contiene todos los campos esperados</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="278"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="277"/>
         <source>Unknown Error</source>
         <translation>Error desconocido</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="281"/>
-        <location filename="../src/gui/creds/oauth.cpp" line="304"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="280"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="303"/>
         <source>Login Error</source>
         <translation>Error al iniciar sesión</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="310"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="309"/>
         <source>You logged-in with user &lt;em&gt;%1&lt;/em&gt;, but must login with user &lt;em&gt;%2&lt;/em&gt;.&lt;br&gt;Please return to the %3 client and restart the authentication.</source>
         <translation>Ha iniciado sesión con el usuario 1%11, pero debe iniciar sesión con el usuario 2%22.3. Vuelva al cliente %3 y reinicie la autenticación.</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="313"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="312"/>
         <source>Wrong user</source>
         <translation>Usuario incorrecto</translation>
     </message>
@@ -2174,47 +2174,47 @@ Tenga en cuenta que el uso de cualquier opción de línea de comando de registro
         <translation>Copiar URL</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="237"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="238"/>
         <source>Please copy the authentication URL using the button above, and provide this information to support.</source>
         <translation>Copie la URL de autenticación utilizando el botón de arriba y facilite esta información al servicio de asistencia.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="251"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="252"/>
         <source>Failed to look up WebFinger instances: %1</source>
         <translation>No se pudieron buscar instancias de WebFinger: %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="268"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="269"/>
         <source>You are already connected to an account with these credentials.</source>
         <translation>Ya está conectado a una cuenta con estas credenciales.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="286"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="287"/>
         <source>Unable to retrieve capabilities from server.</source>
         <translation>No se pueden recuperar las capacidades del servidor.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="290"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="291"/>
         <source>The server is not supported by this client.</source>
         <translation>El servidor no es compatible con este cliente.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="300"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="301"/>
         <source>Error while trying to log in to OAuth2-enabled server. %1</source>
         <translation>Error al intentar iniciar sesión en el servidor habilitado para OAuth2. %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="307"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="308"/>
         <source>Unable to open browser with provided URL. %1</source>
         <translation>No se puede abrir el navegador con la URL proporcionada. %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="311"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="312"/>
         <source>OAuth2 authentication requires a secured connection. %1</source>
         <translation>La autenticación OAuth2 requiere una conexión segura. %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="315"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="316"/>
         <source>Authorization server unreachable. %1</source>
         <translation>No se puede acceder al servidor de autorización. %1</translation>
     </message>
@@ -2222,52 +2222,52 @@ Tenga en cuenta que el uso de cualquier opción de línea de comando de registro
 <context>
     <name>OCC::OCUpdater</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="147"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="149"/>
         <source>Could not download update. Please click &lt;a href=&apos;%1&apos;&gt;here&lt;/a&gt; to download the update manually.</source>
         <translation>No se puede descargar la actualización. Por favor, haga clic &lt;a href=&apos;%1&apos;&gt;aquí&lt;/a&gt; para iniciar una descarga manual.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="149"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="151"/>
         <source>Could not check for new updates.</source>
         <translation>No se puede comprobar si hay actualizaciones.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="139"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="141"/>
         <source>Downloading %1. Please wait…</source>
         <translation>Descargando %1. Por favor, espere...</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="142"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="144"/>
         <source>%1 installed successfully. Restart the application to finish installing the update.</source>
         <translation>%1 erfolgreich installiert. Starten Sie die Anwendung neu um die Installation des Updates abzuschließen.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="144"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="146"/>
         <source>%1 available. Restart application to start the update.</source>
         <translation>%1 disponible. Reinicie la aplicación para iniciar la actualización.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="155"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="157"/>
         <source>New %1 available. Please click &lt;a href=&apos;%2&apos;&gt;here&lt;/a&gt; to download the new AppImage manually.</source>
         <translation>Nueva versión %1 disponible. Por favor, haga clic &lt;a href=&apos;%2&apos;&gt;aquí&lt;/a&gt; para descargar la nueva AppImage manualmente.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="158"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="160"/>
         <source>New %1 available. Please use the system&apos;s update tool to install it.</source>
         <translation>Nueva %1 disponible. Por favor utilice la herramienta de actualización de su sistema para instalarlo.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="160"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="162"/>
         <source>Checking update server…</source>
         <translation>Comprobando el servidor de actualizaciones...</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="162"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="164"/>
         <source>Update status is unknown: Did not check for new updates.</source>
         <translation>Estado de actualización desconocido: no se buscaron nuevas actualizaciones.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="166"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="168"/>
         <source>No updates available. Your installation is at the latest version.</source>
         <translation>No hay actualizaciones disponibles. Tiene la última versión.</translation>
     </message>
@@ -2778,12 +2778,12 @@ Tenga en cuenta que el uso de cualquier opción de línea de comando de registro
 <context>
     <name>OCC::RequestAuthenticationController</name>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="97"/>
+        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="100"/>
         <source>IdP is unreachable. Contact your system administrator or try again later.</source>
         <translation>No se puede acceder a IdP. Póngase en contacto con el administrador del sistema o vuelva a intentarlo más tarde.</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="108"/>
+        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="111"/>
         <source>Authentication failed.</source>
         <translation>La autenticación ha fallado.</translation>
     </message>
@@ -3223,7 +3223,7 @@ Tenga en cuenta que el uso de cualquier opción de línea de comando de registro
 <context>
     <name>OCC::UpdaterScheduler</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="49"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="51"/>
         <source>Update available</source>
         <translation>Actualización disponible</translation>
     </message>
@@ -3231,52 +3231,52 @@ Tenga en cuenta que el uso de cualquier opción de línea de comando de registro
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="42"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="54"/>
         <source>Your web browser will be opened to complete sign in.</source>
         <translation>Se abrirá su navegador web para completar el inicio de sesión.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="57"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="69"/>
         <source>%1 logo</source>
         <translation>%1 logotipo</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="59"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="71"/>
         <source>Welcome to %1</source>
         <translation>Bienvenido a %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="67"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="79"/>
         <source>Enter your server address to get started. Your web browser will be opened to complete sign in.</source>
         <translation>Introduce la dirección de su servidor para empezar. Se abrirá su navegador web para completar el inicio de sesión.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="83"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="95"/>
         <source>Server address field</source>
         <translation>Campo de dirección del servidor</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="84"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="96"/>
         <source>Enter your server address here</source>
         <translation>Introduzca aquí la dirección de su servidor.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="105"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="117"/>
         <source>Additional logo defined by the organization</source>
         <translation>Logotipo adicional definido por la organización.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="198"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="210"/>
         <source>Invalid server URL: %1</source>
         <translation>URL del servidor no válida: %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="202"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="214"/>
         <source>Invalid URL scheme. Only https is accepted.</source>
         <translation>Esquema de URL no válido. Solo se acepta https.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="230"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="242"/>
         <source>The requested URL failed with query value: %1</source>
         <translation>La URL solicitada ha fallado con el valor de consulta: %1</translation>
     </message>
@@ -3395,37 +3395,37 @@ Tenga en cuenta que el uso de cualquier opción de línea de comando de registro
 <context>
     <name>OCC::WindowsUpdater</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="373"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="375"/>
         <source>&lt;p&gt;A new version of the %1 Client is available.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; is available for download. The installed version is %3.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Una nueva versión del programa cliente de %1 está disponible.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; está disponible para descargar. La versión instalada es la %3.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="419"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="421"/>
         <source>Skip this version</source>
         <translation>Saltarse esta versión</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="400"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="402"/>
         <source>Update Failed</source>
         <translation>La actualización ha fallado</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="406"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="408"/>
         <source>&lt;p&gt;A new version of the %1 Client is available but the updating process failed.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; has been downloaded. The installed version is %3.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Una nueva versión de %1 Client está disponible pero el proceso de actualización falló.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; ha sido descargado. La versión instalada es %3.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="420"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="422"/>
         <source>Ask again later</source>
         <translation>Preguntar de nuevo más tarde </translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="421"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="423"/>
         <source>Restart and update</source>
         <translation>Reiniciar y actualizar</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="422"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="424"/>
         <source>Update manually</source>
         <translation>Actualizar manualmente</translation>
     </message>
