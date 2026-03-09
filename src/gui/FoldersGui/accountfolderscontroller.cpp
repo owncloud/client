@@ -119,28 +119,35 @@ void AccountFoldersController::buildMenuActions()
 
     // show in finder
     _showInSystemFolder = new QAction(CommonStrings::showInFileBrowser(), this);
+    _showInSystemFolder->setObjectName("showInFileSystemAction");
     itemActions.push_back(_showInSystemFolder);
     connect(_showInSystemFolder, &QAction::triggered, this, &AccountFoldersController::onShowInSystemFolder);
 
     if (_accountState->account()->capabilities().privateLinkPropertyAvailable()) {
         _showInBrowser = new QAction(CommonStrings::showInWebBrowser(), this);
+        _showInBrowser->setObjectName("showInBrowserAction");
         itemActions.push_back(_showInBrowser);
         connect(_showInBrowser, &QAction::triggered, this, &AccountFoldersController::onShowInBrowser);
     }
 
     QAction *separator = new QAction(this);
+    // I don't think this is particularly useful but shouldn't hurt
+    separator->setObjectName("sparatorAction");
     separator->setSeparator(true);
     itemActions.push_back(separator);
 
     _forceSync = new QAction(tr("Force sync now"), this);
+    _forceSync->setObjectName("forceSyncAction");
     itemActions.push_back(_forceSync);
     connect(_forceSync, &QAction::triggered, this, &AccountFoldersController::onForceSync);
 
     _pauseSync = new QAction(this);
+    _pauseSync->setObjectName("pauseSyncAction");
     itemActions.push_back(_pauseSync);
     connect(_pauseSync, &QAction::triggered, this, &AccountFoldersController::onTogglePauseSync);
 
     _chooseSync = new QAction(tr("Choose what to sync"), this);
+    _chooseSync->setObjectName("selectiveSyncAction");
 
     Vfs::Mode mode = VfsPluginManager::instance().bestAvailableVfsMode();
     if (mode == Vfs::WindowsCfApi) {
@@ -157,6 +164,7 @@ void AccountFoldersController::buildMenuActions()
         }
         else {
             _enableVfs = new QAction(this);
+            _enableVfs->setObjectName("enableVfsAction");
             itemActions.push_back(_enableVfs);
             connect(_enableVfs, &QAction::triggered, this, &AccountFoldersController::onEnableVfs);
         }
@@ -168,6 +176,7 @@ void AccountFoldersController::buildMenuActions()
     }
 
     _removeSync = new QAction(tr("Remove folder sync connection"), this);
+    _removeSync->setObjectName("removeFolderSyncAction");
     itemActions.push_back(_removeSync);
     connect(_removeSync, &QAction::triggered, this, &AccountFoldersController::onRemoveSync);
 

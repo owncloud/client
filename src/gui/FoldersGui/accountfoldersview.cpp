@@ -58,7 +58,8 @@ void AccountFoldersView::buildView()
     buttonLineLayout->addWidget(description, 0, Qt::AlignLeft);
 
     _addFolderButton = new QPushButton(tr("Add new folder sync…"), this);
-    _addFolderButton->setObjectName("addAccountFolderButton");
+    _addFolderButton->setObjectName("addFolderSyncButton");
+    _addFolderButton->setFocusPolicy(Qt::StrongFocus);
     connect(_addFolderButton, &QPushButton::clicked, this, &AccountFoldersView::addFolderTriggered);
     buttonLineLayout->addStretch(1);
     buttonLineLayout->addWidget(_addFolderButton, 0, Qt::AlignRight);
