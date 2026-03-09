@@ -130,12 +130,14 @@ void FolderModelController::onFolderRemoved(const QUuid &accountId, Folder *fold
     if (_items.contains(id)) {
         QStandardItem *it = _items.value(folder->spaceId());
         QModelIndex index = it->index();
+        QModelIndex previousIndex = _model->sibling(index.row() - 1, 0, index);
         if (index.isValid())
             // note that removeRow(s) takes care of deleting the items in the row
             _model->removeRow(it->index().row());
         _items.remove(id);
-    }
-    // should not need to sort on remove
+        // should not need to sort on remove but it's helpful to update the selection to previous item:
+        _selectionModel->setCurrentIndex(previousIndex, QItemSelectionModel::Rows | QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Current);
+    }   
 }
 
 void FolderModelController::connectSignals(FolderMan *folderMan)
