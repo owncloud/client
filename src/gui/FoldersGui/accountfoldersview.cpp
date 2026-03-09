@@ -136,6 +136,7 @@ bool AccountFoldersView::eventFilter(QObject *obj, QEvent *ev)
     if (obj == _treeView) {
         if (ev->type() == QEvent::FocusIn) {
             QModelIndex current = _treeView->currentIndex();
+            _treeView->scrollTo(current);
             _treeView->edit(current);
             // don't mark it as handled because we want the normal focus behavior in the tree to still work!
         }
