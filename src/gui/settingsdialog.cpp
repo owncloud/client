@@ -326,8 +326,13 @@ void SettingsDialog::runFolderWizard(Account *account)
     if (!account)
         return;
     setCurrentAccount(account);
+#ifdef USE_NEW_FOLDER_LIST
+    accountView(_currentAccount)->slotAddFolder();
+#else
     accountSettings(_currentAccount)->slotAddFolder();
+#endif
 }
+
 
 } // namespace OCC
 

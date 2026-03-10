@@ -66,22 +66,20 @@ public:
     void addModalLegacyDialog(QWidget *widget, ModalWidgetSizePolicy sizePolicy);
     void addModalAccountWidget(AccountModalWidget *widget);
 
-    //   uint unsyncedSpaces() const;
-    //   uint syncedSpaces() const;
-
-    // QSortFilterProxyModel *model() { return _sortModel; }
+    // this is called by SettingsDialog directly but should be corrected to either respond to signal, or just make
+    // it a normal function
+    void slotAddFolder();
 
 Q_SIGNALS:
     void showIssuesList();
 
 
-public Q_SLOTS:
-    void slotAccountStateChanged(AccountState::State state);
-
 protected Q_SLOTS:
+    void slotAccountStateChanged(AccountState::State state);
     void slotDeleteAccount();
     void slotOpenAccountInBrowser();
     void slotToggleSignInState();
+    void slotFolderWizardAccepted();
 
 protected:
     void accountSettingUpChanged(bool settingUp);
