@@ -40,6 +40,9 @@ signals:
     void addFolderTriggered();
     void requestActionsUpdate();
 
+protected:
+    bool eventFilter(QObject *obj, QEvent *ev) override;
+
 private:
     void buildView();
     void popItemMenu(const QPoint &pos);

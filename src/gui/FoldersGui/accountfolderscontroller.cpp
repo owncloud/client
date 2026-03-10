@@ -55,7 +55,7 @@ AccountFoldersController::AccountFoldersController(AccountState *state, AccountF
     QStandardItemModel *model = modelController->itemModel();
     _view->setItemModels(model, modelController->selectionModel());
 
-    connect(_view, &AccountFoldersView::addFolderTriggered, this, &AccountFoldersController::slotAddFolder);
+    connect(_view, &AccountFoldersView::addFolderTriggered, this, &AccountFoldersController::onAddFolder);
 
     FolderMan *folderMan = FolderMan::instance();
     modelController->connectSignals(folderMan);
@@ -83,7 +83,7 @@ void AccountFoldersController::onFolderChanged(OCC::Folder *folder)
     _currentFolder = folder;
 }
 
-void AccountFoldersController::slotAddFolder()
+void AccountFoldersController::onAddFolder()
 {
     if (!_accountState || !_accountState->account()) {
         return;
@@ -92,12 +92,12 @@ void AccountFoldersController::slotAddFolder()
     FolderWizard *folderWizard = new FolderWizard(_accountState->account(), nullptr);
     folderWizard->setAttribute(Qt::WA_DeleteOnClose);
 
-    connect(folderWizard, &FolderWizard::folderWizardAccepted, this, &AccountFoldersController::slotFolderWizardAccepted);
+    connect(folderWizard, &FolderWizard::folderWizardAccepted, this, &AccountFoldersController::onFolderWizardAccepted);
 
     emit requestShowModalWidget(folderWizard);
 }
 
-void AccountFoldersController::slotFolderWizardAccepted(OCC::FolderMan::SyncConnectionDescription result)
+void AccountFoldersController::onFolderWizardAccepted(OCC::FolderMan::SyncConnectionDescription result)
 {
     if (!_accountState) {
         return;
@@ -119,28 +119,35 @@ void AccountFoldersController::buildMenuActions()
 
     // show in finder
     _showInSystemFolder = new QAction(CommonStrings::showInFileBrowser(), this);
+    _showInSystemFolder->setObjectName("showInFileSystemAction");
     itemActions.push_back(_showInSystemFolder);
     connect(_showInSystemFolder, &QAction::triggered, this, &AccountFoldersController::onShowInSystemFolder);
 
     if (_accountState->account()->capabilities().privateLinkPropertyAvailable()) {
         _showInBrowser = new QAction(CommonStrings::showInWebBrowser(), this);
+        _showInBrowser->setObjectName("showInBrowserAction");
         itemActions.push_back(_showInBrowser);
         connect(_showInBrowser, &QAction::triggered, this, &AccountFoldersController::onShowInBrowser);
     }
 
     QAction *separator = new QAction(this);
+    // I don't think this is particularly useful but shouldn't hurt
+    separator->setObjectName("sparatorAction");
     separator->setSeparator(true);
     itemActions.push_back(separator);
 
     _forceSync = new QAction(tr("Force sync now"), this);
+    _forceSync->setObjectName("forceSyncAction");
     itemActions.push_back(_forceSync);
     connect(_forceSync, &QAction::triggered, this, &AccountFoldersController::onForceSync);
 
     _pauseSync = new QAction(this);
+    _pauseSync->setObjectName("pauseSyncAction");
     itemActions.push_back(_pauseSync);
     connect(_pauseSync, &QAction::triggered, this, &AccountFoldersController::onTogglePauseSync);
 
     _chooseSync = new QAction(tr("Choose what to sync"), this);
+    _chooseSync->setObjectName("selectiveSyncAction");
 
     Vfs::Mode mode = VfsPluginManager::instance().bestAvailableVfsMode();
     if (mode == Vfs::WindowsCfApi) {
@@ -157,6 +164,7 @@ void AccountFoldersController::buildMenuActions()
         }
         else {
             _enableVfs = new QAction(this);
+            _enableVfs->setObjectName("enableVfsAction");
             itemActions.push_back(_enableVfs);
             connect(_enableVfs, &QAction::triggered, this, &AccountFoldersController::onEnableVfs);
         }
@@ -168,6 +176,7 @@ void AccountFoldersController::buildMenuActions()
     }
 
     _removeSync = new QAction(tr("Remove folder sync connection"), this);
+    _removeSync->setObjectName("removeFolderSyncAction");
     itemActions.push_back(_removeSync);
     connect(_removeSync, &QAction::triggered, this, &AccountFoldersController::onRemoveSync);
 
@@ -276,7 +285,7 @@ void AccountFoldersController::onForceSync()
                "<p>Do you really want to force a Synchronization now?"),
             QMessageBox::Yes | QMessageBox::No, ocApp()->gui()->settingsDialog());
         int result = messageBox.exec();
-        if (result == QDialog::Rejected)
+        if (result == QMessageBox::No)
             return;
     }
 
@@ -296,7 +305,7 @@ void AccountFoldersController::onTogglePauseSync()
                 QMessageBox::Yes | QMessageBox::No, ocApp()->gui()->settingsDialog());
             msgbox.setDefaultButton(QMessageBox::No);
             int result = msgbox.exec();
-            if (result == QDialog::Rejected)
+            if (result == QMessageBox::No)
                 return;
             _currentFolder->slotTerminateSync(tr("Sync paused by user"));
         }
@@ -325,7 +334,7 @@ void AccountFoldersController::onRemoveSync()
     msgBox.button(QMessageBox::No)->setText(tr("Cancel"));
 
     int result = msgBox.exec();
-    if (result == QDialog::Rejected)
+    if (result == QMessageBox::No)
         return;
     // todo: make it a signal
     FolderMan::instance()->removeFolderFromGui(_currentFolder);

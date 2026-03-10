@@ -14,6 +14,7 @@
 
 #include "accountfoldersview.h"
 
+#include <QApplication>
 #include <QHBoxLayout>
 #include <QHeaderView>
 #include <QLabel>
@@ -38,6 +39,7 @@ AccountFoldersView::AccountFoldersView(QWidget *parent)
     // do anything relative to the parent in this construction setup because it is not known at time of construction.
 
     _itemMenu = new QMenu(this);
+    _itemMenu->setObjectName("folderOptionsMenu");
     _itemMenu->setAccessibleName(tr("Sync options menu"));
 
     buildView();
@@ -56,7 +58,8 @@ void AccountFoldersView::buildView()
     buttonLineLayout->addWidget(description, 0, Qt::AlignLeft);
 
     _addFolderButton = new QPushButton(tr("Add new folder sync…"), this);
-    _addFolderButton->setObjectName("addAccountFolderButton");
+    _addFolderButton->setObjectName("addFolderSyncButton");
+    _addFolderButton->setFocusPolicy(Qt::StrongFocus);
     connect(_addFolderButton, &QPushButton::clicked, this, &AccountFoldersView::addFolderTriggered);
     buttonLineLayout->addStretch(1);
     buttonLineLayout->addWidget(_addFolderButton, 0, Qt::AlignRight);
@@ -64,12 +67,16 @@ void AccountFoldersView::buildView()
 
     _treeView = new QTreeView(this);
     _treeView->setObjectName("accountFoldersTreeView");
+    _treeView->setFocusPolicy(Qt::StrongFocus);
+    _treeView->installEventFilter(this);
+
     _treeView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     _treeView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     _treeView->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     // indentation is "required" to show the expanders on folder when there are errors
-    // from experimentation, I think 10 is the min indent we can get away with but I may increase it as it doesn't look quite right
-    _treeView->setIndentation(10);
+    // I played around with this a lot and I think letting the default indent ride is the best choice, otherwise it can be hard
+    // to trigger the expander consistently, among other things
+    //_treeView->setIndentation(10);
     _treeView->setItemsExpandable(true);
     _treeView->setExpandsOnDoubleClick(true);
     _treeView->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -85,7 +92,7 @@ void AccountFoldersView::buildView()
     _treeView->setHeaderHidden(true);
 
     // this method of correcting the row selection color to match the app button highlight does not work when user has changed system settings (the color sticks
-    // with the color that matched the system settings on creation of the view, which is bad. this color correcion has been moved to the item delegates for now
+    // with the color that matched the system settings on creation of the view, which is bad. this color correction has been moved to the item delegates for now
     // because we can always grab the true current color on paint.
     // TODO: #60 - we really need to implement full palettes for both light and dark mode. my rec would be to use a QStyle sub but will
     // make a decision when the time comes.
@@ -95,20 +102,15 @@ void AccountFoldersView::buildView()
     _treeView->setPalette(treePalette);
 
 
-    FolderItemDelegate *delegate = new FolderItemDelegate(_treeView);
+    FolderItemDelegate *delegate = new FolderItemDelegate(_treeView->indentation(), _treeView);
     _treeView->setItemDelegateForColumn(0, delegate);
     // note this is not the normal ellipses character, it's vertically centered instead of positioned at font baseline. This is better
-    // for this button than normal ellipses
+    // for this button than normal ellipses. We also have an elipses icon (core/more.svg) but it looks quite bad in the button so text it is
     ButtonDelegate *buttonDel = new ButtonDelegate("⋯", _treeView);
     buttonDel->setMenu(_itemMenu);
     _treeView->setItemDelegateForColumn(1, buttonDel);
 
-    _treeView->setColumnWidth(1, 60);
-    // this works but only when the button item is current. this means I have to set the button column to current each time row selection
-    // changes but it works well so far. Still needs some tweaks to ensure the edit mode stays active when you click around in the same row.
-    // sometimes the button disappears. Note that using AllEditTriggers does not improve things but with all triggers you can trigger the menu
-    // on the button by hitting the space bar - this seems really weird but I'll take it? Needs testing on windows.
-    _treeView->setEditTriggers(QAbstractItemView::AllEditTriggers);
+    _treeView->setEditTriggers(QAbstractItemView::CurrentChanged | QAbstractItemView::EditKeyPressed | QAbstractItemView::SelectedClicked);
 
     _treeView->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(_treeView, &QWidget::customContextMenuRequested, this, &AccountFoldersView::popItemMenu);
@@ -123,13 +125,36 @@ void AccountFoldersView::buildView()
     setLayout(mainLayout);
 }
 
+bool AccountFoldersView::eventFilter(QObject *obj, QEvent *ev)
+{
+    // we do not get clicked events here - no idea why. In addition, the treeview->clicked signal is sent so rarely it's fairly
+    // useless. I have no idea how this is supposed to work as all mouse events should be reaching the tree at least? Apparently not.
+    // We do get a InputMethodQueryEvent each time but I think this only relates to text based editor delegates? No idea why we get this
+    // for a non-text editor
+    // furthermore, we seem to get a focus event for *every* mouse triggered row selection, which strikes me as weird.
+    // Anyway this filter works for making sure the current item is always in edit mode when the tree gains focus, regardless of how it happens
+    if (obj == _treeView) {
+        if (ev->type() == QEvent::FocusIn) {
+            QModelIndex current = _treeView->currentIndex();
+            _treeView->scrollTo(current);
+            _treeView->edit(current);
+            // don't mark it as handled because we want the normal focus behavior in the tree to still work!
+        }
+    }
+    return false;
+}
+
 void AccountFoldersView::setItemModels(QStandardItemModel *model, QItemSelectionModel *selectionModel)
 {
     // order here is important, if you set the selection model before the main model the selection model for the view
     // reverts to the "default" selectionModel.
-    // also the tree view doesn't manage the lifetime of the selection  model so we could/possibly should delete the default here
+    // also the tree view doesn't manage the lifetime of the selection  model so we delete the default here
+    // and no we can't just use the default selection model directly as it doesn't exist when the model controller
+    // is being set up :/ Thank you, .ui impl
     _treeView->setModel(model);
+    QItemSelectionModel *origSelectionModel = _treeView->selectionModel();
     _treeView->setSelectionModel(selectionModel);
+    origSelectionModel->deleteLater();
 
     // these settings can only work if/when the model has been added to the view because the header "data" comes from the model.
     // without the header data the logical indexes do not exist so...we can't do it in the ctr unless we inject the models there.
@@ -137,8 +162,8 @@ void AccountFoldersView::setItemModels(QStandardItemModel *model, QItemSelection
     QHeaderView *header = _treeView->header();
     header->setStretchLastSection(false);
     header->setSectionResizeMode(0, QHeaderView::Stretch);
-    // if the resize mode is Fixed, for inexplicable reasons the delegate size hint is completely ignored, and the cell
-    // width is fixed at 100px
+    // ResizeToContents is required to allow the button delegate size hint to work - else it defaults to 100px wide regardless
+    // of other settings.
     header->setSectionResizeMode(1, QHeaderView::ResizeToContents);
 }
 
@@ -168,6 +193,9 @@ void AccountFoldersView::refreshMenu()
 
 void AccountFoldersView::popItemMenu(const QPoint &pos)
 {
-    _itemMenu->exec(_treeView->viewport()->mapToGlobal(pos));
+    // only pop the menu on folder items. TODO: work out a secondary menu to allow copy of any sync error(s)
+    // shown in the child items
+    if (!_treeView->currentIndex().parent().isValid())
+        _itemMenu->exec(_treeView->viewport()->mapToGlobal(pos));
 }
 }

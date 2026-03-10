@@ -60,5 +60,6 @@ public:
    QHash<QString, QStandardItem *> _items;
    QStandardItemModel *_model = nullptr;
    QItemSelectionModel *_selectionModel = nullptr;
+   bool _multiLoad = false;
 };
 }

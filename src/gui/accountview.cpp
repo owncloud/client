@@ -79,11 +79,6 @@ AccountView::AccountView(AccountState *accountState, QWidget *parent)
     connect(foldersController, &AccountFoldersController::requestShowModalWidget, this, &AccountView::onRequestShowModalWidget);
     connect(foldersController, &AccountFoldersController::requestAccountModalWidget, this, &AccountView::onRequestAccountModalWidget);
 
-
-    //   _model = new FolderStatusModel(_accountState, this);
-
-    //  connect(folderMan, &FolderMan::folderSyncStateChange, _model, &FolderStatusModel::slotFolderSyncStateChange);
-
     ui->connectionStatusLabel->clear();
 
     connect(_accountState, &AccountState::stateChanged, this, &AccountView::slotAccountStateChanged);
@@ -98,6 +93,13 @@ AccountView::AccountView(AccountState *accountState, QWidget *parent)
     ui->stackedWidget->setCurrentWidget(ui->accountFoldersView);
 }
 
+AccountView::~AccountView()
+{
+    // this is questionable.
+    _goingDown = true;
+    delete ui;
+}
+
 void AccountView::accountSettingUpChanged(bool settingUp)
 {
     if (settingUp) {
@@ -107,6 +109,45 @@ void AccountView::accountSettingUpChanged(bool settingUp)
         ui->spinner->stopAnimation();
         ui->stackedWidget->setCurrentWidget(ui->accountFoldersView);
     }
+}
+
+void AccountView::slotAddFolder()
+{
+    if (!_accountState || !_accountState->account()) {
+        return;
+    }
+
+    FolderWizard *folderWizard = new FolderWizard(_accountState->account(), this);
+    folderWizard->setAttribute(Qt::WA_DeleteOnClose);
+
+    connect(folderWizard, &QDialog::accepted, this, &AccountView::slotFolderWizardAccepted);
+    connect(folderWizard, &QDialog::rejected, this, [] { qCInfo(lcAccountView) << "Folder wizard cancelled"; });
+
+    addModalLegacyDialog(folderWizard, AccountView::ModalWidgetSizePolicy::Expanding);
+}
+
+void AccountView::slotFolderWizardAccepted()
+{
+    if (!_accountState) {
+        return;
+    }
+
+    FolderWizard *folderWizard = qobject_cast<FolderWizard *>(sender());
+    if (!folderWizard)
+        return;
+
+    qCInfo(lcAccountView) << "Folder wizard completed";
+
+    auto config = folderWizard->result();
+
+    // The gui should not allow users to selectively choose any sync lists if vfs is enabled, but this kind of check was
+    // originally in play here so...keep it just in case.
+    if (config.useVirtualFiles && !config.selectiveSyncBlackList.empty()) {
+        config.selectiveSyncBlackList.clear();
+    }
+
+    // Refactoring todo: turn this into a signal/requestAddFolder
+    FolderMan::instance()->addFolderFromGui(_accountState, config);
 }
 
 void AccountView::slotOpenAccountInBrowser()
@@ -250,12 +291,6 @@ void AccountView::slotAccountStateChanged(AccountState::State state)
     }
 }
 
-
-AccountView::~AccountView()
-{
-    _goingDown = true;
-    delete ui;
-}
 
 void AccountView::addModalLegacyDialog(QWidget *widget, ModalWidgetSizePolicy sizePolicy)
 {

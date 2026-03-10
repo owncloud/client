@@ -21,8 +21,9 @@
 
 
 namespace OCC {
-FolderItemDelegate::FolderItemDelegate(QObject *parent)
+FolderItemDelegate::FolderItemDelegate(int treeIndentation, QObject *parent)
     : QItemDelegate{parent}
+    , _treeIndentation(treeIndentation)
 {
 }
 
@@ -120,22 +121,16 @@ void FolderItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
 
 void FolderItemDelegate::paintError(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    QStyleOptionViewItem baseOpt(option);
+    QStyleOptionViewItem rowOpt(option);
     QStyleOptionButton buttonStyle;
-    baseOpt.palette.setColor(QPalette::Highlight, buttonStyle.palette.color(QPalette::Highlight));
-    QRect widgetRect = option.widget->rect();
-    int fullWidth = widgetRect.width();
-    int missingX = 0;
-    const QTreeView *tree = qobject_cast<const QTreeView *>(option.widget);
-    if (tree)
-        missingX = tree->indentation() * 2;
-    // yes this x should be negative to overtake any indent on the tree
-    // opt.rect.setLeft(opt.rect.width() - fullWidth);
-    baseOpt.rect.setWidth(fullWidth);
+    rowOpt.palette.setColor(QPalette::Highlight, buttonStyle.palette.color(QPalette::Highlight));
+
+
     // this allows painting over the indent area which may be incorrect color after switching dark/light mode
     // note we *can't* do this on the folder row because the expander is then invisible.
-    baseOpt.rect.setLeft(-missingX);
-    drawBackground(painter, baseOpt, index);
+    rowOpt.rect.setLeft(rowOpt.rect.left() - _treeIndentation * 2);
+
+    drawBackground(painter, rowOpt, index);
 
     QStyleOptionViewItem opt(option);
     QFontMetrics metrics(opt.font);
@@ -143,7 +138,6 @@ void FolderItemDelegate::paintError(QPainter *painter, const QStyleOptionViewIte
     QSize iconSize(lineHeight, lineHeight);
 
     int indent = calculateErrorIndent(opt);
-
     // these placements align the error icon and text with the status icon and text of the parent folder
     opt.rect.setTop(opt.rect.top() + _cellBorder);
     opt.rect.setLeft(opt.rect.left() + indent);
@@ -155,7 +149,8 @@ void FolderItemDelegate::paintError(QPainter *painter, const QStyleOptionViewIte
 
     painter->save();
     painter->setPen(QPen(QBrush(_separatorColor), _cellSeparatorWidth));
-    painter->drawLine(_cellBorder, baseOpt.rect.bottom(), widgetRect.right() - _cellBorder, baseOpt.rect.bottom());
+
+    painter->drawLine(option.rect.left() - _treeIndentation, rowOpt.rect.bottom(), rowOpt.rect.right(), rowOpt.rect.bottom());
 
     painter->restore();
 }
@@ -168,35 +163,38 @@ QSize FolderItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QMo
     // issues so I'm just using brute force
     // I will try to optimize this later but for the moment, everything looks quite good in action.
 
+
+    if (index.parent().isValid())
+        return errorSizeHint(option, index);
+
     QSize defaultSize = QItemDelegate::sizeHint(option, index);
-    int totalHeight = 0;
+    int firstLineHeight = 0;
+    int secondLineHeight = 0;
+    calculateLineHeights(option, firstLineHeight, secondLineHeight);
+    defaultSize.setHeight(firstLineHeight + secondLineHeight + _lineSpacing + (_cellBorder * 2) + _cellSeparatorWidth);
 
-    if (index.parent().isValid()) {
-        int viewWidth = option.widget->width();
-
-        // need to compensate for the width of the button column too
-        int buttonColumnWidth = 0;
-        const QTreeView *tree = qobject_cast<const QTreeView *>(option.widget);
-        if (tree)
-            buttonColumnWidth = tree->columnWidth(1);
-        int indent = calculateErrorIndent(option);
-        int errorWidth = viewWidth - (indent + _cellBorder + buttonColumnWidth);
-
-        QStyleOptionViewItem opt(option);
-        opt.rect.setWidth(errorWidth);
-        QRect textRect = calculateErrorTextRect(opt, index);
-        totalHeight = _cellBorder * 2 + _cellSeparatorWidth + textRect.height();
-        // weirdly, it does not seem to matter that I am not setting the correct width on the hint...
-        // todo: see what happens if I do.
-    } else {
-        int firstLineHeight = 0;
-        int secondLineHeight = 0;
-        calculateLineHeights(option, firstLineHeight, secondLineHeight);
-        totalHeight = _cellBorder * 2 + _cellSeparatorWidth + firstLineHeight + secondLineHeight + _lineSpacing;
-    }
-
-    defaultSize.setHeight(totalHeight);
     return defaultSize;
+}
+
+QSize FolderItemDelegate::errorSizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
+    int viewWidth = option.widget->width();
+
+    // need to compensate for the width of the button column too
+    int buttonColumnWidth = 0;
+    const QTreeView *tree = qobject_cast<const QTreeView *>(option.widget);
+    if (tree)
+        buttonColumnWidth = tree->columnWidth(1);
+    int errorIndent = calculateErrorIndent(option);
+    int errorWidth = viewWidth - (errorIndent + _treeIndentation + buttonColumnWidth);
+
+    QStyleOptionViewItem opt(option);
+    opt.rect.setWidth(errorWidth);
+    QRect textRect = calculateErrorTextRect(opt, index);
+    int totalHeight = _cellBorder * 2 + _cellSeparatorWidth + textRect.height();
+    // weirdly, it does not seem to matter that I am not setting the correct width on the hint...
+    // todo: see what happens if I do.
+    return {viewWidth - buttonColumnWidth, totalHeight};
 }
 
 QRect FolderItemDelegate::calculateErrorTextRect(const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -213,8 +211,7 @@ int FolderItemDelegate::calculateErrorIndent(const QStyleOptionViewItem &option)
     calculateLineHeights(option, line1, line2);
     int iconAreaWidth = line1 + line2 + _lineSpacing;
     // we don't want to do anything special with the tree's indent as that offset should be baked into the option rect during paint
-    int totalOffset = iconAreaWidth + _horizontalSpacing;
-    // possibly add the tree indent here too
+    int totalOffset = iconAreaWidth;
     return totalOffset;
 }
 

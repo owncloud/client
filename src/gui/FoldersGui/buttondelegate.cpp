@@ -14,13 +14,16 @@
 
 #include "buttondelegate.h"
 
-#include "resources.h"
+#include <QAbstractItemView>
+#include <QEvent>
 #include <QPainter>
 #include <QPushButton>
+#include <QStandardItemModel>
+#include <QTreeView>
 
 namespace OCC {
 
-ButtonDelegate::ButtonDelegate(const QString &text, QObject *parent)
+ButtonDelegate::ButtonDelegate(const QString &text, QAbstractItemView *parent)
     : QItemDelegate{parent}
     , _buttonText(text)
 {
@@ -30,7 +33,10 @@ ButtonDelegate::ButtonDelegate(const QString &text, QObject *parent)
 
     _button = new QPushButton(_buttonText);
     _button->setObjectName("buttonDelegateButton");
+    _button->setFocusPolicy(Qt::StrongFocus);
     _button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    _button->setStyleSheet("QPushButton::menu-indicator{width:0px;}");
+
     // I think this only needs to be set in the underlying item.
     //_button->setAccessibleName("Folder options");
     //_button->setAccessibleDescription("Menu button with folder options. Hit the space key to auto-pop the menu");
@@ -48,7 +54,7 @@ void ButtonDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option
     // the window color above and below the button. No idea. This is on mac at least. The fix is to not paint the text dots if the button
     // is showing on the current cell, as if we paint them there is bleed through visibility of the text under the button since we apparently
     // autoFillBackground has to be off :/
-    if (!_button->isVisible() || !option.rect.contains(_button->pos())) {
+    if (!index.parent().isValid() && (!_button->isVisible() || !option.rect.contains(_button->pos()))) {
         QFont f = painter->font();
         f.setBold(true);
         f.setPixelSize(18);
@@ -81,6 +87,7 @@ QWidget *ButtonDelegate::createEditor(QWidget *parent, const QStyleOptionViewIte
     return _button;
 }
 
+
 void ButtonDelegate::destroyEditor(QWidget *widget, const QModelIndex &index) const
 {
     Q_UNUSED(widget);
@@ -99,6 +106,23 @@ void ButtonDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionVie
     int xOffset = (option.rect.width() - _button->width()) / 2;
     int yOffset = (option.rect.height() - _button->height()) / 2;
     _button->move(option.rect.left() + xOffset, option.rect.top() + yOffset);
+}
+
+bool ButtonDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
+{
+    // implement the menu auto-pop when clicking the delegate directly
+    if (event->type() == QEvent::MouseButtonPress) {
+        QAbstractItemView *view = qobject_cast<QAbstractItemView *>(parent());
+        if (view) {
+            QModelIndex current = view->currentIndex();
+            if (current != index)
+                view->setCurrentIndex(index);
+            _button->setVisible(true);
+            _button->showMenu();
+            return true;
+        }
+    }
+    return QItemDelegate::editorEvent(event, model, option, index);
 }
 
 void ButtonDelegate::setMenu(QMenu *menu)
