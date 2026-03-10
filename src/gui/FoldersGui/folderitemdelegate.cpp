@@ -18,9 +18,6 @@
 #include <QPainter>
 
 #include <QTreeView>
-#include <QtWidgets/qheaderview.h>
-
-#include <QDebug>
 
 
 namespace OCC {
