@@ -410,29 +410,29 @@ Cliente de escritorio para la sincronización de archivos.</translation>
 <context>
     <name>OCC::AccountFoldersController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="135"/>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="227"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="139"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="236"/>
         <source>Force sync now</source>
         <translation>Forzar la sincronización ahora</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="170"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="178"/>
         <source>Remove folder sync connection</source>
         <translation>Eliminar la sincronización de carpetas conectadas</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="143"/>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="352"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="149"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="361"/>
         <source>Choose what to sync</source>
         <translation>Elija qué sincronizar</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="190"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="199"/>
         <source>Disable virtual file support?</source>
         <translation>¿Desactivar soporte a archivo virtual?</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="191"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="200"/>
         <source>This action will disable virtual file support. As a consequence contents of folders that are currently marked as 'available online only' will be downloaded.
 
 The only advantage of disabling virtual file support is that the selective sync feature will become available again.
@@ -445,78 +445,78 @@ La única ventaja de deshabilitar el soporte de archivos virtuales es que la fun
 Esta acción abortará cualquier sincronización actualmente en ejecución.</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="199"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="208"/>
         <source>Disable support</source>
         <translation>Desactivar ayuda</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="227"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="236"/>
         <source>Restart sync</source>
         <translation>Reiniciar sincronización</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="229"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="238"/>
         <source>Resume sync</source>
         <translation>Continuar sincronización</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="229"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="238"/>
         <source>Pause sync</source>
         <translation>Pausar sincronización</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="238"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="247"/>
         <source>Disable virtual file support</source>
         <translation>Deaktivieren Sie die Virtual File Unterstützung</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="238"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="247"/>
         <source>Enable virtual file support</source>
         <translation>Aktivieren Sie die Virtual File Unterstützung</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="274"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="283"/>
         <source>Internet connection is metered</source>
         <translation>Die Internetverbindung wird für den Durchsatz überwacht</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="275"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="284"/>
         <source>Synchronization is paused because the Internet connection is a metered connection&lt;p&gt;Do you really want to force a Synchronization now?</source>
         <translation>Die Synchronisation wurde pausiert, da die Internetverbindung für den Durchsatz überwacht wird&lt;p&gt;Wollen Sie die Synchronisation trotzdem durchführen?</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="295"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="304"/>
         <source>Sync Running</source>
         <translation>Sincronización en curso</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="295"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="304"/>
         <source>The sync operation is running.&lt;br/&gt;Do you want to stop it?</source>
         <translation>Die sync Operation läuft gerade.&lt;br/&gt;Wollen Sie sie stoppen?</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="301"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="310"/>
         <source>Sync paused by user</source>
         <translation>Synchronisation durch den Benutzer pausiert</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="319"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="328"/>
         <source>Confirm Folder Sync Connection Removal</source>
         <translation>Confirme eliminación de la Conexión a la carpeta sincronizada</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="320"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="329"/>
         <source>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
         <translation>&lt;p&gt;¿De verdad quiere dejar de sincronizar la carpeta &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Nota:&lt;/b&gt; Esto &lt;b&gt;no&lt;/b&gt; eliminará los archivos.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="324"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="333"/>
         <source>Remove Folder Sync Connection</source>
         <translation>Eliminar carpeta de sincronización conectada</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="200"/>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="325"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="209"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="334"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>
@@ -524,27 +524,27 @@ Esta acción abortará cualquier sincronización actualmente en ejecución.</tra
 <context>
     <name>OCC::AccountFoldersView</name>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="41"/>
+        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="43"/>
         <source>Sync options menu</source>
         <translation>Menú de opciones de sincronización</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="49"/>
+        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="51"/>
         <source>Folder sync</source>
         <translation>Folder sync</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="54"/>
+        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="56"/>
         <source>Manage your synced folders</source>
         <translation>Gestiona sus carpetas sincronizadas</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="58"/>
+        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="60"/>
         <source>Add new folder sync…</source>
         <translation>Añadir nueva sincronización de carpetas...</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="147"/>
+        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="172"/>
         <source>Syncing %1 out of %2 spaces</source>
         <translation type="unfinished"/>
     </message>
@@ -820,103 +820,103 @@ Esta acción abortará cualquier sincronización actualmente en ejecución.</tra
         <translation>Conexiones de sincronización</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="347"/>
+        <location filename="../src/gui/accountview.cpp" line="382"/>
         <source>Cancel</source>
         <translation>Cancelar</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="183"/>
+        <location filename="../src/gui/accountview.cpp" line="224"/>
         <source>Account options menu</source>
         <translation>Menú de opciones de la cuenta</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="185"/>
-        <location filename="../src/gui/accountview.cpp" line="189"/>
+        <location filename="../src/gui/accountview.cpp" line="226"/>
+        <location filename="../src/gui/accountview.cpp" line="230"/>
         <source>Log in</source>
         <translation>Iniciar sesión</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="186"/>
+        <location filename="../src/gui/accountview.cpp" line="227"/>
         <source>Reconnect</source>
         <translation>Reconectar</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="189"/>
+        <location filename="../src/gui/accountview.cpp" line="230"/>
         <source>Log out</source>
         <translation>Salir</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="194"/>
+        <location filename="../src/gui/accountview.cpp" line="235"/>
         <source>Remove</source>
         <translation>Eliminar</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="213"/>
+        <location filename="../src/gui/accountview.cpp" line="254"/>
         <source>The server version %1 is unsupported! Proceed at your own risk.</source>
         <translation>¡La versión del servidor %1 no es compatible! Continúa bajo tu responsabilidad.</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="216"/>
+        <location filename="../src/gui/accountview.cpp" line="257"/>
         <source>Connected</source>
         <translation>Conectado</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="220"/>
+        <location filename="../src/gui/accountview.cpp" line="261"/>
         <source>Server is temporarily unavailable</source>
         <translation>Servidor no está temporariamente disponible</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="223"/>
+        <location filename="../src/gui/accountview.cpp" line="264"/>
         <source>Server is currently in maintenance mode</source>
         <translation>El servidor está actualmente en modo de mantenimiento</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="226"/>
+        <location filename="../src/gui/accountview.cpp" line="267"/>
         <source>Signed out</source>
         <translation>Cerrar sesión</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="229"/>
+        <location filename="../src/gui/accountview.cpp" line="270"/>
         <source>Updating credentials…</source>
         <translation>Actualizando credenciales...</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="238"/>
+        <location filename="../src/gui/accountview.cpp" line="279"/>
         <source>Connecting…</source>
         <translation>Conectando...</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="234"/>
+        <location filename="../src/gui/accountview.cpp" line="275"/>
         <source>Captive portal prevents connections to the server.</source>
         <translation>Portal Captivo previene conexiones al servidor.</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="236"/>
+        <location filename="../src/gui/accountview.cpp" line="277"/>
         <source>Sync is paused due to metered internet connection</source>
         <translation>Se pausó la sincronización debido a una conexión a internet limitada</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="242"/>
+        <location filename="../src/gui/accountview.cpp" line="283"/>
         <source>Server configuration error</source>
         <translation>Error de configuración en el servidor</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="248"/>
+        <location filename="../src/gui/accountview.cpp" line="289"/>
         <source>Disconnected</source>
         <translation>Desconectado</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="341"/>
+        <location filename="../src/gui/accountview.cpp" line="376"/>
         <source>Confirm Account Removal</source>
         <translation>Confirmar eliminación de cuenta</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="342"/>
+        <location filename="../src/gui/accountview.cpp" line="377"/>
         <source>&lt;p&gt;Do you really want to remove the connection to the account &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
         <translation>&lt;p&gt;¿De verdad quiere eliminar la conexión a la cuenta &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Nota:&lt;/b&gt; Esto &lt;b&gt;no&lt;/b&gt; eliminará los archivos.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="346"/>
+        <location filename="../src/gui/accountview.cpp" line="381"/>
         <source>Remove connection</source>
         <translation>Eliminar conexión</translation>
     </message>
@@ -1460,12 +1460,12 @@ Esto significa que el cliente de sincronización podría no subir los cambios lo
 <context>
     <name>OCC::FolderModelController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/foldermodelcontroller.cpp" line="102"/>
+        <location filename="../src/gui/FoldersGui/foldermodelcontroller.cpp" line="108"/>
         <source>Folder options</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/foldermodelcontroller.cpp" line="103"/>
+        <location filename="../src/gui/FoldersGui/foldermodelcontroller.cpp" line="109"/>
         <source>Menu button with folder options. Hit the space key to pop the folder options menu</source>
         <translation type="unfinished"/>
     </message>

@@ -410,29 +410,29 @@ Mjet njëkohësimi kartelash për desktop.</translation>
 <context>
     <name>OCC::AccountFoldersController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="135"/>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="227"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="139"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="236"/>
         <source>Force sync now</source>
         <translation>Detyro njëkohësim tani</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="170"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="178"/>
         <source>Remove folder sync connection</source>
         <translation>Hiqe lidhjen për njëkohësim dosjeje</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="143"/>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="352"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="149"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="361"/>
         <source>Choose what to sync</source>
         <translation>Zgjidhni çfarë të njëkohësohet</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="190"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="199"/>
         <source>Disable virtual file support?</source>
         <translation>Të çaktivizohet mbulimi për kartela virtuale?</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="191"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="200"/>
         <source>This action will disable virtual file support. As a consequence contents of folders that are currently marked as 'available online only' will be downloaded.
 
 The only advantage of disabling virtual file support is that the selective sync feature will become available again.
@@ -445,78 +445,78 @@ Përfitimi i vetëm i çaktivizimit të mbulimit për kartela virtuale është s
 Ky veprim do të shkaktojë ndërprerjen e çfarëdo njëkohësimi në kryerje e sipër atë çast.</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="199"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="208"/>
         <source>Disable support</source>
         <translation>Çaktivizoje mbulimin</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="227"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="236"/>
         <source>Restart sync</source>
         <translation>Rinise njëkohësimin</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="229"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="238"/>
         <source>Resume sync</source>
         <translation>Rimerre njëkohësimin</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="229"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="238"/>
         <source>Pause sync</source>
         <translation>Ndale njëkohësimin</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="238"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="247"/>
         <source>Disable virtual file support</source>
         <translation>Çaktivizo mbulim për kartela virtuale</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="238"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="247"/>
         <source>Enable virtual file support</source>
         <translation>Aktivizo mbulim kartelash virtuale</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="274"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="283"/>
         <source>Internet connection is metered</source>
         <translation>Lidhja Internet është me racion</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="275"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="284"/>
         <source>Synchronization is paused because the Internet connection is a metered connection&lt;p&gt;Do you really want to force a Synchronization now?</source>
         <translation>Njëkohësimi është ndalur, ngaqë lidhja Internet është një lidhje me racion&lt;p&gt;Doni vërtet të detyrohet Njëkohësimi tani?</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="295"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="304"/>
         <source>Sync Running</source>
         <translation>Njëkohësimi Po Kryhet</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="295"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="304"/>
         <source>The sync operation is running.&lt;br/&gt;Do you want to stop it?</source>
         <translation>Veprimi i njëkohësimit po kryhet.&lt;br/&gt;Doni të ndalet?</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="301"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="310"/>
         <source>Sync paused by user</source>
         <translation>Njëkohësim i ndalur nga përdoruesi</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="319"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="328"/>
         <source>Confirm Folder Sync Connection Removal</source>
         <translation>Ripohoni Heqje Lidhjeje Njëkohësimi Dosjeje</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="320"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="329"/>
         <source>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Doni vërtet të ndalet njëkohësimi i dosjes &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Shënim:&lt;/b&gt; Kjo &lt;b&gt;nuk&lt;/b&gt; do të fshijë ndonjë kartelë.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="324"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="333"/>
         <source>Remove Folder Sync Connection</source>
         <translation>Hiqe Lidhjen Për Njëkohësim Dosjeje</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="200"/>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="325"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="209"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="334"/>
         <source>Cancel</source>
         <translation>Anuloje</translation>
     </message>
@@ -524,27 +524,27 @@ Ky veprim do të shkaktojë ndërprerjen e çfarëdo njëkohësimi në kryerje e
 <context>
     <name>OCC::AccountFoldersView</name>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="41"/>
+        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="43"/>
         <source>Sync options menu</source>
         <translation>Menu mundësish njëkohësimi</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="49"/>
+        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="51"/>
         <source>Folder sync</source>
         <translation>Njëkohësim dosjesh</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="54"/>
+        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="56"/>
         <source>Manage your synced folders</source>
         <translation>Administroni dosjet tuaja të njëkohësuara</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="58"/>
+        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="60"/>
         <source>Add new folder sync…</source>
         <translation>Shtoni njëkohësim të ri dosjesh…</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="147"/>
+        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="172"/>
         <source>Syncing %1 out of %2 spaces</source>
         <translation>Po njëkohësohet %1 nga %2 hapësira gjithsej</translation>
     </message>
@@ -820,103 +820,103 @@ Ky veprim do të shkaktojë ndërprerjen e çfarëdo njëkohësimi në kryerje e
         <translation>Njëkohëso lidhje</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="347"/>
+        <location filename="../src/gui/accountview.cpp" line="382"/>
         <source>Cancel</source>
         <translation>Anuloje</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="183"/>
+        <location filename="../src/gui/accountview.cpp" line="224"/>
         <source>Account options menu</source>
         <translation>Menu mundësish veprimesh</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="185"/>
-        <location filename="../src/gui/accountview.cpp" line="189"/>
+        <location filename="../src/gui/accountview.cpp" line="226"/>
+        <location filename="../src/gui/accountview.cpp" line="230"/>
         <source>Log in</source>
         <translation>Hyni</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="186"/>
+        <location filename="../src/gui/accountview.cpp" line="227"/>
         <source>Reconnect</source>
         <translation>Rilidhu</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="189"/>
+        <location filename="../src/gui/accountview.cpp" line="230"/>
         <source>Log out</source>
         <translation>Dilni</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="194"/>
+        <location filename="../src/gui/accountview.cpp" line="235"/>
         <source>Remove</source>
         <translation>Hiqe</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="213"/>
+        <location filename="../src/gui/accountview.cpp" line="254"/>
         <source>The server version %1 is unsupported! Proceed at your own risk.</source>
         <translation>Versioni %1 i shërbyesit nuk mbulohet! Qari dhe zarari i juaj.</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="216"/>
+        <location filename="../src/gui/accountview.cpp" line="257"/>
         <source>Connected</source>
         <translation>I lidhur</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="220"/>
+        <location filename="../src/gui/accountview.cpp" line="261"/>
         <source>Server is temporarily unavailable</source>
         <translation>Shërbyesi është përkohësisht jashtë funksionimi</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="223"/>
+        <location filename="../src/gui/accountview.cpp" line="264"/>
         <source>Server is currently in maintenance mode</source>
         <translation>Shërbyesi është aktualisht nën mënyrën mirëmbajtje</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="226"/>
+        <location filename="../src/gui/accountview.cpp" line="267"/>
         <source>Signed out</source>
         <translation>I dalë</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="229"/>
+        <location filename="../src/gui/accountview.cpp" line="270"/>
         <source>Updating credentials…</source>
         <translation>Po përditësohen kredenciale…</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="238"/>
+        <location filename="../src/gui/accountview.cpp" line="279"/>
         <source>Connecting…</source>
         <translation>Po bëhet lidhja…</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="234"/>
+        <location filename="../src/gui/accountview.cpp" line="275"/>
         <source>Captive portal prevents connections to the server.</source>
         <translation>Portali rrëmbyes pengon lidhjet me shërbyesin.</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="236"/>
+        <location filename="../src/gui/accountview.cpp" line="277"/>
         <source>Sync is paused due to metered internet connection</source>
         <translation>Njëkohësimi është ndalur, për shkak lidhjeje internet me racion</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="242"/>
+        <location filename="../src/gui/accountview.cpp" line="283"/>
         <source>Server configuration error</source>
         <translation>Gabim formësimi shërbyesi</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="248"/>
+        <location filename="../src/gui/accountview.cpp" line="289"/>
         <source>Disconnected</source>
         <translation>I shkëputur</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="341"/>
+        <location filename="../src/gui/accountview.cpp" line="376"/>
         <source>Confirm Account Removal</source>
         <translation>Ripohoni Heqjen e Llogarisë</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="342"/>
+        <location filename="../src/gui/accountview.cpp" line="377"/>
         <source>&lt;p&gt;Do you really want to remove the connection to the account &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Doni vërtet të hiqet lidhja për te llogaria &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Shënim:&lt;/b&gt; Kjo &lt;b&gt;nuk&lt;/b&gt; do të fshijë ndonjë kartelë.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="346"/>
+        <location filename="../src/gui/accountview.cpp" line="381"/>
         <source>Remove connection</source>
         <translation>Hiqe lidhjen</translation>
     </message>
@@ -1460,12 +1460,12 @@ Kjo do të thotë që klienti i njëkohësimeve mund të mos ngarkojë menjëher
 <context>
     <name>OCC::FolderModelController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/foldermodelcontroller.cpp" line="102"/>
+        <location filename="../src/gui/FoldersGui/foldermodelcontroller.cpp" line="108"/>
         <source>Folder options</source>
         <translation>Mundësi dosjesh</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/foldermodelcontroller.cpp" line="103"/>
+        <location filename="../src/gui/FoldersGui/foldermodelcontroller.cpp" line="109"/>
         <source>Menu button with folder options. Hit the space key to pop the folder options menu</source>
         <translation>Buton menuje me mundësi dosjeje. Që të shfaqet menuja e mundësive të dosjes, shtypni tastin Hapësirë</translation>
     </message>
