@@ -175,7 +175,8 @@ void AccountFoldersController::buildMenuActions()
         connect(_chooseSync, &QAction::triggered, this, &AccountFoldersController::onChooseSync);
     }
 
-    _removeSync = new QAction(tr("Remove folder sync connection"), this);
+    QString removeSyncString = tr("Remove %1 sync connection").arg(CommonStrings::space());
+    _removeSync = new QAction(removeSyncString, this);
     _removeSync->setObjectName("removeFolderSyncAction");
     itemActions.push_back(_removeSync);
     connect(_removeSync, &QAction::triggered, this, &AccountFoldersController::onRemoveSync);

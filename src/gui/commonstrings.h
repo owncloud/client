@@ -23,5 +23,8 @@ namespace CommonStrings {
     QString showInWebBrowser();
     QString copyToClipBoard();
     QString filterButtonText(int filterCount);
+    QString space();
+    QString spaces();
+    QString capSpace();
 }
 }
