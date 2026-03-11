@@ -14,6 +14,7 @@
 #include "commonstrings.h"
 
 #include <QCoreApplication>
+#include <theme.h>
 
 using namespace OCC;
 
@@ -46,4 +47,28 @@ QString CommonStrings::copyToClipBoard()
 QString CommonStrings::filterButtonText(int filterCount)
 {
     return QCoreApplication::translate("CommonStrings", "%n Filter(s)", nullptr, filterCount);
+}
+
+QString CommonStrings::space()
+{
+    if (Theme::instance()->spacesAreCalledFolders())
+        return QCoreApplication::translate("CommonStrings", "folder");
+    else
+        return QCoreApplication::translate("CommonStrings", "space");
+}
+
+QString CommonStrings::spaces()
+{
+    if (Theme::instance()->spacesAreCalledFolders())
+        return QCoreApplication::translate("CommonStrings", "folders");
+    else
+        return QCoreApplication::translate("CommonStrings", "spaces");
+}
+
+QString CommonStrings::capSpace()
+{
+    if (Theme::instance()->spacesAreCalledFolders())
+        return QCoreApplication::translate("CommonStrings", "Folder");
+    else
+        return QCoreApplication::translate("CommonStrings", "Space");
 }

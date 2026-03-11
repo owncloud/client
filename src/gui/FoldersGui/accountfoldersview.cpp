@@ -25,8 +25,8 @@
 #include <QVBoxLayout>
 
 #include "buttondelegate.h"
+#include "commonstrings.h"
 #include "folderitemdelegate.h"
-#include "theme.h"
 
 namespace OCC {
 
@@ -48,16 +48,22 @@ AccountFoldersView::AccountFoldersView(QWidget *parent)
 void AccountFoldersView::buildView()
 {
     QVBoxLayout *mainLayout = new QVBoxLayout();
-    QLabel *titleLabel = new QLabel(tr("Folder sync"), this);
+    QString titleString = tr("%1 sync").arg(CommonStrings::capSpace());
+    QLabel *titleLabel = new QLabel(titleString, this);
+    QFont f = titleLabel->font();
+    f.setBold(true);
+    titleLabel->setFont(f);
     titleLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     mainLayout->addWidget(titleLabel, 0, Qt::AlignLeft);
 
     QHBoxLayout *buttonLineLayout = new QHBoxLayout();
-    QLabel *description = new QLabel(tr("Manage your synced folders"), this);
+    QString descString = tr("Manage your synced %1.").arg(CommonStrings::spaces());
+    QLabel *description = new QLabel(descString, this);
     description->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     buttonLineLayout->addWidget(description, 0, Qt::AlignLeft);
 
-    _addFolderButton = new QPushButton(tr("Add new folder sync…"), this);
+    QString addSyncString = tr("Add new %1 sync…").arg(CommonStrings::space());
+    _addFolderButton = new QPushButton(addSyncString, this);
     _addFolderButton->setObjectName("addFolderSyncButton");
     _addFolderButton->setFocusPolicy(Qt::StrongFocus);
     connect(_addFolderButton, &QPushButton::clicked, this, &AccountFoldersView::addFolderTriggered);
@@ -169,7 +175,7 @@ void AccountFoldersView::setItemModels(QStandardItemModel *model, QItemSelection
 
 void AccountFoldersView::setSyncedFolderCount(int synced, int total)
 {
-    _syncedFolderCountLabel->setText(tr("Syncing %1 out of %2 spaces").arg(QString::number(synced), QString::number(total)));
+    _syncedFolderCountLabel->setText(tr("%1 of %2 %3 are synchronized").arg(QString::number(synced), QString::number(total), CommonStrings::spaces()));
 }
 
 void AccountFoldersView::enableAddFolder(bool enableAdd)
