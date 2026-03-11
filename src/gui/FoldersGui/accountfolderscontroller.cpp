@@ -245,7 +245,7 @@ void AccountFoldersController::updateActions()
     _removeSync->setEnabled(_currentFolder);
 
     if (_enableVfs) {
-        _enableVfs->setText(_currentFolder && _currentFolder->virtualFilesEnabled() ? tr("Disable virtual file support") : tr("Enable virtual file support"));
+        _enableVfs->setText(_currentFolder && _currentFolder->virtualFilesEnabled() ? tr("Deactivate virtual files") : tr("Activate virtual files"));
         // we can't block existence of the action when the folder path doesn't support vfs, so disable it here just in case
         // todo: DC-219 hopefully this check can go away
         QString pathError = Vfs::pathSupportDetail(_currentFolder->path(), Vfs::WindowsCfApi);
