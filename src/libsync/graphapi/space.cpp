@@ -158,12 +158,10 @@ SpaceImage::SpaceImage(Space *space)
 
 QIcon SpaceImage::image() const
 {
-    if (_image.isNull()) {
-        return Resources::getCoreIcon(QStringLiteral("space"));
-    }
     return _image;
 }
 
+// this has to stay until we get rid of the folderWizard
 QUrl SpaceImage::qmlImageUrl() const
 {
     if (!_image.isNull()) {
@@ -174,13 +172,18 @@ QUrl SpaceImage::qmlImageUrl() const
     }
 }
 
+// todo: ideally do the update WITH any other drive changes that may happen.
+// the current problem is that we can't rely on spaceChanged to tell us the image changed because spaceChanged is emitted
+// prior to calling this update (so if you get the image in response to spaceChanged you get the "old" image, not the new one).
+// this means we have to do some fancy tricks to ensure we connect to the imageChanged signal "at just the right time"
+// see the FolderItemUpdater for the example ick.
 void SpaceImage::update()
 {
     const auto &special = _space->getSpecialItems();
     const auto img = std::find_if(special.cbegin(), special.cend(), [](const auto &it) { return it.getSpecialFolder().getName() == QLatin1String("image"); });
     if (img != special.cend())
     {
-        // ssue 12057: verified the image etag does change when the space's icon has been updated via the web interface
+        // issue 12057: verified the image etag does change when the space's icon has been updated via the web interface
         // check the etag before updating the members and creating the job. This should eliminate *many* pointless resource jobs which
         // will exacerbate whatever is making the app crash when the space tries to clean up it's child jobs and one is already gone
         QString newEtag = Utility::normalizeEtag(img->getETag());
@@ -194,15 +197,11 @@ void SpaceImage::update()
         // around at every level and we *definitely* don't want the spaces manager to hand out the account to whoever wants it
         auto job = _space->_spaceManager->account()->resourcesCache()->makeGetJob(_url, this);
 
-        // TODO: next problem = this routine is correctly run when the icon has changed on the server, but the icon in the gui does not get refreshed!
-        // The icon IS in the app cache, so it seems to have been brought back from the server correctly, but it is not shown until restart
-        // I did have a quick look at Resources::getCoreIcon - that is used in the SpaceImage::image function. Also sus is that I can't find any slot
-        // for the imageChanged signal but I think this may be connected in qml via the associated space image property.
         QObject::connect(job, &SimpleNetworkJob::finishedSignal, _space, [job, this] {
             if (job->httpStatusCode() == 200) {
                 _image = job->asIcon();
                 job->deleteLater();
-                Q_EMIT imageChanged();
+                emit imageChanged();
             }
         });
         job->start();
