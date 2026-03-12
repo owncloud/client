@@ -15,6 +15,7 @@
 
 #include <QObject>
 
+#include "accountstate.h"
 #include "progressdispatcher.h"
 #include <chrono>
 
@@ -32,10 +33,14 @@ public:
 private:
     FolderItem *_item;
 
-    void onFolderChanged();
+    void onSpaceChanged();
+    void onConnectedChanged(AccountState::State newState);
     void onSyncStateChanged();
     void onProgressUpdated(const ProgressInfo &progress);
+    void onImageChanged();
+
     QMetaObject::Connection _progressInfoConnection;
+    QMetaObject::Connection _imageChangeConnection;
 
     inline static const auto ProgressUpdateTimeout = std::chrono::seconds(1);
     std::chrono::steady_clock::time_point _lastProgressUpdated;

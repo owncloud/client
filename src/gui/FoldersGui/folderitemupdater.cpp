@@ -16,6 +16,7 @@
 #include "folder.h"
 #include "folderitem.h"
 #include "resources.h"
+#include "space.h"
 
 namespace OCC {
 FolderItemUpdater::FolderItemUpdater(FolderItem *item)
@@ -23,19 +24,54 @@ FolderItemUpdater::FolderItemUpdater(FolderItem *item)
     , _item(item)
 {
     if (_item && _item->folder()) {
-        connect(_item->folder(), &Folder::spaceChanged, this, &FolderItemUpdater::onFolderChanged);
+        connect(_item->folder(), &Folder::spaceChanged, this, &FolderItemUpdater::onSpaceChanged);
         connect(_item->folder(), &Folder::syncStateChange, this, &FolderItemUpdater::onSyncStateChanged);
-        if (item->folder()->accountState())
-            connect(item->folder()->accountState(), &AccountState::stateChanged, this, &FolderItemUpdater::onFolderChanged);
+        if (_item->folder()->accountState())
+            connect(_item->folder()->accountState(), &AccountState::stateChanged, this, &FolderItemUpdater::onConnectedChanged);
     }
 }
 
-// space changed is stuff like...display name, should not be triggered so often?
-void FolderItemUpdater::onFolderChanged()
+// space changed is emitted, basically, any time the etag changes on the drive.
+// note that in spite of the fact that drive etag changes when the image is changed, we can't use this signal to trigger the image update
+// because spaceChanged is emitted *before* the new image is retrieved in a second step as a consequence of updating the drive.
+// This should be refactored after the folderWizard is gone and the goal should be to ensure that you can get any/all space changes, including
+// an updated image, when spaceChanged is handled.
+void FolderItemUpdater::onSpaceChanged()
 {
+    if (!_item->folder())
+        return;
+
+    // we need to possibly connect here to cover cases where a space/folder is added after start.
+    // in this scenario the account is already connected, so we have to use the first spaceChanged trigger
+    // which is associated with an emit from the folder constructor.
+    if (!_imageChangeConnection && _item->folder()->space()) {
+        _imageChangeConnection = connect(_item->folder()->space(), &GraphApi::Space::imageChanged, this, &FolderItemUpdater::onImageChanged);
+        onImageChanged();
+    }
     _item->refresh();
 }
 
+void FolderItemUpdater::onConnectedChanged(AccountState::State newState)
+{
+    if (!_item->folder())
+        return;
+
+    // we may possibly need to connect here as the account may not have been connected during folder construction (eg on loading an account
+    // from config) in which the space is not available (yet). So to cover that case, connect to the space (if not already connected) asap
+    // after connection.
+    if (newState == AccountState::Connected && !_imageChangeConnection && _item->folder()->space()) {
+        _imageChangeConnection = connect(_item->folder()->space(), &GraphApi::Space::imageChanged, this, &FolderItemUpdater::onImageChanged);
+        onImageChanged();
+    } else {
+        // yes we need to drop this connection if the account is disconnected to ensure we fetch the "current" image on next connect
+        // in case it changed while the spaces/drives could not be updated
+        disconnect(_imageChangeConnection);
+    }
+
+    if (newState == AccountState::Connected)
+        _item->updateImage();
+    _item->refresh();
+}
 void FolderItemUpdater::onSyncStateChanged()
 {
     if (!_item->folder())
@@ -78,6 +114,10 @@ void FolderItemUpdater::onSyncStateChanged()
     }
 }
 
+void FolderItemUpdater::onImageChanged()
+{
+    _item->updateImage();
+}
 
 void FolderItemUpdater::onProgressUpdated(const ProgressInfo &progress)
 {
