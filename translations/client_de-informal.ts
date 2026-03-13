@@ -142,7 +142,7 @@ Datei Synchronisations-Applikation.</translation>
     <message>
         <location filename="../src/gui/commonstrings.cpp" line="55"/>
         <source>folder</source>
-        <translation type="unfinished"/>
+        <translation>Ordner</translation>
     </message>
     <message>
         <location filename="../src/gui/commonstrings.cpp" line="57"/>
@@ -152,7 +152,7 @@ Datei Synchronisations-Applikation.</translation>
     <message>
         <location filename="../src/gui/commonstrings.cpp" line="63"/>
         <source>folders</source>
-        <translation type="unfinished"/>
+        <translation>Ordner</translation>
     </message>
     <message>
         <location filename="../src/gui/commonstrings.cpp" line="65"/>
@@ -162,7 +162,7 @@ Datei Synchronisations-Applikation.</translation>
     <message>
         <location filename="../src/gui/commonstrings.cpp" line="71"/>
         <source>Folder</source>
-        <translation type="unfinished"/>
+        <translation>Ordner</translation>
     </message>
     <message>
         <location filename="../src/gui/commonstrings.cpp" line="73"/>

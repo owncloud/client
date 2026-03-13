@@ -142,7 +142,7 @@ Utilità desktop per la sincronizzazione dei file.</translation>
     <message>
         <location filename="../src/gui/commonstrings.cpp" line="55"/>
         <source>folder</source>
-        <translation type="unfinished"/>
+        <translation>cartella</translation>
     </message>
     <message>
         <location filename="../src/gui/commonstrings.cpp" line="57"/>
@@ -152,7 +152,7 @@ Utilità desktop per la sincronizzazione dei file.</translation>
     <message>
         <location filename="../src/gui/commonstrings.cpp" line="63"/>
         <source>folders</source>
-        <translation type="unfinished"/>
+        <translation>cartelle</translation>
     </message>
     <message>
         <location filename="../src/gui/commonstrings.cpp" line="65"/>
@@ -162,7 +162,7 @@ Utilità desktop per la sincronizzazione dei file.</translation>
     <message>
         <location filename="../src/gui/commonstrings.cpp" line="71"/>
         <source>Folder</source>
-        <translation type="unfinished"/>
+        <translation>Cartella</translation>
     </message>
     <message>
         <location filename="../src/gui/commonstrings.cpp" line="73"/>

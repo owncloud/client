@@ -142,7 +142,7 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
     <message>
         <location filename="../src/gui/commonstrings.cpp" line="55"/>
         <source>folder</source>
-        <translation type="unfinished"/>
+        <translation>kaust</translation>
     </message>
     <message>
         <location filename="../src/gui/commonstrings.cpp" line="57"/>
@@ -152,7 +152,7 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
     <message>
         <location filename="../src/gui/commonstrings.cpp" line="63"/>
         <source>folders</source>
-        <translation type="unfinished"/>
+        <translation>kaustad</translation>
     </message>
     <message>
         <location filename="../src/gui/commonstrings.cpp" line="65"/>
@@ -162,7 +162,7 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
     <message>
         <location filename="../src/gui/commonstrings.cpp" line="71"/>
         <source>Folder</source>
-        <translation type="unfinished"/>
+        <translation>Kaust</translation>
     </message>
     <message>
         <location filename="../src/gui/commonstrings.cpp" line="73"/>

@@ -142,7 +142,7 @@ Utilitaire de synchronisation de fichiers pour ordinateur de bureau. </translati
     <message>
         <location filename="../src/gui/commonstrings.cpp" line="55"/>
         <source>folder</source>
-        <translation type="unfinished"/>
+        <translation>dossier</translation>
     </message>
     <message>
         <location filename="../src/gui/commonstrings.cpp" line="57"/>
@@ -152,7 +152,7 @@ Utilitaire de synchronisation de fichiers pour ordinateur de bureau. </translati
     <message>
         <location filename="../src/gui/commonstrings.cpp" line="63"/>
         <source>folders</source>
-        <translation type="unfinished"/>
+        <translation>dossiers</translation>
     </message>
     <message>
         <location filename="../src/gui/commonstrings.cpp" line="65"/>
@@ -162,7 +162,7 @@ Utilitaire de synchronisation de fichiers pour ordinateur de bureau. </translati
     <message>
         <location filename="../src/gui/commonstrings.cpp" line="71"/>
         <source>Folder</source>
-        <translation type="unfinished"/>
+        <translation>Dossier</translation>
     </message>
     <message>
         <location filename="../src/gui/commonstrings.cpp" line="73"/>

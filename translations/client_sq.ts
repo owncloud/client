@@ -142,32 +142,32 @@ Mjet njëkohësimi kartelash për desktop.</translation>
     <message>
         <location filename="../src/gui/commonstrings.cpp" line="55"/>
         <source>folder</source>
-        <translation type="unfinished"/>
+        <translation>dosje</translation>
     </message>
     <message>
         <location filename="../src/gui/commonstrings.cpp" line="57"/>
         <source>space</source>
-        <translation type="unfinished"/>
+        <translation>hapësirë</translation>
     </message>
     <message>
         <location filename="../src/gui/commonstrings.cpp" line="63"/>
         <source>folders</source>
-        <translation type="unfinished"/>
+        <translation>dosje</translation>
     </message>
     <message>
         <location filename="../src/gui/commonstrings.cpp" line="65"/>
         <source>spaces</source>
-        <translation type="unfinished"/>
+        <translation>hapësira</translation>
     </message>
     <message>
         <location filename="../src/gui/commonstrings.cpp" line="71"/>
         <source>Folder</source>
-        <translation type="unfinished"/>
+        <translation>Dosje</translation>
     </message>
     <message>
         <location filename="../src/gui/commonstrings.cpp" line="73"/>
         <source>Space</source>
-        <translation type="unfinished"/>
+        <translation>Hapësirë</translation>
     </message>
 </context>
 <context>
@@ -454,7 +454,7 @@ Mjet njëkohësimi kartelash për desktop.</translation>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="178"/>
         <source>Remove %1 sync connection</source>
-        <translation type="unfinished"/>
+        <translation>Hiq lidhje njëkohësimi %1</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="200"/>
@@ -497,12 +497,12 @@ Ky veprim do të shkaktojë ndërprerjen e çfarëdo njëkohësimi në kryerje e
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="248"/>
         <source>Deactivate virtual files</source>
-        <translation type="unfinished"/>
+        <translation>Çaktivizo kartela virtuale</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="248"/>
         <source>Activate virtual files</source>
-        <translation type="unfinished"/>
+        <translation>Aktivizo kartela virtuale</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="284"/>
@@ -561,22 +561,22 @@ Ky veprim do të shkaktojë ndërprerjen e çfarëdo njëkohësimi në kryerje e
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="51"/>
         <source>%1 sync</source>
-        <translation type="unfinished"/>
+        <translation>Njëkohësim %1</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="60"/>
         <source>Manage your synced %1.</source>
-        <translation type="unfinished"/>
+        <translation>Administroni %1 tuaj të njëkohësuar.</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="65"/>
         <source>Add new %1 sync…</source>
-        <translation type="unfinished"/>
+        <translation>Shtoni njëkohësim të ri për %1…</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="178"/>
         <source>%1 of %2 %3 are synchronized</source>
-        <translation type="unfinished"/>
+        <translation>%1 nga %2 %3 janë të njëkohësuara</translation>
     </message>
 </context>
 <context>
