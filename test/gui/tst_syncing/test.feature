@@ -376,7 +376,7 @@ Feature: Syncing files
             | filename                                                                                                                                                                                                                     |
             | thisIsAVeryLongFileNameToCheckThatItWorks-thisIsAVeryLongFileNameToCheckThatItWorks-thisIsAVeryLongFileNameToCheckThatItWorks-thisIsAVeryLongFileNameToCheckThatItWorks-thisIsAVeryLongFileNameToCheckThatItWorks-thisIs.txt |
 
-    @predefined_users
+
     Scenario: Syncing file of 1 GB size
         Given user "Alice" has set up a client with default settings
         When user "Alice" creates a file "newfile.txt" with size "1GB" inside the sync folder
@@ -393,7 +393,7 @@ Feature: Syncing files
         And the user waits for file "file with space.txt" to be synced
         Then as "Alice" file "file with space.txt" should exist in the server
 
-    @predefined_users
+
     Scenario: Syncing folders each having 500 files
         Given the user has created a folder "folder1" in temp folder
         And the user has created "500" files each of size "1048576" bytes inside folder "folder1" in temp folder
