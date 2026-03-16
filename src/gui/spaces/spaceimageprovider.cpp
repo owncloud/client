@@ -32,7 +32,7 @@ QPixmap SpaceImageProvider::requestPixmap(const QString &id, QSize *size, const 
 
     QIcon icon;
     if (id == QLatin1String("placeholder")) {
-        icon = Resources::getCoreIcon(QStringLiteral("space"));
+        icon = Resources::getCoreIcon(QStringLiteral("defaultSpaceImage"));
     } else {
         const auto ids = id.split(QLatin1Char('/'));
         const auto *space = _spacesManager->space(ids.last());

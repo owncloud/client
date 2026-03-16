@@ -125,6 +125,10 @@ QIcon OCC::Resources::getCoreIcon(const QString &iconName)
         return cached = QPixmap::fromImageReader(&iconReader);
     }
     return cached;
+    // "<svg width="60" height="60" viewBox="0 0 60 60" fill="#ADACAB" xmlns="http://www.w3.org/2000/svg">
+    //<path d="M15 15H45V45H15V15Z" fill="#ADACAB"
+    //    </svg>
+    //   "
 }
 
 /*

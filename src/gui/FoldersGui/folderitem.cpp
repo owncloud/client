@@ -33,6 +33,7 @@ FolderItem::FolderItem(Folder *folder)
 
     _updater = new FolderItemUpdater(this);
     updateStatusString();
+    updateImage();
 }
 
 FolderItem::~FolderItem()
@@ -150,6 +151,18 @@ void FolderItem::updateStatusString()
         _statusString = newStatusString;
 }
 
+void FolderItem::updateImage()
+{
+    QIcon spaceIcon;
+    if (_folder && _folder->space() && _folder->space()->image())
+        spaceIcon = _folder->space()->image()->image();
+
+    if (spaceIcon.isNull())
+        spaceIcon = Resources::getCoreIcon("defaultSpaceImage");
+
+    // sure I would like to see if they are equal before the set, but apparently there are no available ==/!= operators.
+    _image = spaceIcon;
+}
 
 QVariant FolderItem::data(int role) const
 {
@@ -176,15 +189,7 @@ QVariant FolderItem::data(int role) const
     case Qt::DisplayRole:
         return _folder->displayName();
     case Qt::DecorationRole:
-        if (_folder && _folder->space() && _folder->space()->image()) {
-            // this is not working but I have no idea why!
-            // the image is not null but won't paint, even in the default impl
-            // so just using the app icon to get the delegate working for now
-            QIcon spaceIcon = _folder->space()->image()->image();
-            if (!spaceIcon.isNull())
-                return spaceIcon;
-        }
-        return Resources::getCoreIcon("folder-sync");
+        return _image;
     case FolderItemRoles::StatusIconRole:
         return Resources::getCoreIcon(statusIconName());
     case FolderItemRoles::StatusStringRole:

@@ -42,10 +42,8 @@ public:
     QVariant data(int role) const override;
 
     void refresh();
-
     void setProgress(const ProgressInfo &progress);
-
-    // SyncProgress _progress;
+    void updateImage();
 
     Folder *folder();
 
@@ -56,6 +54,7 @@ private:
     quint64 _totalSize = 0;
     quint64 _completedSize = 0;
     QString _statusString;
+    QIcon _image;
     // ProgressInfo _progress;
     //  void updateProgress(OCC::Folder *folder, const OCC::ProgressInfo &progress);
 

@@ -150,9 +150,11 @@ Folder::Folder(const FolderDefinition &definition, AccountState *accountState, s
 
         connect(_accountState->account()->spacesManager(), &GraphApi::SpacesManager::spaceChanged, this, [this](GraphApi::Space *changedSpace) {
             if (_definition.spaceId() == changedSpace->id()) {
-                Q_EMIT spaceChanged();
+                emit spaceChanged();
             }
         });
+        if (space())
+            emit spaceChanged();
 
         // Potentially upgrade suffix vfs to windows vfs
         OC_ENFORCE(_vfs);
