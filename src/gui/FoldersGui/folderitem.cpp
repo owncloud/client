@@ -118,7 +118,7 @@ QString FolderItem::statusAsString() const
     case SyncResult::SyncAbortRequested:
         return {};
     case SyncResult::Success:
-        return QString("Synced");
+        return tr("Synced");
     case SyncResult::Unavailable:
         return tr("Unavailable: the space is no longer available on the server");
     case SyncResult::Problem:

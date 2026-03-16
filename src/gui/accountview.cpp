@@ -373,6 +373,7 @@ void AccountView::slotDeleteAccount()
 
     // Deleting the account potentially deletes 'this', so
     // the QMessageBox should be destroyed before that happens.
+    // todo: this is an unnecessarily complicated def for the message box and should exec instead of open.
     auto messageBox = new QMessageBox(QMessageBox::Question, tr("Confirm Account Removal"),
         tr("<p>Do you really want to remove the connection to the account <i>%1</i>?</p>"
            "<p><b>Note:</b> This will <b>not</b> delete any files.</p>")
