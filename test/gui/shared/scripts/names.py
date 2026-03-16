@@ -65,3 +65,5 @@ welcome_to_ownCloud_OCC_NewAccountWizard = {"name": "NewAccountWizard", "type": 
 server_address_QLabel = {"type": "QLabel", "unnamed": 1, "visible": 1, "window": welcome_to_ownCloud_OCC_NewAccountWizard}
 stackedWidget_accountFoldersTreeView_QTreeView = {"container": stack_stackedWidget_QStackedWidget, "name": "accountFoldersTreeView", "type": "QTreeView", "visible": 1}
 confirm_Folder_Sync_Connection_Removal_QMessageBox_2 = {"type": "QMessageBox", "unnamed": 1, "visible": 1, "windowTitle": "Confirm Folder Sync Connection Removal"}
+confirmRemoveFolderSyncDialog_QMessageBox = {"name": "confirmRemoveFolderSyncDialog", "type": "QMessageBox", "visible": 1}
+confirmRemoveFolderSyncDialog_removeFolderSyncButton_QPushButton = {"name": "removeFolderSyncButton", "type": "QPushButton", "visible": 1, "window": confirmRemoveFolderSyncDialog_QMessageBox}

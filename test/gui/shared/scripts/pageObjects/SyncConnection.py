@@ -48,17 +48,16 @@ class SyncConnection:
         "visible": 1,
     }
     CANCEL_FOLDER_SYNC_CONNECTION_DIALOG = {
-        "text": "Cancel",
+        "name": "cancelRemoveFolderSyncButton",
         "type": "QPushButton",
         "visible": 1,
-        "window": names.confirm_Folder_Sync_Connection_Removal_QMessageBox_2,
+        "window": names.confirmRemoveFolderSyncDialog_QMessageBox,
     }
     REMOVE_FOLDER_SYNC_CONNECTION_BUTTON = {
-        "text": "Remove Folder Sync Connection",
+        "name": "removeFolderSyncButton",
         "type": "QPushButton",
-        "unnamed": 1,
         "visible": 1,
-        "window": names.confirm_Folder_Sync_Connection_Removal_QMessageBox_2,
+        "window": names.confirmRemoveFolderSyncDialog_QMessageBox,
     }
 
     @staticmethod
