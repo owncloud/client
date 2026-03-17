@@ -56,21 +56,41 @@ void FolderItem::setProgress(const ProgressInfo &progress)
         // this might be premature - if so use one of the completion states from folder sync result
         _totalSize = 0;
         _completedSize = 0;
+        _percentComplete = 0;
+        _estimatedDownBw = 0;
+        _estimatedUpBw = 0;
         return;
     }
 
     if (progress.totalSize() == 0) {
-        // nothing is going to happen so ditch - with vfs this will always be the case?
+        // nothing is going to happen, visually so ditch - with vfs this will always be the case?
         return;
     }
 
-    // completed size is literal - meaning if there was nothing to actually sync,
-    // total size = 0
+    // total size is literal - meaning if there was nothing to actually sync, total size = 0
     // this can happen if there are no files/folders in a space
-    // or of the space is already 100% up to date, so no diffs, or if there is nothing to "move" between server/client (move or delete)
+    // or of the space is already 100% up to date, so no diffs,
+    // or if there is nothing to "move" between server/client (move or delete)
     _totalSize = progress.totalSize();
     _completedSize = progress.completedSize();
-    //_percentComplete = progress.refresh();
+    // the old impl added extra "bytes" to the calculation to account for "contentless" operations (move, delete, possibly vfs placeholder creation)
+    // but I'm going with the simple calc because my strong gut feeling is that these tiny updates won't take long enough to substantially change the
+    // info in the gui. If someone complains we can make it more complicated again.
+    _percentComplete = qBound(0, qRound(double(_completedSize) / double(_totalSize) * 100.0), 100);
+
+    _estimatedUpBw = 0;
+    _estimatedDownBw = 0;
+
+    for (const auto &citm : progress._currentItems) {
+        // the idea here is the total available bandwidth will be "shared" among multiple items. So summing their individual bw consumption reveals
+        // the total bw up or down.
+        if (citm._item._direction == SyncFileItem::Up) {
+            _estimatedUpBw += progress.fileProgress(citm._item).estimatedBandwidth;
+        } else {
+            _estimatedDownBw += progress.fileProgress(citm._item).estimatedBandwidth;
+        }
+    }
+
     refresh();
 }
 
@@ -134,8 +154,19 @@ QString FolderItem::statusAsString() const
     case SyncResult::SyncRunning: {
         QString completedFormatted = Utility::octetsToString(_completedSize);
         QString totalFormatted = Utility::octetsToString(_totalSize);
+        QString percentFormatted = QString::number(_percentComplete);
+        QString progress = tr("Syncing %1 of %2 (%3 %").arg(completedFormatted, totalFormatted, percentFormatted);
 
-        return tr("Syncing %1 of %2").arg(completedFormatted, totalFormatted);
+        if (_estimatedDownBw > 0) {
+            QString formattedDownBw = Utility::octetsToString(_estimatedDownBw);
+            progress.append(tr(", ⬇️ %1/s").arg(formattedDownBw));
+        }
+        if (_estimatedUpBw > 0) {
+            QString formattedUpBw = Utility::octetsToString(_estimatedUpBw);
+            progress.append(tr(", ⬆️ %1/s").arg(formattedUpBw));
+        }
+        progress.append(")");
+        return progress;
     }
     };
 
@@ -169,23 +200,7 @@ QVariant FolderItem::data(int role) const
     if (!_folder)
         return QVariant();
 
-    /* auto getErrors = [f] {
-         auto errors = f->syncResult().errorStrings();
-         const Result<void, QString> notLegacyError = FolderMan::instance()->unsupportedConfiguration(f->path());
-         if (!notLegacyError) {
-             errors.append(notLegacyError.error());
-         }
-         if (f->syncResult().hasUnresolvedConflicts()) {
-             errors.append(tr("There are unresolved conflicts."));
-         }
-         return errors;
-     };*/
-
     switch (role) {
-        //  case Roles::Subtitle:
-        //      return getDescription();
-        //  case Roles::FolderErrorMsg:
-        //      return getErrors();
     case Qt::DisplayRole:
         return _folder->displayName();
     case Qt::DecorationRole:
@@ -194,27 +209,10 @@ QVariant FolderItem::data(int role) const
         return Resources::getCoreIcon(statusIconName());
     case FolderItemRoles::StatusStringRole:
         return _statusString;
-        // case ItemRoles::StatusInfoRole:
-        //   return _progress._progressString;
-        /*case Roles::SyncProgressOverallPercent:
-            return folderInfo->_progress._overallPercent / 100.0;
-        case Roles::SyncProgressOverallString:
-            return folderInfo->_progress._overallSyncString; */
     case FolderItemRoles::SortPriorityRole:
         // everything will be sorted in descending order, multiply the priority by 100 and prefer A over Z by applying a negative factor
         return QVariant::fromValue(
             _folder->sortPriority() * 100 - (_folder->displayName().isEmpty() ? 0 : static_cast<int64_t>(_folder->displayName().at(0).toLower().unicode())));
-        /*
-
-           case Roles::AccessibleDescriptionRole: {
-               QStringList desc = {f->displayName(), Utility::enumToDisplayName(f->syncResult().status())};
-               desc << getErrors();
-               if (f->syncResult().status() == SyncResult::SyncRunning) {
-                   desc << folderInfo->_progress._overallSyncString << QStringLiteral("%1%").arg(QString::number(folderInfo->_progress._overallPercent));
-               }
-               desc << getDescription();
-               return desc.join(QLatin1Char(','));
-           }*/
     }
     return QStandardItem::data(role);
 }
