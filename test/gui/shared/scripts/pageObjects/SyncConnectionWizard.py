@@ -99,9 +99,8 @@ class SyncConnectionWizard:
     ADD_FOLDER_SYNC_BUTTON = {
         "checkable": False,
         "container": names.stackedWidget_quickWidget_OCC_QmlUtils_OCQuickWidget,
-        "id": "addSyncButton",
-        "type": "Button",
-        "unnamed": 1,
+        "name": "addFolderSyncButton",
+        "type": "QPushButton",
         "visible": True,
     }
     WARN_LABEL = {
@@ -302,12 +301,6 @@ class SyncConnectionWizard:
     @staticmethod
     def is_remote_folder_selected(folder_selector):
         return squish.waitForObjectExists(folder_selector).selected
-
-    @staticmethod
-    def open_sync_connection_wizard():
-        squish.mouseClick(
-            squish.waitForObject(SyncConnectionWizard.ADD_FOLDER_SYNC_BUTTON)
-        )
 
     @staticmethod
     def get_local_sync_path():

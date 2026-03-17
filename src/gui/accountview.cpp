@@ -379,8 +379,12 @@ void AccountView::slotDeleteAccount()
            "<p><b>Note:</b> This will <b>not</b> delete any files.</p>")
             .arg(_accountState->account()->displayNameWithHost()),
         QMessageBox::NoButton, this);
+    messageBox->setObjectName("confirmRemoveAccountDialog");
     auto yesButton = messageBox->addButton(tr("Remove connection"), QMessageBox::YesRole);
-    messageBox->addButton(tr("Cancel"), QMessageBox::NoRole);
+    yesButton->setObjectName("removeAccountButton");
+    auto noButton = messageBox->addButton(tr("Cancel"), QMessageBox::NoRole);
+    noButton->setObjectName("cancelRemoveAccountButton");
+
     messageBox->setAttribute(Qt::WA_DeleteOnClose);
     connect(messageBox, &QMessageBox::finished, this, [this, messageBox, yesButton]{
         if (messageBox->clickedButton() == yesButton) {

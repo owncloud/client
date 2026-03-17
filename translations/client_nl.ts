@@ -238,35 +238,35 @@ Bestandssynchronisatie desktop software tool.</translation>
 <context>
     <name>FolderItem</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="101"/>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="130"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="102"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="131"/>
         <source>Offline</source>
         <translation>Offline</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="106"/>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="122"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="107"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="123"/>
         <source>Unavailable: the space is no longer available on the server</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="110"/>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="128"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="111"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="129"/>
         <source>Sync paused</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="126"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="127"/>
         <source>Sync failed</source>
         <translation>Sync mislukt</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="132"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="133"/>
         <source>Sync pending</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="137"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="138"/>
         <source>Syncing %1 of %2</source>
         <translation>Synchroniseren %1 van %2</translation>
     </message>
@@ -1234,141 +1234,141 @@ De update wordt uitgevoerd op de achtergrond en zal het bestaande AppImage besta
 <context>
     <name>OCC::Folder</name>
     <message>
-        <location filename="../src/gui/folder.cpp" line="230"/>
+        <location filename="../src/gui/folder.cpp" line="232"/>
         <source>Local folder %1 does not exist.</source>
         <translation>Lokale map %1 bestaat niet.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="232"/>
+        <location filename="../src/gui/folder.cpp" line="234"/>
         <source>%1 should be a folder but is not.</source>
         <translation>%1 zou een map moeten zijn, maar is dat niet.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="234"/>
+        <location filename="../src/gui/folder.cpp" line="236"/>
         <source>%1 is not readable.</source>
         <translation>%1 is niet leesbaar.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="463"/>
+        <location filename="../src/gui/folder.cpp" line="465"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 is verwijderd.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="477"/>
+        <location filename="../src/gui/folder.cpp" line="479"/>
         <source>%1 has been updated.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 is bijgewerkt.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="484"/>
+        <location filename="../src/gui/folder.cpp" line="486"/>
         <source>%1 has been renamed to %2.</source>
         <comment>%1 and %2 name files.</comment>
         <translation>%1 is hernoemd naar %2.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="491"/>
+        <location filename="../src/gui/folder.cpp" line="493"/>
         <source>%1 has been moved to %2.</source>
         <translation>%1 is verplaatst naar %2.</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="461"/>
+        <location filename="../src/gui/folder.cpp" line="463"/>
         <source>%1 and %n other file(s) have been removed.</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="179"/>
+        <location filename="../src/gui/folder.cpp" line="181"/>
         <source>The path &apos;%1&apos; is too long. Please enable long paths in the Windows settings or choose a different folder.</source>
         <translation>Het pad &apos;%1&apos; is te lang. Schakel ondersteuning voor lange paden aan in de Windows instellingen, of kies een andere folder.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="224"/>
+        <location filename="../src/gui/folder.cpp" line="226"/>
         <source>%1 failed to open the database.</source>
         <translation>%1 kon database niet openen.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="236"/>
+        <location filename="../src/gui/folder.cpp" line="238"/>
         <source>%1 is not writable.</source>
         <translation>%1 is niet schrijfbaar.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="394"/>
+        <location filename="../src/gui/folder.cpp" line="396"/>
         <source>The folder has been disabled or removed from the server</source>
         <translation type="unfinished"/>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="468"/>
+        <location filename="../src/gui/folder.cpp" line="470"/>
         <source>%1 and %n other file(s) have been added.</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="470"/>
+        <location filename="../src/gui/folder.cpp" line="472"/>
         <source>%1 has been added.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 is toegevoegd.</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="475"/>
+        <location filename="../src/gui/folder.cpp" line="477"/>
         <source>%1 and %n other file(s) have been updated.</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="482"/>
+        <location filename="../src/gui/folder.cpp" line="484"/>
         <source>%1 has been renamed to %2 and %n other file(s) have been renamed.</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="489"/>
+        <location filename="../src/gui/folder.cpp" line="491"/>
         <source>%1 has been moved to %2 and %n other file(s) have been moved.</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="496"/>
+        <location filename="../src/gui/folder.cpp" line="498"/>
         <source>%1 and %n other file(s) have sync conflicts.</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="498"/>
+        <location filename="../src/gui/folder.cpp" line="500"/>
         <source>%1 has a sync conflict. Please check the conflict file!</source>
         <translation>%1 heeft een sync conflict. Controleer het conflict bestand!</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="503"/>
+        <location filename="../src/gui/folder.cpp" line="505"/>
         <source>%1 and %n other file(s) could not be synced due to errors. See the log for details.</source>
         <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="505"/>
+        <location filename="../src/gui/folder.cpp" line="507"/>
         <source>%1 could not be synced due to an error. See the log for details.</source>
         <translation>%1 kon niet worden gesynchroniseerd door een fout. Bekijk het log voor details.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="511"/>
+        <location filename="../src/gui/folder.cpp" line="513"/>
         <source>Sync Activity</source>
         <translation>Synchronisatie-activiteit</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="714"/>
+        <location filename="../src/gui/folder.cpp" line="716"/>
         <source>Switching VFS mode on folder &apos;%1&apos;</source>
         <translation>VFS-modus inschakelen in map &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="903"/>
+        <location filename="../src/gui/folder.cpp" line="905"/>
         <source>Could not read system exclude file</source>
         <translation>Kon het systeem-uitsluitingsbestand niet lezen</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1098"/>
+        <location filename="../src/gui/folder.cpp" line="1100"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translation>De map %1 werd aangemaakt maar eerder ook uitgesloten van synchronisatie. Data erin zullen niet worden gesynchroniseerd.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1101"/>
+        <location filename="../src/gui/folder.cpp" line="1103"/>
         <source>The file %1 was created but was excluded from synchronization previously. It will not be synchronized.</source>
         <translation>Het bestand %1 is aangemaakt maar was eerder uitgesloten van synchronisatie. Dit bestand zal niet gesynchroniseerd worden.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1113"/>
+        <location filename="../src/gui/folder.cpp" line="1115"/>
         <source>Changes in synchronized folders could not be tracked reliably.
 
 This means that the synchronization client might not upload local changes immediately and will instead only scan for local changes and upload them occasionally (every two hours by default).
@@ -1384,7 +1384,7 @@ Dit betekent dat de synchronisatie-applicatie lokale wijzigingen mogelijk niet d
 <context>
     <name>OCC::FolderItemUpdater</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitemupdater.cpp" line="58"/>
+        <location filename="../src/gui/FoldersGui/folderitemupdater.cpp" line="94"/>
         <source>There are unresolved conflicts.</source>
         <translation type="unfinished"/>
     </message>
@@ -1492,7 +1492,7 @@ Dit betekent dat de synchronisatie-applicatie lokale wijzigingen mogelijk niet d
     <message>
         <location filename="../src/gui/FoldersGui/foldermodelcontroller.cpp" line="108"/>
         <source>Folder options</source>
-        <translation type="unfinished"/>
+        <translation>Map opties</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/foldermodelcontroller.cpp" line="109"/>
@@ -2060,7 +2060,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="55"/>
         <source>Add account…</source>
-        <translation type="unfinished"/>
+        <translation>Account toevoegen...</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="63"/>
@@ -2177,7 +2177,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="75"/>
         <source>Sign in URL</source>
-        <translation type="unfinished"/>
+        <translation>Inlog URL</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="76"/>
@@ -2839,7 +2839,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="64"/>
         <source>Sign in URL</source>
-        <translation type="unfinished"/>
+        <translation>Inlog URL</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="65"/>
@@ -3013,7 +3013,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
         <location filename="../src/gui/socketapi/socketapi.cpp" line="708"/>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="737"/>
         <source>Share…</source>
-        <translation type="unfinished"/>
+        <translation>Delen...</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="710"/>
@@ -3044,12 +3044,12 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="843"/>
         <source>Rename…</source>
-        <translation type="unfinished"/>
+        <translation>Naam wijzigen...</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="846"/>
         <source>Rename and upload…</source>
-        <translation type="unfinished"/>
+        <translation>Hernoemen en uploaden...</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="851"/>
@@ -3284,7 +3284,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="95"/>
         <source>Server address field</source>
-        <translation type="unfinished"/>
+        <translation>Serveradres veld</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="96"/>

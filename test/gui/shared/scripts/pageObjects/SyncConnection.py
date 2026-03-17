@@ -6,9 +6,10 @@ from helpers.ConfigHelper import get_config
 
 
 class SyncConnection:
-    FOLDER_SYNC_CONNECTION_LIST = {
-        "container": names.quickWidget_scrollView_ScrollView,
-        "type": "ListView",
+    FOLDER_SYNC_CONNECTION_TREE = {
+        "container": names.stack_stackedWidget_QStackedWidget,
+        "name": "accountFoldersTreeView",
+        "type": "QTreeView",
         "visible": True,
     }
     FOLDER_SYNC_CONNECTION = {
@@ -18,21 +19,21 @@ class SyncConnection:
         "visible": 1,
     }
     FOLDER_SYNC_CONNECTION_LABEL = {
-        "container": names.quickWidget_scrollView_ScrollView,
-        "type": "Label",
-        "unnamed": 1,
-        "visible": True,
+        "container": names.stackedWidget_accountFoldersTreeView_QTreeView,
+        "type": "QModelIndex",
+        "column": 0,
     }
     FOLDER_SYNC_CONNECTION_MENU_BUTTON = {
-        "checkable": False,
-        "container": names.quickWidget_scrollView_ScrollView,
-        "type": "Button",
-        "unnamed": 1,
-        "visible": True,
+        "columnIndex": 1,
+        "container": names.stackedWidget_accountFoldersTreeView_QTreeView,
+        "name": "buttonDelegateButton",
+        "type": "QPushButton",
+        "visible": 1,
     }
     MENU = {
         "type": "QMenu",
         "window": names.settings_OCC_SettingsDialog,
+        "name": "folderOptionsMenu",
         "visible": 1,
     }
     DISABLE_VFS_CONFIRMATION_BUTTON = {
@@ -47,16 +48,16 @@ class SyncConnection:
         "visible": 1,
     }
     CANCEL_FOLDER_SYNC_CONNECTION_DIALOG = {
-        "name": "CancelFolderSyncDialog",
+        "name": "cancelRemoveFolderSyncButton",
         "type": "QPushButton",
         "visible": 1,
-        "window": names.confirm_Folder_Sync_Connection_Removal_QMessageBox,
+        "window": names.confirmRemoveFolderSyncDialog_QMessageBox,
     }
     REMOVE_FOLDER_SYNC_CONNECTION_BUTTON = {
-        "name": "RemoveFolderSyncButton",
+        "name": "removeFolderSyncButton",
         "type": "QPushButton",
         "visible": 1,
-        "window": names.confirm_Folder_Sync_Connection_Removal_QMessageBox,
+        "window": names.confirmRemoveFolderSyncDialog_QMessageBox,
     }
 
     @staticmethod
@@ -68,17 +69,12 @@ class SyncConnection:
         selector = SyncConnection.FOLDER_SYNC_CONNECTION_LABEL.copy()
         selector.update({"text": sync_folder})
 
-        menu_button = None
+        folder_sync_connection = squish.waitForObject(selector)
+        squish.mouseClick(folder_sync_connection)
 
-        # get the parent of the sync folder label
-        parent = object.parent(
-            squish.waitForObject(selector)
-        ).parent.parent.parent.parent.parent
-        children = object.children(squish.waitForObject(parent))
-        for obj in children:
-            # get sync folder menu button
-            if obj.id == "moreButton":
-                menu_button = squish.waitForObject(obj)
+        menu_button_selector = SyncConnection.FOLDER_SYNC_CONNECTION_MENU_BUTTON.copy()
+        menu_button_selector.update({"rowIndex": folder_sync_connection.row})
+        menu_button = squish.waitForObject(menu_button_selector)
         squish.mouseClick(menu_button)
 
     @staticmethod
@@ -155,11 +151,12 @@ class SyncConnection:
 
     @staticmethod
     def get_folder_connection_count():
-        return squish.waitForObject(SyncConnection.FOLDER_SYNC_CONNECTION_LIST).count
+        tree = squish.waitForObject(SyncConnection.FOLDER_SYNC_CONNECTION_TREE)
+        return tree.model().rowCount()
 
     @staticmethod
     def remove_folder_sync_connection(sync_folder=""):
-        SyncConnection.perform_action("Remove folder sync connection", sync_folder)
+        SyncConnection.perform_action("Remove space sync connection", sync_folder)
 
     @staticmethod
     def cancel_folder_sync_connection_removal():

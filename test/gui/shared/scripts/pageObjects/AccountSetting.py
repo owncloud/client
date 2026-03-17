@@ -16,9 +16,9 @@ class AccountSetting:
         "window": names.settings_OCC_SettingsDialog,
     }
     CONFIRM_REMOVE_CONNECTION_BUTTON = {
-        "container": names.settings_dialogStack_QStackedWidget,
-        "name": "RemoveConnectionButton",
+        "container": names.settings_stack_QStackedWidget,
         "type": "QPushButton",
+        "text": "Remove connection",
         "visible": 1,
     }
     ACCOUNT_CONNECTION_LABEL = {
