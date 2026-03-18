@@ -67,3 +67,4 @@ stackedWidget_accountFoldersTreeView_QTreeView = {"container": stack_stackedWidg
 confirm_Folder_Sync_Connection_Removal_QMessageBox_2 = {"type": "QMessageBox", "unnamed": 1, "visible": 1, "windowTitle": "Confirm Folder Sync Connection Removal"}
 confirmRemoveFolderSyncDialog_QMessageBox = {"name": "confirmRemoveFolderSyncDialog", "type": "QMessageBox", "visible": 1}
 confirmRemoveFolderSyncDialog_removeFolderSyncButton_QPushButton = {"name": "removeFolderSyncButton", "type": "QPushButton", "visible": 1, "window": confirmRemoveFolderSyncDialog_QMessageBox}
+settings_folderOptionsMenu_QMenu = {"name": "folderOptionsMenu", "type": "QMenu", "visible": 1, "window": settings_OCC_SettingsDialog}

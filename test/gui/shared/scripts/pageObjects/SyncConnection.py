@@ -30,12 +30,6 @@ class SyncConnection:
         "type": "QPushButton",
         "visible": 1,
     }
-    MENU = {
-        "type": "QMenu",
-        "window": names.settings_OCC_SettingsDialog,
-        "name": "folderOptionsMenu",
-        "visible": 1,
-    }
     DISABLE_VFS_CONFIRMATION_BUTTON = {
         "name": "DisableVFSSupportButton",
         "type": "QPushButton",
@@ -59,6 +53,36 @@ class SyncConnection:
         "visible": 1,
         "window": names.confirmRemoveFolderSyncDialog_QMessageBox,
     }
+    FORCE_SYNC_ACTION_MENU_OPTION = {
+        "container": names.settings_folderOptionsMenu_QMenu,
+        "name": "forceSyncAction",
+        "type": "QAction",
+        "visible": True,
+    }
+    PAUSE_SYNC_ACTION_MENU_OPTION = {
+        "container": names.settings_folderOptionsMenu_QMenu,
+        "name": "pauseSyncAction",
+        "type": "QAction",
+        "visible": True,
+    }
+    SELECTIVE_SYNC_ACTION_MENU_OPTION = {
+        "container": names.settings_folderOptionsMenu_QMenu,
+        "name": "selectiveSyncAction",
+        "type": "QAction",
+        "visible": True,
+    }
+    REMOVE_FOLDER_SYNC_ACTION_MENU_OPTION = {
+        "container": names.settings_folderOptionsMenu_QMenu,
+        "name": "removeFolderSyncAction",
+        "type": "QAction",
+        "visible": True,
+    }
+    ENABLE_VFS_ACTION_MENU_OPTION = {
+        "container": names.settings_folderOptionsMenu_QMenu,
+        "name": "enableVfsAction",
+        "type": "QAction",
+        "visible": True,
+    }
 
     @staticmethod
     def open_menu(sync_folder=""):
@@ -80,45 +104,45 @@ class SyncConnection:
     @staticmethod
     def perform_action(action, sync_folder=""):
         SyncConnection.open_menu(sync_folder)
-        squish.activateItem(squish.waitForObjectItem(SyncConnection.MENU, action))
+        squish.activateItem(squish.waitForObject(action))
 
     @staticmethod
     def force_sync():
-        SyncConnection.perform_action("Force sync now")
+        SyncConnection.perform_action(SyncConnection.FORCE_SYNC_ACTION_MENU_OPTION)
 
     @staticmethod
     def pause_sync():
-        SyncConnection.perform_action("Pause sync")
+        SyncConnection.perform_action(SyncConnection.PAUSE_SYNC_ACTION_MENU_OPTION)
 
     @staticmethod
     def resume_sync():
-        SyncConnection.perform_action("Resume sync")
+        SyncConnection.perform_action(SyncConnection.PAUSE_SYNC_ACTION_MENU_OPTION)
 
     @staticmethod
     def enable_vfs():
-        SyncConnection.perform_action("Enable virtual file support")
+        SyncConnection.perform_action(SyncConnection.ENABLE_VFS_ACTION_MENU_OPTION)
 
     @staticmethod
     def disable_vfs():
-        SyncConnection.perform_action("Disable virtual file support")
+        SyncConnection.perform_action(SyncConnection.ENABLE_VFS_ACTION_MENU_OPTION)
         squish.clickButton(
             squish.waitForObject(SyncConnection.DISABLE_VFS_CONFIRMATION_BUTTON)
         )
 
     @staticmethod
     def has_menu_item(item):
-        return squish.waitForObjectItem(SyncConnection.MENU, item)
+        return squish.waitForObjectItem(names.settings_folderOptionsMenu_QMenu, item)
 
     @staticmethod
     def menu_item_exists(menu_item):
-        obj = SyncConnection.MENU.copy()
+        obj = names.settings_folderOptionsMenu_QMenu.copy()
         obj.update({"type": "QAction", "text": menu_item})
         return object.exists(obj)
 
     @staticmethod
     def choose_what_to_sync():
         SyncConnection.open_menu()
-        SyncConnection.perform_action("Choose what to sync")
+        SyncConnection.perform_action(SyncConnection.SELECTIVE_SYNC_ACTION_MENU_OPTION)
 
     @staticmethod
     def unselect_folder_in_selective_sync(folder_name):
@@ -156,7 +180,9 @@ class SyncConnection:
 
     @staticmethod
     def remove_folder_sync_connection(sync_folder=""):
-        SyncConnection.perform_action("Remove space sync connection", sync_folder)
+        SyncConnection.perform_action(
+            SyncConnection.REMOVE_FOLDER_SYNC_ACTION_MENU_OPTION, sync_folder
+        )
 
     @staticmethod
     def cancel_folder_sync_connection_removal():
