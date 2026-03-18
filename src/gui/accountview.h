@@ -50,11 +50,6 @@ class FolderStatusDelegate;
 class OWNCLOUDGUI_EXPORT AccountView : public QWidget
 {
     Q_OBJECT
-    Q_PROPERTY(AccountState *accountState MEMBER _accountState CONSTANT)
-
-    OC_DECLARE_WIDGET_FOCUS
-    QML_ELEMENT
-    QML_UNCREATABLE("C++ only")
 
 public:
     enum class ModalWidgetSizePolicy { Minimum = QSizePolicy::Minimum, Expanding = QSizePolicy::Expanding };
@@ -63,33 +58,31 @@ public:
     explicit AccountView(AccountState *accountState, QWidget *parent = nullptr);
     ~AccountView() override;
 
-    void addModalLegacyDialog(QWidget *widget, ModalWidgetSizePolicy sizePolicy);
     void addModalAccountWidget(AccountModalWidget *widget);
 
     // this is called by SettingsDialog directly but should be corrected to either respond to signal, or just make
     // it a normal function
     void slotAddFolder();
 
-Q_SIGNALS:
-    void showIssuesList();
 
-
-protected Q_SLOTS:
+protected slots:
     void slotAccountStateChanged(AccountState::State state);
     void slotDeleteAccount();
     void slotOpenAccountInBrowser();
     void slotToggleSignInState();
     void slotFolderWizardAccepted();
-
-protected:
-    void accountSettingUpChanged(bool settingUp);
-
-private slots:
     void onRequestShowModalWidget(QWidget *widget) { addModalLegacyDialog(widget, ModalWidgetSizePolicy::Expanding); }
     void onRequestAccountModalWidget(OCC::AccountModalWidget *widget);
 
+protected:
+    void accountSettingUpChanged(bool settingUp);
+    void addModalLegacyDialog(QWidget *widget, ModalWidgetSizePolicy sizePolicy);
+
+
+    // private slots:
+
+
 private:
-    void showSelectiveSyncDialog(Folder *folder);
 
     enum class StatusIcon { None, Connected, Disconnected, Info, Warning };
     void showConnectionLabel(const QString &message, StatusIcon statusIcon, QStringList errors = QStringList());
@@ -99,7 +92,6 @@ private:
 
     Ui::AccountView *ui;
 
-    // FolderStatusModel *_model;
     QStandardItemModel *_model;
     QSortFilterProxyModel *_sortModel;
     bool _wasDisabledBefore;
