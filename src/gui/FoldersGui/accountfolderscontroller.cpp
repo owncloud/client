@@ -136,7 +136,7 @@ void AccountFoldersController::buildMenuActions()
     separator->setSeparator(true);
     itemActions.push_back(separator);
 
-    _forceSync = new QAction(tr("Force sync now"), this);
+    _forceSync = new QAction(tr("Sync now"), this);
     _forceSync->setObjectName("forceSyncAction");
     itemActions.push_back(_forceSync);
     connect(_forceSync, &QAction::triggered, this, &AccountFoldersController::onForceSync);
@@ -146,7 +146,7 @@ void AccountFoldersController::buildMenuActions()
     itemActions.push_back(_pauseSync);
     connect(_pauseSync, &QAction::triggered, this, &AccountFoldersController::onTogglePauseSync);
 
-    _chooseSync = new QAction(tr("Choose what to sync"), this);
+    _chooseSync = new QAction(tr("Manage subfolder sync"), this);
     _chooseSync->setObjectName("selectiveSyncAction");
 
     Vfs::Mode mode = VfsPluginManager::instance().bestAvailableVfsMode();
@@ -175,7 +175,7 @@ void AccountFoldersController::buildMenuActions()
         connect(_chooseSync, &QAction::triggered, this, &AccountFoldersController::onChooseSync);
     }
 
-    QString removeSyncString = tr("Remove %1 sync connection").arg(CommonStrings::space());
+    QString removeSyncString = tr("Remove %1 sync").arg(CommonStrings::space());
     _removeSync = new QAction(removeSyncString, this);
     _removeSync->setObjectName("removeFolderSyncAction");
     itemActions.push_back(_removeSync);
@@ -237,7 +237,7 @@ void AccountFoldersController::updateActions()
         _showInBrowser->setEnabled(_currentFolder && _currentFolder->isConnected() && _currentFolder->isAvailable());
 
     _forceSync->setEnabled(_currentFolder && _currentFolder->canSync());
-    _forceSync->setText(_currentFolder && _currentFolder->isSyncRunning() ? tr("Restart sync") : tr("Force sync now"));
+    _forceSync->setText(_currentFolder && _currentFolder->isSyncRunning() ? tr("Restart sync") : tr("Sync now"));
 
     _pauseSync->setText(_currentFolder && _currentFolder->syncPaused() ? tr("Resume sync") : tr("Pause sync"));
     // this is a bit nuanced: we want to enable pause if the folder is disconnected as this is always a safe operation. if it *is* connected
