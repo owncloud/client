@@ -28,6 +28,8 @@
 #include "commonstrings.h"
 #include "folderitemdelegate.h"
 
+#include <QDebug>
+
 namespace OCC {
 
 
@@ -139,12 +141,20 @@ bool AccountFoldersView::eventFilter(QObject *obj, QEvent *ev)
     // for a non-text editor
     // furthermore, we seem to get a focus event for *every* mouse triggered row selection, which strikes me as weird.
     // Anyway this filter works for making sure the current item is always in edit mode when the tree gains focus, regardless of how it happens
+    // qDebug() << "tree view event filter event " << ev->type();
     if (obj == _treeView) {
-        if (ev->type() == QEvent::FocusIn) {
+        // QModelIndex current = _treeView->currentIndex();
+        // qDebug() << "event filter current index " << current;
+        // Extremely important: we need to respond to both of these events to put the row in edit mode, otherwise direct clicking the button column in the
+        // selected row pops doesn't work correctly. I have no idea why this is, but this is *very* particular, and needs to be combined with the event handling
+        // in the button delegate handleEvent to ensure it all works "well". note that "enter" is mouse enter, so it may be a little bit funny to have the tree
+        // go into edit mode and focus when you mouse over the tree, but will try to adapt it later if there are complaints. So far this is really the only
+        // thing that fully worked. WindowActivate quasi-works, but the button may not be focused in some cases.
+        if (ev->type() == QEvent::FocusIn || ev->type() == QEvent::Enter) {
             QModelIndex current = _treeView->currentIndex();
             _treeView->scrollTo(current);
             _treeView->edit(current);
-            // don't mark it as handled because we want the normal focus behavior in the tree to still work!
+            return true;
         }
     }
     return false;

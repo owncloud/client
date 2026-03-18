@@ -14,6 +14,7 @@
 
 #include "foldermodelcontroller.h"
 
+#include "commonstrings.h"
 #include "folder.h"
 #include "folderitem.h"
 #include "folderman.h"
@@ -105,8 +106,8 @@ void FolderModelController::onFolderAdded(const QUuid &accountId, Folder *folder
     FolderItem *item = new FolderItem(folder);
     QStandardItem *buttonItem = new QStandardItem();
     buttonItem->setFlags(Qt::ItemIsEditable | Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-    buttonItem->setAccessibleText(tr("Folder options"));
-    buttonItem->setAccessibleDescription(tr("Menu button with folder options. Hit the space key to pop the folder options menu"));
+    buttonItem->setAccessibleText(tr("%1 options").arg(CommonStrings::space()));
+    buttonItem->setAccessibleDescription(tr("Menu button with %1 options. Hit the space key to pop the folder options menu").arg(CommonStrings::space()));
 
     // we need a dummy item for the second column to host the button delegate for the row
     _model->appendRow({item, buttonItem});

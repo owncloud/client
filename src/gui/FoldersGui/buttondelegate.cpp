@@ -21,6 +21,8 @@
 #include <QStandardItemModel>
 #include <QTreeView>
 
+#include <QDebug>
+
 namespace OCC {
 
 ButtonDelegate::ButtonDelegate(const QString &text, QAbstractItemView *parent)
@@ -111,7 +113,10 @@ void ButtonDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionVie
 bool ButtonDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
 {
     // implement the menu auto-pop when clicking the delegate directly
-    if (event->type() == QEvent::MouseButtonPress) {
+    // qDebug() << "editor event " << event->type();
+    // super important! can't use MouseButtonPress or the menu doesn't pop when eg the tree is not already focused
+    // no idea why this is but release is the way to go, 100%
+    if (event->type() == QEvent::MouseButtonRelease) {
         QAbstractItemView *view = qobject_cast<QAbstractItemView *>(parent());
         if (view) {
             QModelIndex current = view->currentIndex();
