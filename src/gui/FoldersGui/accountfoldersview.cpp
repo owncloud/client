@@ -185,7 +185,7 @@ void AccountFoldersView::setItemModels(QStandardItemModel *model, QItemSelection
 
 void AccountFoldersView::setSyncedFolderCount(int synced, int total)
 {
-    _syncedFolderCountLabel->setText(tr("%1 of %2 %3 are synchronized").arg(QString::number(synced), QString::number(total), CommonStrings::spaces()));
+    _syncedFolderCountLabel->setText(tr("%1 out of %2 %3 are synchronized").arg(QString::number(synced), QString::number(total), CommonStrings::spaces()));
 }
 
 void AccountFoldersView::enableAddFolder(bool enableAdd)
