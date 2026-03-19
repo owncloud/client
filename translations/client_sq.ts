@@ -238,37 +238,47 @@ Mjet njëkohësimi kartelash për desktop.</translation>
 <context>
     <name>FolderItem</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="102"/>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="131"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="122"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="151"/>
         <source>Offline</source>
         <translation>Jashtë linje</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="107"/>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="123"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="127"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="143"/>
         <source>Unavailable: the space is no longer available on the server</source>
         <translation>S’mund të kihet: hapësira s’është më e pranishme te shërbyesi</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="111"/>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="129"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="131"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="149"/>
         <source>Sync paused</source>
         <translation>Njëkohësimi u ndal</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="127"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="147"/>
         <source>Sync failed</source>
         <translation>Njëkohësimi dështoi</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="133"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="153"/>
         <source>Sync pending</source>
         <translation>Njëkohësim pezull</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="138"/>
-        <source>Syncing %1 of %2</source>
-        <translation>Po njëkohësohet %1 nga %2</translation>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="158"/>
+        <source>Syncing %1 of %2 (%3 %</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="162"/>
+        <source>, ⬇️ %1/s</source>
+        <translation>, ⬇️ %1/s</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="166"/>
+        <source>, ⬆️ %1/s</source>
+        <translation>, ⬆️ %1/s</translation>
     </message>
 </context>
 <context>
@@ -440,21 +450,25 @@ Mjet njëkohësimi kartelash për desktop.</translation>
 <context>
     <name>OCC::AccountFoldersController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="139"/>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="240"/>
-        <source>Force sync now</source>
-        <translation>Detyro njëkohësim tani</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="149"/>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="374"/>
         <source>Choose what to sync</source>
         <translation>Zgjidhni çfarë të njëkohësohet</translation>
     </message>
     <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="139"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="240"/>
+        <source>Sync now</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="149"/>
+        <source>Manage subfolder sync</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="178"/>
-        <source>Remove %1 sync connection</source>
-        <translation>Hiq lidhje njëkohësimi %1</translation>
+        <source>Remove %1 sync</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="200"/>
@@ -575,8 +589,8 @@ Ky veprim do të shkaktojë ndërprerjen e çfarëdo njëkohësimi në kryerje e
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="178"/>
-        <source>%1 of %2 %3 are synchronized</source>
-        <translation>%1 nga %2 %3 janë të njëkohësuara</translation>
+        <source>%1 out of %2 %3 are synchronized</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
