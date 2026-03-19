@@ -248,36 +248,46 @@ File synchronization desktop utility.</source>
 <context>
     <name>FolderItem</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="102"/>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="131"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="122"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="151"/>
         <source>Offline</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="107"/>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="123"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="127"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="143"/>
         <source>Unavailable: the space is no longer available on the server</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="111"/>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="129"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="131"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="149"/>
         <source>Sync paused</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="127"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="147"/>
         <source>Sync failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="133"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="153"/>
         <source>Sync pending</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="138"/>
-        <source>Syncing %1 of %2</source>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="158"/>
+        <source>Syncing %1 of %2 (%3 %</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="162"/>
+        <source>, ⬇️ %1/s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="166"/>
+        <source>, ⬆️ %1/s</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -450,20 +460,24 @@ File synchronization desktop utility.</source>
 <context>
     <name>OCC::AccountFoldersController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="139"/>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="240"/>
-        <source>Force sync now</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="149"/>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="374"/>
         <source>Choose what to sync</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="139"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="240"/>
+        <source>Sync now</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="149"/>
+        <source>Manage subfolder sync</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="178"/>
-        <source>Remove %1 sync connection</source>
+        <source>Remove %1 sync</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -581,7 +595,7 @@ This action will abort any currently running synchronization.</source>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="178"/>
-        <source>%1 of %2 %3 are synchronized</source>
+        <source>%1 out of %2 %3 are synchronized</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
