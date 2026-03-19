@@ -157,12 +157,7 @@ void AccountFoldersController::buildMenuActions()
             // yes this is a slightly strange way to do this but think of the alternative code...blech.
             delete _chooseSync;
             _chooseSync = nullptr;
-            // don't create the enable vfs action as user can't turn vfs off:
-
-            // todo: #54 - we may need to handle value of Theme::showVirtualFilesOption here too. I already think it should be handled
-            // by bestAvailableVfsMode but maybe we need something more here. future worry.
-        }
-        else {
+        } else {
             _enableVfs = new QAction(this);
             _enableVfs->setObjectName("enableVfsAction");
             itemActions.push_back(_enableVfs);

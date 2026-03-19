@@ -141,7 +141,7 @@ bool AccountFoldersView::eventFilter(QObject *obj, QEvent *ev)
     // for a non-text editor
     // furthermore, we seem to get a focus event for *every* mouse triggered row selection, which strikes me as weird.
     // Anyway this filter works for making sure the current item is always in edit mode when the tree gains focus, regardless of how it happens
-    // qDebug() << "tree view event filter event " << ev->type();
+    qDebug() << "tree view event filter event " << ev->type();
     if (obj == _treeView) {
         // QModelIndex current = _treeView->currentIndex();
         // qDebug() << "event filter current index " << current;
@@ -150,8 +150,21 @@ bool AccountFoldersView::eventFilter(QObject *obj, QEvent *ev)
         // in the button delegate handleEvent to ensure it all works "well". note that "enter" is mouse enter, so it may be a little bit funny to have the tree
         // go into edit mode and focus when you mouse over the tree, but will try to adapt it later if there are complaints. So far this is really the only
         // thing that fully worked. WindowActivate quasi-works, but the button may not be focused in some cases.
-        if (ev->type() == QEvent::FocusIn || ev->type() == QEvent::Enter) {
+
+
+        // this ensures that if a tree item is in edit mode, but is currently scrolled out of view, hitting edit trigger scrolls to the item
+        // before popping the button menu
+        if (ev->type() == QEvent::ShortcutOverride) {
+            _treeView->scrollTo(_treeView->currentIndex());
+            return true;
+        }
+
+        //  id (ev->type() == )
+        // if I don't include showToParent in this, direct clicking the selected item on first show is fubar - menu pops but in a very strange location
+        if (ev->type() == QEvent::FocusIn || ev->type() == QEvent::ShowToParent) {
             QModelIndex current = _treeView->currentIndex();
+            qDebug() << "event filter index " << current.row() << "," << current.column();
+            _treeView->setCurrentIndex(current);
             _treeView->scrollTo(current);
             _treeView->edit(current);
             return true;

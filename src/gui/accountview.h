@@ -78,6 +78,8 @@ protected:
     void accountSettingUpChanged(bool settingUp);
     void addModalLegacyDialog(QWidget *widget, ModalWidgetSizePolicy sizePolicy);
 
+    void showEvent(QShowEvent *ev) override;
+
 
     // private slots:
 

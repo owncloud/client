@@ -338,6 +338,11 @@ void AccountView::addModalLegacyDialog(QWidget *widget, ModalWidgetSizePolicy si
     ocApp()->gui()->settingsDialog()->requestModality(_accountState->account());
 }
 
+void AccountView::showEvent(QShowEvent *ev)
+{
+    ui->manageAccountButton->setFocus();
+}
+
 void AccountView::onRequestAccountModalWidget(OCC::AccountModalWidget *widget)
 {
     addModalAccountWidget(widget);

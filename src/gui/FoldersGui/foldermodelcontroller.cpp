@@ -95,7 +95,7 @@ void FolderModelController::onFolderListChanged(const QUuid &accountId, const QL
     _multiLoad = false;
 
     _model->sort(0, Qt::DescendingOrder);
-    _selectionModel->setCurrentIndex(_model->index(0, 0), QItemSelectionModel::Rows | QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Current);
+    _selectionModel->setCurrentIndex(_model->index(0, 1), QItemSelectionModel::Rows | QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Current);
 }
 
 void FolderModelController::onFolderAdded(const QUuid &accountId, Folder *folder)
