@@ -81,9 +81,6 @@ protected:
     void showEvent(QShowEvent *ev) override;
 
 
-    // private slots:
-
-
 private:
 
     enum class StatusIcon { None, Connected, Disconnected, Info, Warning };

@@ -49,25 +49,23 @@ FolderModelController::FolderModelController(const QUuid &accountId, QObject *pa
 
 void FolderModelController::onCurrentChanged(const QModelIndex &current, const QModelIndex &previous)
 {
-    // this will happen if the user clicks around in the row, eg from second to first column. just update current to be the second col so the button stays
-    // visible
-    // in this case we do not want to update the current folder, as the row has not changed
+    if (current.parent().isValid()) {
+        emit currentFolderChanged(nullptr);
+        return;
+    }
     if (current.row() == previous.row()) {
         _selectionModel->setCurrentIndex(_model->index(current.row(), 1), QItemSelectionModel::Current);
         return;
     }
-
+    // todo: don't bother with all this casting nonsense, just make a new type for folder items
     QStandardItem *item = _model->item(current.row(), 0);
     FolderItem *folderItem = dynamic_cast<FolderItem *>(item);
     if (folderItem) {
-        // set the row's button item as current to ensure the delegate goes straight into "edit" mode, which
-        // provides a real menu button for accessibility
-        if (current.column() == 0)
-            _selectionModel->setCurrentIndex(_model->index(folderItem->row(), 1), QItemSelectionModel::Current);
+        if (current.column() != 1)
+            _selectionModel->setCurrentIndex(_model->index(current.row(), 1), QItemSelectionModel::Current);
         emit currentFolderChanged(folderItem->folder());
     } else {
-        // at the moment we won't support a "current folder" value if a child error is current/focused -> this will ensure no context menu can pop outside of a
-        // normal folder row. revisit if we need to expand this concept
+        // at the moment we won't support a "current folder" value if a non-folder item is selected.
         emit currentFolderChanged(nullptr);
     }
 }
@@ -95,7 +93,10 @@ void FolderModelController::onFolderListChanged(const QUuid &accountId, const QL
     _multiLoad = false;
 
     _model->sort(0, Qt::DescendingOrder);
-    _selectionModel->setCurrentIndex(_model->index(0, 1), QItemSelectionModel::Rows | QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Current);
+    // be sure nothing is selected on first load. see the kooky handling in AccountFoldersView handleEvent - it is "necessary" to
+    // set and then clear the selection on ShowToParent so going in, selection should be empty. yes this needs improvement but
+    // the nature of always having current row in edit mode is super complicated
+    _selectionModel->clear();
 }
 
 void FolderModelController::onFolderAdded(const QUuid &accountId, Folder *folder)
@@ -149,6 +150,7 @@ void FolderModelController::connectSignals(FolderMan *folderMan)
 
     // normally the folder list is updated after the views have been created but just in case it
     // happened sooner:
-    onFolderListChanged(_accountId, folderMan->foldersForAccount(_accountId));
+    // onFolderListChanged(_accountId, folderMan->foldersForAccount(_accountId));
+    // so far I never see it happening sooner but may revisit this.
 }
 }

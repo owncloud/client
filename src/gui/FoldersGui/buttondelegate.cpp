@@ -21,8 +21,6 @@
 #include <QStandardItemModel>
 #include <QTreeView>
 
-#include <QDebug>
-
 namespace OCC {
 
 ButtonDelegate::ButtonDelegate(const QString &text, QAbstractItemView *parent)
@@ -80,9 +78,8 @@ QSize ButtonDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelI
 
 QWidget *ButtonDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    Q_UNUSED(index);
     Q_UNUSED(option);
-
+    Q_UNUSED(index);
     if (_button->parentWidget() != parent)
         // the parent is actually the scroll area viewport. don't ask :D
         _button->setParent(parent);
@@ -113,8 +110,7 @@ void ButtonDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionVie
 bool ButtonDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
 {
     // implement the menu auto-pop when clicking the delegate directly
-    // qDebug() << "editor event " << event->type();
-    // super important! can't use MouseButtonPress or the menu doesn't pop when eg the tree is not already focused
+    // super important! we can't use MouseButtonPress or the menu doesn't pop when eg the tree is not already focused
     // no idea why this is but release is the way to go, 100%
     if (event->type() == QEvent::MouseButtonRelease) {
         QAbstractItemView *view = qobject_cast<QAbstractItemView *>(parent());

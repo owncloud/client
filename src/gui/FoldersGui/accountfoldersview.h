@@ -42,7 +42,6 @@ signals:
 
 protected:
     bool eventFilter(QObject *obj, QEvent *ev) override;
-    // void showEvent(QShowEvent *event) override;
 
 private:
     void buildView();

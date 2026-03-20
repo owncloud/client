@@ -340,6 +340,7 @@ void AccountView::addModalLegacyDialog(QWidget *widget, ModalWidgetSizePolicy si
 
 void AccountView::showEvent(QShowEvent *ev)
 {
+    Q_UNUSED(ev);
     ui->manageAccountButton->setFocus();
 }
 
