@@ -268,7 +268,7 @@ Mjet njëkohësimi kartelash për desktop.</translation>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="158"/>
         <source>Syncing %1 of %2 (%3 %</source>
-        <translation type="unfinished"/>
+        <translation>Po njëkohësohen %1 nga %2 (%3 %</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="162"/>
@@ -458,17 +458,17 @@ Mjet njëkohësimi kartelash për desktop.</translation>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="139"/>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="240"/>
         <source>Sync now</source>
-        <translation type="unfinished"/>
+        <translation>Njëkohësoje tani</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="149"/>
         <source>Manage subfolder sync</source>
-        <translation type="unfinished"/>
+        <translation>Administroni njëkohësim nëndosjesh</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="178"/>
         <source>Remove %1 sync</source>
-        <translation type="unfinished"/>
+        <translation>Hiqe njëkohësimin e %1</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="200"/>
@@ -590,7 +590,7 @@ Ky veprim do të shkaktojë ndërprerjen e çfarëdo njëkohësimi në kryerje e
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="178"/>
         <source>%1 out of %2 %3 are synchronized</source>
-        <translation type="unfinished"/>
+        <translation>Janë njëkohësuar %1 nga %2 %3 gjithsej</translation>
     </message>
 </context>
 <context>

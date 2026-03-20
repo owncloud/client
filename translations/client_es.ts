@@ -273,12 +273,12 @@ Cliente de escritorio para la sincronización de archivos.</translation>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="162"/>
         <source>, ⬇️ %1/s</source>
-        <translation type="unfinished"/>
+        <translation>, ⬇️ %1/s</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="166"/>
         <source>, ⬆️ %1/s</source>
-        <translation type="unfinished"/>
+        <translation>, ⬆️ %1/s</translation>
     </message>
 </context>
 <context>
