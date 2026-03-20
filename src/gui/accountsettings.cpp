@@ -49,6 +49,7 @@ namespace {
 constexpr auto modalWidgetStretchedMarginC = 50;
 }
 
+// todo: dc-230: delete this class
 namespace OCC {
 
 Q_LOGGING_CATEGORY(lcAccountSettings, "gui.account.settings", QtInfoMsg)
