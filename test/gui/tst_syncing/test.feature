@@ -101,18 +101,19 @@ Feature: Syncing files
         Then the folder "simple-folder" should exist on the file system
         But the folder "large-folder" should not exist on the file system
         When user "Alice" uploads file with content "some content" to "simple-folder/lorem.txt" in the server
-        And user "Alice" uploads file with content "ownCloud" to "large-folder/lorem.txt" in the server
-        And user "Alice" creates a file "simple-folder/localFile.txt" with the following content inside the sync folder
+        And the user waits for file "simple-folder/lorem.txt" to be synced
+        Then the file "simple-folder/lorem.txt" should exist on the file system
+        When user "Alice" creates a file "simple-folder/localFile.txt" with the following content inside the sync folder
             """
             test content
             """
+        And the user waits for file "simple-folder/localFile.txt" to be synced
+        Then as "Alice" file "simple-folder/localFile.txt" should exist in the server
+        When user "Alice" uploads file with content "ownCloud" to "large-folder/lorem.txt" in the server
+        And the user deletes the folder "simple-folder"
         And the user waits for the files to sync
-        Then the file "simple-folder/lorem.txt" should exist on the file system
-        And the file "large-folder/lorem.txt" should not exist on the file system
-        And as "Alice" file "simple-folder/localFile.txt" should exist in the server
-        When the user deletes the folder "simple-folder"
-        And the user waits for the files to sync
-        Then as "Alice" folder "simple-folder" should not exist in the server
+        Then the file "large-folder/lorem.txt" should not exist on the file system
+        And as "Alice" folder "simple-folder" should not exist in the server
 
     @issue-9733
     Scenario: sort folders list by name and size
