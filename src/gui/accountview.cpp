@@ -24,21 +24,16 @@
 #include "accountmanager.h"
 #include "accountstate.h"
 #include "application.h"
-#include "common/utility.h"
 #include "commonstrings.h"
 #include "configfile.h"
 #include "folderman.h"
-#include "folderstatusmodel.h"
 #include "folderwizard/folderwizard.h"
 #include "gui/accountmodalwidget.h"
 #include "gui/models/models.h"
 #include "gui/networkinformation.h"
 #include "gui/qmlutils.h"
 #include "gui/selectivesyncwidget.h"
-#include "gui/spaces/spaceimageprovider.h"
-#include "guiutility.h"
 #include "libsync/graphapi/spacesmanager.h"
-#include "openfilemanager.h"
 #include "scheduling/syncscheduler.h"
 #include "settingsdialog.h"
 #include "theme.h"
@@ -343,6 +338,12 @@ void AccountView::addModalLegacyDialog(QWidget *widget, ModalWidgetSizePolicy si
     ocApp()->gui()->settingsDialog()->requestModality(_accountState->account());
 }
 
+void AccountView::showEvent(QShowEvent *ev)
+{
+    Q_UNUSED(ev);
+    ui->manageAccountButton->setFocus();
+}
+
 void AccountView::onRequestAccountModalWidget(OCC::AccountModalWidget *widget)
 {
     addModalAccountWidget(widget);
@@ -373,6 +374,7 @@ void AccountView::slotDeleteAccount()
 
     // Deleting the account potentially deletes 'this', so
     // the QMessageBox should be destroyed before that happens.
+    // todo: this is an unnecessarily complicated def for the message box and should exec instead of open.
     auto messageBox = new QMessageBox(QMessageBox::Question, tr("Confirm Account Removal"),
         tr("<p>Do you really want to remove the connection to the account <i>%1</i>?</p>"
            "<p><b>Note:</b> This will <b>not</b> delete any files.</p>")

@@ -69,6 +69,9 @@
       </item>
       <item>
        <widget class="QPushButton" name="manageAccountButton">
+        <property name="focusPolicy">
+         <enum>Qt::FocusPolicy::StrongFocus</enum>
+        </property>
         <property name="text">
          <string>Manage Account</string>
         </property>
@@ -86,7 +89,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="loadingPage">
       <layout class="QVBoxLayout" name="verticalLayout_4">

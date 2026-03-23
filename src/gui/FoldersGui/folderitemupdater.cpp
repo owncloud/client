@@ -96,6 +96,7 @@ void FolderItemUpdater::onSyncStateChanged()
         for (const QString &error : std::as_const(errors)) {
             QIcon errorIcon = Resources::getCoreIcon("states/warning");
             QStandardItem *errorItem = new QStandardItem(errorIcon, error);
+            errorItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
             // just for testing to replace the normal error with something really long - will remove before merge
             /*      QString longError =
@@ -105,7 +106,11 @@ void FolderItemUpdater::onSyncStateChanged()
             */
 
             errorItem->setData(error, Qt::AccessibleTextRole);
-            _item->appendRow(errorItem);
+
+            QStandardItem *emptyEditorItem = new QStandardItem();
+            emptyEditorItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+
+            _item->appendRow({errorItem, emptyEditorItem});
         }
 
     } else if (status == SyncResult::SyncPrepare && _item->hasChildren()) {

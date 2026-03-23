@@ -27,7 +27,7 @@
 #include <QRandomGenerator>
 #include <QWidget>
 
-
+// todo: dc-230: delete this class
 using namespace std::chrono_literals;
 
 Q_DECLARE_METATYPE(QPersistentModelIndex)
