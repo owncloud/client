@@ -37,9 +37,8 @@ ButtonDelegate::ButtonDelegate(const QString &text, QAbstractItemView *parent)
     _button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     _button->setStyleSheet("QPushButton::menu-indicator{width:0px;}");
 
-    // I think this only needs to be set in the underlying item.
-    //_button->setAccessibleName("Folder options");
-    //_button->setAccessibleDescription("Menu button with folder options. Hit the space key to auto-pop the menu");
+    _button->setAccessibleName("Folder options");
+    _button->setAccessibleDescription("Menu button with folder options. Use the space key to show the menu");
 }
 
 void ButtonDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const

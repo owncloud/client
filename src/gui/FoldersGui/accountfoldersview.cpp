@@ -78,6 +78,8 @@ void AccountFoldersView::buildView()
 
     _treeView = new QTreeView(this);
     _treeView->setObjectName("accountFoldersTreeView");
+    _treeView->setAccessibleName(tr("%1 list view").arg(CommonStrings::space()));
+    _treeView->setAccessibleDescription(tr("Navigate the %1 list using the up and down arrows").arg(CommonStrings::space()));
     _treeView->setFocusPolicy(Qt::StrongFocus);
     _treeView->installEventFilter(this);
 
