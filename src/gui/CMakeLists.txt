@@ -4,7 +4,6 @@ find_package(KDSingleApplication-qt6 1.0.0 REQUIRED)
 
 set(client_UI_SRCS
     aboutdialog.ui
-    accountsettings.ui
     generalsettings.ui
     ignorelisteditor.ui
     networksettings.ui
@@ -19,7 +18,6 @@ set(client_UI_SRCS
 set(client_SRCS
     aboutdialog.cpp
     accountmanager.cpp
-    accountsettings.cpp
     accountview.cpp
 
     accountmodalwidget.cpp
@@ -32,7 +30,6 @@ set(client_SRCS
     connectionvalidator.cpp
     folder.cpp
     folderman.cpp
-    folderstatusmodel.cpp
     folderwatcher.cpp
     generalsettings.cpp
     ignorelisteditor.cpp
@@ -105,8 +102,6 @@ ecm_add_qml_module(owncloudGui
         QML_FILES
             qml/AccountBar.qml
             qml/AccountButton.qml
-            qml/FolderDelegate.qml
-            qml/FolderError.qml
 
             spaces/qml/SpaceDelegate.qml
             spaces/qml/SpacesView.qml
