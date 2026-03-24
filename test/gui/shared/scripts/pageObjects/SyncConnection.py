@@ -31,10 +31,10 @@ class SyncConnection:
         "visible": 1,
     }
     DISABLE_VFS_CONFIRMATION_BUTTON = {
-        "name": "DisableVFSSupportButton",
-        "type": "QPushButton",
+        "name": "disableVfsButton",
+        "type": "QAction",
         "visible": 1,
-        "window": names.disable_virtual_file_support_QMessageBox,
+        "window": names.confirmDisableVfsDialog_QMessageBox,
     }
     SELECTIVE_SYNC_OK_BUTTON = {
         "container": names.settings_stack_QStackedWidget,
