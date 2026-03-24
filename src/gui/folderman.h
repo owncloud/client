@@ -184,6 +184,9 @@ public:
      */
     void setUpInitialSyncFolders(AccountState *accountState, bool useVfs);
 
+    void setUpInitialSpaces(AccountState *accountState);
+
+
     // Refactoring todo: this function actually just returns the internal vector of folders. I do not see any evidence of
     // what is docced here, at least related to this specific function.
     // Propose changing the container to a hash or similar anyway to allow fast retrieval of folder by id and other
@@ -369,11 +372,17 @@ private:
     /**
      *  private handler connected to spacesManager::ready signal
      *  this is a bit weird as you have to ask the manager if it's ready then wait for the signal before actually loading
-     *  the spaces. this function loads all the spaces into the FolderMan and saves them in an efficient manner
+     *  the spaces. this function loads all the spaces into folders in the FolderMan and saves them in an efficient manner
      *
      *  emits folderListChanged
      */
-    void loadSpaces(AccountState *accountState, bool useVfs);
+    void loadSpacesAndCreateFolders(AccountState *accountState, bool useVfs);
+
+    /**
+     *  similar to loadSpacesAndCreateFolders but it skips the folder creation and basically just calls onSpacesAdded to ensure the
+     *  current spaces are known to the folderman when account is created using selective sync instead of sync all or use vfs
+     */
+    void loadSpacesAlone(AccountState *accountState);
 
     /**
      * @brief onSpacesAdded - handles notice from spaces manager that spaces were added

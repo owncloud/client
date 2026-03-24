@@ -102,6 +102,7 @@ Application::Application(Platform *platform, const QString &displayLanguage, boo
     // don't handling everything "locally" -> request that the best entity for the job do it. Then make the proper connections between
     // requestor and responsible handler in a clearly defined, central location (e.g. an app builder, but for now, this will do)
     connect(_gui, &ownCloudGui::requestSetUpSyncFoldersForAccount, FolderMan::instance(), &FolderMan::setUpInitialSyncFolders);
+    connect(_gui, &ownCloudGui::requestLoadSpacesOnly, FolderMan::instance(), &FolderMan::setUpInitialSpaces);
 
 #ifdef WITH_AUTO_UPDATER
     // Update checks

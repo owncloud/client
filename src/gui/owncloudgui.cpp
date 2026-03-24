@@ -241,6 +241,7 @@ void ownCloudGui::runAccountWizard()
         } else {
             NewAccountBuilder *builder = new NewAccountBuilder(model, this);
             connect(builder, &NewAccountBuilder::requestSetUpSyncFoldersForAccount, this, &ownCloudGui::requestSetUpSyncFoldersForAccount);
+            connect(builder, &NewAccountBuilder::requestLoadSpacesOnly, this, &ownCloudGui::requestLoadSpacesOnly);
             connect(builder, &NewAccountBuilder::requestFolderWizard, _settingsDialog, &SettingsDialog::runFolderWizard);
             connect(builder, &NewAccountBuilder::unableToCompleteAccountCreation, this, &ownCloudGui::handleAccountSetupError);
             builder->buildAccount();

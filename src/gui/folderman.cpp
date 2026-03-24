@@ -280,13 +280,13 @@ void FolderMan::setUpInitialSyncFolders(AccountState *accountState, bool useVfs)
         // folderman can't "force" that condiiton so it just has to wait for that setup to complete
         // normally the spaces manager should always be ready at this point, but if for whatever reason it's not, catch it when it is
         if (!spaceMan->isReady())
-            connect(spaceMan, &GraphApi::SpacesManager::ready, this, [this, accountState, useVfs] { loadSpaces(accountState, useVfs); });
+            connect(spaceMan, &GraphApi::SpacesManager::ready, this, [this, accountState, useVfs] { loadSpacesAndCreateFolders(accountState, useVfs); });
         else
-            loadSpaces(accountState, useVfs);
+            loadSpacesAndCreateFolders(accountState, useVfs);
     }
 }
 
-void FolderMan::loadSpaces(AccountState *accountState, bool useVfs)
+void FolderMan::loadSpacesAndCreateFolders(AccountState *accountState, bool useVfs)
 {
     if (!accountState || !accountState->account())
         return;
@@ -341,6 +341,39 @@ void FolderMan::loadSpaces(AccountState *accountState, bool useVfs)
     }
 }
 
+void FolderMan::setUpInitialSpaces(AccountState *accountState)
+{
+    if (accountState && accountState->account() && accountState->account()->spacesManager()) {
+        GraphApi::SpacesManager *spaceMan = accountState->account()->spacesManager();
+
+        // this replaces the old use of SpacesManager::checkReady which was overcomplicated.
+        // short explanation: the spaces manager has to wait for the account credentials to be valid before it can load its spaces
+        // folderman can't "force" that condiiton so it just has to wait for that setup to complete
+        // normally the spaces manager should always be ready at this point, but if for whatever reason it's not, catch it when it is
+        if (!spaceMan->isReady())
+            connect(spaceMan, &GraphApi::SpacesManager::ready, this, [this, accountState] { loadSpacesAlone(accountState); });
+        else
+            loadSpacesAlone(accountState);
+    }
+}
+
+void FolderMan::loadSpacesAlone(AccountState *accountState)
+{
+    if (!accountState || !accountState->account())
+        return;
+
+    GraphApi::SpacesManager *spacesMgr = accountState->account()->spacesManager();
+    if (!spacesMgr)
+        return;
+
+    auto spaces = spacesMgr->spaces();
+
+    QUuid id = accountState->account()->uuid();
+    int spaceCount = spacesMgr->spacesCount();
+    onSpacesAdded(id, spaces, spaceCount);
+}
+
+
 void FolderMan::onSpacesAdded(const QUuid &accountId, QList<GraphApi::Space *> spaces, int totalSpaceCount)
 {
     // not a fan but the spaces manager doesn't have the account state, just the account. At the point that we correct the relationship
@@ -351,6 +384,11 @@ void FolderMan::onSpacesAdded(const QUuid &accountId, QList<GraphApi::Space *> s
         return;
 
     QSet<GraphApi::Space *> newUnsyncedSpaces(spaces.cbegin(), spaces.cend());
+
+    if (!_unsyncedSpaces.contains(accountId)) {
+        _unsyncedSpaces.insert(accountId, {});
+    }
+
     for (auto space : std::as_const(spaces)) {
         // be sure to eliminate any spaces that are already in the unsynced list to prevent auto-adding spaces that the
         // user explicitly removed from sync
@@ -361,7 +399,6 @@ void FolderMan::onSpacesAdded(const QUuid &accountId, QList<GraphApi::Space *> s
             _folders[accountId][space->id()]->setAvailable(true);
         }
     }
-
 
     if (newUnsyncedSpaces.isEmpty()) {
         // this normally happens when the folderman has loaded folders from config - the folders are created

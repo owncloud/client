@@ -72,13 +72,15 @@ void NewAccountBuilder::completeAccountSetup()
         _account->credentials()->persist();
         // emitting credentialsFetched is required because we didn't use the credentials to auth the new user/account. In theory we should have a
         // way to trigger the creds to emit this itself, but this is a future topic. same with calling persist. todo for future.
-        Q_EMIT _account->credentialsFetched();
+        emit _account->credentialsFetched();
     }
 
     // if we are doing sync all or vfs the folder man should configure all the folders automatically
     if (_syncType != NewAccount::SyncType::SELECTIVE_SYNC) {
         bool useVfs = (_syncType == NewAccount::SyncType::USE_VFS);
-        Q_EMIT requestSetUpSyncFoldersForAccount(_accountState, useVfs);
+        emit requestSetUpSyncFoldersForAccount(_accountState, useVfs);
+    } else {
+        emit requestLoadSpacesOnly(_accountState);
     }
     // remove the placeholder state in the gui - this impl is not great as the account state can't decide for itself whether it's setting up
     // or not, but for now, it's what we have
