@@ -16,7 +16,6 @@
 #include "ui_settingsdialog.h"
 
 #include "accountmanager.h"
-#include "accountsettings.h"
 #include "accountview.h"
 #include "activitysettings.h"
 #include "application.h"
@@ -145,7 +144,7 @@ SettingsDialog::SettingsDialog(ownCloudGui *gui, QWidget *parent)
     for (const auto &accountState : accounts) {
         onAccountAdded(accountState);
     }
-    if (!_widgetForAccount.isEmpty()) {
+    if (!_viewForAccount.isEmpty()) {
         setCurrentAccount(accounts.first()->account());
     }
 
@@ -165,15 +164,11 @@ void SettingsDialog::onAccountAdded(AccountState *state)
     // asap we need to create some kind of accountView builder that will instantiate a controller and view + whatever else
     // as currently everything is in the view which is absolutely not ok, especially given the multitude of "heavy lifting"
     // that goes on in there
-#ifdef USE_NEW_FOLDER_LIST
+
     auto accountView = new AccountView(state, this);
     _ui->stack->addWidget(accountView);
     _viewForAccount.insert(state->account()->uuid(), accountView);
-#else
-    auto accountSettings = new AccountSettings(state, this);
-    _ui->stack->addWidget(accountSettings);
-    _widgetForAccount.insert(state->account()->uuid(), accountSettings);
-#endif
+
     setCurrentAccount(state->account());
 }
 
@@ -183,7 +178,7 @@ void SettingsDialog::onAccountRemoved(AccountState *state)
         return;
     // todo: #37. using the account after we know it's been removed is not ok.
     Account *acc = state->account();
-#ifdef USE_NEW_FOLDER_LIST
+
     if (AccountView *asw = _viewForAccount.value(acc->uuid(), nullptr)) {
         _viewForAccount.remove(acc->uuid());
         _ui->stack->removeWidget(asw);
@@ -193,17 +188,6 @@ void SettingsDialog::onAccountRemoved(AccountState *state)
             _ui->stack->setCurrentWidget(_generalSettings);
         }
     }
-#else
-    if (AccountSettings *asw = _widgetForAccount.value(acc->uuid(), nullptr)) {
-        _widgetForAccount.remove(acc->uuid());
-        _ui->stack->removeWidget(asw);
-        asw->deleteLater();
-        //  go to the settings page if the last account was removed
-        if (_widgetForAccount.isEmpty()) {
-            _ui->stack->setCurrentWidget(_generalSettings);
-        }
-    }
-#endif
 }
 
 void SettingsDialog::addModalWidget(QWidget *w)
@@ -237,12 +221,6 @@ void SettingsDialog::ceaseModality(Account *account)
         }
     }
     _ui->quickWidget->setEnabled(_modalStack.isEmpty());
-}
-
-// todo: kill this and all related account settings refs when the new folder list is done
-AccountSettings *SettingsDialog::accountSettings(Account *account) const
-{
-    return _widgetForAccount.value(account->uuid(), nullptr);
 }
 
 AccountView *SettingsDialog::accountView(Account *account) const
@@ -300,11 +278,8 @@ void SettingsDialog::setCurrentAccount(Account *account)
         return;
 
     _currentAccount = account;
-#ifdef USE_NEW_FOLDER_LIST
+
     _ui->stack->setCurrentWidget(accountView(account));
-#else
-    _ui->stack->setCurrentWidget(accountSettings(account));
-#endif
     _currentPage = SettingsPage::Account;
 
     Q_EMIT currentAccountChanged();
@@ -326,11 +301,7 @@ void SettingsDialog::runFolderWizard(Account *account)
     if (!account)
         return;
     setCurrentAccount(account);
-#ifdef USE_NEW_FOLDER_LIST
     accountView(_currentAccount)->slotAddFolder();
-#else
-    accountSettings(_currentAccount)->slotAddFolder();
-#endif
 }
 
 
