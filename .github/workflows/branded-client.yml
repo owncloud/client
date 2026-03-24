@@ -91,7 +91,6 @@ jobs:
 
   notification:
     needs: gui-tests
-    if: github.event_name == 'schedule'
     runs-on: ubuntu-latest
     container:
       image: owncloudci/alpine:latest
