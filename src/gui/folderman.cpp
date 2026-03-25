@@ -368,9 +368,15 @@ void FolderMan::loadSpacesAlone(AccountState *accountState)
 
     auto spaces = spacesMgr->spaces();
 
+    _scheduler->connectSpacesManager(spacesMgr);
+
     QUuid id = accountState->account()->uuid();
     int spaceCount = spacesMgr->spacesCount();
     onSpacesAdded(id, spaces, spaceCount);
+
+    // initial load is complete, now we just wait for spaces to be added or removed incrementally
+    connect(spacesMgr, &GraphApi::SpacesManager::spacesAdded, this, &FolderMan::onSpacesAdded);
+    connect(spacesMgr, &GraphApi::SpacesManager::spacesRemoved, this, &FolderMan::onSpacesRemoved);
 }
 
 
