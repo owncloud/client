@@ -195,47 +195,6 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
     </message>
 </context>
 <context>
-    <name>FolderDelegate</name>
-    <message>
-        <location filename="../src/gui/qml/FolderDelegate.qml" line="30"/>
-        <source>Folder Sync</source>
-        <translation>Kaustade sünkroonimine</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/qml/FolderDelegate.qml" line="234"/>
-        <source>Add Space</source>
-        <translation>Lisa ruum</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/qml/FolderDelegate.qml" line="234"/>
-        <source>Add Folder</source>
-        <translation>Lisa kaust</translation>
-    </message>
-    <message numerus="yes">
-        <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
-        <source>You are synchronizing %1 out of %n folder(s)</source>
-        <translation><numerusform>Oled sünkroniseerimas %1 kausta %n-st</numerusform><numerusform>Oled sünkroniseerimas %1 kausta %n-st</numerusform></translation>
-    </message>
-    <message numerus="yes">
-        <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
-        <source>You are synchronizing %1 out of %n space(s)</source>
-        <translation><numerusform>Oled sünkroniseerimas %1 ruumi %n-st</numerusform><numerusform>Oled sünkroniseerimas %1 ruumi %n-st</numerusform></translation>
-    </message>
-</context>
-<context>
-    <name>FolderError</name>
-    <message>
-        <location filename="../src/gui/qml/FolderError.qml" line="58"/>
-        <source>Show less</source>
-        <translation>Näita vähem</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/qml/FolderError.qml" line="77"/>
-        <source>Show more</source>
-        <translation>Näita rohkem</translation>
-    </message>
-</context>
-<context>
     <name>FolderItem</name>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="122"/>
@@ -284,59 +243,6 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="166"/>
         <source>, ⬆️ %1/s</source>
         <translation>, ⬆️ %1/s</translation>
-    </message>
-</context>
-<context>
-    <name>FolderStatus</name>
-    <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="99"/>
-        <source>&apos;%1&apos;</source>
-        <translation>&apos;%1&apos;</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="120"/>
-        <source>Syncing %1</source>
-        <extracomment>Example text: &quot;Syncing 'foo.txt', 'bar.txt'&quot;</extracomment>
-        <translation>Sünkroniseerin %1</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="122"/>
-        <source>, ⬇️ %1/s</source>
-        <translation>, ⬇️ %1/s</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="125"/>
-        <source>, ⬆️ %1/s</source>
-        <translation>, ⬆️ %1/s</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="129"/>
-        <source>%1 %2 (%3 of %4)</source>
-        <extracomment>Example text: &quot;uploading foobar.png (2MB of 2MB)&quot;</extracomment>
-        <translation>%1 %2 (%3 / %4)</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="134"/>
-        <source>%1 %2</source>
-        <extracomment>Example text: &quot;uploading foobar.png&quot;</extracomment>
-        <translation>%1 %2</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="151"/>
-        <source>%5 left, %1 of %2, file %3 of %4</source>
-        <extracomment>Example text: &quot;5 minutes left, 12 MB of 345 MB, file 6 of 7&quot;</extracomment>
-        <translation>%5 järel, %1 %2-st, fail %3 %4-st</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="159"/>
-        <source>%1 of %2, file %3 of %4</source>
-        <extracomment>Example text: &quot;12 MB of 345 MB, file 6 of 7&quot;</extracomment>
-        <translation>%1 %2-st, fail %3 %4-st</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="163"/>
-        <source>file %1 of %2</source>
-        <translation>fail %1 / %2</translation>
     </message>
 </context>
 <context>
@@ -593,7 +499,17 @@ See tegevus katkestab kõik käimasolevad sünkroniseerimised.</translation>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="225"/>
+        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="81"/>
+        <source>%1 list view</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="82"/>
+        <source>Navigate the %1 list using the up and down arrows</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="227"/>
         <source>%1 out of %2 %3 are synchronized</source>
         <translation type="unfinished"/>
     </message>
@@ -604,246 +520,6 @@ See tegevus katkestab kõik käimasolevad sünkroniseerimised.</translation>
         <location filename="../src/gui/accountmodalwidget.ui" line="14"/>
         <source>Form</source>
         <translation>Vorm</translation>
-    </message>
-</context>
-<context>
-    <name>OCC::AccountSettings</name>
-    <message>
-        <location filename="../src/gui/accountsettings.ui" line="14"/>
-        <source>Form</source>
-        <translation>Vorm</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.ui" line="73"/>
-        <source>Manage Account</source>
-        <translation>Halda kontot</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.ui" line="109"/>
-        <source>Preparing the account</source>
-        <translation>Konto ettevalmistamine</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.ui" line="137"/>
-        <source>Sync connections</source>
-        <translation>Sünkroniseeri ühendused</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="341"/>
-        <location filename="../src/gui/accountsettings.cpp" line="382"/>
-        <location filename="../src/gui/accountsettings.cpp" line="745"/>
-        <source>Cancel</source>
-        <translation>Loobu</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="514"/>
-        <source>Remove</source>
-        <translation>Eemalda</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="253"/>
-        <location filename="../src/gui/accountsettings.cpp" line="276"/>
-        <source>Choose what to sync</source>
-        <translation>Vali, mida sünkroniseerida</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="211"/>
-        <source>Force sync now</source>
-        <translation>Sünkroniseeri jõuga kohe</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="213"/>
-        <source>Restart sync</source>
-        <translation>Taaskäivita sünkroniseerimine</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="160"/>
-        <source>Remove folder sync connection</source>
-        <translation>Eemalda kaustade sünkroniseerimise ühendus</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="503"/>
-        <source>Account options menu</source>
-        <translation>Konto valikute menüü</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="506"/>
-        <source>Reconnect</source>
-        <translation>Ühendu uuesti</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="165"/>
-        <source>Sync options menu</source>
-        <translation>Sünkroniseerimise valikute menüü</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="171"/>
-        <source>Folder is not ready yet</source>
-        <translation>Kaust ei ole veel valmis</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="332"/>
-        <source>Confirm Folder Sync Connection Removal</source>
-        <translation>Kinnita kaustade sünkroniseerimise ühenduse kustutamine</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="339"/>
-        <source>Remove Folder Sync Connection</source>
-        <translation>Eemalda kaustade sünkroniseerimise ühendus</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="371"/>
-        <source>Disable virtual file support?</source>
-        <translation>Lülita virtuaalse faili tugi välja?</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="372"/>
-        <source>This action will disable virtual file support. As a consequence contents of folders that are currently marked as 'available online only' will be downloaded.
-
-The only advantage of disabling virtual file support is that the selective sync feature will become available again.
-
-This action will abort any currently running synchronization.</source>
-        <translation>See tegevus lülitab välja virtuaalse faili toe. Selle tagajärjel laetakse alla kataloogid märkega &apos;saadaval vaid võrguühendusega&apos;.
-
-Ainus eelis virtuaalse faili toe väljalülitamisel on valikulise sünkroniseerimise võimaluse taastumine.
-
-See tegevus katkestab kõik käimasolevad sünkroniseerimised.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="380"/>
-        <source>Disable support</source>
-        <translation>Eemalda tugi</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="446"/>
-        <source>Sync Running</source>
-        <translation>Sünkroniseerimine on käimas</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="446"/>
-        <source>The sync operation is running.&lt;br/&gt;Do you want to stop it?</source>
-        <translation>Sünkroniseerimine käib. &lt;br/&gt; Kas soovid katkestada?</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="246"/>
-        <source>Disable virtual file support</source>
-        <translation>Keela virtuaalse faili tugi</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="232"/>
-        <source>Enable virtual file support</source>
-        <translation>Luba virtuaalse faili tugi</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="463"/>
-        <source>Sync paused by user</source>
-        <translation>Sünkroniseerimine peatati kasutaja poolt</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="478"/>
-        <source>Internet connection is metered</source>
-        <translation>Internetiühendus on mahupõhine</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="479"/>
-        <source>Synchronization is paused because the Internet connection is a metered connection&lt;p&gt;Do you really want to force a Synchronization now?</source>
-        <translation>Sünkroniseerimine on peatatud, kuna interneti-ühendus on mahupõhine&lt;p&gt;Kas soovite tõesti sünkroniseerida?</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="505"/>
-        <location filename="../src/gui/accountsettings.cpp" line="509"/>
-        <source>Log in</source>
-        <translation>Logi sisse</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="542"/>
-        <source>Connected</source>
-        <translation>Ühendatud</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="551"/>
-        <source>Server is temporarily unavailable</source>
-        <translation>Server ei ole ajutiselt ligipääsetav</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="554"/>
-        <source>Server is currently in maintenance mode</source>
-        <translation>Server on hooldusrežiimil</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="557"/>
-        <source>Signed out</source>
-        <translation>Välja logitud</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="560"/>
-        <source>Updating credentials…</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="569"/>
-        <source>Connecting…</source>
-        <translation>Ühendamine...</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="565"/>
-        <source>Captive portal prevents connections to the server.</source>
-        <translation>Piiratud portaal takistab ühendusi serverisse.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="567"/>
-        <source>Sync is paused due to metered internet connection</source>
-        <translation>Sünkroniseerimine on peatatud mahupõhise internetiühenduse tõttu</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="573"/>
-        <source>Server configuration error</source>
-        <translation>Serveri seadete viga</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="579"/>
-        <source>Disconnected</source>
-        <translation>Lahti ühendatud</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="738"/>
-        <source>Confirm Account Removal</source>
-        <translation>Kinnita konto eemaldamine</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="739"/>
-        <source>&lt;p&gt;Do you really want to remove the connection to the account &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Kas soovid tõesti ühenduse kontoga &lt;i&gt;%1&lt;/i&gt; eemaldada?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Märkus:&lt;/b&gt; See &lt;b&gt;ei&lt;/b&gt; kustuta ühtegi faili.&lt;/p&gt;</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="743"/>
-        <source>Remove connection</source>
-        <translation>Eemalda ühendus</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="509"/>
-        <source>Log out</source>
-        <translation>Logi välja</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="219"/>
-        <source>Resume sync</source>
-        <translation>Jätka sünkroniseerimist</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="219"/>
-        <source>Pause sync</source>
-        <translation>Peata sünkroniseerimine</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="333"/>
-        <source>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Kas soovid tõesti katkestada kataloogi &lt;i&gt;%1&lt;/i&gt; sünkroniseerimist?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Märkus:&lt;/b&gt; See &lt;b&gt;ei&lt;/b&gt; kustuta ühtegi faili.&lt;/p&gt;</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="539"/>
-        <source>The server version %1 is unsupported! Proceed at your own risk.</source>
-        <translation>Serveri versioon %1 ei ole toetatud! Jätkake omal vastutusel.</translation>
     </message>
 </context>
 <context>
@@ -1516,44 +1192,6 @@ See tähendab, et sünkroniseerimisklient ei pruugi kohalikke muudatusi kohe ül
         <location filename="../src/gui/FoldersGui/foldermodelcontroller.cpp" line="111"/>
         <source>Menu button with %1 options. Hit the space key to pop the folder options menu</source>
         <translation type="unfinished"/>
-    </message>
-</context>
-<context>
-    <name>OCC::FolderStatusModel</name>
-    <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="216"/>
-        <source>There are unresolved conflicts.</source>
-        <translation>Mõned konfliktid on lahendamata.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="263"/>
-        <source>%1 of %2 used</source>
-        <translation>%1 %2-st on kasutuses</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="343"/>
-        <source>Checking for changes in remote &apos;%1&apos;</source>
-        <translation>Kaugühenduse &apos;%1&apos; muutuste kontroll</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="345"/>
-        <source>Checking for changes in local &apos;%1&apos;</source>
-        <translation>Kohaliku &apos;%1&apos; muutuste kontroll</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="349"/>
-        <source>Reconciling changes</source>
-        <translation>Muudatuste kooskõlastamine</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="389"/>
-        <source>Queued</source>
-        <translation>Järjekorras</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="227"/>
-        <source>Local folder: %1</source>
-        <translation>Kohalik kaust: %1</translation>
     </message>
 </context>
 <context>
@@ -2827,12 +2465,12 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
 <context>
     <name>OCC::RequestAuthenticationController</name>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="100"/>
+        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="94"/>
         <source>IdP is unreachable. Contact your system administrator or try again later.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="111"/>
+        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="105"/>
         <source>Authentication failed.</source>
         <translation>Autentimine ebaõnnestus.</translation>
     </message>
@@ -2955,22 +2593,22 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
 <context>
     <name>OCC::SettingsDialog</name>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="99"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="98"/>
         <source>Hide</source>
         <translation>Peida</translation>
     </message>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="108"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="107"/>
         <source>Quit %1</source>
         <translation>Lõpeta %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="109"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="108"/>
         <source>Are you sure you want to quit %1?</source>
         <translation>Kas olete kindel, et soovite %1-st väljuda?</translation>
     </message>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="135"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="134"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
     </message>
