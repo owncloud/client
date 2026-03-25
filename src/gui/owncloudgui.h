@@ -62,6 +62,7 @@ public:
 
 Q_SIGNALS:
     void requestSetUpSyncFoldersForAccount(AccountState *account, bool useVfs);
+    void requestLoadSpacesOnly(AccountState *account);
 
 public Q_SLOTS:
     void setupTrayContextMenu();
