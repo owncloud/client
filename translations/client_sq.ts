@@ -195,47 +195,6 @@ Mjet njëkohësimi kartelash për desktop.</translation>
     </message>
 </context>
 <context>
-    <name>FolderDelegate</name>
-    <message>
-        <location filename="../src/gui/qml/FolderDelegate.qml" line="30"/>
-        <source>Folder Sync</source>
-        <translation>Njëkohësim Dosjesh</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/qml/FolderDelegate.qml" line="234"/>
-        <source>Add Space</source>
-        <translation>Shtoni Hapësirë</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/qml/FolderDelegate.qml" line="234"/>
-        <source>Add Folder</source>
-        <translation>Shtoni Dosje</translation>
-    </message>
-    <message numerus="yes">
-        <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
-        <source>You are synchronizing %1 out of %n folder(s)</source>
-        <translation><numerusform>Po bëni njëkohësimin e %1 nga %n dosjeje</numerusform><numerusform>Po bëni njëkohësimin e %1 nga %n dosjeve</numerusform></translation>
-    </message>
-    <message numerus="yes">
-        <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
-        <source>You are synchronizing %1 out of %n space(s)</source>
-        <translation><numerusform>Po bëni njëkohësimin e %1 nga %n hapësire</numerusform><numerusform>Po bëni njëkohësimin e %1 nga %n hapësirave</numerusform></translation>
-    </message>
-</context>
-<context>
-    <name>FolderError</name>
-    <message>
-        <location filename="../src/gui/qml/FolderError.qml" line="58"/>
-        <source>Show less</source>
-        <translation>Shfaq më pak</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/qml/FolderError.qml" line="77"/>
-        <source>Show more</source>
-        <translation>Shfaq më tepër</translation>
-    </message>
-</context>
-<context>
     <name>FolderItem</name>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="122"/>
@@ -284,59 +243,6 @@ Mjet njëkohësimi kartelash për desktop.</translation>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="166"/>
         <source>, ⬆️ %1/s</source>
         <translation>, ⬆️ %1/s</translation>
-    </message>
-</context>
-<context>
-    <name>FolderStatus</name>
-    <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="99"/>
-        <source>&apos;%1&apos;</source>
-        <translation>&apos;%1&apos;</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="120"/>
-        <source>Syncing %1</source>
-        <extracomment>Example text: &quot;Syncing 'foo.txt', 'bar.txt'&quot;</extracomment>
-        <translation>Po njëkohësohet %1</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="122"/>
-        <source>, ⬇️ %1/s</source>
-        <translation>, ⬇️ %1/s</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="125"/>
-        <source>, ⬆️ %1/s</source>
-        <translation>, ⬆️ %1/s</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="129"/>
-        <source>%1 %2 (%3 of %4)</source>
-        <extracomment>Example text: &quot;uploading foobar.png (2MB of 2MB)&quot;</extracomment>
-        <translation>%1 %2 (%3 nga %4)</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="134"/>
-        <source>%1 %2</source>
-        <extracomment>Example text: &quot;uploading foobar.png&quot;</extracomment>
-        <translation>%1 %2</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="151"/>
-        <source>%5 left, %1 of %2, file %3 of %4</source>
-        <extracomment>Example text: &quot;5 minutes left, 12 MB of 345 MB, file 6 of 7&quot;</extracomment>
-        <translation>edhe %5, %1 nga %2, kartela %3 nga %4</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="159"/>
-        <source>%1 of %2, file %3 of %4</source>
-        <extracomment>Example text: &quot;12 MB of 345 MB, file 6 of 7&quot;</extracomment>
-        <translation>%1 nga %2, kartela %3 nga %4</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="163"/>
-        <source>file %1 of %2</source>
-        <translation>kartela %1 nga %2</translation>
     </message>
 </context>
 <context>
@@ -593,7 +499,17 @@ Ky veprim do të shkaktojë ndërprerjen e çfarëdo njëkohësimi në kryerje e
         <translation>Shtoni njëkohësim të ri për %1…</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="225"/>
+        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="81"/>
+        <source>%1 list view</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="82"/>
+        <source>Navigate the %1 list using the up and down arrows</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="227"/>
         <source>%1 out of %2 %3 are synchronized</source>
         <translation>Janë njëkohësuar %1 nga %2 %3 gjithsej</translation>
     </message>
@@ -604,246 +520,6 @@ Ky veprim do të shkaktojë ndërprerjen e çfarëdo njëkohësimi në kryerje e
         <location filename="../src/gui/accountmodalwidget.ui" line="14"/>
         <source>Form</source>
         <translation>Formular</translation>
-    </message>
-</context>
-<context>
-    <name>OCC::AccountSettings</name>
-    <message>
-        <location filename="../src/gui/accountsettings.ui" line="14"/>
-        <source>Form</source>
-        <translation>Formular</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.ui" line="73"/>
-        <source>Manage Account</source>
-        <translation>Administroni Llogari</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.ui" line="109"/>
-        <source>Preparing the account</source>
-        <translation>Po përgatitet llogaria</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.ui" line="137"/>
-        <source>Sync connections</source>
-        <translation>Njëkohëso lidhje</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="341"/>
-        <location filename="../src/gui/accountsettings.cpp" line="382"/>
-        <location filename="../src/gui/accountsettings.cpp" line="745"/>
-        <source>Cancel</source>
-        <translation>Anuloje</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="514"/>
-        <source>Remove</source>
-        <translation>Hiqe</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="253"/>
-        <location filename="../src/gui/accountsettings.cpp" line="276"/>
-        <source>Choose what to sync</source>
-        <translation>Zgjidhni çfarë të njëkohësohet</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="211"/>
-        <source>Force sync now</source>
-        <translation>Detyro njëkohësim tani</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="213"/>
-        <source>Restart sync</source>
-        <translation>Rinise njëkohësimin</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="160"/>
-        <source>Remove folder sync connection</source>
-        <translation>Hiqe lidhjen për njëkohësim dosjeje</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="503"/>
-        <source>Account options menu</source>
-        <translation>Menu mundësish veprimesh</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="506"/>
-        <source>Reconnect</source>
-        <translation>Rilidhu</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="165"/>
-        <source>Sync options menu</source>
-        <translation>Menu mundësish njëkohësimi</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="171"/>
-        <source>Folder is not ready yet</source>
-        <translation>Dosja s’është ende gati</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="332"/>
-        <source>Confirm Folder Sync Connection Removal</source>
-        <translation>Ripohoni Heqje Lidhjeje Njëkohësimi Dosjeje</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="339"/>
-        <source>Remove Folder Sync Connection</source>
-        <translation>Hiqni Lidhjen Për Njëkohësim Dosjeje</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="371"/>
-        <source>Disable virtual file support?</source>
-        <translation>Të çaktivizohet mbulimi për kartela virtuale?</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="372"/>
-        <source>This action will disable virtual file support. As a consequence contents of folders that are currently marked as 'available online only' will be downloaded.
-
-The only advantage of disabling virtual file support is that the selective sync feature will become available again.
-
-This action will abort any currently running synchronization.</source>
-        <translation>Ky veprim do të çaktivizojë mbulimin për kartela virtuale. Si pasojë, lëndë e dosjeve të cilave u është vënë shenjë si “të passhme vetëm në linjë” do të shkarkohen.
-
-Përfitimi i vetëm i çaktivizimit të mbulimit për kartela virtuale është se veçoria e njëkohësimit përzgjedhës do të jetë sërish e përdorshme.
-
-Ky veprim do të shkaktojë ndërprerjen e çfarëdo njëkohësimi në kryerje e sipër atë çast.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="380"/>
-        <source>Disable support</source>
-        <translation>Çaktivizoje mbulimin</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="446"/>
-        <source>Sync Running</source>
-        <translation>Njëkohësimi Po Kryhet</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="446"/>
-        <source>The sync operation is running.&lt;br/&gt;Do you want to stop it?</source>
-        <translation>Veprimi i njëkohësimit po kryhet.&lt;br/&gt;Doni të ndalet?</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="246"/>
-        <source>Disable virtual file support</source>
-        <translation>Çaktivizo mbulim për kartela virtuale</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="232"/>
-        <source>Enable virtual file support</source>
-        <translation>Aktivizo mbulim kartelash virtuale</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="463"/>
-        <source>Sync paused by user</source>
-        <translation>Njëkohësim i ndalur nga përdoruesi</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="478"/>
-        <source>Internet connection is metered</source>
-        <translation>Lidhja Internet është me masë</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="479"/>
-        <source>Synchronization is paused because the Internet connection is a metered connection&lt;p&gt;Do you really want to force a Synchronization now?</source>
-        <translation>Njëkohësimi është ndalur, ngaqë lidhja Internet është një lidhje me masë&lt;p&gt;Doni vërtet të detyrohet Njëkohësimi tani?</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="505"/>
-        <location filename="../src/gui/accountsettings.cpp" line="509"/>
-        <source>Log in</source>
-        <translation>Hyni</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="542"/>
-        <source>Connected</source>
-        <translation>I lidhur</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="551"/>
-        <source>Server is temporarily unavailable</source>
-        <translation>Shërbyesi është përkohësisht jashtë funksionimi</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="554"/>
-        <source>Server is currently in maintenance mode</source>
-        <translation>Shërbyesi është aktualisht nën mënyrën mirëmbajtje</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="557"/>
-        <source>Signed out</source>
-        <translation>I dalë</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="560"/>
-        <source>Updating credentials…</source>
-        <translation>Po përditësohen kredenciale…</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="569"/>
-        <source>Connecting…</source>
-        <translation>Po lidhet…</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="565"/>
-        <source>Captive portal prevents connections to the server.</source>
-        <translation>Portali rrëmbyes pengon lidhjet me shërbyesin.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="567"/>
-        <source>Sync is paused due to metered internet connection</source>
-        <translation>Njëkohësimi është ndalur, për shkak lidhjeje internet me racion</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="573"/>
-        <source>Server configuration error</source>
-        <translation>Gabim formësimi shërbyesi</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="579"/>
-        <source>Disconnected</source>
-        <translation>I shkëputur</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="738"/>
-        <source>Confirm Account Removal</source>
-        <translation>Ripohoni Heqjen e Llogarisë</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="739"/>
-        <source>&lt;p&gt;Do you really want to remove the connection to the account &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Doni vërtet të hiqet lidhja për te llogaria &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Shënim:&lt;/b&gt; Kjo &lt;b&gt;nuk&lt;/b&gt; do të fshijë ndonjë kartelë.&lt;/p&gt;</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="743"/>
-        <source>Remove connection</source>
-        <translation>Hiqe lidhjen</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="509"/>
-        <source>Log out</source>
-        <translation>Dilni</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="219"/>
-        <source>Resume sync</source>
-        <translation>Rimerre njëkohësimin</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="219"/>
-        <source>Pause sync</source>
-        <translation>Ndale njëkohësimin</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="333"/>
-        <source>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Doni vërtet të ndalet njëkohësimi i dosjes &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Shënim:&lt;/b&gt; Kjo &lt;b&gt;nuk&lt;/b&gt; do të fshijë ndonjë kartelë.&lt;/p&gt;</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountsettings.cpp" line="539"/>
-        <source>The server version %1 is unsupported! Proceed at your own risk.</source>
-        <translation>Versioni %1 i shërbyesit nuk mbulohet! Qari dhe zarari i juaj.</translation>
     </message>
 </context>
 <context>
@@ -1511,50 +1187,12 @@ Kjo do të thotë që klienti i njëkohësimeve mund të mos ngarkojë menjëher
     <message>
         <location filename="../src/gui/FoldersGui/foldermodelcontroller.cpp" line="110"/>
         <source>%1 options</source>
-        <translation type="unfinished"/>
+        <translation>Mundësi %1</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/foldermodelcontroller.cpp" line="111"/>
         <source>Menu button with %1 options. Hit the space key to pop the folder options menu</source>
-        <translation type="unfinished"/>
-    </message>
-</context>
-<context>
-    <name>OCC::FolderStatusModel</name>
-    <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="216"/>
-        <source>There are unresolved conflicts.</source>
-        <translation>Ka përplasje të pazgjidhura.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="263"/>
-        <source>%1 of %2 used</source>
-        <translation>Përdorur %1 nga %2</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="343"/>
-        <source>Checking for changes in remote &apos;%1&apos;</source>
-        <translation>Po kërkohet për ndryshime te shërbyesi i largët &apos;%1&apos;</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="345"/>
-        <source>Checking for changes in local &apos;%1&apos;</source>
-        <translation>Po kërkohet për ndryshime te shërbyesi vendor &apos;%1&apos;</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="349"/>
-        <source>Reconciling changes</source>
-        <translation>Po pajtohen ndryshimet mes tyre</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="389"/>
-        <source>Queued</source>
-        <translation>Vënë në radhë</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folderstatusmodel.cpp" line="227"/>
-        <source>Local folder: %1</source>
-        <translation>Dosje vendore: %1</translation>
+        <translation>Buton menuje me mundësi %1. Që të shfaqet menuja e mundësive për dosje, shtypni tastin Hapësirë</translation>
     </message>
 </context>
 <context>
@@ -2828,12 +2466,12 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::RequestAuthenticationController</name>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="100"/>
+        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="94"/>
         <source>IdP is unreachable. Contact your system administrator or try again later.</source>
         <translation>IdP s’kapet dot. Lidhuni me përgjegjësin e sistemit tuaj, ose riprovoni më vonë.</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="111"/>
+        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="105"/>
         <source>Authentication failed.</source>
         <translation>Mirëfilltësimi fështoi.</translation>
     </message>
@@ -2956,22 +2594,22 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::SettingsDialog</name>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="99"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="98"/>
         <source>Hide</source>
         <translation>Fshihe</translation>
     </message>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="108"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="107"/>
         <source>Quit %1</source>
         <translation>Dilni nga %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="109"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="108"/>
         <source>Are you sure you want to quit %1?</source>
         <translation>Jeni i sigurt se doni të dilet nga %1?</translation>
     </message>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="135"/>
+        <location filename="../src/gui/settingsdialog.cpp" line="134"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
     </message>
