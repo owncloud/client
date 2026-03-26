@@ -47,6 +47,7 @@ private:
     void buildView();
     void popItemMenu(const QPoint &pos);
     void refreshMenu();
+    bool performBizarreSetupOnTreeView();
 
     QTreeView *_treeView = nullptr;
     QLabel *_syncedFolderCountLabel = nullptr;
