@@ -140,20 +140,40 @@ void AccountFoldersView::buildView()
     setLayout(mainLayout);
 }
 
+// this really belongs in a tree view controller...
 bool AccountFoldersView::eventFilter(QObject *obj, QEvent *ev)
 {
     if (obj == _treeView) {
         QModelIndex current = _treeView->currentIndex();
-
+        qDebug() << "event filter ev type " << ev->type();
+        // this has been the only way I've found so far to ensure the FocusIn behavior works correct on first focus enter in the tree after show
+        // this should never be necessary but it's unclear why exactly first focus is so broken (using tab or direct mouse click)
         if (ev->type() == QEvent::ShowToParent) {
+            if (_treeView->model()->rowCount(QModelIndex()) <= 0)
+                return false;
             if (!current.isValid()) {
                 current = _treeView->model()->index(0, 1);
                 _treeView->setCurrentIndex(current);
+                qDebug() << "rows in tree on showToParent " << _treeView->model()->rowCount(QModelIndex());
             }
             // clear the selection no matter what! on first show there should be no item selected, else the automatic tree edit mode doesn't work for
             // the "default" selected item
             _treeView->setCurrentIndex(QModelIndex());
-            return false;
+            return true;
+        }
+
+        if (ev->type() == QEvent::UpdateLater) {
+            if (_treeView->model()->rowCount(QModelIndex()) <= 0)
+                return false;
+            if (!current.isValid()) {
+                current = _treeView->model()->index(0, 1);
+                _treeView->setCurrentIndex(current);
+                qDebug() << "rows in tree on UpdateLater " << _treeView->model()->rowCount(QModelIndex());
+            }
+            // clear the selection no matter what! on first show there should be no item selected, else the automatic tree edit mode doesn't work for
+            // the "default" selected item
+            _treeView->setCurrentIndex(QModelIndex());
+            return true;
         }
         // this ensures that if a tree item is in edit mode, but is currently scrolled out of view, hitting edit trigger scrolls to the item
         // before popping the button menu
@@ -167,7 +187,7 @@ bool AccountFoldersView::eventFilter(QObject *obj, QEvent *ev)
             QFocusEvent *focus = dynamic_cast<QFocusEvent *>(ev);
             if (!focus || focus->lostFocus())
                 return false;
-            qDebug() << "focus reason " << focus->reason();
+            //   qDebug() << "focus reason " << focus->reason();
             // this covers the case where the user selects an item in the tree by keyboard or mouse for the very first time - see the prerequisite handling
             // of QEvent::ShowToParent which is needed to make this work, else the tree is unable to correctly edit the default selected item and
             // behaves strangely.
