@@ -140,21 +140,40 @@ void AccountFoldersView::buildView()
     setLayout(mainLayout);
 }
 
+bool AccountFoldersView::performBizarreSetupOnTreeView()
+{
+    if (_firstShowAfterCreation && _treeView->model()->rowCount(QModelIndex()) > 0) {
+        QModelIndex current = _treeView->currentIndex();
+        // this condition matches case when using selective sync, after adding first folder
+        // no I can't explain why this "helps" - just trial and error with this mess
+        if (current.isValid())
+            _treeView->selectionModel()->clear();
+
+        current = _treeView->model()->index(0, 1);
+        _treeView->setCurrentIndex(current);
+
+        // clear the selection no matter what! on first show there should be no item selected, else the automatic tree edit mode using
+        // tab into tree or direct mouse click doesn't work for the "default" selected item
+        _treeView->selectionModel()->clear();
+        _firstShowAfterCreation = false;
+        return true;
+    }
+    return false;
+}
+
+// this really belongs in a tree view controller...
 bool AccountFoldersView::eventFilter(QObject *obj, QEvent *ev)
 {
     if (obj == _treeView) {
         QModelIndex current = _treeView->currentIndex();
-
+        // this has been the only way I've found so far to ensure the FocusIn behavior works correctly on first focus enter in the tree after show
+        // this should never be necessary but it's unclear why exactly first focus is so broken (using tab or direct mouse click)
         if (ev->type() == QEvent::ShowToParent) {
-            if (!current.isValid()) {
-                current = _treeView->model()->index(0, 1);
-                _treeView->setCurrentIndex(current);
-            }
-            // clear the selection no matter what! on first show there should be no item selected, else the automatic tree edit mode doesn't work for
-            // the "default" selected item
-            _treeView->setCurrentIndex(QModelIndex());
-            return false;
+            return performBizarreSetupOnTreeView();
         }
+
+        // from here out event handling is fairly comprehensible.
+
         // this ensures that if a tree item is in edit mode, but is currently scrolled out of view, hitting edit trigger scrolls to the item
         // before popping the button menu
         if (ev->type() == QEvent::ShortcutOverride) {
@@ -165,30 +184,32 @@ bool AccountFoldersView::eventFilter(QObject *obj, QEvent *ev)
         // if I don't include showToParent in this, direct clicking the selected item on first show is fubar - menu pops but in a very strange location
         if (ev->type() == QEvent::FocusIn) {
             QFocusEvent *focus = dynamic_cast<QFocusEvent *>(ev);
-            if (!focus || focus->lostFocus())
+            if (!focus)
                 return false;
-            qDebug() << "focus reason " << focus->reason();
-            // this covers the case where the user selects an item in the tree by keyboard or mouse for the very first time - see the prerequisite handling
-            // of QEvent::ShowToParent which is needed to make this work, else the tree is unable to correctly edit the default selected item and
-            // behaves strangely.
-            if (!current.isValid() && focus->reason() == Qt::TabFocusReason) {
-                current = _treeView->model()->index(0, 1);
-                _treeView->setCurrentIndex(current);
+
+            if (focus->reason() == Qt::TabFocusReason) {
+                // cover case where user is tabbing into the tree when there is no selection yet
+                if (!current.isValid()) {
+                    current = _treeView->model()->index(0, 1);
+                    _treeView->setCurrentIndex(current);
+                }
+                _treeView->scrollTo(current);
                 if (current.flags() & Qt::ItemIsEditable)
                     _treeView->edit(current);
                 return true;
             }
             if (focus->reason() == Qt::MouseFocusReason) {
-                qDebug() << "mouseFocusReason current = " << current.row() << "," << current.column();
-                if (current.flags().testFlag(Qt::ItemIsEditable)) {
+                if (current.flags() & Qt::ItemIsEditable) {
                     _treeView->edit(current);
                     return true;
-                } else
+                } else {
+                    // this helps ensure no stray editor shows when clicking on an error row
                     _treeView->edit(QModelIndex());
+                }
                 return false;
             }
-            if (focus->reason() == Qt::ActiveWindowFocusReason || focus->reason() == Qt::TabFocusReason) {
-                qDebug() << "focus current item on active window or Tab change: " << current.row() << "," << current.column();
+            // this happens if you return the the client after switching to a different app, and the tree was focused before you left
+            if (focus->reason() == Qt::ActiveWindowFocusReason) {
                 _treeView->scrollTo(current);
                 if (current.flags() & Qt::ItemIsEditable)
                     _treeView->edit(current);

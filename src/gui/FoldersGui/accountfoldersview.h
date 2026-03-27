@@ -47,10 +47,12 @@ private:
     void buildView();
     void popItemMenu(const QPoint &pos);
     void refreshMenu();
+    bool performBizarreSetupOnTreeView();
 
     QTreeView *_treeView = nullptr;
     QLabel *_syncedFolderCountLabel = nullptr;
     QPushButton *_addFolderButton = nullptr;
     QMenu *_itemMenu = nullptr;
+    bool _firstShowAfterCreation = true;
 };
 }
