@@ -59,6 +59,8 @@ void NewAccountWizardController::setupWizard()
     _wizard->setOptions(origOptions | QWizard::IndependentPages | QWizard::NoBackButtonOnStartPage);
     // no cancel button is set by default on mac with the original options. just remove it to bring the cancel button back
     _wizard->setOption(QWizard::NoCancelButton, false);
+    // same for the default button
+    _wizard->setOption(QWizard::NoDefaultButton, false);
 
     _wizard->setButtonText(QWizard::BackButton, tr("Back"));
     _wizard->setButtonText(QWizard::CustomButton1, tr("Advanced"));
