@@ -53,5 +53,6 @@ private:
     QLabel *_syncedFolderCountLabel = nullptr;
     QPushButton *_addFolderButton = nullptr;
     QMenu *_itemMenu = nullptr;
+    bool _firstShowAfterCreation = true;
 };
 }

@@ -142,26 +142,22 @@ void AccountFoldersView::buildView()
 
 bool AccountFoldersView::performBizarreSetupOnTreeView()
 {
-    qDebug() << "performing bizarre tree setup";
+    if (_firstShowAfterCreation && _treeView->model()->rowCount(QModelIndex()) > 0) {
+        QModelIndex current = _treeView->currentIndex();
+        // this condition matches case when using selective sync, after adding first folder
+        // no I can't explain why this "helps" - just trial and error with this mess
+        if (current.isValid())
+            _treeView->selectionModel()->clear();
 
-    if (_treeView->model()->rowCount(QModelIndex()) <= 0) {
-        qDebug() << "model is empty, nothing to do";
-        return false;
-    }
-
-    QModelIndex current = _treeView->currentIndex();
-    if (!current.isValid()) {
-        qDebug() << "current index invalid - setting to first item then clearing selection for setup";
         current = _treeView->model()->index(0, 1);
         _treeView->setCurrentIndex(current);
 
-        // clear the selection no matter what! on first show there should be no item selected, else the automatic tree edit mode doesn't work for
-        // the "default" selected item
-        _treeView->setCurrentIndex(QModelIndex());
+        // clear the selection no matter what! on first show there should be no item selected, else the automatic tree edit mode using
+        // tab into tree or direct mouse click doesn't work for the "default" selected item
+        _treeView->selectionModel()->clear();
+        _firstShowAfterCreation = false;
         return true;
     }
-
-    qDebug() << "current index was valid, no bizarre setup to perform";
     return false;
 }
 
@@ -170,28 +166,10 @@ bool AccountFoldersView::eventFilter(QObject *obj, QEvent *ev)
 {
     if (obj == _treeView) {
         QModelIndex current = _treeView->currentIndex();
-        //    qDebug() << "event filter ev type " << ev->type();
-        // this has been the only way I've found so far to ensure the FocusIn behavior works correct on first focus enter in the tree after show
+        // this has been the only way I've found so far to ensure the FocusIn behavior works correctly on first focus enter in the tree after show
         // this should never be necessary but it's unclear why exactly first focus is so broken (using tab or direct mouse click)
         if (ev->type() == QEvent::ShowToParent) {
-            // qDebug() << "showtoparent";
-            // return performBizarreSetupOnTreeView();
-        }
-
-        if (ev->type() == QEvent::UpdateLater) {
-            qDebug() << "updatelater";
             return performBizarreSetupOnTreeView();
-            /*if (_treeView->model()->rowCount(QModelIndex()) <= 0)
-                return false;
-            if (!current.isValid()) {
-                current = _treeView->model()->index(0, 1);
-                _treeView->setCurrentIndex(current);
-                qDebug() << "rows in tree on UpdateLater " << _treeView->model()->rowCount(QModelIndex());
-            }
-            // clear the selection no matter what! on first show there should be no item selected, else the automatic tree edit mode doesn't work for
-            // the "default" selected item
-            _treeView->setCurrentIndex(QModelIndex());
-            return true;*/
         }
 
         // from here out event handling is fairly comprehensible.
@@ -209,10 +187,8 @@ bool AccountFoldersView::eventFilter(QObject *obj, QEvent *ev)
             if (!focus)
                 return false;
 
-            // this covers the case where the user selects an item in the tree by keyboard or mouse for the very first time when no item is current
-            // see the prerequisite handling for ShowToParent and UpdateLater which are needed to make this work, else the tree is unable to correctly edit the
-            // default selected item and behaves strangely.
             if (focus->reason() == Qt::TabFocusReason) {
+                // cover case where user is tabbing into the tree when there is no selection yet
                 if (!current.isValid()) {
                     current = _treeView->model()->index(0, 1);
                     _treeView->setCurrentIndex(current);
@@ -223,8 +199,7 @@ bool AccountFoldersView::eventFilter(QObject *obj, QEvent *ev)
                 return true;
             }
             if (focus->reason() == Qt::MouseFocusReason) {
-                qDebug() << "mouseFocusReason current = " << current.row() << "," << current.column();
-                if (current.flags().testFlag(Qt::ItemIsEditable)) {
+                if (current.flags() & Qt::ItemIsEditable) {
                     _treeView->edit(current);
                     return true;
                 } else {
