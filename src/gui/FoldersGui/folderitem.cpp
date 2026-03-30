@@ -203,6 +203,12 @@ QVariant FolderItem::data(int role) const
     switch (role) {
     case Qt::DisplayRole:
         return _folder->displayName();
+    case Qt::AccessibleTextRole: {
+        QString accessible = _folder->displayName();
+        accessible.append(tr(" sync status "));
+        accessible.append(_statusString);
+        return accessible;
+    }
     case Qt::DecorationRole:
         return _image;
     case FolderItemRoles::StatusIconRole:
