@@ -83,6 +83,13 @@ public:
      */
     virtual void forgetSensitiveData() = 0;
 
+    /* If we don't have a valid refresh token, return false.
+     * otherwise:
+     *   if the refresh routine is running, return true
+     *   if it is not running, start the refresh and return true.
+     */
+    virtual bool refreshAccessToken() = 0;
+
 Q_SIGNALS:
     /** Emitted when fetchFromKeychain() is done.
      *

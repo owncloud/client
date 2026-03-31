@@ -71,7 +71,7 @@ public:
      *   if the refresh routine is running, return true
      *   if it is not running, start the refresh and return true.
      */
-    bool refreshAccessToken();
+    bool refreshAccessToken() override;
 
 protected:
     bool networkAvailable();

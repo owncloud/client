@@ -16,7 +16,6 @@
 #include "application.h"
 #include "configfile.h"
 
-#include "credentials.h"
 #include "fetchserversettings.h"
 
 #include "libsync/creds/abstractcredentials.h"
@@ -528,26 +527,25 @@ void AccountState::slotConnectionValidatorResult(ConnectionValidator::Status sta
 
 void AccountState::slotInvalidCredentials()
 {
-    if (!_waitingForNewCredentials) {
-        qCInfo(lcAccountState) << "Invalid credentials for" << _account->url().toString();
+    AbstractCredentials *creds = account()->credentials();
+    if (!creds || _waitingForNewCredentials)
+        return;
 
-        _waitingForNewCredentials = true;
-        if (account()->credentials()->ready()) {
-            account()->credentials()->invalidateToken();
-        }
-        // todo: evaluate if this is even needed (it seems to be working fine casting to HttpCredentials which would have failed to cast -> ie it's a
-        // noop), and if it is, fix the abstraction todo: needs update in AbstractCredentials
-        if (auto creds = qobject_cast<Credentials *>(account()->credentials())) {
-            qCInfo(lcAccountState) << "refreshing oauth";
-            if (creds->refreshAccessToken()) {
-                return;
-            }
-            qCInfo(lcAccountState) << "refreshing oauth failed";
-        }
-        qCInfo(lcAccountState) << "asking user";
-        account()->credentials()->askFromUser();
-        setState(AskingCredentials);
-    }
+    qCInfo(lcAccountState) << "Invalid credentials for" << _account->url().toString();
+
+    _waitingForNewCredentials = true;
+    if (creds->ready())
+        creds->invalidateToken();
+
+    qCInfo(lcAccountState) << "refreshing oauth using refresh token";
+    if (creds->refreshAccessToken())
+        return;
+
+    qCInfo(lcAccountState) << "refreshing oauth failed";
+    qCInfo(lcAccountState) << "asking user";
+
+    creds->askFromUser();
+    setState(AskingCredentials);
 }
 
 void AccountState::slotCredentialsFetched()
