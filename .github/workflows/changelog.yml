@@ -15,13 +15,13 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ssh-key: ${{ secrets.DEPLOYMENT_SSH_KEY }}
           fetch-depth: 0
 
       - name: Generate changelog
-        uses: docker://toolhippie/calens:0.4.0
+        uses: docker://toolhippie/calens:0.4.0@sha256:728ee4d17b6a3ec40f1a34363d56abbfe7c52f57b9cd6233ee34b82345ccc07f
         with:
           entrypoint: /bin/sh
           args: -c "calens > CHANGELOG.md"
