@@ -553,6 +553,7 @@ public:
     void persist() override { }
     void invalidateToken() override { }
     void forgetSensitiveData() override { }
+    bool refreshAccessToken() override { return true; }
 
 private:
     OCC::AccessManager *_am;
