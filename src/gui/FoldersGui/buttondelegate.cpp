@@ -13,6 +13,7 @@
  */
 
 #include "buttondelegate.h"
+#include "commonstrings.h"
 
 #include <QAbstractItemView>
 #include <QEvent>
@@ -37,8 +38,8 @@ ButtonDelegate::ButtonDelegate(const QString &text, QAbstractItemView *parent)
     _button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     _button->setStyleSheet("QPushButton::menu-indicator{width:0px;}");
 
-    _button->setAccessibleName("Folder options");
-    _button->setAccessibleDescription("Menu button with folder options. Use the space key to show the menu");
+    _button->setAccessibleName(tr("%1 options button").arg(CommonStrings::capSpace()));
+    _button->setAccessibleDescription(tr("Menu button with %1 options. Use the space key to show the menu").arg(CommonStrings::space()));
 }
 
 void ButtonDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
