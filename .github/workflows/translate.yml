@@ -23,7 +23,7 @@ jobs:
       TX_TOKEN: ${{ secrets.TX_TOKEN }}
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ssh-key: ${{ secrets.DEPLOYMENT_SSH_KEY }}
           submodules: recursive
@@ -67,7 +67,7 @@ jobs:
 
       - name: l10n-pull
         if: ${{ matrix.branch == 'master' }}
-        uses: transifex/cli-action@v2
+        uses: transifex/cli-action@584fd205cbe598773b5a81ce711fa44842678189 # v2
         with:
           token: ${{ secrets.TX_TOKEN }}
           args: pull --force --all --silent
