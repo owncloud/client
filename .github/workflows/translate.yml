@@ -43,14 +43,14 @@ jobs:
 
       - name: l10n-push-source
         if: ${{ matrix.branch != 'master' }}
-        uses: transifex/cli-action@v2
+        uses: transifex/cli-action@584fd205cbe598773b5a81ce711fa44842678189 # v2
         with:
           token: ${{ secrets.TX_TOKEN }}
           args: push -s --branch "${{ matrix.branch }}"
 
       - name: l10n-push-source
         if: ${{ matrix.branch == 'master' }}
-        uses: transifex/cli-action@v2
+        uses: transifex/cli-action@584fd205cbe598773b5a81ce711fa44842678189 # v2
         with:
           token: ${{ secrets.TX_TOKEN }}
           args: push -s
