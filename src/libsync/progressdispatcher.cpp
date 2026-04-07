@@ -14,9 +14,9 @@
 
 #include "progressdispatcher.h"
 
-#include <QObject>
-#include <QMetaType>
 #include <QCoreApplication>
+#include <QFileInfo>
+#include <QMetaType>
 
 namespace OCC {
 
@@ -44,7 +44,10 @@ QString Progress::asResultString(const SyncFileItem &item)
     case CSYNC_INSTRUCTION_REMOVE:
         return QCoreApplication::translate("progress", "Deleted");
     case CSYNC_INSTRUCTION_RENAME:
-        return QCoreApplication::translate("progress", "%1 moved to %2").arg(item._file, item._renameTarget);
+        if (QFileInfo(item._file).path() == QFileInfo(item._renameTarget).path())
+            return QCoreApplication::translate("progress", "Renamed %1 to %2").arg(item._file, item._renameTarget);
+        else
+            return QCoreApplication::translate("progress", "Moved %1 to %2").arg(item._file, item._renameTarget);
     case CSYNC_INSTRUCTION_IGNORE:
         return QCoreApplication::translate("progress", "Ignored");
     case CSYNC_INSTRUCTION_ERROR:
