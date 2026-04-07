@@ -21,10 +21,9 @@ jobs:
           fetch-depth: 0
 
       - name: Generate changelog
-        uses: docker://toolhippie/calens:0.4.0@sha256:728ee4d17b6a3ec40f1a34363d56abbfe7c52f57b9cd6233ee34b82345ccc07f
+        uses: actionhippie/calens@244f3e5c328b842a740113859b87bbebf697f63b # v1.13.1
         with:
-          entrypoint: /bin/sh
-          args: -c "calens > CHANGELOG.md"
+          target: CHANGELOG.md
 
       - name: Show diff
         run: git diff
