@@ -95,7 +95,7 @@ void OAISharingLinkType::fromJson(QString jsonString) {
 void OAISharingLinkType::fromJsonValue(QJsonValue json) {
     initializeModel();
 
-    Q_D(OAISharingLinkType);
+    // Q_D(OAISharingLinkType);
 fromJson(json.toString());
 }
 
