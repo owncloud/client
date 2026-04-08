@@ -18,7 +18,7 @@
 
 #include "libsync/graphapi/space.h"
 
-#include <OAIDrive.h>
+#include "libsync/graphapi/libregraph/client/OAIDrive.h"
 
 class QTimer;
 

@@ -1085,7 +1085,7 @@ void Folder::warnOnNewExcludedItem(const SyncJournalFileRecord &record, QStringV
     // Note: This assumes we're getting file watcher notifications
     // for folders only on creation and deletion - if we got a notification
     // on content change that would create spurious warnings.
-    QFileInfo fi(_canonicalLocalPath + path);
+    QFileInfo fi(_canonicalLocalPath + path.toString());
     if (!fi.exists())
         return;
 
@@ -1093,7 +1093,7 @@ void Folder::warnOnNewExcludedItem(const SyncJournalFileRecord &record, QStringV
     auto blacklist = _journal.getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, ok);
     if (!ok)
         return;
-    if (!blacklist.contains(path + QLatin1Char('/')))
+    if (!blacklist.contains(path.toString() + QLatin1Char('/')))
         return;
 
     const auto message = fi.isDir()

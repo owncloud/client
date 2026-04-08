@@ -74,7 +74,7 @@ QString FileSystem::longWinPath(const QString &inpath)
     const QLatin1Char sep('\\');
 
     // we already have a unc path
-    if (str.startsWith(sep + sep)) {
+    if (str.startsWith(QLatin1String("") + sep + sep)) {
         return str;
     }
     // prepend \\?\ and to support long names

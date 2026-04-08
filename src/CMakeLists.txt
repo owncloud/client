@@ -24,6 +24,8 @@ if(NOT WIN32)
 endif()
 
 if(WIN32)
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /fsanitize=address")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /fsanitize=address")
   # Enable DEP & ASLR
   if (MINGW)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--nxcompat -Wl,--dynamicbase")
