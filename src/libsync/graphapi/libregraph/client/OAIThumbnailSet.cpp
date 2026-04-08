@@ -252,13 +252,13 @@ OAIThumbnail OAIThumbnailSet::getSmall() const {
     }
     return d->small;
 }
-void OAIThumbnailSet::setSmall(const OAIThumbnail &small) {
-    Q_D(OAIThumbnailSet);
-    Q_ASSERT(d);
+// void OAIThumbnailSet::setSmall(const OAIThumbnail &small) {
+//     Q_D(OAIThumbnailSet);
+//     Q_ASSERT(d);
 
-    d->small = small;
-    d->small_isSet = true;
-}
+//     d->small = small;
+//     d->small_isSet = true;
+// }
 
 bool OAIThumbnailSet::is_small_Set() const{
     Q_D(const OAIThumbnailSet);

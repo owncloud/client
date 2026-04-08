@@ -63,6 +63,7 @@ function(apply_common_target_settings targetName)
                 /we4189
                 # Our source code is UTF-8, so is the log file (the only file we write)
                 /utf-8
+                /fsanitize=address
         )
     elseif(CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang")
         target_compile_options(${targetName}

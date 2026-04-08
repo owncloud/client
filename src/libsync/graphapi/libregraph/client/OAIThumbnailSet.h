@@ -64,7 +64,7 @@ public:
     bool is_medium_Valid() const;
 
     OAIThumbnail getSmall() const;
-    void setSmall(const OAIThumbnail &small);
+    // void setSmall(const OAIThumbnail &small);
     bool is_small_Set() const;
     bool is_small_Valid() const;
 
