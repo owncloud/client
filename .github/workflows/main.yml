@@ -160,7 +160,7 @@ jobs:
 
     - name: Run tests
       run: |
-        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --no-cache --test owncloud/owncloud-client
+        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --no-cache --test --options '[Compile]Jobs=1' owncloud/owncloud-client
 
     - name: Package
       run: |
