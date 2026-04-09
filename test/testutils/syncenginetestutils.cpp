@@ -943,14 +943,14 @@ void FakeFolder::switchToVfs(QSharedPointer<OCC::Vfs> vfs)
         vfs.data(), &OCC::Vfs::fileStatusChanged);
 
     QObject::connect(vfs.get(), &OCC::Vfs::error, vfs.get(), [](const QString &error) {
-        QFAIL(qUtf8Printable(error));
+        Q_ASSERT_X(false, "VFS::error signal", qUtf8Printable(error));
     });
     QSignalSpy spy(vfs.get(), &OCC::Vfs::started);
     vfs->start(vfsParams);
 
     // don't use QVERIFY outside of the test slot
     if (spy.isEmpty() && !spy.wait()) {
-        QFAIL("VFS Setup failed");
+        Q_ASSERT_X(false, "switchToVfs", "VFS Setup failed");
     }
 }
 
