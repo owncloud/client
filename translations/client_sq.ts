@@ -217,7 +217,7 @@ Mjet njëkohësimi kartelash për desktop.</translation>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="141"/>
         <source>Synced</source>
-        <translation type="unfinished"/>
+        <translation>Të njëkohësuara</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="147"/>
@@ -247,7 +247,7 @@ Mjet njëkohësimi kartelash për desktop.</translation>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="208"/>
         <source> sync status </source>
-        <translation type="unfinished"/>
+        <translation>gjendje njëkohësimi</translation>
     </message>
 </context>
 <context>
@@ -801,12 +801,12 @@ Përditësimi do të kryhet në prapaskenë dhe do të mbishkruajë kartelën e 
     <message>
         <location filename="../src/gui/FoldersGui/buttondelegate.cpp" line="41"/>
         <source>%1 options button</source>
-        <translation type="unfinished"/>
+        <translation>Buton mundësish për %1</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/buttondelegate.cpp" line="42"/>
         <source>Menu button with %1 options. Use the space key to show the menu</source>
-        <translation type="unfinished"/>
+        <translation>Buton menuje me mundësi për %1. Që të shfaqet menuja, shtypni tastin Hapësirë</translation>
     </message>
 </context>
 <context>
@@ -1104,7 +1104,7 @@ Kjo do të thotë që klienti i njëkohësimeve mund të mos ngarkojë menjëher
     <message>
         <location filename="../src/gui/FoldersGui/folderitemupdater.cpp" line="107"/>
         <source>Sync error: </source>
-        <translation type="unfinished"/>
+        <translation>Gabim njëkohësimi:</translation>
     </message>
 </context>
 <context>
@@ -1215,7 +1215,7 @@ Kjo do të thotë që klienti i njëkohësimeve mund të mos ngarkojë menjëher
     <message>
         <location filename="../src/gui/FoldersGui/foldermodelcontroller.cpp" line="112"/>
         <source>Menu button with %1 options. Use the space key to pop the %2 options menu</source>
-        <translation type="unfinished"/>
+        <translation>Buton menuje me mundësi %1. Që të shfaqet menuja e mundësive për %2, shtypni tastin Hapësirë</translation>
     </message>
 </context>
 <context>
@@ -3472,12 +3472,12 @@ Ju lutemi, kontrolloni qenien në punë të shërbyesit dhe rixhironi ndihmësin
     <message>
         <location filename="../src/libsync/progressdispatcher.cpp" line="48"/>
         <source>Renamed %1 to %2</source>
-        <translation type="unfinished"/>
+        <translation>U riemërtua nga %1 në %2</translation>
     </message>
     <message>
         <location filename="../src/libsync/progressdispatcher.cpp" line="50"/>
         <source>Moved %1 to %2</source>
-        <translation type="unfinished"/>
+        <translation>%1 u kalua te %2</translation>
     </message>
     <message>
         <location filename="../src/libsync/progressdispatcher.cpp" line="54"/>
