@@ -38,15 +38,17 @@ bool FolderManagementUtils::prepareFolder(const QString &folder)
         if (!SetFileAttributesW(reinterpret_cast<const wchar_t *>(longFolderPath.utf16()), folderAttrs | FILE_ATTRIBUTE_SYSTEM)) {
             const auto error = GetLastError();
             qCWarning(lcFolder) << "SetFileAttributesW failed on" << longFolderPath << Utility::formatWinError(error);
+            return false;
         }
         if (!SetFileAttributesW(reinterpret_cast<const wchar_t *>(longDesktopIniPath.utf16()), FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM)) {
             const auto error = GetLastError();
             qCWarning(lcFolder) << "SetFileAttributesW failed on" << longDesktopIniPath << Utility::formatWinError(error);
+            return false;
         }
 #else
         QFile::Permissions perm = QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner;
         QFile file(folder);
-        file.setPermissions(perm);
+        return file.setPermissions(perm);
 #endif
     }
     return true;

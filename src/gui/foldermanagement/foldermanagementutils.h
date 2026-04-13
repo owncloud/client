@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QCoreApplication>
 #include <QString>
 
 namespace OCC {
@@ -13,6 +14,8 @@ namespace OCC {
  */
 class FolderManagementUtils final
 {
+    Q_DECLARE_TR_FUNCTIONS(FolderManagementUtils)
+
 public:
     FolderManagementUtils() = delete;
     ~FolderManagementUtils() = delete;
