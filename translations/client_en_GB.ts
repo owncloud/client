@@ -147,7 +147,7 @@ File synchronisation desktop utility.</translation>
     <message>
         <location filename="../src/gui/commonstrings.cpp" line="57"/>
         <source>space</source>
-        <translation type="unfinished"/>
+        <translation>space</translation>
     </message>
     <message>
         <location filename="../src/gui/commonstrings.cpp" line="63"/>
@@ -157,7 +157,7 @@ File synchronisation desktop utility.</translation>
     <message>
         <location filename="../src/gui/commonstrings.cpp" line="65"/>
         <source>spaces</source>
-        <translation type="unfinished"/>
+        <translation>spaces</translation>
     </message>
     <message>
         <location filename="../src/gui/commonstrings.cpp" line="71"/>
@@ -167,7 +167,7 @@ File synchronisation desktop utility.</translation>
     <message>
         <location filename="../src/gui/commonstrings.cpp" line="73"/>
         <source>Space</source>
-        <translation type="unfinished"/>
+        <translation>Space</translation>
     </message>
 </context>
 <context>
@@ -217,7 +217,7 @@ File synchronisation desktop utility.</translation>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="141"/>
         <source>Synced</source>
-        <translation type="unfinished"/>
+        <translation>Synced</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="147"/>
@@ -232,7 +232,7 @@ File synchronisation desktop utility.</translation>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="158"/>
         <source>Syncing %1 of %2 (%3 %</source>
-        <translation type="unfinished"/>
+        <translation>Syncing %1 of %2 (%3 %</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="162"/>
@@ -243,6 +243,11 @@ File synchronisation desktop utility.</translation>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="166"/>
         <source>, ⬆️ %1/s</source>
         <translation>, ⬆️ %1/s</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="208"/>
+        <source> sync status </source>
+        <translation> sync status </translation>
     </message>
 </context>
 <context>
@@ -369,17 +374,17 @@ File synchronisation desktop utility.</translation>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="139"/>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="235"/>
         <source>Sync now</source>
-        <translation type="unfinished"/>
+        <translation>Sync now</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="149"/>
         <source>Manage subfolder sync</source>
-        <translation type="unfinished"/>
+        <translation>Manage subfolder sync</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="173"/>
         <source>Remove %1 sync</source>
-        <translation type="unfinished"/>
+        <translation>Remove %1 sync</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="195"/>
@@ -422,12 +427,12 @@ This action will abort any currently running synchronisation.</translation>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="246"/>
         <source>Deactivate virtual files</source>
-        <translation type="unfinished"/>
+        <translation>Deactivate virtual files</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="246"/>
         <source>Activate virtual files</source>
-        <translation type="unfinished"/>
+        <translation>Activate virtual files</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="282"/>
@@ -486,32 +491,32 @@ This action will abort any currently running synchronisation.</translation>
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="56"/>
         <source>%1 sync</source>
-        <translation type="unfinished"/>
+        <translation>%1 sync</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="65"/>
         <source>Manage your synced %1.</source>
-        <translation type="unfinished"/>
+        <translation>Manage your synced %1.</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="70"/>
         <source>Add new %1 sync…</source>
-        <translation type="unfinished"/>
+        <translation>Add new %1 sync…</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="81"/>
         <source>%1 list view</source>
-        <translation type="unfinished"/>
+        <translation>%1 list view</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="82"/>
         <source>Navigate the %1 list using the up and down arrows</source>
-        <translation type="unfinished"/>
+        <translation>Navigate the %1 list using the up and down arrows</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="248"/>
         <source>%1 out of %2 %3 are synchronized</source>
-        <translation type="unfinished"/>
+        <translation>%1 out of %2 %3 are synchronised</translation>
     </message>
 </context>
 <context>
@@ -789,6 +794,19 @@ The update will be performed in the background, and overwrite the current AppIma
         <location filename="../src/gui/newaccountwizard/authsuccesspagecontroller.cpp" line="64"/>
         <source>Additional logo defined by the organization</source>
         <translation>Additional logo defined by the organization</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::ButtonDelegate</name>
+    <message>
+        <location filename="../src/gui/FoldersGui/buttondelegate.cpp" line="41"/>
+        <source>%1 options button</source>
+        <translation>%1 options button</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/buttondelegate.cpp" line="42"/>
+        <source>Menu button with %1 options. Use the space key to show the menu</source>
+        <translation>Menu button with %1 options. Use the space key to show the menu</translation>
     </message>
 </context>
 <context>
@@ -1083,6 +1101,11 @@ This means that the synchronisation client might not upload local changes immedi
         <source>There are unresolved conflicts.</source>
         <translation>There are unresolved conflicts.</translation>
     </message>
+    <message>
+        <location filename="../src/gui/FoldersGui/folderitemupdater.cpp" line="107"/>
+        <source>Sync error: </source>
+        <translation>Sync error: </translation>
+    </message>
 </context>
 <context>
     <name>OCC::FolderMan</name>
@@ -1187,12 +1210,12 @@ This means that the synchronisation client might not upload local changes immedi
     <message>
         <location filename="../src/gui/FoldersGui/foldermodelcontroller.cpp" line="110"/>
         <source>%1 options</source>
-        <translation type="unfinished"/>
+        <translation>%1 options</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/foldermodelcontroller.cpp" line="111"/>
-        <source>Menu button with %1 options. Hit the space key to pop the folder options menu</source>
-        <translation type="unfinished"/>
+        <location filename="../src/gui/FoldersGui/foldermodelcontroller.cpp" line="112"/>
+        <source>Menu button with %1 options. Use the space key to pop the %2 options menu</source>
+        <translation>Menu button with %1 options. Use the space key to pop the %2 options menu</translation>
     </message>
 </context>
 <context>
@@ -3437,12 +3460,7 @@ Please check the server&apos;s availability then run the wizard again.</translat
         <translation>Deleted</translation>
     </message>
     <message>
-        <location filename="../src/libsync/progressdispatcher.cpp" line="47"/>
-        <source>%1 moved to %2</source>
-        <translation>%1 moved to %2</translation>
-    </message>
-    <message>
-        <location filename="../src/libsync/progressdispatcher.cpp" line="49"/>
+        <location filename="../src/libsync/progressdispatcher.cpp" line="52"/>
         <source>Ignored</source>
         <translation>Ignored</translation>
     </message>
@@ -3452,53 +3470,63 @@ Please check the server&apos;s availability then run the wizard again.</translat
         <translation>Server version downloaded, local copy was backed up as conflict file</translation>
     </message>
     <message>
-        <location filename="../src/libsync/progressdispatcher.cpp" line="51"/>
+        <location filename="../src/libsync/progressdispatcher.cpp" line="48"/>
+        <source>Renamed %1 to %2</source>
+        <translation>Renamed %1 to %2</translation>
+    </message>
+    <message>
+        <location filename="../src/libsync/progressdispatcher.cpp" line="50"/>
+        <source>Moved %1 to %2</source>
+        <translation>Moved %1 to %2</translation>
+    </message>
+    <message>
+        <location filename="../src/libsync/progressdispatcher.cpp" line="54"/>
         <source>Error</source>
         <translation>Error</translation>
     </message>
     <message>
-        <location filename="../src/libsync/progressdispatcher.cpp" line="53"/>
+        <location filename="../src/libsync/progressdispatcher.cpp" line="56"/>
         <source>Updated local metadata</source>
         <translation>Updated local metadata</translation>
     </message>
     <message>
-        <location filename="../src/libsync/progressdispatcher.cpp" line="55"/>
-        <location filename="../src/libsync/progressdispatcher.cpp" line="57"/>
+        <location filename="../src/libsync/progressdispatcher.cpp" line="58"/>
+        <location filename="../src/libsync/progressdispatcher.cpp" line="60"/>
         <source>Unknown</source>
         <translation>Unknown</translation>
     </message>
     <message>
-        <location filename="../src/libsync/progressdispatcher.cpp" line="68"/>
+        <location filename="../src/libsync/progressdispatcher.cpp" line="71"/>
         <source>downloading</source>
         <translation>downloading</translation>
     </message>
     <message>
-        <location filename="../src/libsync/progressdispatcher.cpp" line="70"/>
+        <location filename="../src/libsync/progressdispatcher.cpp" line="73"/>
         <source>uploading</source>
         <translation>uploading</translation>
     </message>
     <message>
-        <location filename="../src/libsync/progressdispatcher.cpp" line="72"/>
+        <location filename="../src/libsync/progressdispatcher.cpp" line="75"/>
         <source>deleting</source>
         <translation>deleting</translation>
     </message>
     <message>
-        <location filename="../src/libsync/progressdispatcher.cpp" line="74"/>
+        <location filename="../src/libsync/progressdispatcher.cpp" line="77"/>
         <source>moving</source>
         <translation>moving</translation>
     </message>
     <message>
-        <location filename="../src/libsync/progressdispatcher.cpp" line="76"/>
+        <location filename="../src/libsync/progressdispatcher.cpp" line="79"/>
         <source>ignoring</source>
         <translation>ignoring</translation>
     </message>
     <message>
-        <location filename="../src/libsync/progressdispatcher.cpp" line="78"/>
+        <location filename="../src/libsync/progressdispatcher.cpp" line="81"/>
         <source>error</source>
         <translation>error</translation>
     </message>
     <message>
-        <location filename="../src/libsync/progressdispatcher.cpp" line="80"/>
+        <location filename="../src/libsync/progressdispatcher.cpp" line="83"/>
         <source>updating local metadata</source>
         <translation>updating local metadata</translation>
     </message>
