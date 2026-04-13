@@ -28,6 +28,7 @@
 #include "configfile.h"
 #include "filesystem.h"
 #include "folderman.h"
+#include "foldermanagement/foldermanagementutils.h"
 #include "folderwatcher.h"
 #include "libsync/graphapi/spacesmanager.h"
 #include "localdiscoverytracker.h"
@@ -173,20 +174,6 @@ Folder::~Folder()
     _engine.reset();
 }
 
-Result<void, QString> Folder::checkPathLength(const QString &path)
-{
-#ifdef Q_OS_WIN
-    if (path.size() > MAX_PATH) {
-        if (!FileSystem::longPathsEnabledOnWindows()) {
-            return tr("The path '%1' is too long. Please enable long paths in the Windows settings or choose a different folder.").arg(path);
-        }
-    }
-#else
-    Q_UNUSED(path)
-#endif
-    return {};
-}
-
 GraphApi::Space *Folder::space() const
 {
     if (_accountState && _accountState->account() && _accountState->account()->spacesManager()) {
@@ -215,9 +202,9 @@ bool Folder::checkLocalPath()
 
     QString error;
     if (fi.isDir() && fi.isReadable() && fi.isWritable()) {
-        auto pathLengthCheck = checkPathLength(_canonicalLocalPath);
-        if (!pathLengthCheck) {
-            error = pathLengthCheck.error();
+        auto pathLengthCheck = FolderManagementUtils::checkPathLength(_canonicalLocalPath);
+        if (!pathLengthCheck.isEmpty()) {
+            error = pathLengthCheck;
         }
 
         if (error.isEmpty()) {

@@ -54,8 +54,7 @@ namespace FileSystem {
      * List of characters not allowd in filenames on Windows
      */
     constexpr_list auto IllegalFilenameCharsWindows = {
-        QLatin1Char('\\'), QLatin1Char(':'), QLatin1Char('?'), QLatin1Char('*'), QLatin1Char('"'), QLatin1Char('>'), QLatin1Char('<'), QLatin1Char('|')
-    };
+        QLatin1Char('\\'), QLatin1Char(':'), QLatin1Char('?'), QLatin1Char('*'), QLatin1Char('"'), QLatin1Char('>'), QLatin1Char('<'), QLatin1Char('|')};
 
     /**
      * @brief Mark the file as hidden  (only has effects on windows)

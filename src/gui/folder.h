@@ -45,10 +45,12 @@ class SyncRunFileLog;
 class FolderWatcher;
 class LocalDiscoveryTracker;
 
+
 /**
  * @brief The FolderDefinition class
  * @ingroup gui
  */
+
 class OWNCLOUDGUI_EXPORT FolderDefinition
 {
 public:
@@ -352,8 +354,6 @@ public:
     [[deprecated("see FolderDefinition::isDeployed")]] bool isDeployed() const;
 
     uint32_t sortPriority() const { return _definition.priority(); }
-
-    static Result<void, QString> checkPathLength(const QString &path);
 
     /**
      *

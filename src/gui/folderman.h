@@ -52,6 +52,7 @@ private:
     SyncResult _overallStatus;
 };
 
+
 /**
  * @brief The FolderMan class
  * @ingroup gui
@@ -355,13 +356,6 @@ private Q_SLOTS:
 
 private:
     explicit FolderMan();
-
-    /**
-     * @brief prepareFolder sets up the folder with mac and windows specific operations
-     * @param folder path
-     * @return true if the folder path exists or can be successfully created
-     */
-    [[nodiscard]] static bool prepareFolder(const QString &folder);
 
     /**
      * Adds a folder "from scratch" as oppossd to from config, which requires less setup than when you create the folder
