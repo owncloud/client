@@ -38,7 +38,7 @@ jobs:
           git checkout translations/client_en.ts
 
       - name: l10n-read
-        run: /usr/lib/qt6/bin/lupdate src -no-obsolete -ts translations/client_en.ts
+        run: /usr/lib/qt6/bin/lupdate src -pluralonly -no-obsolete -ts translations/client_en.ts
 
       - name: l10n-push-source
         if: ${{ matrix.branch != 'master' }}
