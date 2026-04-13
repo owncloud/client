@@ -25,7 +25,7 @@ public:
      * @param folder path
      * @return true if the folder path exists or can be successfully created
      */
-    static bool prepareFolder(const QString &folder);
+    static bool prepareFolder(const QString &path);
 
     /**
      * @brief numberOfSyncJournals counts sync journals by matching folder content with .sync_*.db or ._sync_*.db in the target folder

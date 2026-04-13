@@ -1,18 +1,27 @@
 #include "foldermanagementutils.h"
 
 #include "common/asserts.h"
+#include "common/filesystembase.h"
+#include "theme.h"
 
 #include <QDir>
 #include <QFileInfo>
+#include <QSettings>
 #include <QString>
+
+#ifdef Q_OS_WIN
+#include "common/utility_win.h"
+#endif
+
 
 namespace OCC {
 
+Q_LOGGING_CATEGORY(lcFolderManagement, "gui.foldermanagementutils", QtInfoMsg)
 
-bool FolderManagementUtils::prepareFolder(const QString &folder)
+bool FolderManagementUtils::prepareFolder(const QString &path)
 {
-    if (!QFileInfo::exists(folder)) {
-        if (!OC_ENSURE(QDir().mkpath(folder))) {
+    if (!QFileInfo::exists(path)) {
+        if (!OC_ENSURE(QDir().mkpath(path))) {
             return false;
         }
 #ifdef Q_OS_WIN
@@ -22,11 +31,11 @@ bool FolderManagementUtils::prepareFolder(const QString &folder)
             const QString updateIconKey = QStringLiteral("%1/UpdateIcon").arg(Theme::instance()->appName());
             QSettings desktopIni(desktopIniPath.absoluteFilePath(), QSettings::IniFormat);
             if (desktopIni.value(updateIconKey, true).toBool()) {
-                qCInfo(lcFolder) << "Creating" << desktopIni.fileName() << "to set a folder icon in Explorer.";
+                qCInfo(lcFolderManagement) << "Creating" << desktopIni.fileName() << "to set a folder icon in Explorer.";
                 desktopIni.setValue(QStringLiteral(".ShellClassInfo/IconResource"), QDir::toNativeSeparators(qApp->applicationFilePath()));
                 desktopIni.setValue(updateIconKey, true);
             } else {
-                qCInfo(lcFolder) << "Skip icon update for" << desktopIni.fileName() << "," << updateIconKey << "is disabled";
+                qCInfo(lcFolderManagement) << "Skip icon update for" << desktopIni.fileName() << "," << updateIconKey << "is disabled";
             }
         }
 
@@ -37,18 +46,22 @@ bool FolderManagementUtils::prepareFolder(const QString &folder)
         const DWORD folderAttrs = GetFileAttributesW(reinterpret_cast<const wchar_t *>(longFolderPath.utf16()));
         if (!SetFileAttributesW(reinterpret_cast<const wchar_t *>(longFolderPath.utf16()), folderAttrs | FILE_ATTRIBUTE_SYSTEM)) {
             const auto error = GetLastError();
-            qCWarning(lcFolder) << "SetFileAttributesW failed on" << longFolderPath << Utility::formatWinError(error);
+            qCWarning(lcFolderManagement) << "SetFileAttributesW failed on" << longFolderPath << Utility::formatWinError(error);
             return false;
         }
         if (!SetFileAttributesW(reinterpret_cast<const wchar_t *>(longDesktopIniPath.utf16()), FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM)) {
             const auto error = GetLastError();
-            qCWarning(lcFolder) << "SetFileAttributesW failed on" << longDesktopIniPath << Utility::formatWinError(error);
+            qCWarning(lcFolderManagement) << "SetFileAttributesW failed on" << longDesktopIniPath << Utility::formatWinError(error);
             return false;
         }
 #else
         QFile::Permissions perm = QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner;
-        QFile file(folder);
-        return file.setPermissions(perm);
+        QFile file(path);
+        if (!file.setPermissions(perm)) {
+            qCWarning(lcFolderManagement) << tr("setPermissions failed on %1").arg(path);
+            return false;
+        }
+
 #endif
     }
     return true;
