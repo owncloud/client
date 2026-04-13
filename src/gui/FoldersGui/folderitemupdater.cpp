@@ -104,8 +104,7 @@ void FolderItemUpdater::onSyncStateChanged()
                we " "can't update a known total size using these progress values becausethey are never negative, to indicate a removal"; QStandardItem
                *errorItem = new QStandardItem(errorIcon, longError);
             */
-            QString accessibleError = tr("Sync error: ");
-            accessibleError.append(error);
+            QString accessibleError = tr("Sync error: %1").arg(error);
             errorItem->setData(accessibleError, Qt::AccessibleTextRole);
 
             QStandardItem *emptyEditorItem = new QStandardItem();

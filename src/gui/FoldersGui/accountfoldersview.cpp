@@ -53,6 +53,7 @@ AccountFoldersView::AccountFoldersView(QWidget *parent)
 void AccountFoldersView::buildView()
 {
     QVBoxLayout *mainLayout = new QVBoxLayout();
+    //: This shows as 'Folder sync' or 'Space sync'
     QString titleString = tr("%1 sync").arg(CommonStrings::capSpace());
     QLabel *titleLabel = new QLabel(titleString, this);
     QFont f = titleLabel->font();
@@ -67,6 +68,7 @@ void AccountFoldersView::buildView()
     description->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     buttonLineLayout->addWidget(description, 0, Qt::AlignLeft);
 
+    //: This shows as 'Add new folder sync…' or 'Add new Space sync…'
     QString addSyncString = tr("Add new %1 sync…").arg(CommonStrings::space());
     _addFolderButton = new QPushButton(addSyncString, this);
     _addFolderButton->setObjectName("addFolderSyncButton");
