@@ -109,8 +109,10 @@ Folder::Folder(const FolderDefinition &definition, AccountState *accountState, s
     }
     setSyncState(status);
     // check if the starting conditions are legit
-    if (_accountState && _accountState->account() && checkLocalPath()) {
-        prepareFolder(path());
+    // check local path is performed in the FolderMan::validateFolderDefinition during addFolder - if it fails no folder is created at all
+    if (_accountState && _accountState->account() /*&& checkLocalPath()*/) {
+        // this should only be done in folder manager when creating the folder on load from config or add folder
+        //  FolderManagementUtils::prepareFolder(path());
         // those errors should not persist over sessions
         _journal.wipeErrorBlacklistCategory(SyncJournalErrorBlacklistRecord::Category::LocalSoftError);
         // todo: the engine needs to be created externally, presumably by the folderman, and passed in by injection
@@ -182,7 +184,7 @@ GraphApi::Space *Folder::space() const
     return nullptr;
 }
 
-bool Folder::checkLocalPath()
+/*bool Folder::checkLocalPath()
 {
 #ifdef Q_OS_WIN
     QNtfsPermissionCheckGuard ntfs_perm;
@@ -232,7 +234,7 @@ bool Folder::checkLocalPath()
         return false;
     }
     return true;
-}
+}*/
 
 SyncOptions Folder::loadSyncOptions()
 {
@@ -245,41 +247,6 @@ SyncOptions Folder::loadSyncOptions()
 
     opt.fillFromEnvironmentVariables();
     return opt;
-}
-
-void Folder::prepareFolder(const QString &path)
-{
-#ifdef Q_OS_WIN
-    // First create a Desktop.ini so that the folder and favorite link show our application's icon.
-    const QFileInfo desktopIniPath{QStringLiteral("%1/Desktop.ini").arg(path)};
-    {
-        const QString updateIconKey = QStringLiteral("%1/UpdateIcon").arg(Theme::instance()->appName());
-        QSettings desktopIni(desktopIniPath.absoluteFilePath(), QSettings::IniFormat);
-        if (desktopIni.value(updateIconKey, true).toBool()) {
-            qCInfo(lcFolder) << "Creating" << desktopIni.fileName() << "to set a folder icon in Explorer.";
-            desktopIni.setValue(QStringLiteral(".ShellClassInfo/IconResource"), QDir::toNativeSeparators(qApp->applicationFilePath()));
-            desktopIni.setValue(updateIconKey, true);
-        } else {
-            qCInfo(lcFolder) << "Skip icon update for" << desktopIni.fileName() << "," << updateIconKey << "is disabled";
-        }
-    }
-
-    const QString longFolderPath = FileSystem::longWinPath(path);
-    const QString longDesktopIniPath = FileSystem::longWinPath(desktopIniPath.absoluteFilePath());
-    // Set the folder as system and Desktop.ini as hidden+system for explorer to pick it.
-    // https://msdn.microsoft.com/en-us/library/windows/desktop/cc144102
-    const DWORD folderAttrs = GetFileAttributesW(reinterpret_cast<const wchar_t *>(longFolderPath.utf16()));
-    if (!SetFileAttributesW(reinterpret_cast<const wchar_t *>(longFolderPath.utf16()), folderAttrs | FILE_ATTRIBUTE_SYSTEM)) {
-        const auto error = GetLastError();
-        qCWarning(lcFolder) << "SetFileAttributesW failed on" << longFolderPath << Utility::formatWinError(error);
-    }
-    if (!SetFileAttributesW(reinterpret_cast<const wchar_t *>(longDesktopIniPath.utf16()), FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM)) {
-        const auto error = GetLastError();
-        qCWarning(lcFolder) << "SetFileAttributesW failed on" << longDesktopIniPath << Utility::formatWinError(error);
-    }
-#else
-    Q_UNUSED(path)
-#endif
 }
 
 QString Folder::displayName() const
@@ -310,7 +277,7 @@ QString Folder::shortGuiLocalPath() const
 
 QString Folder::cleanPath() const
 {
-    QString cleanedPath = QDir::cleanPath(_canonicalLocalPath);
+    QString cleanedPath = QDir::cleanPath(_definition.canonicalPath());
 
     if (cleanedPath.length() == 3 && cleanedPath.endsWith(QLatin1String(":/")))
         cleanedPath.remove(2, 1);
@@ -1072,7 +1039,7 @@ void Folder::warnOnNewExcludedItem(const SyncJournalFileRecord &record, QStringV
     // Note: This assumes we're getting file watcher notifications
     // for folders only on creation and deletion - if we got a notification
     // on content change that would create spurious warnings.
-    QFileInfo fi(_canonicalLocalPath + path);
+    QFileInfo fi(_definition.canonicalPath() + path);
     if (!fi.exists())
         return;
 
@@ -1214,6 +1181,22 @@ void FolderDefinition::setLocalPath(const QString &path)
     _localPath = QDir::fromNativeSeparators(path);
     if (!_localPath.endsWith(QLatin1Char('/'))) {
         _localPath.append(QLatin1Char('/'));
+    }
+
+    QFileInfo fi(_localPath);
+    _canonicalLocalPath = fi.canonicalFilePath();
+    // commenting this out til I can verify it can really go away now. I checked the bug report and it was filed against QFileSystemWatcher,
+    // so I don't understand what it has to do with deriving the canonical path in the first place?
+    // #ifdef Q_OS_MAC
+    //  Workaround QTBUG-55896  (Should be fixed in Qt 5.8)
+    //    _canonicalLocalPath = _canonicalLocalPath.normalized(QString::NormalizationForm_C);
+    // #endif
+    if (_canonicalLocalPath.isEmpty()) {
+        qCWarning(lcFolder) << "Broken symlink:" << _localPath;
+        _canonicalLocalPath = _localPath;
+    } else if (!_canonicalLocalPath.endsWith(QLatin1Char('/'))) {
+        // the canonicalPath function strips off the trailing separator so we have to add it back, apparently
+        _canonicalLocalPath.append(QLatin1Char('/'));
     }
 }
 

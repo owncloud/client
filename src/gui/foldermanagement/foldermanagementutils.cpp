@@ -16,7 +16,7 @@
 
 namespace OCC {
 
-Q_LOGGING_CATEGORY(lcFolderManagement, "gui.foldermanagementutils", QtInfoMsg)
+Q_LOGGING_CATEGORY(lcFolderManagementUtils, "gui.foldermanagementutils", QtInfoMsg)
 
 bool FolderManagementUtils::prepareFolder(const QString &path)
 {
@@ -58,7 +58,7 @@ bool FolderManagementUtils::prepareFolder(const QString &path)
         QFile::Permissions perm = QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner;
         QFile file(path);
         if (!file.setPermissions(perm)) {
-            qCWarning(lcFolderManagement) << tr("setPermissions failed on %1").arg(path);
+            qCWarning(lcFolderManagementUtils) << "setPermissions failed on " << path;
             return false;
         }
 
@@ -84,6 +84,46 @@ QString FolderManagementUtils::checkPathLength(const QString &path)
     Q_UNUSED(path)
 #endif
     return {};
+}
+
+QString FolderManagementUtils::validateFolderPath(const QString &path)
+{
+#ifdef Q_OS_WIN
+    QNtfsPermissionCheckGuard ntfs_perm;
+#endif
+    const QFileInfo fi(path);
+    QString error;
+    if (fi.isDir() && fi.isReadable() && fi.isWritable()) {
+        auto pathLengthCheck = FolderManagementUtils::checkPathLength(fi.canonicalFilePath());
+        if (!pathLengthCheck.isEmpty()) {
+            error = pathLengthCheck;
+        }
+
+        /* if (error.isEmpty()) {
+             qCDebug(lcFolderManagementUtils) << "Checked local path ok";
+             if (!_journal.open()) {
+                 error = tr("%1 failed to open the database.").arg(_definition.localPath());
+             }
+         }*/
+    } else {
+        // Check directory again
+        if (!FileSystem::fileExists(path, fi)) {
+            error = tr("Local folder %1 does not exist.").arg(path);
+        } else if (!fi.isDir()) {
+            error = tr("%1 should be a folder but is not.").arg(path);
+        } else if (!fi.isReadable()) {
+            error = tr("%1 is not readable.").arg(path);
+        } else if (!fi.isWritable()) {
+            error = tr("%1 is not writable.").arg(path);
+        }
+    }
+    if (!error.isEmpty()) {
+        qCWarning(lcFolderManagementUtils) << error;
+        //  _syncResult.appendErrorString(error);
+        //  setSyncState(SyncResult::SetupError);
+        // return error;
+    }
+    return error;
 }
 
 } // OCC

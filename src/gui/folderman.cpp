@@ -241,6 +241,7 @@ bool FolderMan::addFoldersFromConfigByAccount(QSettings &settings, AccountState 
 
         Folder *folder = addFolder(account, folderDefinition);
         if (!folder) {
+            // todo: decide if we should actively remove the folder data from the config! I think we should but let's see
             continue;
         }
 
@@ -698,6 +699,15 @@ bool FolderMan::validateFolderDefinition(const FolderDefinition &folderDefinitio
 {
     if (folderDefinition.id().isEmpty() || folderDefinition.journalPath().isEmpty() || !ensureFilesystemSupported(folderDefinition))
         return false;
+
+    QString pathCheck = FolderManagementUtils::validateFolderPath(folderDefinition.localPath());
+    if (!pathCheck.isEmpty()) {
+        // does this warrant popping an error dialog?
+        qCWarning(lcFolderMan) << "Folder definition path check failed with error: " << pathCheck;
+        return false;
+    }
+
+
     return true;
 }
 
@@ -1169,9 +1179,9 @@ Folder *FolderMan::addFolderFromScratch(AccountState *accountState, FolderDefini
         if (newFolder->vfs().mode() != Vfs::WindowsCfApi) {
             Utility::setupFavLink(folderDefinition.localPath());
         }
-        qCDebug(lcFolderMan) << "Local sync folder" << folderDefinition.localPath() << "successfully created!";
+        qCDebug(lcFolderMan) << "Local sync folder" << folderDefinition.localPath() << "successfully created";
     } else {
-        qCWarning(lcFolderMan) << "Failed to create local sync folder!";
+        qCWarning(lcFolderMan) << "Failed to create local sync folder: " << folderDefinition.localPath();
     }
 
     // we should not emit any folder list change from this function because it can be called in bulk as well as individual operations

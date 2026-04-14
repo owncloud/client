@@ -85,8 +85,11 @@ public:
     void setVirtualFilesMode(Vfs::Mode mode) { _virtualFilesMode = mode; }
 
     /// Ensure / as separator and trailing /.
+    /// calling set here also ensures the canonical local path is properly created
     void setLocalPath(const QString &path);
     QString localPath() const { return _localPath; }
+
+    QString canonicalPath() const { return _canonicalLocalPath; }
 
 
     /// Remove ending /, then ensure starting '/': so "/foo/bar" and "/".
@@ -143,6 +146,8 @@ private:
     QString _displayName;
     /// path on local machine (always trailing /)
     QString _localPath;
+    /// canonical local path
+    QString _canonicalLocalPath;
     /// path on remote (usually no trailing /, exception "/")
     QString _targetPath;
     bool _deployed = false;
@@ -176,7 +181,6 @@ public:
     };
     Q_ENUM(ChangeReason)
 
-    static void prepareFolder(const QString &path);
 
     /** Create a new Folder
      */
@@ -226,7 +230,7 @@ public:
     /**
      * canonical local folder path, always ends with /
      */
-    QString path() const { return _canonicalLocalPath; }
+    QString path() const { return _definition.canonicalPath(); }
 
     /**
      * cleaned canonical folder path, like path() but never ends with a /
@@ -462,7 +466,7 @@ private Q_SLOTS:
 private:
     void showSyncResultPopup();
 
-    bool checkLocalPath();
+    // bool checkLocalPath();
 
     SyncOptions loadSyncOptions();
 
@@ -497,7 +501,7 @@ private:
 
     QPointer<AccountState> _accountState;
     FolderDefinition _definition;
-    QString _canonicalLocalPath; // As returned with QFileInfo:canonicalFilePath.  Always ends with "/"
+    // QString _canonicalLocalPath; // As returned with QFileInfo:canonicalFilePath.  Always ends with "/"
 
     SyncResult _syncResult;
     QScopedPointer<SyncEngine> _engine;

@@ -40,6 +40,12 @@ public:
      *  if it passes, the return value will be empty
      **/
     static QString checkPathLength(const QString &path);
-};
 
+    /**
+     *  performs various checks on the folder path to ensure it can be used as local sync destination
+     *  if the checks fail, the return value will contain the error
+     *  if it passes, the return value will be empty.
+     **/
+    static QString validateFolderPath(const QString &path);
+};
 }
