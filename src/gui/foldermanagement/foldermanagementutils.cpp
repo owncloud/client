@@ -31,11 +31,11 @@ bool FolderManagementUtils::prepareFolder(const QString &path)
             const QString updateIconKey = QStringLiteral("%1/UpdateIcon").arg(Theme::instance()->appName());
             QSettings desktopIni(desktopIniPath.absoluteFilePath(), QSettings::IniFormat);
             if (desktopIni.value(updateIconKey, true).toBool()) {
-                qCInfo(lcFolderManagement) << "Creating" << desktopIni.fileName() << "to set a folder icon in Explorer.";
+                qCInfo(lcFolderManagementUtils) << "Creating" << desktopIni.fileName() << "to set a folder icon in Explorer.";
                 desktopIni.setValue(QStringLiteral(".ShellClassInfo/IconResource"), QDir::toNativeSeparators(qApp->applicationFilePath()));
                 desktopIni.setValue(updateIconKey, true);
             } else {
-                qCInfo(lcFolderManagement) << "Skip icon update for" << desktopIni.fileName() << "," << updateIconKey << "is disabled";
+                qCInfo(lcFolderManagementUtils) << "Skip icon update for" << desktopIni.fileName() << "," << updateIconKey << "is disabled";
             }
         }
 
@@ -46,12 +46,12 @@ bool FolderManagementUtils::prepareFolder(const QString &path)
         const DWORD folderAttrs = GetFileAttributesW(reinterpret_cast<const wchar_t *>(longFolderPath.utf16()));
         if (!SetFileAttributesW(reinterpret_cast<const wchar_t *>(longFolderPath.utf16()), folderAttrs | FILE_ATTRIBUTE_SYSTEM)) {
             const auto error = GetLastError();
-            qCWarning(lcFolderManagement) << "SetFileAttributesW failed on" << longFolderPath << Utility::formatWinError(error);
+            qCWarning(lcFolderManagementUtils) << "SetFileAttributesW failed on" << longFolderPath << Utility::formatWinError(error);
             return false;
         }
         if (!SetFileAttributesW(reinterpret_cast<const wchar_t *>(longDesktopIniPath.utf16()), FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM)) {
             const auto error = GetLastError();
-            qCWarning(lcFolderManagement) << "SetFileAttributesW failed on" << longDesktopIniPath << Utility::formatWinError(error);
+            qCWarning(lcFolderManagementUtils) << "SetFileAttributesW failed on" << longDesktopIniPath << Utility::formatWinError(error);
             return false;
         }
 #else
