@@ -5,11 +5,11 @@
 
 namespace OCC {
 /**
- * @brief The FolderManagementUtils class is a "controlled" namespace for general functions related to managing folders and their paths
+ * @brief The FolderManagementUtils class is a "controlled" collection of general functions related to managing folders and their paths.
  *
  * indeed, this could be a namespace but I have seen too many abuses of "a namespace can be defined ANYWHERE" to be comfortable with it
  *
- * declaring a final, non instantiable class prevents any creative namespace decls/defs
+ * Declaring a final, non instantiable class prevents any creative "namespace" decls/defs
  *
  */
 class FolderManagementUtils final
@@ -21,9 +21,10 @@ public:
     ~FolderManagementUtils() = delete;
 
     /**
-     * @brief prepareFolder sets up the folder with mac and windows specific operations
+     * @brief prepareFolder creates the folder from given path if it does not already exist, and configures the folder with mac and windows
+     * specific operations
      * @param folder path
-     * @return true if the folder path exists or can be successfully created
+     * @return true if the folder path exists and was successfully configured
      */
     static bool prepareFolder(const QString &path);
 
@@ -42,7 +43,7 @@ public:
     static QString checkPathLength(const QString &path);
 
     /**
-     *  performs various checks on the folder path to ensure it can be used as local sync destination
+     *  performs various checks on the folder path to ensure it exists and can be used as local sync destination.
      *  if the checks fail, the return value will contain the error
      *  if it passes, the return value will be empty.
      **/
