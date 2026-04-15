@@ -69,8 +69,22 @@
       </item>
       <item>
        <widget class="QPushButton" name="manageAccountButton">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="focusPolicy">
          <enum>Qt::FocusPolicy::StrongFocus</enum>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QPushButton::menu-indicator 
+{
+	subcontrol-origin: padding;
+    subcontrol-position: right center;
+	left: -2;	
+}</string>
         </property>
         <property name="text">
          <string>Manage Account</string>
