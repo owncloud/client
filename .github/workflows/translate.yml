@@ -89,4 +89,4 @@ jobs:
           body: "Automated translation update from Transifex. This pull request is updated on each sync run — merging it will close it and a fresh one will be opened on the next change."
           delete-branch: true
           sign-commits: true
-          reviewers: erikjv
+          reviewers: erikjv,mmattel
