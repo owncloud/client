@@ -170,6 +170,7 @@ void AccountFoldersController::buildMenuActions()
         connect(_chooseSync, &QAction::triggered, this, &AccountFoldersController::onChooseSync);
     }
 
+    //: This shows as 'Remove folder sync' or 'Remove Space sync'
     QString removeSyncString = tr("Remove %1 sync").arg(CommonStrings::space());
     _removeSync = new QAction(removeSyncString, this);
     _removeSync->setObjectName("removeFolderSyncAction");
