@@ -169,13 +169,16 @@ public:
     std::optional<qsizetype> setupFoldersFromConfig();
 
     /**
+     *
+     *  Extremely important refactoring todo: addFolder should not be public!
+     *  It is currently "required" for some tests which is not really cool, as it does not represent a complete/standalone impl.
+     *
      *  core step in any add folder routine. it validates the definition, instantiates vfs, instantiates the folder and validates whether
      *  it had setup errors.
      *
-     *  it is up to the caller to create the local sync folder (corresponding to the local path in the def), connect the folder, save it to settings, etc.
+     *  it is up to the caller to create the local sync folder (corresponding to the local path in the def) using the new FolderManagementUtils::prepareFolder,
+     *  connect the folder, save it to settings, etc.
      *
-     *  Refactoring todo: this should not be public! it is currently "required" for some tests which is not really cool, as it does not represent
-     *  a complete/standalone impl.
      */
     Folder *addFolder(AccountState *accountState, const FolderDefinition &folderDefinition);
 
