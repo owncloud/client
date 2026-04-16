@@ -187,7 +187,7 @@ private Q_SLOTS:
         QFETCH(QString, name);
 
         auto tmp = OCC::TestUtils::createTempDir();
-        QFile f(tmp.path() + u"/abc");
+        QFile f(tmp.path() + "/abc");
         QVERIFY(f.open(QFile::WriteOnly));
         QByteArray data("abc");
         QCOMPARE(f.write(data), data.size());

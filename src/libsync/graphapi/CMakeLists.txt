@@ -4,3 +4,5 @@ target_sources(libsync PRIVATE
         spacesmanager.cpp)
 
 target_include_directories(libsync PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
+
+add_subdirectory(libregraph/client)

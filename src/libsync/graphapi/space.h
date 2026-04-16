@@ -16,7 +16,7 @@
 
 #include "owncloudlib.h"
 
-#include <OAIDrive.h>
+#include <libregraph/client/OAIDrive.h>
 
 #include <QIcon>
 #include <QList>
