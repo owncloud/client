@@ -21,6 +21,7 @@
 #include "common/asserts.h"
 #include "configfile.h"
 #include "folder.h"
+#include "foldermanagement/folderbuilder.h"
 #include "foldermanagement/foldermanagementutils.h"
 #include "gui/networkinformation.h"
 #include "guiutility.h"
@@ -725,17 +726,17 @@ Folder *FolderMan::addFolder(AccountState *accountState, const FolderDefinition 
     QUuid accountId = accountState->account()->uuid();
 
     if (Folder *f = folder(accountId, folderDefinition.spaceId())) {
-        qCWarning(lcFolderMan) << "Trying to add folder" << folderDefinition.localPath() << "but it already exists in folder list";
+        qCWarning(lcFolderMan) << "Trying to add new folder for " << folderDefinition.localPath() << "but it already exists in folder list";
         return f;
     }
 
-    auto vfs = VfsPluginManager::instance().createVfsFromPlugin(folderDefinition.virtualFilesMode());
-    if (!vfs) {
-        qCWarning(lcFolderMan) << "Could not load plugin for mode" << folderDefinition.virtualFilesMode();
+    FolderBuilder builder(folderDefinition);
+    auto folder = builder.buildFolder(accountState, _ignoreHiddenFiles, this);
+
+    if (!folder) {
+        qCWarning(lcFolderMan) << "Unable to create Folder for " << folder->path() << " with spaceId " << folderDefinition.spaceId();
         return nullptr;
     }
-
-    auto folder = new Folder(folderDefinition, accountState, std::move(vfs), _ignoreHiddenFiles, this);
 
     qCInfo(lcFolderMan) << "Adding folder to Folder Map " << folder << folder->path();
     QString spaceId = folder->spaceId();

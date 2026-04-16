@@ -184,7 +184,7 @@ public:
 
     /** Create a new Folder
      */
-    Folder(const FolderDefinition &definition, AccountState *accountState, std::unique_ptr<Vfs> &&vfs, bool ignoreHiddenFiles, QObject *parent = nullptr);
+    Folder(const FolderDefinition &definition, AccountState *accountState, SyncJournalDb *journal, Vfs *vfs, bool ignoreHiddenFiles, QObject *parent);
 
     ~Folder() override;
     /**
@@ -310,10 +310,7 @@ public:
 
 
     // TODO: don't expose
-    SyncJournalDb *journalDb()
-    {
-        return &_journal;
-    }
+    SyncJournalDb *journalDb() { return _journal; }
     // TODO: don't expose
     SyncEngine &syncEngine()
     {
@@ -518,7 +515,7 @@ private:
     /// Reset when no follow-up is requested.
     int _consecutiveFollowUpSyncs = 0;
 
-    mutable SyncJournalDb _journal;
+    SyncJournalDb *_journal = nullptr;
 
     QScopedPointer<SyncRunFileLog> _fileLog;
 
@@ -566,6 +563,8 @@ private:
     // it is also false that it is never null - it is reset in wipeForRemoval
     // extra fun is I have no idea what happens to the instance in the SyncOptions - is it still alive relative to the engine?
     // I don't see any handling of the engine or SyncOptions whatsoever in wipeForRemoval so we'll need to go spelunking.
+    // final endpoint is to make this a raw pointer, pass it around and let the deps wrap it in a qpointer
+    // reconsider parenting before this step is taken
     QSharedPointer<Vfs> _vfs;
 };
 }

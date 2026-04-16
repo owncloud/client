@@ -1013,7 +1013,7 @@ private Q_SLOTS:
 
         if (vfsMode != Vfs::Off)
         {
-            auto vfs = QSharedPointer<Vfs>(VfsPluginManager::instance().createVfsFromPlugin(vfsMode).release());
+            auto vfs = QSharedPointer<Vfs>(VfsPluginManager::instance().createVfsFromPlugin(vfsMode, nullptr));
             QVERIFY(vfs);
             fakeFolder.switchToVfs(vfs);
             fakeFolder.syncJournal().internalPinStates().setForPath("", PinState::OnlineOnly);

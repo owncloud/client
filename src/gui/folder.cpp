@@ -92,14 +92,26 @@ using namespace FileSystem::SizeLiterals;
 
 Q_LOGGING_CATEGORY(lcFolder, "gui.folder", QtInfoMsg)
 
-Folder::Folder(const FolderDefinition &definition, AccountState *accountState, std::unique_ptr<Vfs> &&vfs, bool ignoreHiddenFiles, QObject *parent)
+Folder::Folder(const FolderDefinition &definition, AccountState *accountState, SyncJournalDb *journal, Vfs *vfs, bool ignoreHiddenFiles, QObject *parent)
     : QObject(parent)
     , _accountState(accountState)
     , _definition(definition)
-    , _journal(_definition.absoluteJournalPath())
     , _fileLog(new SyncRunFileLog)
-    , _vfs(vfs.release())
 {
+    journal->setParent(this);
+    _journal = journal;
+
+    // this is temporary! we only clear the parent on the vfs pointer because for the time being, we are wrapping this in a shared pointer
+    // the shared pointer is marked for death, then we will be able to set the vfs parent to this, as it should be
+    vfs->setParent(nullptr);
+    _vfs.reset(vfs);
+
+    // the FolderBuilder should fail if the account state or account are dead, so this should never trigger
+    Q_ASSERT(_accountState && _accountState->account());
+    // FolderBuilder should also fail if it could not build the other dependencies so again, assert should never trigger
+    Q_ASSERT(_vfs);
+    Q_ASSERT(_journal);
+
     _timeSinceLastSyncStart.start();
     _timeSinceLastSyncDone.start();
 
@@ -108,62 +120,50 @@ Folder::Folder(const FolderDefinition &definition, AccountState *accountState, s
         status = SyncResult::Paused;
     }
     setSyncState(status);
-    // check if the starting conditions are legit
-    // check local path is performed in the FolderMan::validateFolderDefinition during addFolder - if it fails no folder is created at all
-    if (_accountState && _accountState->account() /*&& checkLocalPath()*/) {
-        // this should only be done in folder manager when creating the folder on load from config or add folder
-        //  FolderManagementUtils::prepareFolder(path());
-        // those errors should not persist over sessions
-        _journal.wipeErrorBlacklistCategory(SyncJournalErrorBlacklistRecord::Category::LocalSoftError);
-        // todo: the engine needs to be created externally, presumably by the folderman, and passed in by injection
-        // current impl can result in an invalid engine which is just a mess given the folder is useless without it
-        _engine.reset(new SyncEngine(_accountState->account(), webDavUrl(), path(), remotePath(), &_journal));
-        // pass the setting if hidden files are to be ignored, will be read in csync_update
-        _engine->setIgnoreHiddenFiles(ignoreHiddenFiles);
 
-        if (!_engine->loadDefaultExcludes()) {
-            qCWarning(lcFolder, "Could not read system exclude file");
-        }
+    // todo: the engine needs to be created externally, presumably by the folderman, and passed in by injection
+    // current impl can result in an invalid engine which is just a mess given the folder is useless without it
+    _engine.reset(new SyncEngine(_accountState->account(), webDavUrl(), path(), remotePath(), _journal));
+    // pass the setting if hidden files are to be ignored, will be read in csync_update
+    _engine->setIgnoreHiddenFiles(ignoreHiddenFiles);
 
-        connect(_accountState, &AccountState::isConnectedChanged, this, &Folder::canSyncChanged);
-
-        connect(_engine.data(), &SyncEngine::started, this, &Folder::slotSyncStarted, Qt::QueuedConnection);
-        connect(_engine.data(), &SyncEngine::finished, this, &Folder::slotSyncFinished, Qt::QueuedConnection);
-
-        connect(_engine.data(), &SyncEngine::transmissionProgress, this,
-            [this](const ProgressInfo &pi) { Q_EMIT ProgressDispatcher::instance()->progressInfo(this, pi); });
-
-        connect(_engine.data(), &SyncEngine::transmissionProgress, this, &Folder::progressUpdate);
-
-        connect(_engine.data(), &SyncEngine::itemCompleted, this, &Folder::slotItemCompleted);
-        connect(_engine.data(), &SyncEngine::seenLockedFile, FolderMan::instance(), &FolderMan::slotSyncOnceFileUnlocks);
-        connect(_engine.data(), &SyncEngine::aboutToPropagate,
-            this, &Folder::slotLogPropagationStart);
-        connect(_engine.data(), &SyncEngine::syncError, this, &Folder::slotSyncError);
-
-        connect(ProgressDispatcher::instance(), &ProgressDispatcher::folderConflicts,
-            this, &Folder::slotFolderConflicts);
-        connect(_engine.data(), &SyncEngine::excluded, this, [this](const QString &path) { Q_EMIT ProgressDispatcher::instance()->excluded(this, path); });
-
-        _localDiscoveryTracker.reset(new LocalDiscoveryTracker);
-        connect(_engine.data(), &SyncEngine::finished,
-            _localDiscoveryTracker.data(), &LocalDiscoveryTracker::slotSyncFinished);
-        connect(_engine.data(), &SyncEngine::itemCompleted,
-            _localDiscoveryTracker.data(), &LocalDiscoveryTracker::slotItemCompleted);
-
-        connect(_accountState->account()->spacesManager(), &GraphApi::SpacesManager::spaceChanged, this, [this](GraphApi::Space *changedSpace) {
-            if (_definition.spaceId() == changedSpace->id()) {
-                emit spaceChanged();
-            }
-        });
-        if (space())
-            emit spaceChanged();
-
-        // Potentially upgrade suffix vfs to windows vfs
-        OC_ENFORCE(_vfs);
-        // Initialize the vfs plugin. Do this after the UI is running, so we can show a dialog when something goes wrong.
-        QTimer::singleShot(0, this, &Folder::startVfs);
+    if (!_engine->loadDefaultExcludes()) {
+        qCWarning(lcFolder, "Could not read system exclude file");
     }
+
+    connect(_accountState, &AccountState::isConnectedChanged, this, &Folder::canSyncChanged);
+
+    connect(_engine.data(), &SyncEngine::started, this, &Folder::slotSyncStarted, Qt::QueuedConnection);
+    connect(_engine.data(), &SyncEngine::finished, this, &Folder::slotSyncFinished, Qt::QueuedConnection);
+
+    connect(_engine.data(), &SyncEngine::transmissionProgress, this,
+        [this](const ProgressInfo &pi) { Q_EMIT ProgressDispatcher::instance()->progressInfo(this, pi); });
+
+    connect(_engine.data(), &SyncEngine::transmissionProgress, this, &Folder::progressUpdate);
+
+    connect(_engine.data(), &SyncEngine::itemCompleted, this, &Folder::slotItemCompleted);
+    connect(_engine.data(), &SyncEngine::seenLockedFile, FolderMan::instance(), &FolderMan::slotSyncOnceFileUnlocks);
+    connect(_engine.data(), &SyncEngine::aboutToPropagate, this, &Folder::slotLogPropagationStart);
+    connect(_engine.data(), &SyncEngine::syncError, this, &Folder::slotSyncError);
+
+    connect(ProgressDispatcher::instance(), &ProgressDispatcher::folderConflicts, this, &Folder::slotFolderConflicts);
+    connect(_engine.data(), &SyncEngine::excluded, this, [this](const QString &path) { Q_EMIT ProgressDispatcher::instance()->excluded(this, path); });
+
+    _localDiscoveryTracker.reset(new LocalDiscoveryTracker);
+    connect(_engine.data(), &SyncEngine::finished, _localDiscoveryTracker.data(), &LocalDiscoveryTracker::slotSyncFinished);
+    connect(_engine.data(), &SyncEngine::itemCompleted, _localDiscoveryTracker.data(), &LocalDiscoveryTracker::slotItemCompleted);
+
+    connect(_accountState->account()->spacesManager(), &GraphApi::SpacesManager::spaceChanged, this, [this](GraphApi::Space *changedSpace) {
+        if (_definition.spaceId() == changedSpace->id()) {
+            emit spaceChanged();
+        }
+    });
+
+    if (space())
+        emit spaceChanged();
+
+    // Initialize the vfs plugin. Do this after the UI is running, so we can show a dialog when something goes wrong.
+    QTimer::singleShot(0, this, &Folder::startVfs);
 }
 
 Folder::~Folder()
@@ -492,7 +492,7 @@ void Folder::startVfs()
     VfsSetupParams vfsParams(_accountState->account(), webDavUrl(), _engine.get());
     vfsParams.filesystemPath = path();
     vfsParams.remotePath = remotePathTrailingSlash();
-    vfsParams.journal = &_journal;
+    vfsParams.journal = _journal;
     vfsParams.providerDisplayName = Theme::instance()->appNameGUI();
     vfsParams.providerName = Theme::instance()->appName();
     vfsParams.providerVersion = Version::version();
@@ -504,7 +504,7 @@ void Folder::startVfs()
     connect(_vfs.get(), &Vfs::started, this, [this] {
         // Immediately mark the sqlite temporaries as excluded. They get recreated
         // on db-open and need to get marked again every time.
-        QString stateDbFile = _journal.databaseFilePath();
+        QString stateDbFile = _journal->databaseFilePath();
         _vfs->fileStatusChanged(stateDbFile + QStringLiteral("-wal"), SyncFileStatus::StatusExcluded);
         _vfs->fileStatusChanged(stateDbFile + QStringLiteral("-shm"), SyncFileStatus::StatusExcluded);
         _engine->setSyncOptions(loadSyncOptions());
@@ -542,8 +542,7 @@ void Folder::slotDiscardDownloadProgress()
     // Delete from journal and from filesystem.
     QDir folderpath(_definition.localPath());
     QSet<QString> keep_nothing;
-    const QVector<SyncJournalDb::DownloadInfo> deleted_infos =
-        _journal.getAndDeleteStaleDownloadInfos(keep_nothing);
+    const QVector<SyncJournalDb::DownloadInfo> deleted_infos = _journal->getAndDeleteStaleDownloadInfos(keep_nothing);
     for (const auto &deleted_info : deleted_infos) {
         const QString tmppath = folderpath.filePath(deleted_info._tmpfile);
         qCInfo(lcFolder) << "Deleting temporary file: " << tmppath;
@@ -553,7 +552,7 @@ void Folder::slotDiscardDownloadProgress()
 
 int Folder::slotWipeErrorBlacklist()
 {
-    return _journal.wipeErrorBlacklist();
+    return _journal->wipeErrorBlacklist();
 }
 
 void Folder::slotWatchedPathsChanged(const QSet<QString> &paths, ChangeReason reason)
@@ -594,7 +593,7 @@ void Folder::slotWatchedPathsChanged(const QSet<QString> &paths, ChangeReason re
         _localDiscoveryTracker->addTouchedPath(relativePath);
 
         SyncJournalFileRecord record;
-        _journal.getFileRecord(relativePath.toUtf8(), &record);
+        _journal->getFileRecord(relativePath.toUtf8(), &record);
         if (reason != ChangeReason::UnLock) {
             // Check that the mtime/size actually changed or there was
             // an attribute change (pin state) that caused the notification
@@ -630,7 +629,7 @@ void Folder::implicitlyHydrateFile(const QString &relativepath)
 
     // Set in the database that we should download the file
     SyncJournalFileRecord record;
-    _journal.getFileRecord(relativepath.toUtf8(), &record);
+    _journal->getFileRecord(relativepath.toUtf8(), &record);
     if (!record.isValid()) {
         qCInfo(lcFolder) << "Did not find file in db";
         return;
@@ -640,7 +639,7 @@ void Folder::implicitlyHydrateFile(const QString &relativepath)
         return;
     }
     record._type = ItemTypeVirtualFileDownload;
-    _journal.setFileRecord(record);
+    _journal->setFileRecord(record);
 
     // Change the file's pin state if it's contradictory to being hydrated
     // (suffix-virtual file's pin state is stored at the hydrated path)
@@ -684,6 +683,12 @@ void Folder::changeVfsMode(Vfs::Mode newMode)
     if (newMode == _definition.virtualFilesMode()) {
         return;
     }
+    // if we can't create the new mode, just ditch.
+    Vfs *newVfs = VfsPluginManager::instance().createVfsFromPlugin(newMode, this);
+    if (!newVfs) {
+        qCWarning(lcFolder) << "Unable to change vfs mode for Folder " << _definition.localPath();
+        return;
+    }
 
     // This is tested in TestSyncVirtualFiles::testWipeVirtualSuffixFiles, so for changes here, have them reflected in that test.
     const bool wasPaused = _definition.paused();
@@ -719,7 +724,8 @@ void Folder::changeVfsMode(Vfs::Mode newMode)
     // passed to the engine. It is not clear to me how/when the options vfs shared ptr gets updated to match this
     // new/reset instance but this should be high prio to work this out as wow this is dangerous. the todo is basically: eval the use of
     // this _vfs pointer and make it consistent and SAFE across uses
-    _vfs.reset(VfsPluginManager::instance().createVfsFromPlugin(newMode).release());
+    // also todo: we have to cover the case that the createVfsFromPlugin returns nullptr!
+    _vfs.reset(newVfs);
 
     // Restart VFS.
     _definition.setVirtualFilesMode(newMode);
@@ -791,7 +797,7 @@ void Folder::wipeForRemoval()
 
     // Unregister the socket API so it does not keep the .sync_journal file open
     FolderMan::instance()->socketApi()->slotUnregisterPath(this);
-    _journal.close(); // close the sync journal
+    _journal->close(); // close the sync journal
 
     // Remove db and temporaries
     const QString stateDbFile = _engine->journal()->databaseFilePath();
@@ -1044,7 +1050,7 @@ void Folder::warnOnNewExcludedItem(const SyncJournalFileRecord &record, QStringV
         return;
 
     bool ok = false;
-    auto blacklist = _journal.getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, ok);
+    auto blacklist = _journal->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, ok);
     if (!ok)
         return;
     if (!blacklist.contains(path + QLatin1Char('/')))
