@@ -15,12 +15,9 @@
 
 #pragma once
 
-#include "accountfwd.h"
-#include "jobqueue.h"
-
-#include "common/asserts.h"
-
 #include "owncloudlib.h"
+#include "account.h"
+#include "jobqueue.h"
 
 #include <QDateTime>
 #include <QElapsedTimer>
@@ -51,23 +48,11 @@ class OWNCLOUDSYNC_EXPORT AbstractNetworkJob : public QObject
 {
     Q_OBJECT
 public:
-    explicit AbstractNetworkJob(AccountPtr account, const QUrl &baseUrl, const QString &path, QObject *parent = nullptr);
+    explicit AbstractNetworkJob(Account *account, const QUrl &baseUrl, const QString &path, QObject *parent = nullptr);
     ~AbstractNetworkJob() override;
 
     virtual void start();
 
-    AccountPtr account() const { return _account; }
-    QString path() const { return _path; }
-
-    /*
-     * A base Url, for most of the jobs this will be the WebDAV entry point.
-     */
-    QUrl baseUrl() const;
-
-    /*
-     * The absolute url: baseUrl() + path() + query()
-     */
-    QUrl url() const;
 
     QNetworkReply *reply() const;
 
@@ -132,7 +117,6 @@ public:
     static constexpr std::chrono::seconds DefaultHttpTimeout { 5 * 60 };
 
     /** whether or noth this job should be restarted after authentication */
-    bool  isAuthenticationJob() const;
     void  setAuthenticationJob(bool b);
 
     /** How many times was that job retried */
@@ -174,6 +158,11 @@ Q_SIGNALS:
     void finishedSignal(QPrivateSignal);
 
 protected:
+    /*
+     * The absolute url: baseUrl() + path() + query()
+     */
+    QUrl url() const;
+
     /** Initiate a network request, returning a QNetworkReply.
      *
      * Calls setReply() and setupConnections() on it.
@@ -196,8 +185,6 @@ protected:
      */
     virtual void finished() = 0;
 
-    QByteArray _responseTimestamp;
-
     QString replyStatusString();
 
     /*
@@ -206,11 +193,13 @@ protected:
      * The query must be fully encoded.
      */
     void setQuery(const QUrlQuery &query);
-    QUrlQuery query() const;
 
-    AccountPtr _account;
+    QUrlQuery _query;
+    QByteArray _responseTimestamp;
 
 private:
+    QPointer<Account> _account;
+
     /** Makes this job drive a pre-made QNetworkReply
      *
      * This reply cannot have a QIODevice request body because we can't get
@@ -221,8 +210,6 @@ private:
 
     const QUrl _baseUrl;
     const QString _path;
-
-    QUrlQuery _query;
 
     std::chrono::seconds _timeout = httpTimeout;
     bool _timedout = false; // set to true when the timeout slot is received

@@ -14,7 +14,7 @@
 
 #pragma once
 
-#include "common/chronoelapsedtimer.h"
+#include "libsync/graphapi/space.h"
 
 #include <QObject>
 
@@ -29,25 +29,34 @@ class ETagWatcher : public QObject
 {
     Q_OBJECT
 public:
-    ETagWatcher(FolderMan *folderMan, QObject *parent);
+    ETagWatcher(QObject *parent);
+
+public Q_SLOTS:
+    void slotSpaceChanged(GraphApi::Space *space);
+
+    void slotFolderListChanged(const QUuid &accountId, const QList<Folder *> folders);
+
+    void onFolderAdded(const QUuid &accountId, Folder *folder);
+
+    void onFolderRemoved(const QUuid &accountId, Folder *folder);
+
+
+Q_SIGNALS:
+    void requestEnqueueFolder(Folder *folder);
 
 private:
-    void updateEtag(Folder *f, const QString &etag);
-
-    // oc10 relies on etag polling, with ocis we use the spaces endpoint
-    void startOC10EtagJob(Folder *f);
-
-
-    FolderMan *_folderMan;
+    void updateEtag(const QUuid &accountId, const QString &spaceId, const QString &etag);
 
     struct ETagInfo
     {
         QString etag;
-        // only used with oc10 in order to decide whether we need to query the etag
-        Utility::ChronoElapsedTimer lastUpdate;
+        Folder *folder;
     };
 
-    std::unordered_map<Folder *, ETagInfo> _lastEtagJob;
+    // we have to separate the data into accounts because it's NOT the case that all spaceid's are unique
+    // specifically, the Shares space always has the same space id -> see Space.cpp sharesIdC
+    // so we have a hash keyed on the uuid of the account, which in turn holds the hash for the space ids->etag info
+    QHash<QUuid, QHash<QString, ETagInfo>> _lastEtagJobForSpace;
 };
 
 }

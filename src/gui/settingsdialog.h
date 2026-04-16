@@ -17,17 +17,17 @@
 #include "accountstate.h"
 #include "gui/qmlutils.h"
 #include "owncloudgui.h"
-#include "progressdispatcher.h"
 
 #include <QMainWindow>
 #include <QStyledItemDelegate>
+
 
 namespace OCC {
 
 namespace Ui {
     class SettingsDialog;
 }
-class AccountSettings;
+class AccountView;
 class Application;
 class FolderMan;
 class ownCloudGui;
@@ -57,7 +57,7 @@ public:
     void requestModality(Account *account);
     void ceaseModality(Account *account);
 
-    AccountSettings *accountSettings(Account *account) const;
+    AccountView *accountView(Account *account) const;
 
     SettingsPage currentPage() const;
 
@@ -65,16 +65,23 @@ public:
 
     void setCurrentAccount(Account *account);
 
+    // todo: #37 - this is stickier to get rid of as it's used in the qml related to the account. That needs to go.
     Account *currentAccount() const;
 
 public Q_SLOTS:
-    void addAccount();
+    // this is a direct call from QML
+    void createNewAccount();
+    void runFolderWizard(Account *account);
 
 
 Q_SIGNALS:
     void currentPageChanged();
+    // I think this only goes to qml
     void currentAccountChanged();
 
+protected Q_SLOTS:
+    void onAccountAdded(AccountState *state);
+    void onAccountRemoved(AccountState *state);
 
 protected:
     void setVisible(bool visible) override;
@@ -83,7 +90,8 @@ protected:
 private:
     Ui::SettingsDialog *const _ui;
 
-    QHash<Account *, AccountSettings *> _widgetForAccount;
+
+    QHash<QUuid, AccountView *> _viewForAccount;
 
     ActivitySettings *_activitySettings;
     ownCloudGui *_gui;
@@ -91,6 +99,7 @@ private:
 
     GeneralSettings *_generalSettings;
     SettingsPage _currentPage = SettingsPage::None;
+    // todo: #37
     Account *_currentAccount = nullptr;
 };
 }

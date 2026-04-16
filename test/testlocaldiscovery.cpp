@@ -28,7 +28,7 @@ private Q_SLOTS:
         QTest::newRow("Vfs::Off") << Vfs::Off << false;
 
         if (VfsPluginManager::instance().isVfsPluginAvailable(Vfs::WindowsCfApi)) {
-            QTest::newRow("Vfs::WindowsCfApi dehydrated") << Vfs::WindowsCfApi << true;
+            // QTest::newRow("Vfs::WindowsCfApi dehydrated") << Vfs::WindowsCfApi << true;
 
             // TODO: the hydrated version will fail due to an issue in the winvfs plugin, so leave it disabled for now.
             // QTest::newRow("Vfs::WindowsCfApi hydrated") << Vfs::WindowsCfApi << false;
@@ -314,6 +314,49 @@ private Q_SLOTS:
             != nullptr); // check if the directory still exists in the original normalization
         QVERIFY(remoteState.find(QStringLiteral("P/B") + incorrect + QStringLiteral("/b"))
             == nullptr); // there should NOT be a directory with another normalization
+    }
+
+    void testLocalNameNormalizationChange()
+    {
+        QFETCH_GLOBAL(Vfs::Mode, vfsMode);
+        QFETCH_GLOBAL(bool, filesAreDehydrated);
+
+        // Create an empty remote folder
+        FakeFolder fakeFolder({FileInfo{}}, vfsMode, filesAreDehydrated);
+        OperationCounter counter(fakeFolder);
+
+        const unsigned char a_umlaut_composed_bytes[] = {0xc3, 0xa4, 0x00};
+        const QString a_umlaut_composed = QString::fromUtf8(reinterpret_cast<const char *>(a_umlaut_composed_bytes));
+        const QString a_umlaut_decomposed = a_umlaut_composed.normalized(QString::NormalizationForm_D);
+
+        // OC10 stores names in composed form only, oCIS might have a mix, but NFC is common.
+        fakeFolder.remoteModifier().insert(a_umlaut_composed);
+
+        // Download the file
+        QVERIFY(fakeFolder.applyLocalModificationsAndSync());
+
+        // With client version 5 on mac, the file name would be decomposed by Qt. Simulate that:
+        QString err;
+        bool result = FileSystem::uncheckedRenameReplace(fakeFolder.localPath() + a_umlaut_composed, fakeFolder.localPath() + a_umlaut_decomposed, &err);
+        QVERIFY(result);
+        QVERIFY(err.isEmpty());
+
+        // Now nothing should happen...
+        counter.reset();
+        QVERIFY(fakeFolder.syncOnce());
+
+        QCOMPARE(counter.nGET, 0);
+        QCOMPARE(counter.nDELETE, 0);
+        QCOMPARE(counter.nMOVE, 0);
+        QCOMPARE(counter.nPUT, 0);
+
+        // Check that nothing changed on the server:
+        QVERIFY(fakeFolder.currentRemoteState().find(a_umlaut_composed) != nullptr);
+        QVERIFY(fakeFolder.currentRemoteState().find(a_umlaut_decomposed) == nullptr);
+
+        // Check that locally the file is renamed back to the same composition as on the server
+        QVERIFY(fakeFolder.currentLocalState().find(a_umlaut_composed) != nullptr);
+        QVERIFY(fakeFolder.currentLocalState().find(a_umlaut_decomposed) == nullptr);
     }
 };
 

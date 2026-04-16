@@ -23,23 +23,7 @@ namespace {
 constexpr auto tiemoutC = 5s;
 QString credentialKeyC()
 {
-    return QStringLiteral("%1_credentials").arg(Theme::instance()->appName());
-}
-
-QString accountKey(const Account *acc)
-{
-    OC_ASSERT(!acc->url().isEmpty());
-    return QStringLiteral("%1:%2:%3").arg(credentialKeyC(), acc->url().host(), acc->uuid().toString(QUuid::WithoutBraces));
-}
-
-QString scope(const CredentialManager *const manager)
-{
-    return manager->account() ? accountKey(manager->account()) : credentialKeyC();
-}
-
-QString scopedKey(const CredentialManager *const manager, const QString &key)
-{
-    return scope(manager) + QLatin1Char(':') + key;
+    return QString("%1_credentials").arg(Theme::instance()->appName());
 }
 }
 
@@ -54,11 +38,33 @@ CredentialManager::CredentialManager(QObject *parent)
 {
 }
 
+QString CredentialManager::scope() const
+{
+    return _account ? accountKey() : credentialKeyC();
+}
+
+QString CredentialManager::scopedKey(const QString &key) const
+{
+    return scope() + QLatin1Char(':') + key;
+}
+
+QString CredentialManager::accountKey() const
+{
+    if (!_account || _account->url().isEmpty())
+        return QString();
+
+    return QString("%1:%2:%3").arg(credentialKeyC(), _account->url().host(), _account->uuid().toString(QUuid::WithoutBraces));
+}
 
 CredentialJob *CredentialManager::get(const QString &key)
 {
-    qCInfo(lcCredentialsManager) << "get" << scopedKey(this, key);
-    auto out = new CredentialJob(this, key);
+    if (!contains(key)) {
+        qCWarning(lcCredentialsManager) << "We don't know" << key << "skipping retrieval from keychain";
+        return nullptr;
+    }
+    const QString scopedKey = this->scopedKey(key);
+    qCInfo(lcCredentialsManager) << "get" << scopedKey;
+    auto out = new CredentialJob(this, scopedKey);
     out->start();
     return out;
 }
@@ -66,9 +72,10 @@ CredentialJob *CredentialManager::get(const QString &key)
 QKeychain::Job *CredentialManager::set(const QString &key, const QVariant &data)
 {
     OC_ASSERT(!data.isNull());
-    qCInfo(lcCredentialsManager) << "set" << scopedKey(this, key);
+    const QString scoped = scopedKey(key);
+    qCInfo(lcCredentialsManager) << "set" << scoped;
     auto writeJob = new QKeychain::WritePasswordJob(Theme::instance()->appName());
-    writeJob->setKey(scopedKey(this, key));
+    writeJob->setKey(scoped);
 
     auto timer = new QTimer(writeJob);
     timer->setInterval(tiemoutC);
@@ -98,15 +105,16 @@ QKeychain::Job *CredentialManager::remove(const QString &key)
     OC_ASSERT(contains(key));
     // remove immediately to prevent double invocation by clear()
     credentialsList().remove(key);
-    qCInfo(lcCredentialsManager) << "del" << scopedKey(this, key);
+    const QString scoped = scopedKey(key);
+    qCInfo(lcCredentialsManager) << "del" << scoped;
     auto keychainJob = new QKeychain::DeletePasswordJob(Theme::instance()->appName());
-    keychainJob->setKey(scopedKey(this, key));
-    connect(keychainJob, &QKeychain::DeletePasswordJob::finished, this, [keychainJob, key, this] {
+    keychainJob->setKey(scoped);
+    connect(keychainJob, &QKeychain::DeletePasswordJob::finished, this, [keychainJob, scoped] {
         OC_ASSERT(keychainJob->error() != QKeychain::EntryNotFound);
         if (keychainJob->error() == QKeychain::NoError) {
-            qCInfo(lcCredentialsManager) << "removed" << scopedKey(this, key);
+            qCInfo(lcCredentialsManager) << "removed" << scoped;
         } else {
-            qCWarning(lcCredentialsManager) << "Failed to remove:" << scopedKey(this, key) << keychainJob->errorString();
+            qCWarning(lcCredentialsManager) << "Failed to remove:" << scoped << keychainJob->errorString();
         }
     });
     // start is delayed so we can directly call it
@@ -126,14 +134,13 @@ QVector<QPointer<QKeychain::Job>> CredentialManager::clear(const QString &group)
     return out;
 }
 
-const Account *CredentialManager::account() const
-{
-    return _account;
-}
-
 bool CredentialManager::contains(const QString &key) const
 {
     return credentialsList().contains(key);
+}
+bool CredentialManager::isEmpty()
+{
+    return knownKeys().isEmpty();
 }
 
 QStringList CredentialManager::knownKeys(const QString &group) const
@@ -161,15 +168,14 @@ QSettings &CredentialManager::credentialsList() const
 {
     // delayed init as scope requires a fully inizialised acc
     if (!_credentialsList) {
-        _credentialsList = ConfigFile::settingsWithGroup(QStringLiteral("Credentials/") + scope(this));
+        _credentialsList = ConfigFile::settingsWithGroup("Credentials/" + scope());
     }
     return *_credentialsList;
 }
 
-CredentialJob::CredentialJob(CredentialManager *parent, const QString &key)
+CredentialJob::CredentialJob(CredentialManager *parent, const QString &scopedKey)
     : QObject(parent)
-    , _key(key)
-    , _parent(parent)
+    , _scopedKey(scopedKey)
 {
     connect(this, &CredentialJob::finished, this, &CredentialJob::deleteLater);
 }
@@ -191,16 +197,8 @@ QKeychain::Error CredentialJob::error() const
 
 void CredentialJob::start()
 {
-    if (!_parent->contains(_key)) {
-        _error = QKeychain::EntryNotFound;
-        // QKeychain is started delayed, Q_EMIT the signal delayed to make sure we are connected
-        qCDebug(lcCredentialsManager) << "We don't know" << _key << "skipping retrieval from keychain";
-        QTimer::singleShot(0, this, &CredentialJob::finished);
-        return;
-    }
-
     _job = new QKeychain::ReadPasswordJob(Theme::instance()->appName());
-    _job->setKey(scopedKey(_parent, _key));
+    _job->setKey(_scopedKey);
     connect(_job, &QKeychain::ReadPasswordJob::finished, this, [this] {
 #if defined(Q_OS_UNIX) && !defined(Q_OS_MAC)
         if (_retryOnKeyChainError && (_job->error() == QKeychain::NoBackendAvailable || _job->error() == QKeychain::OtherError)) {
@@ -212,7 +210,6 @@ void CredentialJob::start()
             _retryOnKeyChainError = false;
         }
 #endif
-        OC_ASSERT(_job->error() != QKeychain::EntryNotFound);
         if (_job->error() == QKeychain::NoError) {
             QCborParserError error;
             const auto obj = QCborValue::fromCbor(_job->binaryData(), &error);
@@ -224,16 +221,11 @@ void CredentialJob::start()
             _data = obj.toVariant();
             OC_ASSERT(_data.isValid());
         } else {
-            qCWarning(lcCredentialsManager) << "Failed to get password" << scopedKey(_parent, _key) << _job->errorString();
+            qCWarning(lcCredentialsManager) << "Failed to get password" << _scopedKey << _job->errorString();
             _error = _job->error();
             _errorString = _job->errorString();
         }
         Q_EMIT finished();
     });
     _job->start();
-}
-
-QString CredentialJob::key() const
-{
-    return _key;
 }

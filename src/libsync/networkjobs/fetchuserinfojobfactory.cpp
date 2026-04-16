@@ -49,11 +49,11 @@ CoreJob *FetchUserInfoJobFactory::startJob(const QUrl &url, QObject *parent)
     // todo: #20 - apparently this is oc10 related - there are many instances but they should go.
     req.setRawHeader(QByteArrayLiteral("OCS-APIREQUEST"), QByteArrayLiteral("true"));
 
-    // We just added the Authorization header, don't let HttpCredentialsAccessManager tamper with it
+    // We just added the Authorization header, don't let the credentials AccessManager tamper with it
     req.setAttribute(OCC::DontAddCredentialsAttribute, true);
     req.setAttribute(QNetworkRequest::AuthenticationReuseAttribute, QNetworkRequest::Manual);
 
-    auto *job = new CoreJob(nam()->get(req), parent);
+    auto *job = new CoreJob(_nam->get(req), parent);
 
     QObject::connect(job->reply(), &QNetworkReply::finished, job, [job] {
         const auto data = job->reply()->readAll();

@@ -19,7 +19,6 @@
 #include "gui/owncloudguilib.h"
 
 #include "connectionvalidator.h"
-#include "creds/abstractcredentials.h"
 #include "jobqueue.h"
 
 #include "account.h"
@@ -50,8 +49,6 @@ class OWNCLOUDGUI_EXPORT AccountState : public QObject
     Q_OBJECT
     Q_PROPERTY(Account *account READ accountForQml CONSTANT)
     Q_PROPERTY(bool isConnected READ isConnected NOTIFY isConnectedChanged)
-    // todo: #16
-    Q_PROPERTY(bool supportsSpaces READ supportsSpaces NOTIFY supportsSpacesChanged)
     Q_PROPERTY(AccountState::State state READ state NOTIFY stateChanged)
     QML_ELEMENT
     QML_UNCREATABLE("Only created by AccountManager")
@@ -94,15 +91,15 @@ public:
     /// The actual current connectivity status.
     typedef ConnectionValidator::Status ConnectionStatus;
 
+    /// Use the account as parent
+    explicit AccountState(Account *account);
     ~AccountState() override;
 
     /** Creates an account state from settings and an Account object.
      *
      * Use from AccountManager with a prepared QSettings object only.
      */
-    static std::unique_ptr<AccountState> loadFromSettings(AccountPtr account, const QSettings &settings);
-
-    static std::unique_ptr<AccountState> fromNewAccount(AccountPtr account);
+    static AccountState *loadFromSettings(Account *account, const QSettings &settings);
 
     /** Writes account state information to settings.
      *
@@ -110,7 +107,7 @@ public:
      */
     void writeToSettings(QSettings &settings) const;
 
-    AccountPtr account() const;
+    Account *account() const;
 
     ConnectionStatus connectionStatus() const;
     QStringList connectionErrors() const;
@@ -140,11 +137,6 @@ public:
 
     bool isConnected() const;
 
-    // weather the account was created after spaces where implemented
-    bool supportsSpaces() const;
-
-    QuotaInfo *quotaInfo();
-
     /** Returns a new settings object for this account, already in the right groups. */
     std::unique_ptr<QSettings> settings();
 
@@ -167,33 +159,28 @@ public:
     void checkConnectivity(bool blockJobs = false);
 
 private:
-    /// Use the account as parent
-    explicit AccountState(AccountPtr account);
 
     void setState(State state);
 
 Q_SIGNALS:
     void stateChanged(State state);
     void isConnectedChanged();
-    void isSettingUpChanged();
-    void supportsSpacesChanged();
+    void isSettingUpChanged(bool settingUp);
 
 protected Q_SLOTS:
     void slotConnectionValidatorResult(ConnectionValidator::Status status, const QStringList &errors);
     void slotInvalidCredentials();
     void slotCredentialsFetched();
-    void slotCredentialsAsked();
 
 private:
     Account *accountForQml() const;
-    AccountPtr _account;
+    QPointer<Account> _account;
     JobQueueGuard _queueGuard;
     State _state;
     ConnectionStatus _connectionStatus;
     QStringList _connectionErrors;
     bool _waitingForNewCredentials;
     QDateTime _timeOfLastETagCheck;
-    bool _supportsSpaces = true;
     bool _settingUp = false;
 
     ConnectionValidator *_connectionValidator;
@@ -235,4 +222,3 @@ private:
 }
 
 Q_DECLARE_METATYPE(OCC::AccountState *)
-Q_DECLARE_METATYPE(OCC::AccountStatePtr)

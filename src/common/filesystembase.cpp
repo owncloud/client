@@ -183,15 +183,22 @@ bool FileSystem::rename(const QString &originFileName,
         if (!success) {
             error = Utility::formatWinError(GetLastError());
         }
-    } else
-#endif
-    {
+    } else {
         QFile orig(originFileName);
         success = orig.rename(destinationFileName);
         if (!success) {
             error = orig.errorString();
         }
     }
+#else
+    std::error_code err;
+    std::filesystem::rename(originFileName.toStdString(), destinationFileName.toStdString(), err);
+    if (err) {
+        error = QString::fromStdString(err.message());
+    } else {
+        success = true;
+    }
+#endif
 
     if (!success) {
         qCWarning(lcFileSystem) << "Error renaming file" << originFileName

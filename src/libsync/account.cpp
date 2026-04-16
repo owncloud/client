@@ -15,14 +15,12 @@
 #include "account.h"
 #include "accessmanager.h"
 #include "capabilities.h"
-#include "common/asserts.h"
 #include "cookiejar.h"
 #include "creds/abstractcredentials.h"
 #include "creds/credentialmanager.h"
 #include "graphapi/spacesmanager.h"
 #include "networkjobs.h"
 #include "networkjobs/resources.h"
-#include "theme.h"
 
 #include <QAuthenticator>
 #include <QDir>
@@ -53,15 +51,17 @@ QString Account::commonCacheDirectory()
     return _customCommonCacheDirectory;
 }
 
-Account::Account(const QUuid &uuid, QObject *parent)
+Account::Account(const QUuid &uuid, const QString &user, const QUrl &url, QObject *parent)
     : QObject(parent)
     , _uuid(uuid)
+    , _davUser(user)
+    , _url(url)
     , _capabilities({}, {})
     , _jobQueue(this)
     , _queueGuard(&_jobQueue)
     , _credentialManager(new CredentialManager(this))
 {
-    qRegisterMetaType<AccountPtr>("AccountPtr");
+    qRegisterMetaType<Account>("Account");
 
     _cacheDirectory = QStringLiteral("%1/accounts/%2").arg(commonCacheDirectory(), _uuid.toString(QUuid::WithoutBraces));
     QDir().mkpath(_cacheDirectory);
@@ -79,27 +79,37 @@ Account::Account(const QUuid &uuid, QObject *parent)
     }
     QDir().mkpath(resourcesCacheDir);
     _resourcesCache = new ResourcesCache(resourcesCacheDir, this);
-}
 
-AccountPtr Account::create(const QUuid &uuid)
-{
-    AccountPtr acc = AccountPtr(new Account(uuid));
-    acc->setSharedThis(acc);
-    return acc;
+    _spacesManager = new GraphApi::SpacesManager(this);
 }
 
 Account::~Account()
 {
 }
 
+void Account::cleanupForRemoval()
+{
+    // Abort any pending jobs: the account credentials are invalidated.
+    jobQueue()->clear();
+
+    // Stop the spaces manager, because it might start a new `Drives` job before the account is deleted.
+    if (_spacesManager) {
+        delete _spacesManager;
+        _spacesManager = nullptr;
+    }
+
+    // Stop the resource cache (including any pending jobs), because this uses the cache directory.
+    delete _resourcesCache;
+    _resourcesCache = nullptr;
+
+    if (!QDir(_cacheDirectory).removeRecursively()) {
+        qCWarning(lcAccount) << "Cache directory" << _cacheDirectory << "was not fully removed";
+    }
+}
+
 QString Account::davPath() const
 {
     return QLatin1String("/remote.php/dav/files/") + davUser() + QLatin1Char('/');
-}
-
-void Account::setSharedThis(AccountPtr sharedThis)
-{
-    _sharedThis = sharedThis.toWeakRef();
 }
 
 CredentialManager *Account::credentialManager() const
@@ -112,23 +122,9 @@ QUuid Account::uuid() const
     return _uuid;
 }
 
-AccountPtr Account::sharedFromThis()
-{
-    return _sharedThis.toStrongRef();
-}
-
 QString Account::davUser() const
 {
-    return _davUser.isEmpty() ? _credentials->user() : _davUser;
-}
-
-void Account::setDavUser(const QString &newDavUser)
-{
-    if (_davUser == newDavUser) {
-        return;
-    }
-    _davUser = newDavUser;
-    Q_EMIT wantsAccountSaved(this);
+    return _davUser;
 }
 
 QIcon Account::avatar() const
@@ -188,51 +184,56 @@ void Account::setDavDisplayName(const QString &newDisplayName)
     }
 }
 
-QString Account::id() const
+QString Account::groupIndex() const
 {
-    return _id;
+    return _groupIndex;
 }
 
 AbstractCredentials *Account::credentials() const
 {
-    return _credentials.data();
+    return _credentials;
 }
 
+// todo: in a sane world the credentials should be instantiated by the account (as parent) as using this setter there isthe chance that it could be set or unset
+// randomly or even multiple times like this is really not good. For now we have to pass the creds in as the tests use their own subclass of AbstractCredentials
+// = FakeCredentials, so that has to be worked out before we can move this creds handling into the account proper, where it should be.
 void Account::setCredentials(AbstractCredentials *cred)
 {
-    // set active credential manager
+    if (!cred || _credentials == cred)
+        return;
+
+    // keep any cookies for new nam
     QNetworkCookieJar *jar = nullptr;
     if (_am) {
         jar = _am->cookieJar();
         jar->setParent(nullptr);
-        _am->deleteLater();
+    }
+    // get rid of the old credentials if they exist - imo this should never happen but who knows
+    // note the access manager is parented by the creds so let that take care of deleting the am, but verify it's gone
+    if (_credentials) {
+        delete _credentials;
+        _credentials = nullptr;
+        Q_ASSERT(_am == nullptr);
     }
 
-    // The order for these two is important! Reading the credential's
-    // settings accesses the account as well as account->_credentials,
-    _credentials.reset(cred);
-    cred->setAccount(this);
-
+    _credentials = cred;
     _am = _credentials->createAccessManager();
+    if (jar) {
+        _am->setCookieJar(jar);
+    }
 
     // the network access manager takes ownership when setCache is called, so we have to reinitialize it every time we reset the manager
     _networkCache = new QNetworkDiskCache(this);
     const QString networkCacheLocation = (QStringLiteral("%1/network/").arg(_cacheDirectory));
-    qCDebug(lcAccount) << "Cache location for account" << this << "set to" << networkCacheLocation;
     _networkCache->setCacheDirectory(networkCacheLocation);
     _am->setCache(_networkCache);
 
-    if (jar) {
-        _am->setCookieJar(jar);
-    }
-    connect(_credentials.data(), &AbstractCredentials::fetched, this, [this] {
+    connect(_credentials, &AbstractCredentials::fetched, this, [this] {
         Q_EMIT credentialsFetched();
         _queueGuard.unblock();
     });
-    connect(_credentials.data(), &AbstractCredentials::authenticationStarted, this, [this] {
-        _queueGuard.block();
-    });
-    connect(_credentials.data(), &AbstractCredentials::authenticationFailed, this, [this] { _queueGuard.clear(); });
+    connect(_credentials, &AbstractCredentials::authenticationStarted, this, [this] { _queueGuard.block(); });
+    connect(_credentials, &AbstractCredentials::authenticationFailed, this, [this] { _queueGuard.clear(); });
 }
 
 QUrl Account::davUrl() const
@@ -250,9 +251,9 @@ void Account::clearCookieJar()
     _am->setCookieJar(new CookieJar);
 }
 
-AccessManager *Account::accessManager()
+AccessManager *Account::accessManager() const
 {
-    return _am.data();
+    return _am;
 }
 
 QNetworkReply *Account::sendRawRequest(const QByteArray &verb, const QUrl &url, QNetworkRequest req, QIODevice *data)
@@ -273,9 +274,9 @@ QNetworkReply *Account::sendRawRequest(const QByteArray &verb, const QUrl &url, 
     return _am->sendCustomRequest(req, verb, data);
 }
 
-void Account::setApprovedCerts(const QList<QSslCertificate> &certs)
+void Account::setApprovedCerts(const QSet<QSslCertificate> &certs)
 {
-    _approvedCerts = { certs.begin(), certs.end() };
+    _approvedCerts = certs;
     _am->setCustomTrustedCaCertificates(_approvedCerts);
 }
 
@@ -286,14 +287,6 @@ void Account::addApprovedCerts(const QSet<QSslCertificate> &certs)
     Q_EMIT wantsAccountSaved(this);
 }
 
-void Account::setUrl(const QUrl &url)
-{
-    if (_url != url) {
-        _url = url;
-        Q_EMIT urlChanged();
-    }
-}
-
 QUrl Account::url() const
 {
     return _url;
@@ -302,27 +295,6 @@ QUrl Account::url() const
 QString Account::hostName() const
 {
     return _url.host();
-}
-
-QVariant Account::credentialSetting(const QString &key) const
-{
-    if (_credentials) {
-        QString prefix = _credentials->credentialsType();
-        QVariant value = _settingsMap.value(prefix + QLatin1Char('_') + key);
-        if (value.isNull()) {
-            value = _settingsMap.value(key);
-        }
-        return value;
-    }
-    return QVariant();
-}
-
-void Account::addCredentialSetting(const QString &key, const QVariant &value)
-{
-    if (_credentials) {
-        QString prefix = _credentials->credentialsType();
-        _settingsMap.insert(prefix + QLatin1Char('_') + key, value);
-    }
 }
 
 JobQueue *Account::jobQueue()
@@ -337,7 +309,6 @@ void Account::clearAMCache()
 
 const Capabilities &Account::capabilities() const
 {
-    Q_ASSERT(hasCapabilities());
     return _capabilities;
 }
 
@@ -348,43 +319,47 @@ bool Account::hasCapabilities() const
 
 void Account::setCapabilities(const Capabilities &caps)
 {
-    const bool versionChanged = caps.status().legacyVersion != _capabilities.status().legacyVersion || caps.status().productversion != _capabilities.status().productversion;
+    if (!caps.isValid())
+        return;
+
+    // this should not happen:
+    if (!caps.spacesSupport().enabled) {
+        qCWarning(lcAccount) << "trying to set capabilities instance that doesn't support spaces - aborting";
+        return;
+    }
+
+    const bool versionChanged =
+        caps.status().legacyVersion != _capabilities.status().legacyVersion || caps.status().productversion != _capabilities.status().productversion;
     _capabilities = caps;
     if (versionChanged) {
         Q_EMIT serverVersionChanged();
-    }
-    if (!_spacesManager && _capabilities.spacesSupport().enabled) {
-        _spacesManager = new GraphApi::SpacesManager(this);
     }
 }
 
 Account::ServerSupportLevel Account::serverSupportLevel() const
 {
     if (!hasCapabilities()) {
-        // not detected yet, assume it is fine.
-        return ServerSupportLevel::Supported;
+        // not detected yet
+        // should only happen when reloading an account from config?
+        return ServerSupportLevel::Unknown;
     }
 
-    // ocis
+    // todo: #34
+    // ocis and kiteworks allegedly
+    // this seems awfully loosey goosey but I've been told it should work
     if (!capabilities().status().productversion.isEmpty()) {
         return ServerSupportLevel::Supported;
     }
 
-    // Older version which is not "end of life" according to https://github.com/owncloud/core/wiki/Maintenance-and-Release-Schedule
-    if (!capabilities().status().legacyVersion.isNull()) {
-        if (capabilities().status().legacyVersion < QVersionNumber(10)) {
-            return ServerSupportLevel::Unsupported;
-        }
-        return ServerSupportLevel::Supported;
-    }
-    return ServerSupportLevel::Unknown;
+    return ServerSupportLevel::Unsupported;
 }
 
 QString Account::defaultSyncRoot() const
 {
-    Q_ASSERT(!_defaultSyncRoot.isEmpty());
     return _defaultSyncRoot;
 }
+// todo: #43 this seems to be used as a quasi switch for filtering oc10 from spaces support but needs more investigation
+// if we need to eg update the sync root because it is not yet set, use defaultSyncRoot.isEmpty, not this thing.
 bool Account::hasDefaultSyncRoot() const
 {
     return !_defaultSyncRoot.isEmpty();

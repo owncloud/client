@@ -17,6 +17,7 @@
 // todo: #31
 
 #include <QLoggingCategory>
+#include <QNetworkCookie>
 
 namespace OCC {
 
@@ -29,6 +30,13 @@ CookieJar::CookieJar(QObject *parent)
 
 CookieJar::~CookieJar()
 {
+}
+
+CookieJar *CookieJar::clone(QObject *parent)
+{
+    auto newJar = new CookieJar(parent);
+    newJar->setAllCookies(allCookies());
+    return newJar;
 }
 
 } // namespace OCC

@@ -18,10 +18,8 @@
 
 #include "fetchserversettings.h"
 
-#include "creds/httpcredentials.h"
 #include "libsync/creds/abstractcredentials.h"
 
-#include "quotainfo.h"
 #include "gui/settingsdialog.h"
 #include "gui/tlserrordialog.h"
 
@@ -43,17 +41,14 @@ inline const QLatin1String userExplicitlySignedOutC()
 {
     return QLatin1String("userExplicitlySignedOut");
 }
-auto supportsSpacesC()
-{
-    return QLatin1String("supportsSpaces");
-}
+
 } // anonymous namespace
 
 namespace OCC {
 
 Q_LOGGING_CATEGORY(lcAccountState, "gui.account.state", QtInfoMsg)
 
-AccountState::AccountState(AccountPtr account)
+AccountState::AccountState(Account *account)
     : QObject()
     , _account(account)
     , _queueGuard(_account->jobQueue())
@@ -64,6 +59,8 @@ AccountState::AccountState(AccountPtr account)
     , _maintenanceToConnectedDelay(1min + minutes(QRandomGenerator::global()->generate() % 4)) // 1-5min delay
 {
     qRegisterMetaType<AccountState *>("AccountState*");
+
+    Q_ASSERT(_account);
 
     connectAccount();
     connectNetworkInformation();
@@ -78,12 +75,11 @@ AccountState::AccountState(AccountPtr account)
     connect(timer, &QTimer::timeout, this, [this] { checkConnectivity(false); });
     timer->start();
 
-    connect(account->credentials(), &AbstractCredentials::requestLogout, this, [this] {
-        setState(State::SignedOut);
-    });
+    connect(_account->credentials(), &AbstractCredentials::requestLogout, this, [this] { setState(State::SignedOut); });
 
+    // todo: no we should not directly register the account, but let accountAdded signal trigger it
     if (FolderMan::instance()) {
-        FolderMan::instance()->socketApi()->registerAccount(account);
+        FolderMan::instance()->socketApi()->registerAccount(_account.get());
     }
 }
 
@@ -102,7 +98,6 @@ void AccountState::connectAccount()
     }
     connect(_account.data(), &Account::invalidCredentials, this, &AccountState::slotInvalidCredentials);
     connect(_account.data(), &Account::credentialsFetched, this, &AccountState::slotCredentialsFetched);
-    connect(_account.data(), &Account::credentialsAsked, this, &AccountState::slotCredentialsAsked);
     connect(_account.data(), &Account::unknownConnectionState, this, [this] { checkConnectivity(true); });
 
     connect(_account.data(), &Account::appProviderErrorOccured, this, [](const QString &error) {
@@ -120,21 +115,16 @@ void AccountState::connectNetworkInformation()
     connect(NetworkInformation::instance(), &NetworkInformation::isBehindCaptivePortalChanged, this, &AccountState::onBehindCaptivePortalChanged);
 }
 
-std::unique_ptr<AccountState> AccountState::loadFromSettings(AccountPtr account, const QSettings &settings)
+AccountState *AccountState::loadFromSettings(Account *account, const QSettings &settings)
 {
-    auto accountState = std::unique_ptr<AccountState>(new AccountState(account));
+    auto accountState = new AccountState(account);
     const bool userExplicitlySignedOut = settings.value(userExplicitlySignedOutC(), false).toBool();
     if (userExplicitlySignedOut) {
         // see writeToSettings below
         accountState->setState(SignedOut);
     }
-    accountState->_supportsSpaces = settings.value(supportsSpacesC(), false).toBool();
-    return accountState;
-}
 
-std::unique_ptr<AccountState> AccountState::fromNewAccount(AccountPtr account)
-{
-    return std::unique_ptr<AccountState>(new AccountState(account));
+    return accountState;
 }
 
 void AccountState::writeToSettings(QSettings &settings) const
@@ -145,10 +135,9 @@ void AccountState::writeToSettings(QSettings &settings) const
     // SignedOut state to indicate that the client should not try to re-connect the next time it
     // is started.
     settings.setValue(userExplicitlySignedOutC(), _state == SignedOut);
-    settings.setValue(supportsSpacesC(), _supportsSpaces);
 }
 
-AccountPtr AccountState::account() const
+Account *AccountState::account() const
 {
     return _account;
 }
@@ -170,6 +159,9 @@ AccountState::State AccountState::state() const
 
 void AccountState::setState(State state)
 {
+    if (!_account)
+        return;
+
     const State oldState = _state;
     if (_state != state) {
         qCInfo(lcAccountState) << "AccountState state change: " << _state << "->" << state;
@@ -202,13 +194,12 @@ void AccountState::setState(State state)
             // ensure the connection validator is done
             _queueGuard.unblock();
             // update capabilities and fetch relevant settings
-            _fetchCapabilitiesJob = new FetchServerSettingsJob(account(), this);
+            _fetchCapabilitiesJob = new FetchServerSettingsJob(_account, this);
             connect(_fetchCapabilitiesJob.get(), &FetchServerSettingsJob::finishedSignal, this, [oldState, this] {
                 // Lisa todo: I do not understand this logic at all - review it
                 if (oldState == Connected || _state == Connected) {
                     _fetchCapabilitiesJob.clear();
                     Q_EMIT isConnectedChanged();
-                    Q_EMIT supportsSpacesChanged();
                 }
             });
             _fetchCapabilitiesJob->start();
@@ -227,11 +218,14 @@ bool AccountState::isSignedOut() const
 
 void AccountState::signOutByUi()
 {
-    account()->credentials()->forgetSensitiveData();
-    account()->clearCookieJar();
+    if (!_account)
+        return;
+
+    _account->credentials()->forgetSensitiveData();
+    _account->clearCookieJar();
     setState(SignedOut);
     // persist that we are signed out
-    Q_EMIT account()->wantsAccountSaved(account().data());
+    Q_EMIT _account->wantsAccountSaved(_account);
 }
 
 void AccountState::freshConnectionAttempt()
@@ -243,11 +237,13 @@ void AccountState::freshConnectionAttempt()
 
 void AccountState::signIn()
 {
+    if (!_account)
+        return;
     if (_state == SignedOut) {
         _waitingForNewCredentials = false;
         setState(Disconnected);
         // persist that we are no longer signed out
-        Q_EMIT account()->wantsAccountSaved(account().data());
+        Q_EMIT account()->wantsAccountSaved(_account);
     }
 }
 
@@ -282,11 +278,17 @@ void AccountState::checkConnectivity(bool blockJobs)
     }
 
     // ======= beginning here are pre-check updates (or so)
-    // If we never fetched credentials, do that now - otherwise connection attempts
+    // If the credentials have never been fetched, try to fetch them - otherwise connection attempts
     // make little sense.
-    if (!account()->credentials()->wasFetched()) {
+    // todo: review this logic to see if that actually belongs here. I really don't understand why this is needed
+
+    if (!account()->credentials()->wasEverFetched()) {
+        // I hope this is never called. ok. it is called on call to AccountState::checkConnectivity which is called during AccountManager::addAccountState
+        // so if we want to refresh the creds explicitly, do it there or prior
         _waitingForNewCredentials = true;
         account()->credentials()->fetchFromKeychain();
+        // the fetch should be allowed to finish before we do anything more
+        return;
     }
     if (account()->hasCapabilities()) {
         // IF the account is connected the connection check can be skipped
@@ -309,7 +311,7 @@ void AccountState::checkConnectivity(bool blockJobs)
 
     // =======  here we setup a new ConnectionValidator
 
-    _connectionValidator = new ConnectionValidator(_account);
+    _connectionValidator = new ConnectionValidator(_account.get(), this);
     connect(_connectionValidator, &ConnectionValidator::connectionResult, this, &AccountState::slotConnectionValidatorResult);
     connect(_connectionValidator, &ConnectionValidator::sslErrors, this,
         [blockJobs, this](const QList<QSslError> &errors) { handleSslConnectionErrors(errors, blockJobs); });
@@ -525,24 +527,25 @@ void AccountState::slotConnectionValidatorResult(ConnectionValidator::Status sta
 
 void AccountState::slotInvalidCredentials()
 {
-    if (!_waitingForNewCredentials) {
-        qCInfo(lcAccountState) << "Invalid credentials for" << _account->url().toString();
+    AbstractCredentials *creds = account()->credentials();
+    if (!creds || _waitingForNewCredentials)
+        return;
 
-        _waitingForNewCredentials = true;
-        if (account()->credentials()->ready()) {
-            account()->credentials()->invalidateToken();
-        }
-        if (auto creds = qobject_cast<HttpCredentials *>(account()->credentials())) {
-            qCInfo(lcAccountState) << "refreshing oauth";
-            if (creds->refreshAccessToken()) {
-                return;
-            }
-            qCInfo(lcAccountState) << "refreshing oauth failed";
-        }
-        qCInfo(lcAccountState) << "asking user";
-        account()->credentials()->askFromUser();
-        setState(AskingCredentials);
-    }
+    qCInfo(lcAccountState) << "Invalid credentials for" << _account->url().toString();
+
+    _waitingForNewCredentials = true;
+    if (creds->ready())
+        creds->invalidateToken();
+
+    qCInfo(lcAccountState) << "refreshing oauth using refresh token";
+    if (creds->refreshAccessToken())
+        return;
+
+    qCInfo(lcAccountState) << "refreshing oauth failed";
+    qCInfo(lcAccountState) << "asking user";
+
+    creds->askFromUser();
+    setState(AskingCredentials);
 }
 
 void AccountState::slotCredentialsFetched()
@@ -556,52 +559,17 @@ void AccountState::slotCredentialsFetched()
     checkConnectivity();
 }
 
-void AccountState::slotCredentialsAsked()
-{
-    qCInfo(lcAccountState) << "Credentials asked for" << _account->url().toString() << "are they ready?" << _account->credentials()->ready();
-
-    _waitingForNewCredentials = false;
-
-    if (!_account->credentials()->ready()) {
-        // User canceled the connection or did not give a password
-        setState(SignedOut);
-        return;
-    }
-
-    if (_connectionValidator) {
-        // When new credentials become available we always want to restart the
-        // connection validation, even if it's currently running.
-        resetConnectionValidator();
-    }
-
-    checkConnectivity();
-}
 
 Account *AccountState::accountForQml() const
 {
-    return _account.data();
+    return _account;
 }
 
 std::unique_ptr<QSettings> AccountState::settings()
 {
     auto s = ConfigFile::settingsWithGroup(QStringLiteral("Accounts"));
-    s->beginGroup(_account->id());
+    s->beginGroup(_account->groupIndex());
     return s;
-}
-
-bool AccountState::supportsSpaces() const
-{
-    return _supportsSpaces && _account->hasCapabilities() && _account->capabilities().spacesSupport().enabled;
-}
-
-QuotaInfo *AccountState::quotaInfo()
-{
-    // QuotaInfo should not be used with spaces
-    Q_ASSERT(!supportsSpaces());
-    if (!_quotaInfo) {
-        _quotaInfo = new QuotaInfo(this);
-    }
-    return _quotaInfo;
 }
 
 bool AccountState::isSettingUp() const
@@ -618,8 +586,7 @@ void AccountState::setSettingUp(bool settingUp)
 {
     if (_settingUp != settingUp) {
         _settingUp = settingUp;
-        // for goodness sake, just send the new value
-        Q_EMIT isSettingUpChanged();
+        Q_EMIT isSettingUpChanged(settingUp);
     }
 }
 bool AccountState::readyForSync() const

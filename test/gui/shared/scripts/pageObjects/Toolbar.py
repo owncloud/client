@@ -46,10 +46,8 @@ class Toolbar:
         "type": "QMessageBox",
         "unnamed": 1,
         "visible": 1,
-        "windowTitle": "Quit ownCloud",
     }
     CONFIRM_QUIT_BUTTON = {
-        "text": "Yes",
         "type": "QPushButton",
         "unnamed": 1,
         "visible": 1,

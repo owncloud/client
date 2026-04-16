@@ -123,7 +123,7 @@ Pane {
                 }
             }
             onClicked: {
-                settingsDialog.addAccount();
+                settingsDialog.createNewAccount();
             }
         }
         Item {

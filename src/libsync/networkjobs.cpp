@@ -32,7 +32,7 @@ Q_LOGGING_CATEGORY(lcPropfindJob, "sync.networkjob.propfind", QtInfoMsg)
 Q_LOGGING_CATEGORY(lcAvatarJob, "sync.networkjob.avatar", QtInfoMsg)
 Q_LOGGING_CATEGORY(lcMkColJob, "sync.networkjob.mkcol", QtInfoMsg)
 
-RequestEtagJob::RequestEtagJob(AccountPtr account, const QUrl &rootUrl, const QString &path, QObject *parent)
+RequestEtagJob::RequestEtagJob(Account *account, const QUrl &rootUrl, const QString &path, QObject *parent)
     : PropfindJob(account, rootUrl, path, PropfindJob::Depth::Zero, parent)
 {
     setProperties({ QByteArrayLiteral("getetag") });
@@ -51,8 +51,7 @@ const QString &RequestEtagJob::etag() const
 }
 /*********************************************************************************************/
 
-MkColJob::MkColJob(AccountPtr account, const QUrl &url, const QString &path,
-    const QMap<QByteArray, QByteArray> &extraHeaders, QObject *parent)
+MkColJob::MkColJob(Account *account, const QUrl &url, const QString &path, const QMap<QByteArray, QByteArray> &extraHeaders, QObject *parent)
     : AbstractNetworkJob(account, url, path, parent)
     , _extraHeaders(extraHeaders)
 {
@@ -216,7 +215,7 @@ bool LsColXMLParser::parse(const QByteArray &xml, QHash<QString, qint64> *sizes,
 
 /*********************************************************************************************/
 
-PropfindJob::PropfindJob(AccountPtr account, const QUrl &url, const QString &path, Depth depth, QObject *parent)
+PropfindJob::PropfindJob(Account *account, const QUrl &url, const QString &path, Depth depth, QObject *parent)
     : AbstractNetworkJob(account, url, path, parent)
     , _depth(depth)
 {
@@ -323,7 +322,7 @@ const QHash<QString, qint64> &PropfindJob::sizes() const
 
 /*********************************************************************************************/
 
-AvatarJob::AvatarJob(AccountPtr account, const QString &userId, int size, QObject *parent)
+AvatarJob::AvatarJob(Account *account, const QString &userId, int size, QObject *parent)
     : AbstractNetworkJob(account, account->url(), QStringLiteral("remote.php/dav/avatars/%1/%2.png").arg(userId, QString::number(size)), parent)
 {
     setStoreInCache(true);
@@ -374,7 +373,7 @@ void AvatarJob::finished()
 
 /*********************************************************************************************/
 
-EntityExistsJob::EntityExistsJob(AccountPtr account, const QUrl &rootUrl, const QString &path, QObject *parent)
+EntityExistsJob::EntityExistsJob(Account *account, const QUrl &rootUrl, const QString &path, QObject *parent)
     : AbstractNetworkJob(account, rootUrl, path, parent)
 {
 }
@@ -392,14 +391,16 @@ void EntityExistsJob::finished()
 
 /*********************************************************************************************/
 
-SimpleNetworkJob::SimpleNetworkJob(AccountPtr account, const QUrl &rootUrl, const QString &path, const QByteArray &verb, const QNetworkRequest &req, QObject *parent)
+SimpleNetworkJob::SimpleNetworkJob(
+    Account *account, const QUrl &rootUrl, const QString &path, const QByteArray &verb, const QNetworkRequest &req, QObject *parent)
     : AbstractNetworkJob(account, rootUrl, path, parent)
     , _request(req)
     , _verb(verb)
 {
 }
 
-SimpleNetworkJob::SimpleNetworkJob(AccountPtr account, const QUrl &rootUrl, const QString &path, const QByteArray &verb, const UrlQuery &arguments, const QNetworkRequest &req, QObject *parent)
+SimpleNetworkJob::SimpleNetworkJob(
+    Account *account, const QUrl &rootUrl, const QString &path, const QByteArray &verb, const UrlQuery &arguments, const QNetworkRequest &req, QObject *parent)
     : SimpleNetworkJob(account, rootUrl, path, verb, req, parent)
 {
     Q_ASSERT((QList<QByteArray> { "GET", "PUT", "POST", "DELETE", "HEAD", "PATCH" }.contains(verb)));
@@ -422,19 +423,22 @@ SimpleNetworkJob::SimpleNetworkJob(AccountPtr account, const QUrl &rootUrl, cons
     }
 }
 
-SimpleNetworkJob::SimpleNetworkJob(AccountPtr account, const QUrl &rootUrl, const QString &path, const QByteArray &verb, const QJsonObject &arguments, const QNetworkRequest &req, QObject *parent)
+SimpleNetworkJob::SimpleNetworkJob(Account *account, const QUrl &rootUrl, const QString &path, const QByteArray &verb, const QJsonObject &arguments,
+    const QNetworkRequest &req, QObject *parent)
     : SimpleNetworkJob(account, rootUrl, path, verb, QJsonDocument(arguments).toJson(), req, parent)
 {
     _request.setHeader(QNetworkRequest::ContentTypeHeader, QStringLiteral("application/json"));
 }
 
-SimpleNetworkJob::SimpleNetworkJob(AccountPtr account, const QUrl &rootUrl, const QString &path, const QByteArray &verb, QIODevice *requestBody, const QNetworkRequest &req, QObject *parent)
+SimpleNetworkJob::SimpleNetworkJob(
+    Account *account, const QUrl &rootUrl, const QString &path, const QByteArray &verb, QIODevice *requestBody, const QNetworkRequest &req, QObject *parent)
     : SimpleNetworkJob(account, rootUrl, path, verb, req, parent)
 {
     _device = requestBody;
 }
 
-SimpleNetworkJob::SimpleNetworkJob(AccountPtr account, const QUrl &rootUrl, const QString &path, const QByteArray &verb, QByteArray &&requestBody, const QNetworkRequest &req, QObject *parent)
+SimpleNetworkJob::SimpleNetworkJob(
+    Account *account, const QUrl &rootUrl, const QString &path, const QByteArray &verb, QByteArray &&requestBody, const QNetworkRequest &req, QObject *parent)
     : SimpleNetworkJob(account, rootUrl, path, verb, new QBuffer(&_body), req, parent)
 {
     _body = std::move(requestBody);
@@ -470,10 +474,10 @@ void SimpleNetworkJob::newReplyHook(QNetworkReply *reply)
     }
 }
 
-void fetchPrivateLinkUrl(AccountPtr account, const QUrl &baseUrl, const QString &remotePath, QObject *target,
-    const std::function<void(const QUrl &url)> &targetFun)
+void fetchPrivateLinkUrl(
+    Account *account, const QUrl &baseUrl, const QString &remotePath, QObject *target, const std::function<void(const QUrl &url)> &targetFun)
 {
-    if (account->capabilities().privateLinkPropertyAvailable()) {
+    if (account && account->capabilities().privateLinkPropertyAvailable()) {
         // Retrieve the new link by PROPFIND
         auto *job = new PropfindJob(account, baseUrl, remotePath, PropfindJob::Depth::Zero, target);
         job->setProperties({ QByteArrayLiteral("http://owncloud.org/ns:privatelink") });

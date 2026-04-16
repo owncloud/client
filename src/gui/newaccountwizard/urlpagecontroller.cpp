@@ -14,6 +14,7 @@
 #include "urlpagecontroller.h"
 
 #include "accessmanager.h"
+#include "config/appconfig.h"
 #include "networkadapters/determineauthtypeadapter.h"
 #include "networkadapters/discoverwebfingerserviceadapter.h"
 #include "networkadapters/resolveurladapter.h"
@@ -34,11 +35,23 @@ UrlPageController::UrlPageController(QWizardPage *page, AccessManager *accessMan
 {
     buildPage();
 
-    QString themeUrl = Theme::instance()->overrideServerUrlV2();
-    if (_urlField && !themeUrl.isEmpty()) {
-        setUrl(themeUrl);
-        // I think this is the right thing to do: if the theme provides the url, don't let the user change it!
+    if (_urlField == nullptr) {
+        return;
+    }
+
+    AppConfig systemConfig;
+    QString serverUrl = systemConfig.serverUrl();
+    // no server url was given by any means, so the user has to provide one
+    if (serverUrl.isEmpty()) {
+        return;
+    }
+    setUrl(serverUrl);
+
+    // The system admin provides the url, don't let the user change it!
+    bool allowServerUrlChange = systemConfig.allowServerUrlChange();
+    if (!allowServerUrlChange) {
         _urlField->setEnabled(false);
+        _instructionLabel->setText(tr("Your web browser will be opened to complete sign in."));
     }
 }
 
@@ -63,23 +76,33 @@ void UrlPageController::buildPage()
     welcomeLabel->setAlignment(Qt::AlignCenter);
     welcomeLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
-    QLabel *instructionLabel = new QLabel(tr("Enter your server address to get started. Your web browser will be opened to complete sign in."), _page);
-    QFont font = instructionLabel->font();
+    _instructionLabel = new QLabel(tr("Enter your server address to get started. Your web browser will be opened to complete sign in."), _page);
+    QFont font = _instructionLabel->font();
     font.setPixelSize(14);
-    instructionLabel->setFont(font);
-    instructionLabel->setWordWrap(true);
-    instructionLabel->setAlignment(Qt::AlignCenter);
-    instructionLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    _instructionLabel->setFont(font);
+    _instructionLabel->setWordWrap(true);
+    _instructionLabel->setAlignment(Qt::AlignCenter);
+    _instructionLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     _urlField = new QLineEdit(_page);
+    QPalette urlFieldPalette = _urlField->palette();
+    urlFieldPalette.setColor(QPalette::Base, urlFieldPalette.color(QPalette::Button));
+    urlFieldPalette.setColor(QPalette::Text, urlFieldPalette.color(QPalette::ButtonText));
+    _urlField->setPalette(urlFieldPalette);
     _urlField->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     _urlField->setPlaceholderText(Theme::instance()->wizardUrlPlaceholder());
     _urlField->setFocusPolicy(Qt::StrongFocus);
+    _urlField->setAccessibleName(tr("Server address field"));
+    _urlField->setAccessibleDescription(tr("Enter your server address here"));
+    _urlField->setObjectName("ServerAddressLineEdit");
 
     _errorField = new QLabel(QString(), _page);
     QPalette errorPalette = _errorField->palette();
     errorPalette.setColor(QPalette::Text, Qt::red);
     _errorField->setPalette(errorPalette);
+    QFont errorFont = _errorField->font();
+    errorFont.setPixelSize(14);
+    _errorField->setFont(errorFont);
     _errorField->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     _errorField->setWordWrap(true);
     _errorField->setAlignment(Qt::AlignLeft);
@@ -101,7 +124,7 @@ void UrlPageController::buildPage()
     layout->addWidget(logoLabel, Qt::AlignCenter);
     layout->addSpacing(16);
     layout->addWidget(welcomeLabel, Qt::AlignCenter);
-    layout->addWidget(instructionLabel, Qt::AlignCenter);
+    layout->addWidget(_instructionLabel, Qt::AlignCenter);
     layout->addWidget(_urlField, Qt::AlignCenter);
     layout->addWidget(_errorField, Qt::AlignLeft);
     if (footerLogoLabel)

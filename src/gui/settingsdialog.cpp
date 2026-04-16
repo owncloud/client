@@ -16,8 +16,8 @@
 #include "ui_settingsdialog.h"
 
 #include "accountmanager.h"
-#include "accountsettings.h"
-#include "activitywidget.h"
+#include "accountview.h"
+#include "activitysettings.h"
 #include "application.h"
 #include "configfile.h"
 #include "generalsettings.h"
@@ -35,8 +35,6 @@
 
 void setActivationPolicy(ActivationPolicy policy);
 #endif
-
-// #define USE_NEW_ACCOUNT_WIZARD
 
 Q_LOGGING_CATEGORY(lcSettingsDialog, "gui.settingsdialog", QtInfoMsg);
 
@@ -75,6 +73,8 @@ public:
     {
         const auto qmlIcon = OCC::Resources::QMLResources::parseIcon(id);
         const auto accountState = OCC::AccountManager::instance()->accountState(QUuid::fromString(qmlIcon.iconName));
+        if (!accountState || !accountState->account())
+            return {};
         return OCC::Resources::pixmap(requestedSize, accountState->account()->avatar(), qmlIcon.enabled ? QIcon::Normal : QIcon::Disabled, size);
     }
 };
@@ -117,19 +117,13 @@ SettingsDialog::SettingsDialog(ownCloudGui *gui, QWidget *parent)
 
     _activitySettings = new ActivitySettings;
     _ui->stack->addWidget(_activitySettings);
-    connect(_activitySettings, &ActivitySettings::guiLog, _gui,
-        [this](const QString &title, const QString &msg) {
-            _gui->slotShowOptionalTrayMessage(title, msg);
-        });
-    ConfigFile cfg;
-    _activitySettings->setNotificationRefreshInterval(cfg.notificationRefreshInterval());
 
     _generalSettings = new GeneralSettings;
     _ui->stack->addWidget(_generalSettings);
     connect(_generalSettings, &GeneralSettings::showAbout, gui, &ownCloudGui::slotAbout);
     connect(_generalSettings, &GeneralSettings::syncOptionsChanged, FolderMan::instance(), &FolderMan::slotReloadSyncOptions);
 
-    cfg.restoreGeometry(this);
+    ConfigFile().restoreGeometry(this);
 #ifdef Q_OS_MAC
     setActivationPolicy(ActivationPolicy::Accessory);
 #endif
@@ -144,43 +138,56 @@ SettingsDialog::SettingsDialog(ownCloudGui *gui, QWidget *parent)
     });
 
     setCurrentPage(SettingsPage::Settings);
-    auto addAccount = [this](AccountStatePtr accountStatePtr) {
-        if (!accountStatePtr)
-            return;
-        auto accountSettings = new AccountSettings(accountStatePtr, this);
-        _ui->stack->addWidget(accountSettings);
-        _widgetForAccount.insert(accountStatePtr->account().data(), accountSettings);
-        // select the first added account
-        if (_widgetForAccount.size() == 1) {
-            setCurrentAccount(accountStatePtr->account().data());
-        }
-    };
-    for (const auto &accountState : AccountManager::instance()->accounts()) {
-        addAccount(accountState);
+
+    // load any existing accounts from the manager.
+    const auto accounts = AccountManager::instance()->accounts();
+    for (const auto &accountState : accounts) {
+        onAccountAdded(accountState);
     }
-    // Refactoring todo: make these real functions. Naive abuse of lambdas obfuscates the responsibilities of the class as important
-    // functionality is hidden in the impl instead of being clearly visible in the interface. This is very bad practice and we
-    // need to start correcting that to support maintainability.
-    connect(AccountManager::instance(), &AccountManager::accountAdded, this, addAccount);
-    connect(AccountManager::instance(), &AccountManager::accountRemoved, this, [this](AccountStatePtr accountStatePtr) {
-        if (!accountStatePtr)
-            return;
-        Account *acc = accountStatePtr->account().data();
-        if (AccountSettings *asw = _widgetForAccount.value(acc)) {
-            _ui->stack->removeWidget(asw);
-            _widgetForAccount.remove(acc);
-            asw->deleteLater();
-            // go to the settings page if the last account was removed
-            if (_widgetForAccount.isEmpty()) {
-                _ui->stack->setCurrentWidget(_generalSettings);
-            }
-        }
-    });
+    if (!_viewForAccount.isEmpty()) {
+        setCurrentAccount(accounts.first()->account());
+    }
+
+    connect(AccountManager::instance(), &AccountManager::accountAdded, this, &SettingsDialog::onAccountAdded);
+    connect(AccountManager::instance(), &AccountManager::accountRemoved, this, &SettingsDialog::onAccountRemoved);
 }
 
 SettingsDialog::~SettingsDialog()
 {
     delete _ui;
+}
+
+void SettingsDialog::onAccountAdded(AccountState *state)
+{
+    if (!state || !state->account())
+        return;
+    // asap we need to create some kind of accountView builder that will instantiate a controller and view + whatever else
+    // as currently everything is in the view which is absolutely not ok, especially given the multitude of "heavy lifting"
+    // that goes on in there
+
+    auto accountView = new AccountView(state, this);
+    _ui->stack->addWidget(accountView);
+    _viewForAccount.insert(state->account()->uuid(), accountView);
+
+    setCurrentAccount(state->account());
+}
+
+void SettingsDialog::onAccountRemoved(AccountState *state)
+{
+    if (!state || !state->account())
+        return;
+    // todo: #37. using the account after we know it's been removed is not ok.
+    Account *acc = state->account();
+
+    if (AccountView *asw = _viewForAccount.value(acc->uuid(), nullptr)) {
+        _viewForAccount.remove(acc->uuid());
+        _ui->stack->removeWidget(asw);
+        asw->deleteLater();
+        //  go to the settings page if the last account was removed
+        if (_viewForAccount.isEmpty()) {
+            _ui->stack->setCurrentWidget(_generalSettings);
+        }
+    }
 }
 
 void SettingsDialog::addModalWidget(QWidget *w)
@@ -194,6 +201,9 @@ void SettingsDialog::addModalWidget(QWidget *w)
 
 void SettingsDialog::requestModality(Account *account)
 {
+    if (!account)
+        return;
+
     _ui->quickWidget->setEnabled(false);
     if (_modalStack.isEmpty()) {
         setCurrentAccount(account);
@@ -204,7 +214,7 @@ void SettingsDialog::requestModality(Account *account)
 
 void SettingsDialog::ceaseModality(Account *account)
 {
-    if (_modalStack.contains(account)) {
+    if (account && _modalStack.contains(account)) {
         _modalStack.removeOne(account);
         if (!_modalStack.isEmpty()) {
             setCurrentAccount(_modalStack.first());
@@ -213,9 +223,9 @@ void SettingsDialog::ceaseModality(Account *account)
     _ui->quickWidget->setEnabled(_modalStack.isEmpty());
 }
 
-AccountSettings *SettingsDialog::accountSettings(Account *account) const
+AccountView *SettingsDialog::accountView(Account *account) const
 {
-    return _widgetForAccount.value(account, nullptr);
+    return _viewForAccount.value(account->uuid(), nullptr);
 }
 
 void SettingsDialog::setVisible(bool visible)
@@ -264,8 +274,12 @@ SettingsDialog::SettingsPage SettingsDialog::currentPage() const
 
 void SettingsDialog::setCurrentAccount(Account *account)
 {
+    if (!account || account == _currentAccount)
+        return;
+
     _currentAccount = account;
-    _ui->stack->setCurrentWidget(accountSettings(account));
+
+    _ui->stack->setCurrentWidget(accountView(account));
     _currentPage = SettingsPage::Account;
 
     Q_EMIT currentAccountChanged();
@@ -277,14 +291,19 @@ Account *SettingsDialog::currentAccount() const
     return _currentAccount;
 }
 
-void SettingsDialog::addAccount()
+void SettingsDialog::createNewAccount()
 {
-#ifdef USE_NEW_ACCOUNT_WIZARD
-    ocApp()->gui()->runNewestAccountWizard();
-#else
-    ocApp()->gui()->runNewAccountWizard();
-#endif
+    ocApp()->gui()->runAccountWizard();
 }
+
+void SettingsDialog::runFolderWizard(Account *account)
+{
+    if (!account)
+        return;
+    setCurrentAccount(account);
+    accountView(_currentAccount)->slotAddFolder();
+}
+
 
 } // namespace OCC
 

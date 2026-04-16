@@ -9,6 +9,7 @@ import squish
 
 from helpers.ConfigHelper import get_config, set_config, is_windows
 from helpers.ReportHelper import is_video_enabled
+from helpers.UserHelper import get_username_for_user, get_password_for_user
 
 
 def substitute_inline_codes(value):
@@ -37,9 +38,8 @@ def get_client_details(details):
         if row[0] == 'server':
             client_details.update({'server': row[1]})
         elif row[0] == 'user':
-            client_details.update({'user': row[1]})
-        elif row[0] == 'password':
-            client_details.update({'password': row[1]})
+            client_details.update({'user': get_username_for_user(row[1])})
+            client_details.update({'password': get_password_for_user(row[1])})
         elif row[0] == 'sync_folder':
             client_details.update({'sync_folder': row[1]})
     return client_details
@@ -71,9 +71,8 @@ def get_resource_path(resource='', user='', space=''):
     sync_path = get_config('currentUserSyncPath')
     if user:
         sync_path = user
-    if get_config('ocis'):
-        space = space or get_config('syncConnectionName')
-        sync_path = join(sync_path, space)
+    space = space or get_config('syncConnectionName')
+    sync_path = join(sync_path, space)
     sync_path = join(get_config('clientRootSyncPath'), sync_path)
     resource = resource.replace(sync_path, '').strip('/').strip('\\')
     if is_windows():
@@ -96,7 +95,7 @@ def start_client():
     check_keyring()
 
     squish.startApplication(
-        'owncloud -s'
+        f'{get_config("client_name").lower()} -s'
         + f' --logfile {get_config("clientLogFile")}'
         + ' --logdebug'
         + ' --logflush'

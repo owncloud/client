@@ -18,7 +18,6 @@ function(apply_common_target_settings targetName)
     target_compile_definitions(${targetName}
         PRIVATE
             QT_NO_CAST_TO_ASCII
-            QT_NO_CAST_FROM_ASCII
             QT_NO_URL_CAST_FROM_STRING
             QT_NO_CAST_FROM_BYTEARRAY
             QT_USE_QSTRINGBUILDER
@@ -26,6 +25,9 @@ function(apply_common_target_settings targetName)
             QT_NO_FOREACH
             QT_DISABLE_DEPRECATED_BEFORE=0x060200
     )
+    # These are added by ECM:
+    remove_definitions(-DQT_NO_KEYWORDS) # We are not a library, and we don't use a 3th party signal/slot library.
+    remove_definitions(-DQT_NO_CAST_FROM_ASCII) # Our source code is UTF-8
 
     if(WIN32)
         target_compile_definitions(${targetName}
@@ -56,6 +58,8 @@ function(apply_common_target_settings targetName)
                 /we4930
                 # A variable is declared and initialized but not used.
                 /we4189
+                # Our source code is UTF-8, so is the log file (the only file we write)
+                /utf-8
         )
     elseif(CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang")
         target_compile_options(${targetName}

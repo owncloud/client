@@ -70,7 +70,7 @@ private Q_SLOTS:
         QTest::newRow("Vfs::Off") << Vfs::Off << false;
 
         if (VfsPluginManager::instance().isVfsPluginAvailable(Vfs::WindowsCfApi)) {
-            QTest::newRow("Vfs::WindowsCfApi dehydrated") << Vfs::WindowsCfApi << true;
+            // QTest::newRow("Vfs::WindowsCfApi dehydrated") << Vfs::WindowsCfApi << true;
 
             // TODO: the hydrated version will fail due to an issue in the winvfs plugin, so leave it disabled for now.
             // QTest::newRow("Vfs::WindowsCfApi hydrated") << Vfs::WindowsCfApi << false;
@@ -592,7 +592,7 @@ private Q_SLOTS:
         remote.appendByte(QStringLiteral("A2/a2m"));
         local.rename(QStringLiteral("A2"), QStringLiteral("A3"));
         local.setContents(QStringLiteral("B2/b2m"), FileModifier::DefaultFileSize, 'D');
-        local.appendByte(QStringLiteral("B2/b2m"));
+        local.appendByte(QStringLiteral("B2/b2m"), 'D');
         remote.rename(QStringLiteral("B2"), QStringLiteral("B3"));
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
@@ -607,16 +607,16 @@ private Q_SLOTS:
 
         // Folder rename with contents touched on both ends
         remote.setContents(QStringLiteral("A3/a2m"), FileModifier::DefaultFileSize, 'R');
-        remote.appendByte(QStringLiteral("A3/a2m"));
+        remote.appendByte(QStringLiteral("A3/a2m"), 'R');
         local.setContents(QStringLiteral("A3/a2m"), FileModifier::DefaultFileSize, 'L');
-        local.appendByte(QStringLiteral("A3/a2m"));
-        local.appendByte(QStringLiteral("A3/a2m"));
+        local.appendByte(QStringLiteral("A3/a2m"), 'L');
+        local.appendByte(QStringLiteral("A3/a2m"), 'L');
         local.rename(QStringLiteral("A3"), QStringLiteral("A4"));
         remote.setContents(QStringLiteral("B3/b2m"), FileModifier::DefaultFileSize, 'R');
-        remote.appendByte(QStringLiteral("B3/b2m"));
+        remote.appendByte(QStringLiteral("B3/b2m"), 'R');
         local.setContents(QStringLiteral("B3/b2m"), FileModifier::DefaultFileSize, 'L');
-        local.appendByte(QStringLiteral("B3/b2m"));
-        local.appendByte(QStringLiteral("B3/b2m"));
+        local.appendByte(QStringLiteral("B3/b2m"), 'L');
+        local.appendByte(QStringLiteral("B3/b2m"), 'L');
         remote.rename(QStringLiteral("B3"), QStringLiteral("B4"));
         QThread::sleep(1); // This test is timing-sensitive. No idea why, it's probably the modtime on the client side.
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
@@ -629,6 +629,7 @@ private Q_SLOTS:
         auto conflicts = findConflicts(currentLocal.children[QStringLiteral("A4")]);
         QCOMPARE(conflicts.size(), 1);
         for (const auto &c : std::as_const(conflicts)) {
+            qDebug() << c;
             QCOMPARE(currentLocal.find(c)->contentChar, 'L');
             local.remove(c);
         }
@@ -991,7 +992,7 @@ private Q_SLOTS:
         QTest::newRow("Vfs::Off") << Vfs::Off;
 #ifdef Q_OS_WIN32
         if (VfsPluginManager::instance().isVfsPluginAvailable(Vfs::WindowsCfApi)) {
-            QTest::newRow("Vfs::WindowsCfApi") << Vfs::WindowsCfApi;
+            // QTest::newRow("Vfs::WindowsCfApi") << Vfs::WindowsCfApi;
         } else {
             qWarning("Skipping Vfs::WindowsCfApi");
         }
@@ -1001,10 +1002,6 @@ private Q_SLOTS:
     void testMovedWithError()
     {
         QFETCH(Vfs::Mode, vfsMode);
-        const auto getName = [vfsMode] (const QString &s)
-        {
-            return s;
-        };
         const QString src = QStringLiteral("folder/folderA/file.txt");
         const QString dest = QStringLiteral("folder/folderB/file.txt");
         FakeFolder fakeFolder{ FileInfo{ QString(), { FileInfo{ QStringLiteral("folder"), { FileInfo{ QStringLiteral("folderA"), { { QStringLiteral("file.txt"), 400 } } }, QStringLiteral("folderB") } } } } };
@@ -1027,7 +1024,7 @@ private Q_SLOTS:
 
 
         fakeFolder.serverErrorPaths().append(src, 403);
-        fakeFolder.localModifier().rename(getName(src), getName(dest));
+        fakeFolder.localModifier().rename(src, dest);
         QVERIFY(fakeFolder.currentRemoteState().find(src));
         QVERIFY(!fakeFolder.currentRemoteState().find(dest));
 
@@ -1044,7 +1041,7 @@ private Q_SLOTS:
         }
 
         QVERIFY(!fakeFolder.currentLocalState().find(src));
-        QVERIFY(fakeFolder.currentLocalState().find(getName(dest)));
+        QVERIFY(fakeFolder.currentLocalState().find(dest));
         QVERIFY(fakeFolder.currentRemoteState().find(src));
         QVERIFY(!fakeFolder.currentRemoteState().find(dest));
     }

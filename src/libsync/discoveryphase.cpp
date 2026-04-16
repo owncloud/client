@@ -15,7 +15,6 @@
 #include "discoveryphase.h"
 #include "discovery.h"
 
-#include "account.h"
 #include "common/asserts.h"
 #include "common/checksums.h"
 
@@ -25,8 +24,6 @@
 #include <QFile>
 #include <QLoggingCategory>
 #include <QUrl>
-#include <cstring>
-
 
 namespace OCC {
 
@@ -185,14 +182,15 @@ void DiscoveryPhase::scheduleMoreJobs()
 
 bool DiscoveryPhase::isSpace() const
 {
+    if (!_account)
+        return false;
     return !(Utility::urlEqual(_account->davUrl(), _baseUrl) || _account->davUrl().isParentOf(_baseUrl));
 }
 
-DiscoverySingleLocalDirectoryJob::DiscoverySingleLocalDirectoryJob(const AccountPtr &account, const QString &localPath, OCC::Vfs *vfs, QObject *parent)
+DiscoverySingleLocalDirectoryJob::DiscoverySingleLocalDirectoryJob(const QString &localPath, OCC::Vfs *vfs, QObject *parent)
     : QObject(parent)
     , QRunnable()
     , _localPath(localPath)
-    , _account(account)
     , _vfs(vfs)
 {
     qRegisterMetaType<QVector<LocalInfo> >("QVector<LocalInfo>");
@@ -261,7 +259,7 @@ void DiscoverySingleLocalDirectoryJob::run() {
     Q_EMIT finished(results);
 }
 
-DiscoverySingleDirectoryJob::DiscoverySingleDirectoryJob(const AccountPtr &account, const QUrl &baseUrl, const QString &path, QObject *parent)
+DiscoverySingleDirectoryJob::DiscoverySingleDirectoryJob(Account *account, const QUrl &baseUrl, const QString &path, QObject *parent)
     : QObject(parent)
     , _subPath(path)
     , _account(account)
@@ -274,6 +272,12 @@ DiscoverySingleDirectoryJob::DiscoverySingleDirectoryJob(const AccountPtr &accou
 
 void DiscoverySingleDirectoryJob::start()
 {
+    if (!_account) {
+        Q_EMIT finished(HttpError{0, tr("The account was deleted before we could start the propfind job")});
+        deleteLater();
+        return;
+    }
+
     // Start the actual HTTP job
     _proFindJob = new PropfindJob(_account, _baseUrl, _subPath, PropfindJob::Depth::One, this);
 

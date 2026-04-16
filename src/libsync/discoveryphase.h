@@ -15,18 +15,14 @@
 #pragma once
 
 #include <QObject>
-#include <QElapsedTimer>
-#include <QStringList>
-#include <csync.h>
-#include <QMap>
-#include <QSet>
+
+#include "account.h"
 #include "networkjobs.h"
-#include <QMutex>
-#include <QWaitCondition>
-#include <QRunnable>
-#include <deque>
-#include "syncoptions.h"
 #include "syncfileitem.h"
+#include "syncoptions.h"
+
+#include <QHash>
+#include <set>
 
 class ExcludedFiles;
 
@@ -38,7 +34,6 @@ enum class LocalDiscoveryStyle {
 };
 
 
-class Account;
 class SyncJournalDb;
 class ProcessDirectoryJob;
 
@@ -86,7 +81,7 @@ class DiscoverySingleLocalDirectoryJob : public QObject, public QRunnable
 {
     Q_OBJECT
 public:
-    explicit DiscoverySingleLocalDirectoryJob(const AccountPtr &account, const QString &localPath, OCC::Vfs *vfs, QObject *parent = nullptr);
+    explicit DiscoverySingleLocalDirectoryJob(const QString &localPath, OCC::Vfs *vfs, QObject *parent = nullptr);
 
     void run() override;
 Q_SIGNALS:
@@ -99,7 +94,6 @@ Q_SIGNALS:
 private Q_SLOTS:
 private:
     QString _localPath;
-    AccountPtr _account;
     OCC::Vfs* _vfs;
 public:
 };
@@ -114,7 +108,7 @@ class DiscoverySingleDirectoryJob : public QObject
 {
     Q_OBJECT
 public:
-    explicit DiscoverySingleDirectoryJob(const AccountPtr &account, const QUrl &baseUrl, const QString &path, QObject *parent = nullptr);
+    explicit DiscoverySingleDirectoryJob(Account *account, const QUrl &baseUrl, const QString &path, QObject *parent = nullptr);
     // Specify that this is the root and we need to check the data-fingerprint
     void setIsRootPath() { _isRootPath = true; }
     bool isRootPath() const { return _isRootPath; }
@@ -135,7 +129,7 @@ private:
     QVector<RemoteInfo> _results;
     QString _subPath;
     QString _firstEtag;
-    AccountPtr _account;
+    QPointer<Account> _account;
     const QUrl _baseUrl;
     // The first result is for the directory itself and need to be ignored.
     // This flag is true if it was already ignored.
@@ -234,14 +228,14 @@ class DiscoveryPhase : public QObject
 
 public:
     // input
-    DiscoveryPhase(const AccountPtr &account, const SyncOptions &options, const QUrl &baseUrl, QObject *parent = nullptr)
+    DiscoveryPhase(Account *account, const SyncOptions &options, const QUrl &baseUrl, QObject *parent = nullptr)
         : QObject(parent)
-        , _account(account)
         , _syncOptions(options)
         , _baseUrl(baseUrl)
+        , _account(account)
     {
     }
-    AccountPtr _account;
+
     const SyncOptions _syncOptions;
     const QUrl _baseUrl;
     QString _localDir; // absolute path to the local directory. ends with '/'
@@ -278,6 +272,9 @@ Q_SIGNALS:
       */
     void silentlyExcluded(const QString &folderPath);
     void excluded(const QString &folderPath);
+
+private:
+    QPointer<Account> _account;
 };
 
 /// Implementation of DiscoveryPhase::adjustRenamedPath

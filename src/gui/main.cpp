@@ -131,7 +131,6 @@ CommandLineOptions parseOptions(const QStringList &arguments)
     auto logFlushOption = addOption({QStringLiteral("logflush"), QApplication::translate("CommandLine", "Flush the log file after every write.")});
     auto logDebugOption = addOption({QStringLiteral("logdebug"), QApplication::translate("CommandLine", "Output debug-level messages in the log.")});
     auto debugOption = addOption({QStringLiteral("debug"), QApplication::translate("CommandLine", "Enable debug mode.")});
-    addOption({QStringLiteral("cmd"), QApplication::translate("CommandLine", "Forward all arguments to the cmd client. This argument must be the first.")});
 
     parser.process(arguments);
 
@@ -358,42 +357,6 @@ QString setupTranslations(QApplication *app)
 int main(int argc, char **argv)
 {
     return RestartManager([](int argc, char **argv) {
-        // when called with --cmd we run the cmd client in a sub process and forward everything
-        if (argc > 1 && argv[1] == QByteArrayLiteral("--cmd")) {
-#ifdef Q_OS_WIN
-            // On Windows ui applications don't have console access by default
-            // We can't use our normal workaround to attach to the parent console as it breaks the stdin handling.
-            // Therefore, we create a new console and redirect our streams.
-            AllocConsole();
-            freopen("CONIN$", "r", stdin);
-            freopen("CONOUT$", "w", stdout);
-            freopen("CONOUT$", "w", stderr);
-#endif
-            QCoreApplication cmdApp(argc, argv);
-            QProcess cmd;
-            cmd.setProcessChannelMode(QProcess::ForwardedChannels);
-            cmd.setInputChannelMode(QProcess::ForwardedInputChannel);
-
-            const QString app = []() -> QString {
-#ifdef Q_OS_WIN
-                return QCoreApplication::applicationFilePath().chopped(4) + QStringLiteral("cmd.exe");
-#else
-                return QCoreApplication::applicationFilePath() + QStringLiteral("cmd");
-#endif
-            }();
-            cmd.start(app, cmdApp.arguments().mid(2));
-            if (!cmd.waitForFinished(-1)) {
-                std::cout << "Failed to start" << qPrintable(cmd.program()) << std::endl;
-            }
-#ifdef Q_OS_WIN
-            // readline to keep the console window open until closed by the user
-            std::string dummy;
-            std::cout << "Press enter to close";
-            std::getline(std::cin, dummy);
-#endif
-            return cmd.exitCode();
-        }
-
         // load the resources
         const OCC::ResourcesLoader resource;
 
@@ -447,6 +410,11 @@ int main(int argc, char **argv)
             return 0;
         }
 
+        // we have to collect this value before calling checkClientVersion, as that will create the config, which leaves us
+        // unable to know if this is really the first run later in the sequence, when the Application is instantiated.
+        // basically just save this for later.
+        bool firstRun = !ConfigFile().exists();
+
         // Check if the user upgraded or downgraded. We do this as early as possible, to detect
         // a possible downgrade.
         if (!checkClientVersion()) {
@@ -470,6 +438,7 @@ int main(int argc, char **argv)
         }
 
         auto ocApp = Application::createInstance(platform.get(), displayLanguage, options.debugMode);
+        ocApp->updateAutoRun(firstRun);
 
         QObject::connect(platform.get(), &Platform::requestAttention, ocApp->gui(), &ownCloudGui::slotShowSettings);
 
@@ -518,7 +487,7 @@ int main(int argc, char **argv)
 
         // Display the wizard if we don't have an account yet, and no other UI is showing.
         if (AccountManager::instance()->accounts().isEmpty()) {
-            QTimer::singleShot(0, ocApp->gui(), &ownCloudGui::runNewAccountWizard);
+            QTimer::singleShot(0, ocApp->gui(), &ownCloudGui::runAccountWizard);
         }
 
         // Now that everything is up and running, start accepting connections/requests from the shell integration.

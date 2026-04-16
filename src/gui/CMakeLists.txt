@@ -4,27 +4,21 @@ find_package(KDSingleApplication-qt6 1.0.0 REQUIRED)
 
 set(client_UI_SRCS
     aboutdialog.ui
-    accountsettings.ui
     generalsettings.ui
     ignorelisteditor.ui
     networksettings.ui
-    protocolwidget.ui
-    issueswidget.ui
-    activitywidget.ui
+    localactivitywidget.ui
+    syncerrorwidget.ui
     settingsdialog.ui
-    sharedialog.ui
-    sharelinkwidget.ui
-    shareusergroupwidget.ui
-    shareuserline.ui
     tlserrordialog.ui
-    notificationwidget.ui
     logbrowser.ui
+    accountview.ui
 )
 
 set(client_SRCS
     aboutdialog.cpp
     accountmanager.cpp
-    accountsettings.cpp
+    accountview.cpp
 
     accountmodalwidget.cpp
     accountmodalwidget.ui
@@ -36,7 +30,6 @@ set(client_SRCS
     connectionvalidator.cpp
     folder.cpp
     folderman.cpp
-    folderstatusmodel.cpp
     folderwatcher.cpp
     generalsettings.cpp
     ignorelisteditor.cpp
@@ -44,39 +37,27 @@ set(client_SRCS
     logbrowser.cpp
     networkinformation.cpp
     networksettings.cpp
-    ocssharejob.cpp
     openfilemanager.cpp
     owncloudgui.cpp
-    protocolwidget.cpp
+    localactivitywidget.cpp
     protocolitem.cpp
-    issueswidget.cpp
-    activitydata.cpp
-    activitywidget.cpp
+    syncerrorwidget.cpp
+    activitysettings.cpp
     selectivesyncwidget.cpp
     settingsdialog.cpp
-    sharedialog.cpp
-    sharelinkwidget.cpp
-    sharemanager.cpp
-    shareusergroupwidget.cpp
-    sharee.cpp
     tlserrordialog.cpp
     syncrunfilelog.cpp
-    systray.cpp
-    quotainfo.cpp
     accountstate.cpp
-    notificationwidget.cpp
-    notificationconfirmjob.cpp
-    servernotificationhandler.cpp
     guiutility.cpp
     elidedlabel.cpp
     translations.cpp
 
-    creds/httpcredentials.cpp
-    creds/httpcredentialsgui.cpp
-    creds/qmlcredentials.cpp
     creds/oauth.cpp
+    creds/credentials.cpp
+    creds/requestauthenticationwidget.cpp
+    creds/requestauthenticationcontroller.cpp
+    creds/oauthhtmlpage.cpp
 
-    models/activitylistmodel.cpp
     models/expandingheaderview.cpp
     models/models.cpp
     models/protocolitemmodel.cpp
@@ -98,9 +79,7 @@ set( final_src
     ${3rdparty_SRC}
 )
 
-add_subdirectory(newwizard)
 add_subdirectory(folderwizard)
-
 add_library(owncloudGui SHARED ${final_src})
 
 set_target_properties(owncloudGui PROPERTIES AUTOUIC ON AUTORCC ON)
@@ -109,7 +88,7 @@ target_include_directories(owncloudGui PRIVATE models spaces creds)
 target_link_libraries(owncloudGui
     PUBLIC
         Qt::Widgets Qt::Network Qt::Xml Qt::Quick Qt::QuickWidgets Qt::QuickControls2
-        newwizard folderwizard
+        folderwizard
         libsync
         Qt6Keychain::Qt6Keychain
 )
@@ -119,14 +98,10 @@ ecm_add_qml_module(owncloudGui
         URI org.ownCloud.gui
         VERSION 1.0
         NAMESPACE OCC
+        GENERATE_PLUGIN_SOURCE
         QML_FILES
             qml/AccountBar.qml
             qml/AccountButton.qml
-            qml/FolderDelegate.qml
-            qml/FolderError.qml
-
-            qml/credentials/Credentials.qml
-            qml/credentials/OAuthCredentials.qml
 
             spaces/qml/SpaceDelegate.qml
             spaces/qml/SpacesView.qml
@@ -142,6 +117,7 @@ add_subdirectory(networkadapters)
 add_subdirectory(newaccountwizard)
 add_subdirectory(socketapi)
 add_subdirectory(spaces)
+add_subdirectory(FoldersGui)
 
 target_include_directories(owncloudGui PUBLIC
     ${CMAKE_SOURCE_DIR}/src/3rdparty/QProgressIndicator
@@ -150,7 +126,6 @@ target_include_directories(owncloudGui PUBLIC
 
 IF( APPLE )
     target_sources(owncloudGui PRIVATE
-            systray.mm
             settingsdialog_mac.mm
             guiutility_mac.mm
             folderwatcher_mac.cpp)
@@ -163,7 +138,6 @@ elseif(UNIX AND NOT APPLE)
     ## handle DBUS for Fdo notifications
     if (TARGET Qt::DBus)
         target_link_libraries(owncloudGui PUBLIC Qt::DBus)
-        target_compile_definitions(owncloudGui PUBLIC "USE_FDO_NOTIFICATIONS")
     endif()
     target_sources(owncloudGui PRIVATE
             folderwatcher_linux.cpp
@@ -175,6 +149,8 @@ if(WITH_AUTO_UPDATER)
     target_compile_definitions(owncloudGui PUBLIC $<BUILD_INTERFACE:WITH_AUTO_UPDATER>)
 endif()
 
+find_package(Qt6 REQUIRED COMPONENTS Core)
+
 add_executable(owncloud main.cpp)
 
 set_target_properties(owncloud PROPERTIES
@@ -184,6 +160,7 @@ set_target_properties(owncloud PROPERTIES
 )
 apply_common_target_settings(owncloud)
 target_link_libraries(owncloud PUBLIC owncloudGui owncloudResources KDAB::kdsingleapplication )
+target_link_libraries(owncloud PRIVATE Qt6::Core)
 
 MESSAGE(STATUS "OWNCLOUD_SIDEBAR_ICONS: ${APPLICATION_ICON_NAME}: ${OWNCLOUD_SIDEBAR_ICONS}")
 

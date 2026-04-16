@@ -152,9 +152,8 @@ QString OWNCLOUDSYNC_EXPORT createDownloadTmpFileName(const QString &previous)
 }
 
 // DOES NOT take ownership of the device.
-GETFileJob::GETFileJob(AccountPtr account, const QUrl &url, const QString &path, QIODevice *device,
-    const QMap<QByteArray, QByteArray> &headers, const QString &expectedEtagForResume,
-    qint64 resumeStart, QObject *parent)
+GETFileJob::GETFileJob(Account *account, const QUrl &url, const QString &path, QIODevice *device, const QMap<QByteArray, QByteArray> &headers,
+    const QString &expectedEtagForResume, qint64 resumeStart, QObject *parent)
     : AbstractNetworkJob(account, url, path, parent)
     , _device(device)
     , _headers(headers)
@@ -405,7 +404,7 @@ void PropagateDownloadFile::start()
         const bool isConflict = _item->instruction() == CSYNC_INSTRUCTION_CONFLICT && QFileInfo(fsPath).isDir();
         if (isConflict) {
             QString error;
-            if (!propagator()->createConflict(_item, _associatedComposite, &error)) {
+            if (!propagator()->createConflict(_item, &error)) {
                 done(SyncFileItem::SoftError, error);
                 return;
             }
@@ -571,9 +570,8 @@ void PropagateDownloadFile::startFullDownload()
 
     if (_item->_directDownloadUrl.isEmpty()) {
         // Normal job, download from oC instance
-        _job = new GETFileJob(propagator()->account(), propagator()->webDavUrl(),
-            propagator()->fullRemotePath(_item->_file),
-            &_tmpFile, headers, _expectedEtagForResume, _resumeStart, this);
+        _job = new GETFileJob(propagator()->account(), propagator()->webDavUrl(), propagator()->fullRemotePath(_item->_file), &_tmpFile, headers,
+            _expectedEtagForResume, _resumeStart, this);
     } else {
         // We were provided a direct URL, use that one
         qCInfo(lcPropagateDownload) << "directDownloadUrl given for " << _item->_file << _item->_directDownloadUrl;
@@ -583,10 +581,7 @@ void PropagateDownloadFile::startFullDownload()
         }
 
         QUrl url = QUrl::fromUserInput(_item->_directDownloadUrl);
-        _job = new GETFileJob(propagator()->account(),
-            url,
-            {},
-            &_tmpFile, headers, _expectedEtagForResume, _resumeStart, this);
+        _job = new GETFileJob(propagator()->account(), url, {}, &_tmpFile, headers, _expectedEtagForResume, _resumeStart, this);
     }
     _job->setExpectedContentLength(_item->_size - _resumeStart);
 
@@ -806,7 +801,7 @@ void PropagateDownloadFile::deleteExistingFolder()
     }
 
     QString error;
-    if (!propagator()->createConflict(_item, _associatedComposite, &error)) {
+    if (!propagator()->createConflict(_item, &error)) {
         done(SyncFileItem::NormalError, error);
     }
 }
@@ -879,7 +874,7 @@ void PropagateDownloadFile::downloadFinished()
     bool isConflict = _item->instruction() == CSYNC_INSTRUCTION_CONFLICT && (QFileInfo(fn).isDir() || !FileSystem::fileEquals(fn, _tmpFile.fileName()));
     if (isConflict) {
         QString error;
-        if (!propagator()->createConflict(_item, _associatedComposite, &error)) {
+        if (!propagator()->createConflict(_item, &error)) {
             done(SyncFileItem::SoftError, error);
             return;
         }

@@ -60,13 +60,13 @@ private:
     }
 };
 
-SelectiveSyncWidget::SelectiveSyncWidget(AccountPtr account, QWidget *parent)
+SelectiveSyncWidget::SelectiveSyncWidget(Account *account, QWidget *parent)
     : QWidget(parent)
     , _account(account)
     , _inserting(false)
     , _folderTree(new QTreeWidget(this))
 {
-    _loading = new QLabel(tr("Loading ..."), _folderTree);
+    _loading = new QLabel(tr("Loading …"), _folderTree);
 
     auto layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
@@ -98,8 +98,12 @@ QSize SelectiveSyncWidget::sizeHint() const
     return QWidget::sizeHint().expandedTo(QSize(600, 600));
 }
 
+// todo DC-150 or beyond: jobs should not be run in the gui! create a controller to run the job, and eliminate the account dep here in this widget
 void SelectiveSyncWidget::refreshFolders()
 {
+    if (!_account)
+        return;
+
     auto *job = new PropfindJob(_account, davUrl(), _folderPath, PropfindJob::Depth::One, this);
     job->setProperties({QByteArrayLiteral("resourcetype"), QByteArrayLiteral("http://owncloud.org/ns:size")});
     connect(job, &PropfindJob::directoryListingSubfolders, this, &SelectiveSyncWidget::slotUpdateDirectories);
@@ -212,14 +216,13 @@ void SelectiveSyncWidget::slotUpdateDirectories(QStringList list)
     SelectiveSyncTreeViewItem *root = static_cast<SelectiveSyncTreeViewItem *>(_folderTree->topLevelItem(0));
 
     const QString rootPath = Utility::ensureTrailingSlash(Utility::concatUrlPath(davUrl(), _folderPath).path());
+    const bool ignoreHiddenFiles = FolderMan::instance()->ignoreHiddenFiles();
 
     // Check for excludes.
     list.erase(std::remove_if(list.begin(), list.end(),
-                   [&rootPath, this](const QString &it) {
-                       return _excludedFiles.isExcludedRemote(it, rootPath, FolderMan::instance()->ignoreHiddenFiles(), ItemTypeDirectory);
-                   }),
+                   [&rootPath, ignoreHiddenFiles, this](
+                       const QString &it) { return _excludedFiles.isExcludedRemote(it, rootPath, ignoreHiddenFiles, ItemTypeDirectory); }),
         list.end());
-
 
     QStringList relativeList;
     relativeList.reserve(list.size());
@@ -291,6 +294,9 @@ void SelectiveSyncWidget::slotUpdateDirectories(QStringList list)
 
 void SelectiveSyncWidget::slotItemExpanded(QTreeWidgetItem *item)
 {
+    if (!_account)
+        return;
+
     QString dir = item->data(0, Qt::UserRole).toString();
     if (dir.isEmpty()) {
         return;

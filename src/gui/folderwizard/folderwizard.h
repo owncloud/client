@@ -17,7 +17,6 @@
 #include <QUrl>
 #include <QWizard>
 
-#include "accountfwd.h"
 #include "gui/folderman.h"
 
 class QCheckBox;
@@ -45,12 +44,17 @@ public:
     };
     Q_ENUM(PageType)
 
-    explicit FolderWizard(const AccountStatePtr &account, QWidget *parent = nullptr);
-    ~FolderWizard() override;
+    explicit FolderWizard(Account *account, QWidget *parent);
 
     FolderMan::SyncConnectionDescription result();
-
     Q_DECLARE_PRIVATE(FolderWizard)
+
+signals:
+    void folderWizardAccepted(OCC::FolderMan::SyncConnectionDescription result);
+
+private:
+    void sendResult();
+
 
 private:
     QScopedPointer<FolderWizardPrivate> d_ptr;

@@ -52,64 +52,6 @@ bool Capabilities::sharePublicLink() const
     return shareAPI() && _fileSharingPublicCapabilities.value(QStringLiteral("enabled"), true).toBool();
 }
 
-bool Capabilities::sharePublicLinkAllowUpload() const
-{
-    return _fileSharingPublicCapabilities.value(QStringLiteral("upload")).toBool();
-}
-
-bool Capabilities::sharePublicLinkSupportsUploadOnly() const
-{
-    return _fileSharingPublicCapabilities.value(QStringLiteral("supports_upload_only")).toBool();
-}
-
-static bool getEnforcePasswordCapability(const QVariantMap &fileSharingPublicCapabilities, const QString &name)
-{
-    auto value = fileSharingPublicCapabilities[QStringLiteral("password")].toMap()[QStringLiteral("enforced_for")].toMap()[name];
-    if (!value.isValid())
-        return fileSharingPublicCapabilities[QStringLiteral("password")].toMap()[QStringLiteral("enforced")].toBool();
-    return value.toBool();
-}
-
-bool Capabilities::sharePublicLinkEnforcePasswordForReadOnly() const
-{
-    return getEnforcePasswordCapability(_fileSharingPublicCapabilities, QStringLiteral("read_only"));
-}
-
-bool Capabilities::sharePublicLinkEnforcePasswordForReadWrite() const
-{
-    return getEnforcePasswordCapability(_fileSharingPublicCapabilities, QStringLiteral("read_write"));
-}
-
-bool Capabilities::sharePublicLinkEnforcePasswordForUploadOnly() const
-{
-    return getEnforcePasswordCapability(_fileSharingPublicCapabilities, QStringLiteral("upload_only"));
-}
-
-bool Capabilities::sharePublicLinkDefaultExpire() const
-{
-    return _fileSharingPublicCapabilities.value(QStringLiteral("expire_date")).toMap().value(QStringLiteral("enabled")).toBool();
-}
-
-int Capabilities::sharePublicLinkDefaultExpireDateDays() const
-{
-    return _fileSharingPublicCapabilities.value(QStringLiteral("expire_date")).toMap().value(QStringLiteral("days")).toInt();
-}
-
-bool Capabilities::sharePublicLinkEnforceExpireDate() const
-{
-    return _fileSharingPublicCapabilities.value(QStringLiteral("expire_date")).toMap().value(QStringLiteral("enforced")).toBool();
-}
-
-bool Capabilities::sharePublicLinkMultiple() const
-{
-    return _fileSharingPublicCapabilities.value(QStringLiteral("multiple")).toBool();
-}
-
-bool Capabilities::shareResharing() const
-{
-    return _fileSharingCapabilities.value(QStringLiteral("resharing")).toBool();
-}
-
 int Capabilities::defaultPermissions() const
 {
     return _fileSharingCapabilities.value(QStringLiteral("default_permissions"), 1).toInt();
@@ -163,31 +105,6 @@ CheckSums::Algorithm Capabilities::uploadChecksumType() const
     return CheckSums::Algorithm::PARSE_ERROR;
 }
 
-bool Capabilities::chunkingNg() const
-{
-    if (!bigfilechunkingEnabled())
-    {
-        return false;
-    }
-    static const auto chunkng = qgetenv("OWNCLOUD_CHUNKING_NG");
-    if (chunkng == "0")
-        return false;
-    if (chunkng == "1")
-        return true;
-    return _capabilities.value(QStringLiteral("dav")).toMap().value(QStringLiteral("chunking")).toFloat() >= 1.0;
-}
-
-bool Capabilities::bigfilechunkingEnabled() const
-{
-    bool ok;
-    const int chunkSize = qEnvironmentVariableIntValue("OWNCLOUD_CHUNK_SIZE", &ok);
-    if (ok && chunkSize == 0)
-    {
-        return false;
-    }
-    return _capabilities.value(QStringLiteral("files")).toMap().value(QStringLiteral("bigfilechunking"), true).toBool();
-}
-
 const Status &Capabilities::status() const
 {
     return _status;
@@ -201,11 +118,6 @@ const TusSupport &Capabilities::tusSupport() const
 const SpaceSupport &Capabilities::spacesSupport() const
 {
     return _spaces;
-}
-
-bool Capabilities::chunkingParallelUploadDisabled() const
-{
-    return _capabilities.value(QStringLiteral("dav")).toMap().value(QStringLiteral("chunkingParallelUploadDisabled")).toBool();
 }
 
 bool Capabilities::privateLinkPropertyAvailable() const
@@ -231,16 +143,6 @@ QList<int> Capabilities::httpErrorCodesThatResetFailingChunkedUploads() const
 QString Capabilities::invalidFilenameRegex() const
 {
     return _capabilities[QStringLiteral("dav")].toMap()[QStringLiteral("invalidFilenameRegex")].toString();
-}
-
-bool Capabilities::uploadConflictFiles() const
-{
-    static auto envIsSet = !qEnvironmentVariableIsEmpty("OWNCLOUD_UPLOAD_CONFLICT_FILES");
-    static int envValue = qEnvironmentVariableIntValue("OWNCLOUD_UPLOAD_CONFLICT_FILES");
-    if (envIsSet)
-        return envValue != 0;
-
-    return _capabilities[QStringLiteral("uploadConflictFiles")].toBool();
 }
 
 bool Capabilities::versioningEnabled() const
@@ -281,7 +183,7 @@ QString Status::versionString() const
 
 TusSupport::TusSupport(const QVariantMap &tus_support)
 {
-    if (tus_support.isEmpty() || qEnvironmentVariableIsSet("OWNCLOUD_NO_TUS")) {
+    if (tus_support.isEmpty()) {
         return;
     }
     version = QVersionNumber::fromString(tus_support.value(QStringLiteral("version")).toString());

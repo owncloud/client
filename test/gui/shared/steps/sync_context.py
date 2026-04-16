@@ -1,3 +1,4 @@
+import re
 import squish
 
 from pageObjects.SyncConnectionWizard import SyncConnectionWizard
@@ -6,10 +7,11 @@ from pageObjects.Toolbar import Toolbar
 from pageObjects.Activity import Activity
 from pageObjects.Settings import Settings
 
-from helpers.ConfigHelper import get_config, is_windows, set_config
+from helpers.ConfigHelper import get_config, is_windows, set_config, is_owncloud_client
 from helpers.SyncHelper import (
     wait_for_resource_to_sync,
     wait_for_resource_to_have_sync_error,
+    wait_for_initial_sync_to_complete,
 )
 from helpers.SetupClientHelper import (
     get_temp_resource_path,
@@ -17,11 +19,20 @@ from helpers.SetupClientHelper import (
     substitute_inline_codes,
     get_resource_path,
 )
+from helpers.UserHelper import get_displayname_for_user, get_username_for_user
 
 
 @When('using sync connection folder "|any|"')
 def step(context, sync_folder):
-    set_config('syncConnectionName', sync_folder)
+    if not is_owncloud_client():
+        set_config(
+            'syncConnectionName',
+            f'{sync_folder} (Shared by {get_username_for_user("admin")})',
+        )
+    else:
+        set_config('syncConnectionName', sync_folder)
+        # wait for files to sync
+        wait_for_initial_sync_to_complete(get_resource_path('/', space=sync_folder))
 
 
 @Given('the user has paused the file sync')
@@ -177,6 +188,8 @@ def step(context):
 @When('the user selects "|any|" space in sync connection wizard')
 def step(context, space_name):
     if get_config('ocis'):
+        if not is_owncloud_client():
+            space_name = get_config('personal_sync_folder')
         SyncConnectionWizard.select_space(space_name)
         SyncConnectionWizard.next_step()
         set_config('syncConnectionName', space_name)
@@ -193,21 +206,15 @@ def step(context):
 def step(context, folder_name):
     sync_path = get_temp_resource_path(folder_name)
     SyncConnectionWizard.set_sync_path(sync_path)
-    if get_config('ocis'):
-        # empty connection name when using temporary locations
-        set_config('syncConnectionName', '')
-        set_current_user_sync_path(sync_path)
-
-
-@When('the user selects "|any|" as a remote destination folder')
-def step(context, folder_name):
-    # There's no remote destination section with oCIS server
-    if not get_config('ocis'):
-        SyncConnectionWizard.select_remote_destination_folder(folder_name)
+    # empty connection name when using temporary locations
+    set_config('syncConnectionName', '')
+    set_current_user_sync_path(sync_path)
 
 
 @When('the user syncs the "|any|" space')
 def step(context, space_name):
+    if space_name == 'Personal' and not is_owncloud_client():
+        space_name = get_config('personal_sync_folder')
     SyncConnectionWizard.sync_space(space_name)
 
 
@@ -276,27 +283,6 @@ def step(context):
     SyncConnectionWizard.back()
 
 
-@When('the user creates a folder "|any|" in the remote destination wizard')
-def step(context, folder_name):
-    if not get_config('ocis'):
-        SyncConnectionWizard.create_folder_in_remote_destination(folder_name)
-
-
-@When('the user refreshes the remote destination in the sync connection wizard')
-def step(context):
-    if not get_config('ocis'):
-        SyncConnectionWizard.refresh_remote()
-
-
-@Then('the folder "|any|" should be present in the remote destination wizard')
-def step(context, folder_name):
-    if not get_config('ocis'):
-        has_folder, folder_selector = SyncConnectionWizard.has_remote_folder(
-            folder_name
-        )
-        test.compare(True, has_folder, 'Folder should be in the remote list')
-
-
 @When('the user selects remove folder sync connection option')
 def step(context):
     SyncConnection.remove_folder_sync_connection()
@@ -316,11 +302,6 @@ def step(context, sync_folder):
 @Then('the file "|any|" should have status "|any|" in the activity tab')
 def step(context, file_name, status):
     Activity.has_sync_status(file_name, status)
-
-
-@When('the user opens the sync connection wizard')
-def step(context):
-    SyncConnectionWizard.open_sync_connection_wizard()
 
 
 @Then('the button to open sync connection wizard should be disabled')
@@ -361,6 +342,11 @@ def step(context, should_or_should_not):
         resource = row[0]
         status = row[1]
         account = substitute_inline_codes(row[2])
+        if not is_owncloud_client():
+            # get the displayname of user from account string
+            # and replace the existing displayname with predefined user's displayname from the account string
+            displayname = get_displayname_for_user(account.split()[0].strip())
+            account = re.sub(r'^[^@]+', displayname, account)
         test.compare(
             Activity.check_not_synced_table(resource, status, account),
             expected,
@@ -371,3 +357,12 @@ def step(context, should_or_should_not):
 @When('the user unchecks the "|any|" filter')
 def step(context, filter_option):
     Activity.select_not_synced_filter(filter_option)
+
+
+@Then('the space "|any|" should not exist in the sync folder list')
+def step(context, space_name):
+    test.compare(
+        SyncConnectionWizard.is_space_available(space_name),
+        False,
+        f'Expected {space_name} to be not synced.',
+    )

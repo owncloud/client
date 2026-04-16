@@ -40,7 +40,6 @@ public:
 
 private Q_SLOTS:
     void saveProxySettings();
-    void saveBWLimitSettings();
     void saveMeteredSettings();
 
     /// Red marking of host field if empty and enabled
@@ -53,10 +52,9 @@ protected:
 
 private:
     void loadProxySettings();
-    void loadBWLimitSettings();
+    void removeBWLimitSettings();
     void loadMeteredSettings();
     CredentialManager *_credentialManager;
-
 
     Ui::NetworkSettings *_ui;
 };

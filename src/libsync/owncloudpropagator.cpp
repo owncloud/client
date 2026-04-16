@@ -25,9 +25,10 @@
 #include "propagateremotedelete.h"
 #include "propagateremotemkdir.h"
 #include "propagateremotemove.h"
-#include "propagateupload.h"
+#include "propagateuploadfile.h"
 #include "propagateuploadtus.h"
 #include "propagatorjobs.h"
+#include "vio/csync_vio_local.h"
 
 #ifdef Q_OS_WIN
 #include "common/utility_win.h"
@@ -74,11 +75,6 @@ qint64 freeSpaceLimit()
 
     return value;
 }
-
-OwncloudPropagator::~OwncloudPropagator()
-{
-}
-
 
 int OwncloudPropagator::maximumActiveTransferJob()
 {
@@ -344,26 +340,21 @@ PropagateItemJob *OwncloudPropagator::createJob(const SyncFileItemPtr &item)
                 return job;
             }
         } //fall through
-    case CSYNC_INSTRUCTION_SYNC:
+    case CSYNC_INSTRUCTION_SYNC: {
         if (item->_direction != SyncFileItem::Up) {
             auto job = new PropagateDownloadFile(this, item);
             job->setDeleteExistingFolder(deleteExisting);
             return job;
-        } else {
-            PropagateUploadFileCommon *job = nullptr;
-            if (account()->capabilities().tusSupport().isValid()) {
-                job = new PropagateUploadFileTUS(this, item);
-            } else {
-                if (item->_size > syncOptions()._initialChunkSize && account()->capabilities().chunkingNg()) {
-                    // Item is above _initialChunkSize, thus will be classified as to be chunked
-                    job = new PropagateUploadFileNG(this, item);
-                } else {
-                    job = new PropagateUploadFileV1(this, item);
-                }
-            }
+        }
+        if (account()->capabilities().tusSupport().isValid()) {
+            auto job = new PropagateUploadFileTUS(this, item);
             job->setDeleteExisting(deleteExisting);
             return job;
         }
+        auto job = new PropagateUploadFile(this, item);
+        job->setDeleteExisting(deleteExisting);
+        return job;
+    }
     case CSYNC_INSTRUCTION_RENAME:
         if (item->_direction == SyncFileItem::Up) {
             return new PropagateRemoteMove(this, item);
@@ -525,9 +516,9 @@ void OwncloudPropagator::start(SyncFileItemSet &&items)
                 // since it would be done before the actual remove (issue #1845)
                 // NOTE: Currently this means that we don't update those etag at all in this sync,
                 //       but it should not be a problem, they will be updated in the next sync.
-                for (auto &dir : directories) {
-                    if (dir.second->item()->instruction() == CSYNC_INSTRUCTION_UPDATE_METADATA) {
-                        dir.second->item()->setInstruction(CSYNC_INSTRUCTION_NONE);
+                for (auto &aDir : directories) {
+                    if (aDir.second->item()->instruction() == CSYNC_INSTRUCTION_UPDATE_METADATA) {
+                        aDir.second->item()->setInstruction(CSYNC_INSTRUCTION_NONE);
                         _anotherSyncNeeded = true;
                     }
                 }
@@ -568,17 +559,36 @@ const SyncOptions &OwncloudPropagator::syncOptions() const
 Result<QString, bool> OwncloudPropagator::localFileNameClash(const QString &relFile)
 {
     OC_ASSERT(!relFile.isEmpty());
-    if (!relFile.isEmpty() && Utility::fsCasePreserving()) {
+    if (!relFile.isEmpty() && Utility::fsCasePreservingButCaseInsensitive()) {
         const QFileInfo fileInfo(_localDir + relFile);
 #ifdef Q_OS_MAC
+        // APFS is case preserving but case ignoring. It is also normalization preserving and normalization ignoring.
+        // So we have to check for both
         if (!fileInfo.exists()) {
+            // No file with an "equivalent" name exists.
             return false;
         } else {
-            // Need to normalize to composited form because of QTBUG-39622/QTBUG-55896
-            const QString cName = fileInfo.canonicalFilePath().normalized(QString::NormalizationForm_C);
-            if (fileInfo.filePath() != cName && !cName.endsWith(relFile, Qt::CaseSensitive)) {
-                qCWarning(lcPropagator) << "Detected case clash between" << fileInfo.filePath() << "and" << cName;
-                return cName;
+            // Check if the existing file is an *exact* name match with the remote file. Do this by
+            // checking each file name in the directory of `relFile`.
+            QString fileName = fileInfo.fileName(); // The file name of the to-be-downloaded file
+            bool hasFileInExactNormalizationAndCaseForm = false;
+            auto handle = csync_vio_local_opendir(fileInfo.path());
+            while (true) {
+                std::unique_ptr<csync_file_stat_t> dirent = csync_vio_local_readdir(handle, nullptr);
+                if (!dirent)
+                    break;
+
+                if (fileName == dirent->path) {
+                    // Exact match: no case differences, and no normalization differences, so no clash.
+                    hasFileInExactNormalizationAndCaseForm = true;
+                    break;
+                }
+            }
+            csync_vio_local_closedir(handle);
+
+            if (!hasFileInExactNormalizationAndCaseForm) {
+                qCWarning(lcPropagator) << "Detected clash for" << fileInfo.filePath();
+                return fileInfo.filePath();
             }
         }
 #elif defined(Q_OS_WIN)
@@ -720,7 +730,7 @@ void OwncloudPropagator::reportProgress(const SyncFileItem &item, qint64 bytes)
     Q_EMIT progress(item, bytes);
 }
 
-AccountPtr OwncloudPropagator::account() const
+Account *OwncloudPropagator::account() const
 {
     return _account;
 }
@@ -743,18 +753,13 @@ OwncloudPropagator::DiskSpaceResult OwncloudPropagator::diskSpaceCheck() const
     return DiskSpaceOk;
 }
 
-bool OwncloudPropagator::createConflict(const SyncFileItemPtr &item,
-    PropagatorCompositeJob *composite, QString *error)
+bool OwncloudPropagator::createConflict(const SyncFileItemPtr &item, QString *error)
 {
     QString fn = fullLocalPath(item->_file);
 
     QString renameError;
     auto conflictModTime = FileSystem::getModTime(fn);
-    QString conflictUserName;
-    if (account()->capabilities().uploadConflictFiles())
-        conflictUserName = account()->davDisplayName();
-    QString conflictFileName = Utility::makeConflictFileName(
-        item->_file, Utility::qDateTimeFromTime_t(conflictModTime), conflictUserName);
+    QString conflictFileName = Utility::makeConflictFileName(item->_file, Utility::qDateTimeFromTime_t(conflictModTime));
     QString conflictFilePath = fullLocalPath(conflictFileName);
 
     // If the file is locked, we want to retry this sync when it
@@ -789,25 +794,6 @@ bool OwncloudPropagator::createConflict(const SyncFileItemPtr &item,
     }
 
     _journal->setConflictRecord(conflictRecord);
-
-    // Create a new upload job if the new conflict file should be uploaded
-    if (account()->capabilities().uploadConflictFiles()) {
-        if (composite && !QFileInfo(conflictFilePath).isDir()) {
-            SyncFileItemPtr conflictItem = SyncFileItemPtr(new SyncFileItem);
-            conflictItem->_file = conflictFileName;
-            conflictItem->_type = ItemTypeFile;
-            conflictItem->_direction = SyncFileItem::Up;
-            conflictItem->setInstruction(CSYNC_INSTRUCTION_NEW);
-            conflictItem->_modtime = conflictModTime;
-            conflictItem->_size = item->_previousSize;
-            Q_EMIT newItem(conflictItem);
-            composite->appendTask(conflictItem);
-        } else {
-            // Directories we can't process in one go. The next sync run
-            // will take care of uploading the conflict dir contents.
-            _anotherSyncNeeded = true;
-        }
-    }
 
     return true;
 }
@@ -897,7 +883,6 @@ void PropagatorCompositeJob::slotSubJobAbortFinished()
 
 void PropagatorCompositeJob::appendJob(PropagatorJob *job)
 {
-    job->setAssociatedComposite(this);
     _jobsToDo.append(job);
 }
 
@@ -1027,7 +1012,6 @@ PropagateDirectory::PropagateDirectory(OwncloudPropagator *propagator, const Syn
 {
     if (_firstJob) {
         connect(_firstJob.get(), &PropagatorJob::finished, this, &PropagateDirectory::slotFirstJobFinished);
-        _firstJob->setAssociatedComposite(&_subJobs);
     }
     connect(&_subJobs, &PropagatorJob::finished, this, &PropagateDirectory::slotSubJobsFinished);
 }

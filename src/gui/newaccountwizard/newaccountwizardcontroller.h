@@ -14,8 +14,10 @@
 
 #pragma once
 
+#include "advancedsettingspagecontroller.h"
 #include "oauthpagecontroller.h"
 #include "urlpagecontroller.h"
+
 #include <QObject>
 #include <QPointer>
 #include <QWizard>
@@ -54,13 +56,12 @@ protected Q_SLOTS:
 
     // slots for handling signals from the page controllers:
     void onUrlValidationCompleted(const OCC::UrlPageResults &result);
-    // the failed slot is currently unused - I don't think we need to listen on this one for the wizard, will remove it if it's really
-    // useless in the end
-    void onUrlValidationFailed(const OCC::UrlPageResults &result);
 
     void onOAuthValidationCompleted(const OCC::OAuthPageResults &results);
     // we need to raise the gui when oauth validation fails
     void onOauthValidationFailed(const OCC::OAuthPageResults &results);
+
+    void onAdvancedSettingsCompleted(const OCC::AdvancedSettingsResult &result);
 
 
 private:

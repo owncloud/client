@@ -12,13 +12,13 @@
  * for more details.
  */
 
-#ifndef MIRALL_CREDS_ABSTRACT_CREDENTIALS_H
-#define MIRALL_CREDS_ABSTRACT_CREDENTIALS_H
+#pragma once
 
 #include <QObject>
+#include <QPointer>
 
 #include "accessmanager.h"
-#include "accountfwd.h"
+#include "account.h"
 #include "owncloudlib.h"
 #include <csync.h>
 
@@ -33,30 +33,22 @@ class OWNCLOUDSYNC_EXPORT AbstractCredentials : public QObject
     Q_OBJECT
 
 public:
-    AbstractCredentials();
+    // note the account is also the parent and effective owner of the creds!!!
+    AbstractCredentials(Account *account, QObject *parent);
     // No need for virtual destructor - QObject already has one.
 
-    /** The bound account for the credentials instance.
-     *
-     * Credentials are always used in conjunction with an account.
-     * Calling Account::setCredentials() will call this function.
-     * Credentials only live as long as the underlying account object.
-     */
-    virtual void setAccount(Account *account);
-
-    virtual QString credentialsType() const = 0;
-    virtual QString user() const = 0;
     virtual AccessManager *createAccessManager() const = 0;
 
     /** Whether there are credentials that can be used for a connection attempt. */
     virtual bool ready() const = 0;
 
-    /** Whether fetchFromKeychain() was called before. */
-    bool wasFetched() const { return _wasFetched; }
+    /** Whether fetchFromKeychain() was ever called before. */
+    // todo: DC-128 - evaluate the need for this. it's weird.
+    bool wasEverFetched() const { return _wasEverFetched; }
 
     /** Trigger (async) fetching of credential information
      *
-     * Should set _wasFetched = true, and later Q_EMIT fetched() when done.
+     * Should set _wasEverFetched = true, update the ready() state, and fetched() is emitted
      */
     virtual void fetchFromKeychain() = 0;
 
@@ -66,7 +58,10 @@ public:
      */
     virtual void askFromUser() = 0;
 
+    // todo: this is an unholy impl that is called from all sorts of locations, the most concerning of which is the
+    // abstractnetworkjob
     virtual bool stillValid(QNetworkReply *reply) = 0;
+
     virtual void persist() = 0;
 
     /** Invalidates token used to authorize requests, it will no longer be used.
@@ -88,6 +83,13 @@ public:
      */
     virtual void forgetSensitiveData() = 0;
 
+    /* If we don't have a valid refresh token, return false.
+     * otherwise:
+     *   if the refresh routine is running, return true
+     *   if it is not running, start the refresh and return true.
+     */
+    virtual bool refreshAccessToken() = 0;
+
 Q_SIGNALS:
     /** Emitted when fetchFromKeychain() is done.
      *
@@ -108,10 +110,12 @@ Q_SIGNALS:
     void requestLogout();
 
 protected:
-    Account *_account;
-    bool _wasFetched;
+    // the account should be the parent of the creds, so it should not go out of scope while we are using this.
+    // however, those may be famous last words depending on how the teardown happens so keep it in a weak ref
+    QPointer<Account> _account;
+
+    // todo: DC-112 I don't understand why this is needed but will try to figure it out
+    bool _wasEverFetched;
 };
 
 } // namespace OCC
-
-#endif

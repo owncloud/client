@@ -15,12 +15,14 @@
 #ifndef OWNCLOUDPROPAGATOR_H
 #define OWNCLOUDPROPAGATOR_H
 
+#include <QObject>
+#include <QPointer>
+
 #include <QHash>
 #include <QMap>
-#include <QObject>
 #include <QTimer>
 
-#include "accountfwd.h"
+#include "account.h"
 #include "common/syncjournaldb.h"
 #include "csync.h"
 #include "syncfileitem.h"
@@ -102,14 +104,6 @@ public:
      */
     virtual qint64 committedDiskSpace() const { return 0; }
 
-    /** Set the associated composite job
-     *
-     * Used only from PropagatorCompositeJob itself, when a job is added
-     * and from PropagateDirectory to associate the subJobs with the first
-     * job.
-     */
-    void setAssociatedComposite(PropagatorCompositeJob *job) { _associatedComposite = job; }
-
     const QString path() { return _path; }
 
 public Q_SLOTS:
@@ -136,18 +130,9 @@ Q_SIGNALS:
      * Emitted when the abort is fully finished
      */
     void abortFinished(SyncFileItem::Status status = SyncFileItem::NormalError);
+
 protected:
     OwncloudPropagator *propagator() const;
-
-    /** If this job gets added to a composite job, this will point to the parent.
-     *
-     * For the PropagateDirectory::_firstJob it will point to
-     * PropagateDirectory::_subJobs.
-     *
-     * That can be useful for jobs that want to spawn follow-up jobs without
-     * becoming composite jobs themselves.
-     */
-    PropagatorCompositeJob *_associatedComposite = nullptr;
 
 private:
     QString _path;
@@ -382,11 +367,10 @@ public:
 
 public:
     OwncloudPropagator(
-        AccountPtr account, const SyncOptions &options, const QUrl &baseUrl, const QString &localDir, const QString &remoteFolder, SyncJournalDb *progressDb)
+        Account *account, const SyncOptions &options, const QUrl &baseUrl, const QString &localDir, const QString &remoteFolder, SyncJournalDb *progressDb)
         : _journal(progressDb)
         , _finishedEmitted(false)
         , _anotherSyncNeeded(false)
-        , _chunkSize(options._initialChunkSize)
         , _account(account)
         , _syncOptions(options)
         , _localDir((localDir.endsWith(QLatin1Char('/'))) ? localDir : localDir + QLatin1Char('/'))
@@ -395,8 +379,6 @@ public:
     {
         qRegisterMetaType<PropagatorJob::AbortType>("PropagatorJob::AbortType");
     }
-
-    ~OwncloudPropagator() override;
 
     void start(SyncFileItemSet &&_syncedItems);
 
@@ -431,13 +413,6 @@ public:
     /* the maximum number of jobs using bandwidth (uploads or downloads, in parallel) */
     int maximumActiveTransferJob();
 
-    /** The size to use for upload chunks.
-     *
-     * Will be dynamically adjusted after each chunk upload finishes
-     * if Capabilities::desiredChunkUploadDuration has a target
-     * chunk-upload duration set.
-     */
-    qint64 _chunkSize;
     qint64 smallFileSize();
 
     /* The maximum number of active jobs in parallel  */
@@ -480,7 +455,7 @@ public:
 
     void abort();
 
-    AccountPtr account() const;
+    Account *account() const;
 
     QUrl webDavUrl() const
     {
@@ -503,13 +478,9 @@ public:
      *
      * Sets up conflict records.
      *
-     * It also creates a new upload job in composite if the item that's
-     * moved away is a file and conflict uploads are requested.
-     *
      * Returns true on success, false and error on error.
      */
-    bool createConflict(const SyncFileItemPtr &item,
-        PropagatorCompositeJob *composite, QString *error);
+    bool createConflict(const SyncFileItemPtr &item, QString *error);
 
     // Map original path (as in the DB) to target final path
     // TODO: no public members...
@@ -564,7 +535,7 @@ Q_SIGNALS:
     void insufficientRemoteStorage();
 
 private:
-    AccountPtr _account;
+    QPointer<Account> _account;
     QScopedPointer<PropagateRootDirectory> _rootJob;
     SyncOptions _syncOptions;
     bool _jobScheduled = false;

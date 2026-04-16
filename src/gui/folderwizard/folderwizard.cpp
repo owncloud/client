@@ -16,7 +16,6 @@
 #include "folderwizard_p.h"
 
 #include "folderwizardlocalpath.h"
-#include "folderwizardremotepath.h"
 #include "folderwizardselectivesync.h"
 
 #include "spacespage.h"
@@ -28,7 +27,6 @@
 #include "gui/settingsdialog.h"
 #include "theme.h"
 
-#include "gui/accountstate.h"
 #include "gui/folderman.h"
 
 #include "libsync/graphapi/space.h"
@@ -63,107 +61,86 @@ QString FolderWizardPrivate::formatWarnings(const QStringList &warnings, bool is
 
 QString FolderWizardPrivate::defaultSyncRoot() const
 {
-    if (!_account->account()->hasDefaultSyncRoot()) {
-        const auto folderType = _account->supportsSpaces() ? FolderMan::NewFolderType::SpacesSyncRoot : FolderMan::NewFolderType::OC10SyncRoot;
-        return FolderMan::suggestSyncFolder(folderType, _account->account()->uuid());
+    // this should never happen when we have set up the account using spaces - there is ALWAYS a default root when spaces are in play
+    // and they are always in play so this check is bogus. todo: #43
+    if (!_account->hasDefaultSyncRoot()) {
+        const auto folderType = FolderMan::NewFolderType::SpacesSyncRoot;
+        return FolderMan::suggestSyncFolder(folderType, _account->uuid());
     } else {
-        return _account->account()->defaultSyncRoot();
+        return _account->defaultSyncRoot();
     }
 }
 
-FolderWizardPrivate::FolderWizardPrivate(FolderWizard *q, const AccountStatePtr &account)
+QUuid FolderWizardPrivate::uuid() const
+{
+    if (_account)
+        return _account->uuid();
+    return {};
+}
+
+FolderWizardPrivate::FolderWizardPrivate(FolderWizard *q, Account *account)
     : q_ptr(q)
     , _account(account)
     , _folderWizardSourcePage(new FolderWizardLocalPath(this))
     , _folderWizardSelectiveSyncPage(nullptr)
 {
-    if (account->supportsSpaces()) {
-        _spacesPage = new SpacesPage(account->account(), q);
+    if (_account) {
+        _spacesPage = new SpacesPage(account->spacesManager(), q);
         q->setPage(FolderWizard::Page_Space, _spacesPage);
     }
 
     q->setPage(FolderWizard::Page_Source, _folderWizardSourcePage);
 
-    // apparently also oc10 only per deprecation message on singleSyncFolder()
-    if (!_account->supportsSpaces() && !Theme::instance()->singleSyncFolder()) {
-        _folderWizardTargetPage = new FolderWizardRemotePath(this);
-        q->setPage(FolderWizard::Page_Target, _folderWizardTargetPage);
-    }
-
     // When VFS is available (currently only with Windows' CFApi), and it is forced on, Spaces are meant to be synced as a whole.
     const bool showPage = VfsPluginManager::instance().bestAvailableVfsMode() != Vfs::WindowsCfApi || !Theme::instance()->forceVirtualFilesOption();
     if (showPage) {
-        _folderWizardSelectiveSyncPage = new FolderWizardSelectiveSync(this);
+        _folderWizardSelectiveSyncPage = new FolderWizardSelectiveSync(_account, this);
         q->setPage(FolderWizard::Page_SelectiveSync, _folderWizardSelectiveSyncPage);
     }
 }
 
 QString FolderWizardPrivate::initialLocalPath() const
 {
-    if (_account->supportsSpaces()) {
-        return FolderMan::findGoodPathForNewSyncFolder(
-            defaultSyncRoot(), _spacesPage->currentSpace()->displayName(), FolderMan::NewFolderType::SpacesSyncRoot, _account->account()->uuid());
-    }
-
-    // Split default sync root:
-    const QFileInfo path(defaultSyncRoot());
-    return FolderMan::findGoodPathForNewSyncFolder(path.path(), path.fileName(), FolderMan::NewFolderType::OC10SyncRoot, _account->account()->uuid());
-}
-
-QString FolderWizardPrivate::remotePath() const
-{
-    return _folderWizardTargetPage ? _folderWizardTargetPage->targetPath() : QString();
+    return FolderMan::instance()->findGoodPathForNewSyncFolder(
+        defaultSyncRoot(), _spacesPage->currentSpace()->displayName(), FolderMan::NewFolderType::SpacesFolder, _account->uuid());
 }
 
 uint32_t FolderWizardPrivate::priority() const
 {
-    if (_account->supportsSpaces()) {
-        return _spacesPage->currentSpace()->priority();
-    }
-    return 0;
+    return _spacesPage->currentSpace()->sortPriority();
 }
 
 QUrl FolderWizardPrivate::davUrl() const
 {
-    if (_account->supportsSpaces()) {
-        auto url = _spacesPage->currentSpace()->webdavUrl();
-        if (!url.path().endsWith(QLatin1Char('/'))) {
-            url.setPath(url.path() + QLatin1Char('/'));
-        }
-        return url;
+    auto url = _spacesPage->currentSpace()->webDavUrl();
+    if (!url.path().endsWith(QLatin1Char('/'))) {
+        url.setPath(url.path() + QLatin1Char('/'));
     }
-    return _account->account()->davUrl();
+    return url;
 }
 
 QString FolderWizardPrivate::spaceId() const
 {
-    if (_account->supportsSpaces()) {
-        return _spacesPage->currentSpace()->id();
-    }
-    return {};
+    return _spacesPage->currentSpace()->id();
 }
 
 QString FolderWizardPrivate::displayName() const
 {
-    if (_account->supportsSpaces()) {
-        return _spacesPage->currentSpace()->displayName();
-    }
-    return QString();
-}
-
-const AccountStatePtr &FolderWizardPrivate::accountState()
-{
-    return _account;
+    return _spacesPage->currentSpace()->displayName();
 }
 
 bool FolderWizardPrivate::useVirtualFiles() const
 {
+    // todo: see other todo's related to DC-219. Basically we should simply not allow user to pick a local path that is not supported
+    // for vfs if vfs is generally available. "Use virtual files" should not rely on the folder path check at all, as we should
+    // block use of unsupported paths from the start (generally via account wizard and folder wizard gui's)
     const auto mode = VfsPluginManager::instance().bestAvailableVfsMode();
     const bool useVirtualFiles = (Theme::instance()->forceVirtualFilesOption() && mode == Vfs::WindowsCfApi) || (_folderWizardSelectiveSyncPage && _folderWizardSelectiveSyncPage->useVirtualFiles());
     if (useVirtualFiles) {
-        const auto availability = Vfs::checkAvailability(initialLocalPath(), mode);
-        if (!availability) {
-            auto msg = new QMessageBox(QMessageBox::Warning, FolderWizard::tr("Virtual files are not available for the selected folder"), availability.error(), QMessageBox::Ok, ocApp()->gui()->settingsDialog());
+        QString vfsSupported = Vfs::pathSupportDetail(initialLocalPath(), mode);
+        if (!vfsSupported.isEmpty()) {
+            auto msg = new QMessageBox(QMessageBox::Warning, FolderWizard::tr("Virtual files are not available for the selected folder"), vfsSupported,
+                QMessageBox::Ok, ocApp()->gui()->settingsDialog());
             msg->setAttribute(Qt::WA_DeleteOnClose);
             msg->open();
             return false;
@@ -172,28 +149,35 @@ bool FolderWizardPrivate::useVirtualFiles() const
     return useVirtualFiles;
 }
 
-FolderWizard::FolderWizard(const AccountStatePtr &account, QWidget *parent)
+FolderWizard::FolderWizard(Account *account, QWidget *parent)
     : QWizard(parent)
     , d_ptr(new FolderWizardPrivate(this, account))
 {
     setWindowTitle(tr("Add Folder Sync Connection"));
+    setObjectName("AddFolderSyncWizard");
     setOptions(QWizard::CancelButtonOnLeft);
     setButtonText(QWizard::FinishButton, tr("Add Sync Connection"));
     setWizardStyle(QWizard::ModernStyle);
+
+    connect(this, &QWizard::accepted, this, &FolderWizard::sendResult);
 }
 
-FolderWizard::~FolderWizard()
+void FolderWizard::sendResult()
 {
+    emit folderWizardAccepted(result());
 }
 
 FolderMan::SyncConnectionDescription FolderWizard::result()
 {
     Q_D(FolderWizard);
-
+    // DC-219 todo:
+    // check this local path to see if it supports vfs if vfs is in play - this check should happen before the wizard is completed,
+    //     eg validate whatever page has the user choice of local path
     const QString localPath = d->_folderWizardSourcePage->localPath();
-    if (!d->_account->account()->hasDefaultSyncRoot()) {
+    // leave this until we fix the weird handling in account wizard that leaves the sync root empty if selective sync is chosen
+    if (!d->_account->hasDefaultSyncRoot()) {
         if (FileSystem::isChildPathOf(localPath, d->defaultSyncRoot())) {
-            d->_account->account()->setDefaultSyncRoot(d->defaultSyncRoot());
+            d->_account->setDefaultSyncRoot(d->defaultSyncRoot());
             if (!QFileInfo::exists(d->defaultSyncRoot())) {
                 OC_ASSERT(QDir().mkpath(d->defaultSyncRoot()));
             }

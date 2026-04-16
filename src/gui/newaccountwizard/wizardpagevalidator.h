@@ -21,6 +21,8 @@ namespace OCC {
 class WizardPageValidator
 {
 public:
+    virtual ~WizardPageValidator() { }
+
     /**
      * @brief validate the data of a wizard page
      * @return true if the validation succeeds, false if it does not

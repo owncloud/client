@@ -11,8 +11,7 @@
  * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  */
-#ifndef ABOUTDIALOG_H
-#define ABOUTDIALOG_H
+#pragma once
 
 #include <QDialog>
 
@@ -36,12 +35,8 @@ private:
     void openBrowserFromUrl(const QUrl &s);
     void setupUpdaterWidget();
 
-private Q_SLOTS:
-    void slotUpdateChannelChanged(int index);
-
 private:
     Ui::AboutDialog *ui;
 };
 
 }
-#endif // ABOUTDIALOG_H

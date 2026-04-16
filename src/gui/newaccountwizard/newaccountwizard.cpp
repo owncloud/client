@@ -29,7 +29,13 @@ bool NewAccountWizard::validateCurrentPage()
 {
     QWizardPage *page = currentPage();
     if (page && _pageValidators.contains(page)) {
-        return _pageValidators[page]->validate();
+        // fix the problem that user can click next button multiple times
+        // it should auto re-enable on forward, back, but won't let a successful validation be repeated on same page
+        button(WizardButton::NextButton)->setEnabled(false);
+        bool success = _pageValidators[page]->validate();
+        if (!success)
+            button(WizardButton::NextButton)->setEnabled(true);
+        return success;
     }
     return false;
 }

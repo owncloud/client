@@ -13,8 +13,11 @@
  */
 
 #pragma once
-#include "accountfwd.h"
+
 #include "owncloudlib.h"
+
+#include "account.h"
+#include "config/openidconfig.h"
 
 #include <QNetworkReply>
 #include <QPointer>
@@ -63,7 +66,7 @@ public:
     Q_ENUM(PromptValuesSupported)
     Q_DECLARE_FLAGS(PromptValuesSupportedFlags, PromptValuesSupported)
 
-    OAuth(const QUrl &serverUrl, const QString &davUser, QNetworkAccessManager *networkAccessManager,QObject *parent);
+    OAuth(const QUrl &serverUrl, const QString &davUser, const OpenIdConfig& openIdConfig, QNetworkAccessManager *networkAccessManager, QObject *parent);
     ~OAuth() override;
 
     virtual void startAuthentication();
@@ -89,12 +92,9 @@ protected:
 
     QUrl _serverUrl;
     QString _davUser;
+    OpenIdConfig _openIdConfig;
     QNetworkAccessManager *_networkAccessManager;
     bool _isRefreshingToken = false;
-
-    QString _clientId;
-    QString _clientSecret;
-
 
     virtual void fetchWellKnown();
 
@@ -109,9 +109,7 @@ private:
     void checkUserInfo();
     void finalize(const QString &accessToken, const QString &refreshToken, const QUrl &messageUrl);
     void httpReplyAndClose(
-        QPointer<QTcpSocket> socket, const QString &code, const QString &title, const QString &body = {}, const QStringList &additionalHeader = {});
-
-    void httpReplyAndClose(const QString &code, const QString &title, const QString &body, const QStringList &additionalHeader = {});
+        QPointer<QTcpSocket> socket, bool success, const QString &code, const QString &title, const QString &body = {}, const QStringList &additionalHeader = {});
 
     QByteArray generateRandomString(size_t size) const;
 
@@ -148,13 +146,15 @@ class AccountBasedOAuth : public OAuth
     Q_OBJECT
 
 public:
-    explicit AccountBasedOAuth(AccountPtr account, QObject *parent = nullptr);
+    explicit AccountBasedOAuth(Account *account, const OpenIdConfig& openIdConfig, QObject *parent);
 
     void startAuthentication() override;
 
     void refreshAuthentication(const QString &refreshToken);
 
 Q_SIGNALS:
+    // this can either come from refreshAuthentication or the fetchWellKnown's
+    // checkServerJob
     void refreshError(QNetworkReply::NetworkError error, const QString &errorString);
     void refreshFinished(const QString &accessToken, const QString &refreshToken);
 
@@ -162,7 +162,7 @@ protected:
     void fetchWellKnown() override;
 
 private:
-    AccountPtr _account;
+    QPointer<Account> _account;
 };
 
 QString toString(OAuth::PromptValuesSupportedFlags s);

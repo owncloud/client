@@ -14,9 +14,9 @@
 
 #include "accessmanager.h"
 #include "application.h"
-#include "common/restartmanager.h"
 #include "common/utility.h"
 #include "common/version.h"
+#include "config/appconfig.h"
 #include "configfile.h"
 #include "theme.h"
 
@@ -40,6 +40,7 @@ namespace OCC {
 
 UpdaterScheduler::UpdaterScheduler(Application *app, QObject *parent)
     : QObject(parent)
+    , _skipUpdateCheck(AppConfig().skipUpdateCheck())
 {
     connect(&_updateCheckTimer, &QTimer::timeout,
         this, &UpdaterScheduler::slotTimerFired);
@@ -86,8 +87,8 @@ void UpdaterScheduler::slotTimerFired()
     }
 
     // consider the skipUpdateCheck flag in the config.
-    if (cfg.skipUpdateCheck()) {
-        qCInfo(lcUpdater) << "Skipping update check because of config file";
+    if (_skipUpdateCheck) {
+        qCInfo(lcUpdater) << "Skipping update check because of system config";
         return;
     }
 
@@ -108,12 +109,6 @@ OCUpdater::OCUpdater(const QUrl &url)
     , _timeoutWatchdog(new QTimer(this))
 {
 }
-
-void OCUpdater::setUpdateUrl(const QUrl &url)
-{
-    _updateUrl = url;
-}
-
 
 void OCUpdater::backgroundCheckForUpdate()
 {
@@ -143,7 +138,7 @@ QString OCUpdater::statusString() const
 
     switch (downloadState()) {
     case Downloading:
-        return tr("Downloading %1. Please wait...").arg(updateVersion);
+        return tr("Downloading %1. Please wait…").arg(updateVersion);
     case DownloadComplete:
         if (Utility::runningInAppImage()) {
             return tr("%1 installed successfully. Restart the application to finish installing the update.").arg(updateVersion);
@@ -164,7 +159,7 @@ QString OCUpdater::statusString() const
 #endif
         return tr("New %1 available. Please use the system's update tool to install it.").arg(updateVersion);
     case CheckingServer:
-        return tr("Checking update server...");
+        return tr("Checking update server…");
     case Unknown:
         return tr("Update status is unknown: Did not check for new updates.");
     case UpToDate:

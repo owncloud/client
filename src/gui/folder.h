@@ -52,14 +52,11 @@ class LocalDiscoveryTracker;
 class OWNCLOUDGUI_EXPORT FolderDefinition
 {
 public:
+    // use for reading from config
     FolderDefinition(const QByteArray &id, const QUrl &davUrl, const QString &spaceId, const QString &displayName);
 
-    // Lisa todo: just make this a normal public ctr. there is no reason to have this static create method, but it's used in several places so keeping it for
-    // now
-    static auto createNewFolderDefinition(const QUrl &davUrl, const QString &spaceId, const QString &displayName = {})
-    {
-        return FolderDefinition(QUuid::createUuid().toByteArray(QUuid::WithoutBraces), davUrl, spaceId, displayName);
-    }
+    // use when creating folder from scratch for the very first time
+    FolderDefinition(const QUrl &davUrl, const QString &spaceId, const QString &displayName = {});
 
 
     /// Saves the folder definition into the given settings (group should be preconfigured)
@@ -80,10 +77,6 @@ public:
     /// whether the folder is paused
     bool paused() const { return _paused; }
     void setPaused(bool pause) { _paused = pause; }
-
-    /// whether the folder syncs hidden files
-    bool ignoreHiddenFiles() const { return _ignoreHiddenFiles; }
-    void setIgnoreHiddenFiles(bool ignore) { _ignoreHiddenFiles = ignore; }
 
     /// Which virtual files setting the folder uses
     Vfs::Mode virtualFilesMode() const { return _virtualFilesMode; }
@@ -120,7 +113,8 @@ public:
      * The folder is deployed by an admin
      * We will hide the remove option and the disable/enable vfs option.
      */
-    bool isDeployed() const { return _deployed; }
+    // todo #52 Release 8.0 = eliminate this OC10 property and remove prop from settings
+    [[deprecated("deployed concept is no longer supported and will be removed in client 8.0")]] bool isDeployed() const { return _deployed; }
 
     /**
      * Higher values mean more important
@@ -135,13 +129,8 @@ private:
 
     /// whether the folder is paused
     bool _paused = false;
-    /// whether the folder syncs hidden files
-    bool _ignoreHiddenFiles = true;
     /// Which virtual files setting the folder uses
     Vfs::Mode _virtualFilesMode = Vfs::Off;
-
-    /// Whether the vfs mode shall silently be updated if possible
-    bool _upgradeVfsMode = false;
 
     // oc10 and as cache for ocis
     QUrl _webDavUrl;
@@ -189,40 +178,42 @@ public:
 
     /** Create a new Folder
      */
-    Folder(const FolderDefinition &definition, const AccountStatePtr &accountState, std::unique_ptr<Vfs> &&vfs, QObject *parent = nullptr);
+    Folder(const FolderDefinition &definition, AccountState *accountState, std::unique_ptr<Vfs> &&vfs, bool ignoreHiddenFiles, QObject *parent = nullptr);
 
     ~Folder() override;
     /**
      * The account the folder is configured on.
      */
-    AccountStatePtr accountState() const { return _accountState; }
+    AccountState *accountState() const { return _accountState; }
 
     const FolderDefinition &definition() const { return _definition; }
 
+    /**
+     * id is the id used to identify a folder/space in the config file
+     *
+     * this id is "legacy" from the days when not all supported servers (eg oc10) supported spaces. Ideally we should remove this in favor of always using
+     the space id but it would require changes to the config.
+    */
     QByteArray id() const { return _definition.id(); }
 
     /**
-     * Ignore syncing of hidden files or not. This is defined in the
-     * folder definition
+     * @brief spaceId is the primary identifier for a folder, and it is guaranteed to be unique *within an account*.
      *
-     * Lisa todo: refactor this as
-     * a) it's actually a global setting and
-     * b) the value only matters when it is passed to the engine
-     * it doesn't really need to be in the definition at all.
+     * It is not universally unique because "shares" space has a hard coded spaceId which is always used regardless of where it lives.
+     *
+     * @return the space id for the folder
      */
-    bool ignoreHiddenFiles() const { return _definition.ignoreHiddenFiles(); }
-
-    void setIgnoreHiddenFiles(bool ignore) { _definition.setIgnoreHiddenFiles(ignore); }
+    QString spaceId() const { return _definition.spaceId(); }
 
     /**
      * remote folder path, usually without trailing /, exception "/"
      */
     QString remotePath() const { return _definition.targetPath(); }
 
-    // may come from the definition, may come from the space. Lisa todo: review this as it appears questionable
+    // Normally this value comes from the space, but may come from the definition when the space is not available
     QString displayName() const;
 
-    // may come from definition, may come from space - Lisa todo: check this out
+    // Normally this value comes from the space, but may come from the definition when the space is not available
     QUrl webDavUrl() const;
 
     /**
@@ -261,6 +252,16 @@ public:
 
     bool syncPaused() const { return _definition.paused(); }
 
+    /** a folder is unavailable if its space is missing from the spaces manager
+     *  this happens when a folder has been added for an existing space, then that space is disabled
+     *  or deleted on the server.
+     *  we should not try to sync unavailable spaces!
+     */
+    bool isAvailable() const { return _available; }
+    void setAvailable(bool available);
+
+    // is the folder connected (via the accountState)
+    bool isConnected();
     /**
      * Returns true when the folder may sync.
      */
@@ -298,8 +299,6 @@ public:
     virtual void wipeForRemoval();
 
     void setSyncState(SyncResult::Status state);
-
-    void setDirtyNetworkLimits();
 
     void reloadSyncOptions();
 
@@ -344,27 +343,15 @@ public:
     bool virtualFilesEnabled() const;
     void setVirtualFilesEnabled(bool enabled);
 
-    /** Whether this folder should show selective sync ui */
-    bool supportsSelectiveSync() const;
-
-    /**
-     * Whether to register the parent folder of our sync root in the explorer
-     * The default behaviour is to register alls spaces in a common dir in the home folder
-     * in that case we only display that common dir in the Windows sidebar.
-     * With the legacy behaviour we only have one dir which we will register with Windows
-     */
-    bool groupInSidebar() const;
-
     /**
      * The folder is deployed by an admin
      * We will hide the remove option and the disable/enable vfs option.
+     *
+     * see FolderDefinition isDeployed - this concept was oc10 related so it needs to go
      */
-    bool isDeployed() const;
+    [[deprecated("see FolderDefinition::isDeployed")]] bool isDeployed() const;
 
-    uint32_t priority() const { return _definition.priority(); }
-
-
-    void setPriority(uint32_t p) { _definition.setPriority(p); }
+    uint32_t sortPriority() const { return _definition.priority(); }
 
     static Result<void, QString> checkPathLength(const QString &path);
 
@@ -382,6 +369,9 @@ Q_SIGNALS:
     void canSyncChanged();
     void spaceChanged();
     void vfsModeChanged(Folder *f, Vfs::Mode newMode);
+    void displayNameChanged();
+    void imageChanged(); // probably part of space changed
+    void progressUpdate(const ProgressInfo &progress);
 
 
     /**
@@ -456,9 +446,9 @@ private Q_SLOTS:
 
     void slotLogPropagationStart();
 
-    /** Adjust sync result based on conflict data from IssuesWidget.
+    /** Adjust sync result based on conflict data from SyncErrorWidget.
      *
-     * This is pretty awkward, but IssuesWidget just keeps better track
+     * This is pretty awkward, but SyncErrorWidget just keeps better track
      * of conflicts across partial local discovery.
      */
     void slotFolderConflicts(Folder *folder, const QStringList &conflictPaths);
@@ -482,8 +472,10 @@ private:
      * May be called several times.
      */
     // Refactoring todo: I would expect a "registration" function to take an arg for the thing that is supposed to be registered
-    // I also do not see evidence that this is called "several times" aside from the fact that it's called any time the
-    //
+    // I also do not see evidence that this is called "several times" aside from the fact that it's called in relation to vfs::started()
+    // so if vfs is in play, any time you turn vfs on or off for an existing folder, yes it can be called again. Under normal circumstances
+    // I don't expect it to be very common for it to get called multiple times, though. Part of the todo is to evaluate whether it makes sense
+    // to re/build the watcher relative to vfs state as I don't see any connection conceptually (yet, at least).
     void registerFolderWatcher();
 
     enum LogStatus {
@@ -503,7 +495,7 @@ private:
 
     void changeVfsMode(Vfs::Mode newMode);
 
-    AccountStatePtr _accountState;
+    QPointer<AccountState> _accountState;
     FolderDefinition _definition;
     QString _canonicalLocalPath; // As returned with QFileInfo:canonicalFilePath.  Always ends with "/"
 
@@ -529,9 +521,17 @@ private:
     QTimer _scheduleSelfTimer;
 
     /**
-     * Setting up vfs is an async operation
+     * Setting up vfs can be an async operation which is triggered by vfs::startImpl
+     * this bool is set to true once vfs is fully started as notified via the started() signal
+     * when a "real" vfs impl is in play, started() is emitted after the async setup is complete
+     * when vfs is effectively "off", started() is emitted immediately by startImpl
+     * main point is that even when vfs is not actually in play we pretend it's "started" -> _vfsIsReady will be true
      */
     bool _vfsIsReady = false;
+
+    // does the folder have a corresponding space on the server? folderman will update the value based on info we get
+    // from spaces manager.
+    bool _available = true;
 
     /**
      * Watches this folder's local directory for changes.
@@ -554,7 +554,7 @@ private:
     QScopedPointer<LocalDiscoveryTracker> _localDiscoveryTracker;
 
     /**
-     * The vfs mode instance (created by plugin) to use. Never null.
+     * The vfs mode instance (created by plugin) to use. Never null. When vfs is not in play, vfs_off is the impl used.
      */
     // Refactoring todo: this is shared with the SyncOptions that are passed to the engine. This needs reevaluation and cleanup
     // to ensure we don't keep it alive outside of usable scope. Would probably be simplest to make it a QPointer for use with the
@@ -563,7 +563,5 @@ private:
     // extra fun is I have no idea what happens to the instance in the SyncOptions - is it still alive relative to the engine?
     // I don't see any handling of the engine or SyncOptions whatsoever in wipeForRemoval so we'll need to go spelunking.
     QSharedPointer<Vfs> _vfs;
-
-    friend class SpaceMigration;
 };
 }

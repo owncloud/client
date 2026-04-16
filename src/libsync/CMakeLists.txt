@@ -7,7 +7,7 @@ set_package_properties(LibreGraphAPI PROPERTIES
 
 set(libsync_SRCS
     account.cpp
-        capabilities.cpp
+    capabilities.cpp
     cookiejar.cpp
     discovery.cpp
     discoveryphase.cpp
@@ -25,13 +25,13 @@ set(libsync_SRCS
     progressdispatcher.cpp
     propagatorjobs.cpp
     propagatedownload.cpp
-    propagateupload.cpp
-    propagateuploadv1.cpp
-    propagateuploadng.cpp
+    propagateuploadcommon.cpp
+    propagateuploadfile.cpp
     propagateuploadtus.cpp
     propagateremotedelete.cpp
     propagateremotemove.cpp
     propagateremotemkdir.cpp
+    putfilejob.cpp
     syncengine.cpp
     syncfileitem.cpp
     syncfilestatustracker.cpp
@@ -39,6 +39,8 @@ set(libsync_SRCS
     syncresult.cpp
     syncoptions.cpp
     theme.cpp
+    uploaddevice.cpp
+
     creds/credentialmanager.cpp
     creds/abstractcredentials.cpp
 
@@ -50,6 +52,8 @@ set(libsync_SRCS
     abstractcorejob.cpp
 
     appprovider.cpp
+    config/appconfig.cpp
+    config/openidconfig.cpp
 )
 
 if(WIN32)
@@ -97,6 +101,7 @@ ecm_add_qml_module(libsync
         URI org.ownCloud.libsync
         VERSION 1.0
         NAMESPACE OCC
+        GENERATE_PLUGIN_SOURCE
 )
 
 ecm_finalize_qml_module(libsync DESTINATION ${KDE_INSTALL_QMLDIR})

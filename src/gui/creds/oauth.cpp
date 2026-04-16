@@ -12,25 +12,21 @@
  * for more details.
  */
 
-#include "creds/oauth.h"
+#include "oauth.h"
 
 #include "accessmanager.h"
-#include "account.h"
 #include "creds/credentialssupport.h"
 #include "gui/networkadapters/userinfoadapter.h"
 #include "libsync/creds/credentialmanager.h"
 #include "networkjobs/checkserverjobfactory.h"
-#include "resources/template.h"
+#include "oauthhtmlpage.h"
 #include "theme.h"
 
-#include <QBuffer>
 #include <QDesktopServices>
-#include <QIcon>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QNetworkReply>
-#include <QPixmap>
 #include <QRandomGenerator>
 
 using namespace std::chrono;
@@ -46,36 +42,18 @@ namespace {
 
 const QString wellKnownPathC = QStringLiteral("/.well-known/openid-configuration");
 
-auto defaultOauthPromptValue()
+OAuth::PromptValuesSupportedFlags defaultOauthPromptValue(const OpenIdConfig& config)
 {
-    static const auto promptValue = [] {
+    static const auto promptValue = [config] {
+        auto prompt = config.prompt();
         OAuth::PromptValuesSupportedFlags out = OAuth::PromptValuesSupported::none;
         // convert the legacy openIdConnectPrompt() to QFlags
-        for (const auto &x : Theme::instance()->openIdConnectPrompt().split(QLatin1Char(' '))) {
+        for (const auto &x : prompt.split(QLatin1Char(' '))) {
             out |= Utility::stringToEnum<OAuth::PromptValuesSupported>(x);
         }
         return out;
     }();
     return promptValue;
-}
-
-QString renderHttpTemplate(const QString &title, const QString &content)
-{
-    const QString icon = [] {
-        const auto img = Theme::instance()->aboutIcon().pixmap(256).toImage();
-        QByteArray out;
-        QBuffer buffer(&out);
-        img.save(&buffer, "PNG");
-        return QString::fromUtf8(out.toBase64());
-    }();
-    return Resources::Template::renderTemplateFromFile(QStringLiteral(":/client/resources/oauth/oauth.html.in"),
-        {
-            {QStringLiteral("TITLE"), title}, //
-            {QStringLiteral("CONTENT"), content}, //
-            {QStringLiteral("ICON"), icon}, //
-            {QStringLiteral("BACKGROUND_COLOR"), Theme::instance()->wizardHeaderBackgroundColor().name()}, //
-            {QStringLiteral("FONT_COLOR"), Theme::instance()->wizardHeaderTitleColor().name()} //
-        });
 }
 
 seconds defaultTimeout()
@@ -100,15 +78,14 @@ QVariant getRequiredField(const QVariantMap &json, const QString &s, QString *er
 }
 }
 
-OAuth::OAuth(const QUrl &serverUrl, const QString &davUser, QNetworkAccessManager *networkAccessManager, QObject *parent)
+OAuth::OAuth(const QUrl &serverUrl, const QString &davUser, const OpenIdConfig& openIdConfig, QNetworkAccessManager *networkAccessManager, QObject *parent)
     : QObject(parent)
     , _serverUrl(serverUrl)
     , _davUser(davUser)
+    , _openIdConfig(openIdConfig)
     , _networkAccessManager(networkAccessManager)
-    , _clientId(Theme::instance()->oauthClientId())
-    , _clientSecret(Theme::instance()->oauthClientSecret())
-    , _redirectUrl(Theme::instance()->oauthLocalhost())
-    , _supportedPromptValues(defaultOauthPromptValue())
+    , _redirectUrl(QString("http://localhost"))
+    , _supportedPromptValues(defaultOauthPromptValue(openIdConfig))
 {
 }
 
@@ -119,8 +96,7 @@ void OAuth::startAuthentication()
     qCDebug(lcOauth) << "starting authentication";
 
     // Listen on the socket to get a port which will be used in the redirect_uri
-
-    QList<quint16> ports = Theme::instance()->oauthPorts();
+    QList<quint16> ports = _openIdConfig.ports();
     for (const auto port : std::as_const(ports)) {
         if (_server.listen(QHostAddress::LocalHost, port)) {
             break;
@@ -144,18 +120,13 @@ void OAuth::startAuthentication()
     QObject::connect(&_server, &QTcpServer::newConnection, this, &OAuth::handleTcpConnection);
 }
 
-void OAuth::httpReplyAndClose(const QString &code, const QString &title, const QString &body, const QStringList &additionalHeader)
-{
-    httpReplyAndClose(_socket, code, title, body, additionalHeader);
-}
-
-void OAuth::httpReplyAndClose(QPointer<QTcpSocket> socket, const QString &code, const QString &title, const QString &body, const QStringList &additionalHeader)
+void OAuth::httpReplyAndClose(QPointer<QTcpSocket> socket, bool success, const QString &code, const QString &title, const QString &body, const QStringList &additionalHeader)
 {
     if (!socket) {
         return; // socket can have been deleted if the browser was closed
     }
 
-    const QByteArray content = renderHttpTemplate(title, body.isEmpty() ? title : body).toUtf8();
+    const QByteArray content = OAuthHtmlPage::buildPage(success, title, body.isEmpty() ? title : body).toUtf8();
     QString header = QStringLiteral("HTTP/1.1 %1\r\n"
                                     "Content-Type: text/html; charset=utf-8\r\n"
                                     "Connection: close\r\n"
@@ -180,13 +151,15 @@ void OAuth::httpReplyAndClose(QPointer<QTcpSocket> socket, const QString &code, 
 
 void OAuth::finalize(const QString &accessToken, const QString &refreshToken, const QUrl &messageUrl)
 {
-    const QString loginSuccessfulHtml = tr("<h1>Login Successful</h1><p>You can close this window.</p>");
-    const QString loginSuccessfulTitle = tr("Login Successful");
+    const QString brand = Theme::instance()->appNameGUI();
+    const QString loginSuccessfulTitle = tr("Successfully signed in");
+    const QString loginSuccessfulHtml = tr("Now, explore %1 on desktop.").arg(brand);
+
     if (messageUrl.isValid()) {
-        httpReplyAndClose(QStringLiteral("303 See Other"), loginSuccessfulTitle, loginSuccessfulHtml,
+        httpReplyAndClose(_socket, true, QStringLiteral("303 See Other"), loginSuccessfulTitle, loginSuccessfulHtml,
             {QStringLiteral("Location: %1").arg(QString::fromUtf8(messageUrl.toEncoded()))});
     } else {
-        httpReplyAndClose(QStringLiteral("200 OK"), loginSuccessfulTitle, loginSuccessfulHtml);
+        httpReplyAndClose(_socket, true, QStringLiteral("200 OK"), loginSuccessfulTitle, loginSuccessfulHtml);
     }
     Q_EMIT result(LoggedIn, accessToken, refreshToken);
 }
@@ -233,7 +206,7 @@ void OAuth::handleSocketReadyRead()
 
     const auto getPrefix = QByteArrayLiteral("GET /?");
     if (!peek.startsWith(getPrefix)) {
-        httpReplyAndClose(candidateSocket, QStringLiteral("404 Not Found"), QStringLiteral("404 Not Found"));
+        httpReplyAndClose(candidateSocket, false, QStringLiteral("404 Not Found"), QStringLiteral("404 Not Found"));
         return;
     }
     const auto endOfUrl = peek.indexOf(' ', getPrefix.length());
@@ -241,7 +214,7 @@ void OAuth::handleSocketReadyRead()
     _queryArgs = QUrlQuery(QUrl::fromPercentEncoding(peek.mid(getPrefix.length(), endOfUrl - getPrefix.length())));
 
     if (_queryArgs.queryItemValue(QStringLiteral("state")).toUtf8() != _state) {
-        httpReplyAndClose(candidateSocket, QStringLiteral("400 Bad Request"), QStringLiteral("400 Bad Request"));
+        httpReplyAndClose(candidateSocket, false, QStringLiteral("400 Bad Request"), QStringLiteral("400 Bad Request"));
         return;
     }
 
@@ -304,7 +277,7 @@ void OAuth::getTokens()
                 errorReason = tr("Unknown Error");
             }
             qCWarning(lcOauth) << "Error when getting the accessToken" << errorReason;
-            httpReplyAndClose(QStringLiteral("500 Internal Server Error"), tr("Login Error"), tr("<h1>Login Error</h1><p>%1</p>").arg(errorReason));
+            httpReplyAndClose(_socket, false, QStringLiteral("500 Internal Server Error"), tr("Login Error"), errorReason);
             Q_EMIT result(Error);
             return;
         }
@@ -327,17 +300,16 @@ void OAuth::checkUserInfo()
     const UserInfoResult infoResult = infoAdapter.getResult();
 
     if (!infoResult.success()) {
-        httpReplyAndClose(QStringLiteral("500 Internal Server Error"), tr("Login Error"), tr("<h1>Login Error</h1><p>%1</p>").arg(infoResult.error));
+        httpReplyAndClose(_socket, false, QStringLiteral("500 Internal Server Error"), tr("Login Error"), infoResult.error);
         Q_EMIT result(Error);
     } else {
         if (infoResult.userId.compare(_davUser, Qt::CaseInsensitive) != 0) {
             // Connected with the wrong user
             qCWarning(lcOauth) << "We expected the user" << _davUser << "but the server answered with user" << infoResult.userId;
-            const QString message = tr("<h1>Wrong user</h1>"
-                                       "<p>You logged-in with user <em>%1</em>, but must login with user <em>%2</em>.<br>"
-                                       "Please return to the %3 client and restart the authentication.</p>")
+            const QString message = tr("You logged-in with user <em>%1</em>, but must login with user <em>%2</em>.<br>"
+                                       "Please return to the %3 client and restart the authentication.")
                                         .arg(infoResult.userId, _davUser, Theme::instance()->appNameGUI());
-            httpReplyAndClose(QStringLiteral("403 Forbidden"), tr("Wrong user"), message);
+            httpReplyAndClose(_socket, false, QStringLiteral("403 Forbidden"), tr("Wrong user"), message);
             Q_EMIT result(Error);
         } else {
             finalize(_accessToken, _refreshToken, _messageUrl);
@@ -353,17 +325,17 @@ QNetworkReply *OAuth::postTokenRequest(QUrlQuery &&queryItems)
     req.setTransferTimeout(defaultTimeoutMs());
     switch (_endpointAuthMethod) {
     case TokenEndpointAuthMethods::client_secret_basic:
-        req.setRawHeader("Authorization", "Basic " + QStringLiteral("%1:%2").arg(_clientId, _clientSecret).toUtf8().toBase64());
+        req.setRawHeader("Authorization", "Basic " + QStringLiteral("%1:%2").arg(_openIdConfig.clientId(), _openIdConfig.clientSecret()).toUtf8().toBase64());
         break;
     case TokenEndpointAuthMethods::client_secret_post:
-        queryItems.addQueryItem(QStringLiteral("client_id"), _clientId);
-        queryItems.addQueryItem(QStringLiteral("client_secret"), _clientSecret);
+        queryItems.addQueryItem(QStringLiteral("client_id"), _openIdConfig.clientId());
+        queryItems.addQueryItem(QStringLiteral("client_secret"), _openIdConfig.clientSecret());
         break;
     }
     req.setHeader(QNetworkRequest::ContentTypeHeader, QStringLiteral("application/x-www-form-urlencoded; charset=UTF-8"));
     req.setAttribute(DontAddCredentialsAttribute, true);
 
-    queryItems.addQueryItem(QStringLiteral("scope"), QString::fromUtf8(QUrl::toPercentEncoding(Theme::instance()->openIdConnectScopes())));
+    queryItems.addQueryItem(QStringLiteral("scope"), QString::fromUtf8(QUrl::toPercentEncoding(_openIdConfig.scopes())));
     req.setUrl(requestTokenUrl);
     return _networkAccessManager->post(req, queryItems.toString(QUrl::FullyEncoded).toUtf8());
 }
@@ -387,10 +359,10 @@ QUrl OAuth::authorisationLink() const
 
     const QByteArray code_challenge =
         QCryptographicHash::hash(_pkceCodeVerifier, QCryptographicHash::Sha256).toBase64(QByteArray::Base64UrlEncoding | QByteArray::OmitTrailingEquals);
-    QUrlQuery query{{QStringLiteral("response_type"), QStringLiteral("code")}, {QStringLiteral("client_id"), _clientId},
+    QUrlQuery query{{QStringLiteral("response_type"), QStringLiteral("code")}, {QStringLiteral("client_id"), _openIdConfig.clientId()},
         {QStringLiteral("redirect_uri"), QStringLiteral("%1:%2").arg(_redirectUrl, QString::number(_server.serverPort()))},
         {QStringLiteral("code_challenge"), QString::fromLatin1(code_challenge)}, {QStringLiteral("code_challenge_method"), QStringLiteral("S256")},
-        {QStringLiteral("scope"), QString::fromUtf8(QUrl::toPercentEncoding(Theme::instance()->openIdConnectScopes()))},
+        {QStringLiteral("scope"), QString::fromUtf8(QUrl::toPercentEncoding(_openIdConfig.scopes()))},
         {QStringLiteral("prompt"), QString::fromUtf8(QUrl::toPercentEncoding(toString(_supportedPromptValues)))},
         {QStringLiteral("state"), QString::fromUtf8(_state)}};
 
@@ -443,8 +415,8 @@ void OAuth::fetchWellKnown()
                 _supportedPromptValues = PromptValuesSupported::none;
                 for (const auto &x : promptValuesSupported) {
                     const auto flag = Utility::stringToEnum<PromptValuesSupported>(x.toString());
-                    // only use flags present in Theme::instance()->openIdConnectPrompt()
-                    if (flag & defaultOauthPromptValue())
+                    // only use flags present in _openIdConfig->openIdConnectPrompt()
+                    if (flag & defaultOauthPromptValue(_openIdConfig))
                         _supportedPromptValues |= flag;
                 }
             }
@@ -502,8 +474,11 @@ void OAuth::openBrowser()
     }
 }
 
-AccountBasedOAuth::AccountBasedOAuth(AccountPtr account, QObject *parent)
-    : OAuth(account->url(), account->davUser(), account->accessManager(), parent)
+// todo: I was contemplating how we can make sure the passed account isn't null before we use it
+// to seed the OAuth ctr, and really, I'm not sure this should be a subclass of oauth in the first place. Instead it could simply use an
+// oauth instance to complete the tasks it can't do itself -> this could possibly be a "has a" not an "is a" impl
+AccountBasedOAuth::AccountBasedOAuth(Account *account, const OpenIdConfig& openIdConfig, QObject *parent)
+    : OAuth(account->url(), account->davUser(), openIdConfig, account->accessManager(), parent)
     , _account(account)
 {
 }
@@ -515,9 +490,14 @@ void AccountBasedOAuth::startAuthentication()
 
 void AccountBasedOAuth::fetchWellKnown()
 {
+    if (!_account) {
+        qCWarning(lcOauth) << "Unable to fetch well known, account has been deleted";
+        return;
+    }
+
     qCDebug(lcOauth) << "starting CheckServerJob before fetching" << wellKnownPathC;
 
-    auto *checkServerJob = CheckServerJobFactory::createFromAccount(_account, true, this).startJob(_serverUrl, this);
+    auto *checkServerJob = CheckServerJobFactory::createFromAccount(_account, true).startJob(_serverUrl, this);
 
     connect(checkServerJob, &CoreJob::finished, this, [checkServerJob, this]() {
         if (checkServerJob->success()) {
@@ -541,7 +521,8 @@ void AccountBasedOAuth::refreshAuthentication(const QString &refreshToken)
         return;
     }
 
-    // I don't see where this ever gets set to false
+    // I don't see where this ever gets set to false - seems to rely on a one shot run before creating a new instance where the value
+    // is initialized to false. hm.
     _isRefreshingToken = true;
 
 

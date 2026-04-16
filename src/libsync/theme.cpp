@@ -366,6 +366,8 @@ QString Theme::syncStateIconName(const SyncResult &result) const
         return QStringLiteral("offline");
     case SyncResult::Error:
         [[fallthrough]];
+    case SyncResult::Unavailable:
+        [[fallthrough]];
     case SyncResult::SetupError:
         // FIXME: Use problem once we have an icon.
         return QStringLiteral("error");
@@ -555,6 +557,16 @@ bool Theme::enableMoveToTrash() const
     return true;
 }
 
+bool Theme::moveToTrashDefaultValue() const
+{
+    return false;
+}
+
+bool Theme::allowSystemConfigOverrides() const
+{
+    return false;
+}
+
 bool Theme::syncNewlyDiscoveredSpaces() const
 {
     return false;
@@ -577,21 +589,6 @@ bool Theme::withCrashReporter() const
 #else
     return false;
 #endif
-}
-
-template <>
-OWNCLOUDSYNC_EXPORT QString Utility::enumToDisplayName(Theme::UserIDType userIdType)
-{
-    switch (userIdType) {
-    case Theme::UserIDUserName:
-        return QCoreApplication::translate("Type of user ID", "Username");
-    case Theme::UserIDEmail:
-        return QCoreApplication::translate("Type of user ID", "E-mail address");
-    case Theme::UserIDCustom:
-        return Theme::instance()->customUserID();
-    default:
-        Q_UNREACHABLE();
-    }
 }
 
 } // end namespace client

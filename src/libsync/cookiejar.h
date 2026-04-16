@@ -22,7 +22,7 @@
 namespace OCC {
 
 /**
- * @brief The CookieJar class
+ * @brief A clonable cookie jar. This can be used when we don't want to spoil the original cookie jar.
  * @ingroup libsync
  */
 class OWNCLOUDSYNC_EXPORT CookieJar : public QNetworkCookieJar
@@ -32,8 +32,10 @@ public:
     explicit CookieJar(QObject *parent = nullptr);
     ~CookieJar() override;
 
-    using QNetworkCookieJar::setAllCookies;
-    using QNetworkCookieJar::allCookies;
+    /**
+     * Return a clone of this cookie jar, with a copy of all cookies.
+     */
+    CookieJar *clone(QObject *parent = nullptr);
 };
 
 } // namespace OCC

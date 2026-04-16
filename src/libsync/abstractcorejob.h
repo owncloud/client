@@ -127,7 +127,8 @@ public:
     }
 
 protected:
-    [[nodiscard]] QNetworkAccessManager *nam() const;
+
+    QNetworkAccessManager *_nam;
 
     /**
      * Set job result. Needed because the jobs' methods are protected, and this class is a friend of Job.
@@ -141,8 +142,5 @@ protected:
      * @param errorMessage network error or other suitable error message
      */
     static void setJobError(CoreJob *job, const QString &errorMessage);
-
-private:
-    QNetworkAccessManager *_nam;
 };
 }

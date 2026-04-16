@@ -57,7 +57,7 @@ WebFingerLookupResult WebFingerLookupAdapter::getResult()
     // we are not connected yet, so we need to handle the authentication manually
     req.setRawHeader("Authorization", _authorizationHeader.toUtf8());
 
-    // we just added the Authorization header, don't let HttpCredentialsAccessManager tamper with it
+    // we just added the Authorization header, don't let the credentials AccessManager tamper with it
     req.setAttribute(DontAddCredentialsAttribute, true);
     req.setAttribute(QNetworkRequest::AuthenticationReuseAttribute, QNetworkRequest::Manual);
 

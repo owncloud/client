@@ -170,7 +170,7 @@ OCSYNC_EXPORT bool fsCasePreserving_override = []() -> bool {
     return Utility::isWindows() || Utility::isMac();
 }();
 
-bool Utility::fsCasePreserving()
+bool Utility::fsCasePreservingButCaseInsensitive()
 {
     return fsCasePreserving_override;
 }
@@ -184,7 +184,7 @@ bool Utility::fileNamesEqual(const QString &fn1, const QString &fn2)
     // ONLY use this function with existing pathes.
     const QString a = fd1.canonicalPath();
     const QString b = fd2.canonicalPath();
-    bool re = !a.isEmpty() && QString::compare(a, b, fsCasePreserving() ? Qt::CaseInsensitive : Qt::CaseSensitive) == 0;
+    bool re = !a.isEmpty() && QString::compare(a, b, fsCaseSensitivity()) == 0;
     return re;
 }
 
@@ -380,8 +380,7 @@ bool Utility::urlEqual(QUrl url1, QUrl url2)
     return url1.matches(url2, QUrl::StripTrailingSlash | QUrl::NormalizePathSegments);
 }
 
-QString Utility::makeConflictFileName(
-    const QString &fn, const QDateTime &dt, const QString &user)
+QString Utility::makeConflictFileName(const QString &fn, const QDateTime &dt)
 {
     QString conflictFileName(fn);
     // Add conflict tag before the extension.
@@ -392,12 +391,6 @@ QString Utility::makeConflictFileName(
     }
 
     QString conflictMarker = QStringLiteral(" (conflicted copy ");
-    if (!user.isEmpty()) {
-        // Don't allow parens in the user name, to ensure
-        // we can find the beginning and end of the conflict tag.
-        const auto userName = sanitizeForFileName(user).replace(QLatin1Char('('), QLatin1Char('_')).replace(QLatin1Char(')'), QLatin1Char('_'));;
-        conflictMarker += userName + QLatin1Char(' ');
-    }
     conflictMarker += dt.toString(QStringLiteral("yyyy-MM-dd hhmmss")) + QLatin1Char(')');
 
     conflictFileName.insert(dotLocation, conflictMarker);

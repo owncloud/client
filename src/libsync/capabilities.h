@@ -26,6 +26,7 @@
 
 namespace OCC {
 
+// todo: #34
 struct OWNCLOUDSYNC_EXPORT Status
 {
     /**
@@ -96,7 +97,7 @@ struct OWNCLOUDSYNC_EXPORT SpaceSupport
 struct OWNCLOUDSYNC_EXPORT FilesSharing
 {
     /**
-     api_enabled": true,
+    "api_enabled": true,
     "resharing": true,
     "group_sharing": true,
     "sharing_roles": true,
@@ -149,23 +150,7 @@ public:
 
     bool shareAPI() const;
     bool sharePublicLink() const;
-    bool sharePublicLinkAllowUpload() const;
-    bool sharePublicLinkSupportsUploadOnly() const;
 
-    /** Whether read-only link shares require a password.
-     *
-     * Returns sharePublicLinkEnforcePassword() if the fine-grained
-     * permission isn't available.
-     */
-    bool sharePublicLinkEnforcePasswordForReadOnly() const;
-    bool sharePublicLinkEnforcePasswordForReadWrite() const;
-    bool sharePublicLinkEnforcePasswordForUploadOnly() const;
-
-    bool sharePublicLinkDefaultExpire() const;
-    int sharePublicLinkDefaultExpireDateDays() const;
-    bool sharePublicLinkEnforceExpireDate() const;
-    bool sharePublicLinkMultiple() const;
-    bool shareResharing() const;
     /** Remote Poll interval.
      *
      *  returns the requested poll interval in seconds to be used by the client.
@@ -176,17 +161,9 @@ public:
     // TODO: return SharePermission
     int defaultPermissions() const;
 
-    bool chunkingNg() const;
-
-    /// Wheter to use chunking
-    bool bigfilechunkingEnabled() const;
-
     const Status &status() const;
     const TusSupport &tusSupport() const;
     const SpaceSupport &spacesSupport() const;
-
-    /// disable parallel upload in chunking
-    bool chunkingParallelUploadDisabled() const;
 
     /// Whether the "privatelink" DAV property is available
     bool privateLinkPropertyAvailable() const;
@@ -203,7 +180,7 @@ public:
     /**
      * Returns the checksum types the server understands.
      *
-     * When the client uses one of these checksumming algorithms in
+     * When the client uses one of these checksum algorithms in
      * the OC-Checksum header of a file upload, the server will use
      * it to validate that data was transmitted correctly.
      *
@@ -261,11 +238,6 @@ public:
      * return the list of filename that should not be uploaded
      */
     QStringList blacklistedFiles() const;
-
-    /**
-     * Whether conflict files should remain local (default) or should be uploaded.
-     */
-    bool uploadConflictFiles() const;
 
     /** Is versioning available? */
     bool versioningEnabled() const;

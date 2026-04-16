@@ -37,20 +37,17 @@ SpacesManager::SpacesManager(Account *parent)
     , _account(parent)
     , _refreshTimer(new QTimer(this))
 {
+    connect(_account, &Account::credentialsFetched, this, &SpacesManager::refresh);
+
     _refreshTimer->setInterval(refreshTimeoutC);
     // the timer will be restarted once we received drives data
     _refreshTimer->setSingleShot(true);
-
     connect(_refreshTimer, &QTimer::timeout, this, &SpacesManager::refresh);
-    connect(_account, &Account::credentialsFetched, this, &SpacesManager::refresh);
-    // Refactoring todo: check to see if this actually happened, can we remove this?
-    // legacy signal which is going to be removed in 5.0
-    connect(_account, &Account::credentialsAsked, this, &SpacesManager::refresh);
 }
 
 void SpacesManager::refresh()
 {
-    if (!OC_ENSURE(_account->accessManager())) {
+    if (!_account || !_account->accessManager()) {
         return;
     }
     if (!_account->credentials()->ready()) {
@@ -58,36 +55,57 @@ void SpacesManager::refresh()
     }
 
     // TODO: leak the job until we fixed the ownership https://github.com/owncloud/client/issues/11203
-    auto drivesJob = new Drives(_account->sharedFromThis(), nullptr);
+    auto drivesJob = new Drives(_account, nullptr);
     drivesJob->setTimeout(refreshTimeoutC);
     connect(drivesJob, &Drives::finishedSignal, this, [drivesJob, this] {
-        // a system which provides multiple personal spaces the name of the drive is always used as display name
-        auto hasManyPersonalSpaces = this->account()->capabilities().spacesSupport().hasMultiplePersonalSpaces;
-
         drivesJob->deleteLater();
+
+        // a system which provides multiple personal spaces the name of the drive is always used as display name
+        auto hasManyPersonalSpaces = _account->capabilities().spacesSupport().hasMultiplePersonalSpaces;
+        QList<Space *> newSpaces;
+        QList<QString> deletedSpaces;
+
         if (drivesJob->httpStatusCode() == 200) {
-            auto oldKeys = _spacesMap.keys();
+            QList<QString> oldKeys = _spaces.keys();
             for (const auto &dr : drivesJob->drives()) {
-                auto *space = this->space(dr.getId());
-                oldKeys.removeAll(dr.getId());
-                if (!space) {
-                    space = new Space(this, dr, hasManyPersonalSpaces);
-                    _spacesMap.insert(dr.getId(), space);
+                bool driveDisabled = dr.getRoot().getDeleted().getState() == QLatin1String("trashed");
+                // we need to treat any newly disabled spaces as if they were deleted so leave it alone.
+                // if an existing space is now disabled it will remain in the old key list for removal, below
+                if (driveDisabled)
+                    continue;
+
+                auto *space = _spaces.value(dr.getId(), nullptr);
+                if (space) {
+                    oldKeys.removeOne(dr.getId());
+                    bool changed = space->setDrive(dr);
+                    if (changed)
+                        emit spaceChanged(space);
                 } else {
-                    space->setDrive(dr);
+                    space = new Space(this, dr, hasManyPersonalSpaces);
+                    _spaces.insert(dr.getId(), space);
+                    emit spaceAdded(_account->uuid(), space);
+                    newSpaces.append(space);
                 }
-                Q_EMIT spaceChanged(space);
             }
-            for (const QString &id : oldKeys) {
-                auto *oldSpace = _spacesMap.take(id);
-                oldSpace->deleteLater();
+            for (const QString &id : std::as_const(oldKeys)) {
+                auto *oldSpace = _spaces.take(id);
+                if (oldSpace) {
+                    emit spaceAboutToBeRemoved(_account->uuid(), oldSpace);
+                    deletedSpaces.append(id);
+                    oldSpace->deleteLater();
+                }
             }
             if (!_ready) {
                 _ready = true;
                 Q_EMIT ready();
             }
         }
-        Q_EMIT updated();
+        if (!newSpaces.isEmpty())
+            emit spacesAdded(_account->uuid(), newSpaces, _spaces.count());
+        if (!deletedSpaces.isEmpty())
+            emit spacesRemoved(_account->uuid(), deletedSpaces, _spaces.count());
+        // todo: remove this once the old accountSettings are gone
+        Q_EMIT updated(_account);
         _refreshTimer->start();
     });
     _refreshTimer->stop();
@@ -96,17 +114,9 @@ void SpacesManager::refresh()
 
 Space *SpacesManager::space(const QString &id) const
 {
-    return _spacesMap.value(id);
-}
-
-Space *SpacesManager::spaceByUrl(const QUrl &url) const
-{
-    auto it = std::find_if(_spacesMap.cbegin(), _spacesMap.cend(),
-        [url](const auto *space) { return OCC::Utility::urlEqual(QUrl(space->drive().getRoot().getWebDavUrl()), url); });
-    if (it != _spacesMap.cend()) {
-        return *it;
-    }
-    return {};
+    if (id.isEmpty())
+        return nullptr;
+    return _spaces.value(id, nullptr);
 }
 
 Account *SpacesManager::account() const
@@ -116,15 +126,5 @@ Account *SpacesManager::account() const
 
 QVector<Space *> SpacesManager::spaces() const
 {
-    return {_spacesMap.begin(), _spacesMap.end()};
-}
-
-void SpacesManager::checkReady()
-{
-    // see constructor for calls to refresh
-    if (_ready) {
-        Q_EMIT ready();
-    } else {
-        refresh();
-    }
+    return {_spaces.begin(), _spaces.end()};
 }

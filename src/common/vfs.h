@@ -13,9 +13,12 @@
  */
 #pragma once
 
+// if this is included, to support a qpointer on the account, all hell breaks loose wrt endless "cannot open include file: 'owncloudlib.h'
+// No such file or directory" which is fundamental to the libsync exports
+// so unfortunately we can't make a qpointer for the account here - do the update described below asap to get rid of the dependency
+// #include "libsync/account.h"
 #include "assert.h"
 #include "csync/csync.h"
-#include "libsync/accountfwd.h"
 #include "ocsynclib.h"
 #include "pinstate.h"
 #include "result.h"
@@ -23,15 +26,17 @@
 #include "utility.h"
 
 #include <QObject>
-#include <QSharedPointer>
+#include <QPointer>
 #include <QUrl>
 #include <QVersionNumber>
 
 #include <memory>
 
+
 namespace OCC {
 
 class Account;
+
 class SyncJournalDb;
 class SyncFileItem;
 class SyncEngine;
@@ -39,7 +44,7 @@ class SyncEngine;
 /** Collection of parameters for initializing a Vfs instance. */
 struct OCSYNC_EXPORT VfsSetupParams
 {
-    explicit VfsSetupParams(const AccountPtr &account, const QUrl &baseUrl, bool groupInSidebar, SyncEngine *syncEngine);
+    explicit VfsSetupParams(Account *account, const QUrl &baseUrl, SyncEngine *syncEngine);
     /** The full path to the folder on the local filesystem
      *
      * Always ends with /.
@@ -53,7 +58,7 @@ struct OCSYNC_EXPORT VfsSetupParams
     QString remotePath;
 
     /// Account url, credentials etc. for network calls
-    AccountPtr account;
+    Account *account;
 
     /** Access to the sync folder's database.
      *
@@ -76,16 +81,10 @@ struct OCSYNC_EXPORT VfsSetupParams
         return _baseUrl;
     }
 
-    bool groupInSidebar() const
-    {
-        return _groupInSidebar;
-    }
-
     SyncEngine *syncEngine() const;
 
 private:
     QUrl _baseUrl;
-    bool _groupInSidebar = false;
     SyncEngine *_syncEngine;
 };
 
@@ -120,7 +119,17 @@ public:
 
     static Mode modeFromString(const QString &str);
 
-    static Result<void, QString> checkAvailability(const QString &path, OCC::Vfs::Mode mode);
+    /**
+     * @brief pathSupportDetail - needs a better name but the concept is that this function checks to see if the path is supported for vfs.
+     * if it is not supported the return string contains the "reason" it's not supported.
+     * @param path to check to for support
+     * @param mode which we want to check - note that the only arg that makes sense here at all is Vfs::WindowsCfApi
+     * @return empty string if the mode is supported on the given path. If the string is not empty, it contains a string explaining the
+     * reason the mode is not supported.
+     *
+     * as of this writing, the possible root reasons are: path is a drive, path is on a network drive, path fs is not ntfs.
+     */
+    static QString pathSupportDetail(const QString &path, OCC::Vfs::Mode mode);
 
     enum class AvailabilityError
     {

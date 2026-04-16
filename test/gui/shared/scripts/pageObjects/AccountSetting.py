@@ -6,7 +6,7 @@ class AccountSetting:
     MANAGE_ACCOUNT_BUTTON = {
         "container": names.settings_dialogStack_QStackedWidget,
         "name": "manageAccountButton",
-        "type": "QToolButton",
+        "type": "QPushButton",
         "visible": 1,
     }
     ACCOUNT_MENU = {
@@ -16,10 +16,9 @@ class AccountSetting:
         "window": names.settings_OCC_SettingsDialog,
     }
     CONFIRM_REMOVE_CONNECTION_BUTTON = {
-        "container": names.settings_dialogStack_QStackedWidget,
-        "text": "Remove connection",
+        "container": names.settings_stack_QStackedWidget,
         "type": "QPushButton",
-        "unnamed": 1,
+        "text": "Remove connection",
         "visible": 1,
     }
     ACCOUNT_CONNECTION_LABEL = {
@@ -45,7 +44,7 @@ class AccountSetting:
         "visible": 1,
         "window": names.settings_OCC_SettingsDialog,
     }
-    CONFIRMATION_YES_BUTTON = {"text": "Yes", "type": "QPushButton", "visible": 1}
+    CONFIRMATION_YES_BUTTON = {"type": "QPushButton", "visible": 1}
 
     @staticmethod
     def account_action(action):

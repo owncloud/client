@@ -22,7 +22,6 @@
 
 #include <QList>
 #include <QObject>
-#include <QQueue>
 
 namespace OCC {
 
@@ -86,7 +85,6 @@ public:
      * Or in case of a space folder, that if the new folder is in a Space sync root, it is the sync root of the same account.
      */
     enum class NewFolderType {
-        OC10SyncRoot,
         SpacesSyncRoot,
         SpacesFolder,
     };
@@ -124,17 +122,32 @@ public:
          */
         bool useVirtualFiles;
 
-        uint32_t priority;
+        uint32_t sortPriority;
 
         QSet<QString> selectiveSyncBlackList;
     };
 
     static QString suggestSyncFolder(NewFolderType folderType, const QUuid &accountUuid);
 
-
-    static QString checkPathValidityRecursive(const QString &path, FolderMan::NewFolderType folderType, const QUuid &accountUuid);
+    /**
+     * @brief Check a path for a new spaces sync root or spaces folder for validity.
+     *
+     * @param path The path to check
+     * @param folderType The kind of folder that is to be created (Folder or Spaces sync root)
+     * @param the account UUID for the which the folder is created
+     * @return an error string if there is a problem, or an null string if the path is valid
+     *
+     * Checks:
+     *  - spaces sync root not in a syncdb folder (a space folder)
+     *  - spaces sync root not in another spaces sync root
+     *  - space folder not in a syncdb folder (another space folder)
+     *  - space folder *can* be in sync root, if:
+     *  - space folder not in a spaces sync root of other account (check with account uuid) or (possibly branded) client
+     */
+    QString checkPathValidity(const QString &path, NewFolderType folderType, const QUuid &accountUuid) const;
 
     static std::unique_ptr<FolderMan> createInstance();
+
     ~FolderMan() override;
 
     /**
@@ -149,6 +162,8 @@ public:
      *
      *  returns empty if a downgrade of a folder was detected
      *  otherwise it will return the number of folders that were set up (this can be zero when no folders were previously configured).
+     *
+     *  emits folderListChanged
      */
     std::optional<qsizetype> setupFoldersFromConfig();
 
@@ -161,13 +176,16 @@ public:
      *  Refactoring todo: this should not be public! it is currently "required" for some tests which is not really cool, as it does not represent
      *  a complete/standalone impl.
      */
-    Folder *addFolder(const AccountStatePtr &accountState, const FolderDefinition &folderDefinition);
+    Folder *addFolder(AccountState *accountState, const FolderDefinition &folderDefinition);
 
 
     /**
      *  sets up sync folders/spaces after adding a new account via the gui
      */
-    void setUpInitialSyncFolders(AccountStatePtr accountStatePtr, bool useVfs);
+    void setUpInitialSyncFolders(AccountState *accountState, bool useVfs);
+
+    void setUpInitialSpaces(AccountState *accountState);
+
 
     // Refactoring todo: this function actually just returns the internal vector of folders. I do not see any evidence of
     // what is docced here, at least related to this specific function.
@@ -190,20 +208,10 @@ public:
      * future configurations (possibly with user confirmation for deletions) and in
      * FolderMan::setupFolders() to know which too-new folder configurations to skip.
      */
-    const QVector<Folder *> &folders() const;
+    QList<Folder *> folders() const;
 
+    QList<Folder *> foldersForAccount(const QUuid &accountId);
 
-    /**
-     *  Removes a folder sync permanently in response to user request
-     *  Not for general folder cleanup
-     *  it is caller's responsibility to remove folder from settings if necessary.
-     */
-    // Refactoring todo: this is called directly from the AccountSettings gui - instead the gui should signal a request to
-    // remove the folder.
-    // also, this function *is* used for general folder cleanup when an account is removed.
-    // we must develop concise, SINGLE impls for eg adding or removing folders instead of spreading the handling over multiple
-    // locations.
-    void removeFolderSync(Folder *);
 
     /**
      * Returns the folder which the file or directory stored in path is in
@@ -211,17 +219,7 @@ public:
      * Optionally, the path relative to the found folder is returned in
      * relativePath.
      */
-    Folder *folderForPath(const QString &path, QString *relativePath = nullptr);
-
-    /**
-      * returns a list of local files that exist on the local harddisk for an
-      * incoming relative server path. The method checks with all existing sync
-      * folders.
-      */
-    QStringList findFileInLocalFolders(const QString &relPath, const AccountPtr acc);
-
-    /** Returns the folder by id or NULL if no folder with the id exists. */
-    [[deprecated("directly reference the folder")]] Folder *folder(const QByteArray &id);
+    Folder *folderForPath(const QString &path, QString *relativePath = nullptr) const;
 
     /**
      * Ensures that a given directory does not contain a sync journal file.
@@ -231,24 +229,7 @@ public:
     static bool ensureJournalGone(const QString &journalDbFile);
     static bool ensureFilesystemSupported(const FolderDefinition &folderDefinition);
 
-    /// Produce text for use in the tray tooltip
-    static QString trayTooltipStatusString(const SyncResult &result, bool paused);
-
-    /**
-     * Compute status summarizing multiple folders
-     * @return tuple containing folders, status, unresolvedConflicts and lastSyncDone
-     */
-    static TrayOverallStatusResult trayOverallStatus(const QVector<Folder *> &folders);
-
     SocketApi *socketApi();
-
-    /**
-     * Check if @a path is a valid path for a new folder considering the already sync'ed items.
-     * Make sure that this folder, or any subfolder is not sync'ed already.
-     *
-     * @returns an empty string if it is allowed, or an error if it is not allowed
-     */
-    QString checkPathValidityForNewFolder(const QString &path, NewFolderType folderType, const QUuid &accountUuid) const;
 
     /**
      * Attempts to find a non-existing, acceptable path for creating a new sync folder.
@@ -259,30 +240,16 @@ public:
      * subfolder of ~ would be a good candidate. When that happens \a basePath
      * is returned.
      */
-    static QString findGoodPathForNewSyncFolder(const QString &basePath, const QString &newFolder, NewFolderType folderType, const QUuid &accountUuid);
+    QString findGoodPathForNewSyncFolder(const QString &basePath, const QString &newFolder, NewFolderType folderType, const QUuid &accountUuid) const;
 
-    /**
-     * While ignoring hidden files can theoretically be switched per folder,
-     * it's currently a global setting that users can only change for all folders
-     * at once.
-     * These helper functions can be removed once it's properly per-folder.
-     */
-    // Refactoring todo: when is the ability to switch ignoreHiddenFiles per folder going to happen? what does it
-    // depend on? if there is no change in sight for this, we should refactor the prop to be a general setting
-    // that applies to all folders, and is persisted in the General settings group of the config. The churn around
-    // moving this setting to the folder defs is absurd if it's not needed (and currently it's not actually needed)
     bool ignoreHiddenFiles() const;
     void setIgnoreHiddenFiles(bool ignore);
 
-    /**
-     * Returns true if any folder is currently syncing.
+    /** Simple save and remove all folders on shut down
      *
-     * This might be a FolderMan-scheduled sync, or a externally
-     * managed sync like a placeholder hydration.
+     *  emits folderListChanged
+     *
      */
-    bool isAnySyncRunning() const;
-
-    /** Simple save and remove all folders on shut down */
     void unloadAndDeleteAllFolders();
 
     /**
@@ -293,15 +260,7 @@ public:
 
     SyncScheduler *scheduler() { return _scheduler; }
 
-
     void setDirtyProxy();
-    void setDirtyNetworkLimits();
-
-    /** Whether or not vfs is supported in the location. */
-    bool checkVfsAvailability(const QString &path, Vfs::Mode mode = VfsPluginManager::instance().bestAvailableVfsMode()) const;
-
-    /** If the folder configuration is no longer supported this will return an error string */
-    Result<void, QString> unsupportedConfiguration(const QString &path) const;
 
     [[nodiscard]] bool isSpaceSynced(GraphApi::Space *space) const;
 
@@ -310,13 +269,20 @@ public:
      * and does a few other things uniquely required by the gui workflow.
      *
      * this handler also saves the new folder def that is created by user request
+     *
+     * emits folderAdded(newFolder)
      */
     // todo: #1
     // todo: #2
-    void addFolderFromGui(const AccountStatePtr &accountStatePtr, const SyncConnectionDescription &config);
+    void addFolderFromGui(AccountState *accountState, const SyncConnectionDescription &config);
 
     // todo: #3
     void removeFolderSettings(Folder *folder);
+
+    /**
+     * @brief folder retrieves the folder given the spaceId, or null if no folder exists for the account and space combo
+     */
+    Folder *folder(const QUuid &accountId, const QString &spaceId) const;
 
 Q_SIGNALS:
     /**
@@ -327,13 +293,24 @@ Q_SIGNALS:
     void folderSyncStateChange(Folder *);
 
     /**
-     * Emitted whenever the list of configured folders changes.
+     * Emitted whenever the list of folders changes substantially.
+     * this includes after building the list for a new account or restore from config
+     * also when removing folders in bulk, on account removed or shutdown.
      */
-    void folderListChanged();
-    void folderRemoved(Folder *folder);
-    // Refactoring todo: we need folderAdded too. The folder model should use that for normal folder updates instead of folderListChanged
-    // which causes full rebuild of the model -> crazy inefficient. Ideally folderListChanged should only be emitted for large operations (eg after loading
-    // folders from config or from new account)
+    void folderListChanged(const QUuid &accountId, const QList<Folder *> folders);
+    // emitted on incremental folder additions (eg when the user uses the folder wizard to create a new sync)
+    void folderAdded(const QUuid &accountId, Folder *folder);
+    // emitted on incremental folder removal (eg when the user deletes a sync connection via gui)
+    void folderRemoved(const QUuid &accountId, Folder *folder);
+
+    // still working these out but generally this belongs in folderman more than anywhere else as it can cross ref
+    // existing folders and track unsynced spaces
+    // still need to figure out how to "track" synced folder count when a space had a folder but was deleted
+    // server side. we show these as "unavailable" in the folder list but really not sure how the effectively dead folder
+    // is "counted"
+    // void syncedSpaceCountChanged(QUuid accountId, int syncedCount);
+    // void unsyncedSpacesChanged(QUuid accountId, QSet<GraphApi::Space *> unsyncedSpaces, int totalSpaceCount);
+    void unsyncedSpaceCountChanged(QUuid accountId, int unsyncedCount, int totalSpaces);
 
 public Q_SLOTS:
 
@@ -354,13 +331,18 @@ public Q_SLOTS:
     /// This slot will tell all sync engines to reload the sync options.
     void slotReloadSyncOptions();
 
+    // emits folderRemoved
+    void removeFolderFromGui(Folder *f);
+    void forceFolderSync(Folder *f);
+
 private Q_SLOTS:
+
     void slotFolderSyncPauseChanged(Folder *, bool paused);
     void slotFolderCanSyncChanged();
     void slotFolderSyncStarted();
     void slotFolderSyncFinished(const SyncResult &);
 
-    void slotRemoveFoldersForAccount(const AccountStatePtr &accountState);
+    void slotRemoveFoldersForAccount(AccountState *accountState);
 
     void slotServerVersionChanged(Account *account);
 
@@ -384,16 +366,45 @@ private:
     /**
      * Adds a folder "from scratch" as oppossd to from config, which requires less setup than when you create the folder
      * from some dynamic operation (eg folders from new account or via the gui add folder sync operations).
-     * In case Wizard::SyncMode::SelectiveSync is used, nullptr is returned.
      */
-    Folder *addFolderFromScratch(const AccountStatePtr &accountStatePtr, FolderDefinition &&definition, bool useVfs);
+    Folder *addFolderFromScratch(AccountState *accountState, FolderDefinition &&definition, bool useVfs);
 
     /**
      *  private handler connected to spacesManager::ready signal
      *  this is a bit weird as you have to ask the manager if it's ready then wait for the signal before actually loading
-     *  the spaces. this function loads all the spaces into the FolderMan and saves them in an efficient manner
+     *  the spaces. this function loads all the spaces into folders in the FolderMan and saves them in an efficient manner
+     *
+     *  emits folderListChanged
      */
-    void loadSpacesWhenReady(AccountStatePtr accountState, bool useVfs);
+    void loadSpacesAndCreateFolders(AccountState *accountState, bool useVfs);
+
+    /**
+     *  similar to loadSpacesAndCreateFolders but it skips the folder creation and basically just calls onSpacesAdded to ensure the
+     *  current spaces are known to the folderman when account is created using selective sync instead of sync all or use vfs
+     */
+    void loadSpacesAlone(AccountState *accountState);
+
+    /**
+     * @brief onSpacesAdded - handles notice from spaces manager that spaces were added
+     * @param accountId - account the new spaces live in
+     * @param spaces - the new spaces
+     * @param totalSpaceCount - total space count after new spaces added
+     *
+     * important change: the spaces manager now filters out disabled spaces automatically so no one else should be trying to figure out
+     * if a space is disabled or not - they will not be part of the active space set from now on
+     */
+    void onSpacesAdded(const QUuid &accountId, QList<GraphApi::Space *> spaces, int totalSpaceCount);
+
+    /**
+     * @brief onSpacesRemoved - handles notice from spaces manager that spaces were removed
+     * @param accountId - account the spaces lived in
+     * @param spaceIds - these are the spoace id's of removed spaces since the pointers are already gone
+     * @param totalSpaceCount - the number of spaces available after removal
+     *
+     * important change: spaces that have been disabled will now appear in the "removed" collection because the spaces manager filters
+     * them out from the start, now.
+     */
+    void onSpacesRemoved(const QUuid &accountId, QList<QString> spaceIds, int totalSpaceCount);
 
     /**
      *  reads the folder defs from the config for a single account.
@@ -404,7 +415,7 @@ private:
      *
      *  returns false when a downgrade of the database is detected, true otherwise.
      */
-    bool addFoldersFromConfigByAccount(QSettings &settings, AccountStatePtr account);
+    bool addFoldersFromConfigByAccount(QSettings &settings, AccountState *account);
 
     // tests folder def for minimum reqs
     bool validateFolderDefinition(const FolderDefinition &folderDefinition);
@@ -436,6 +447,13 @@ private:
     // impl detail: we also disconnect the folder from autosave here!
     void removeFolderSettings(Folder *folder, QSettings &settings);
 
+    /**
+     *  Removes a folder sync permanently and deletes the folder
+     *  Not for general folder cleanup
+     *  it is caller's responsibility to remove folder from settings if necessary.
+     */
+    void deleteFolderSync(Folder *);
+
     /** Queues all folders for syncing. */
     void scheduleAllFolders();
 
@@ -447,9 +465,18 @@ private:
     // pair this with _socketApi->slotUnregisterPath(folder);
     void registerFolderWithSocketApi(Folder *folder);
 
-    QSet<Folder *> _disabledFolders;
-    QVector<Folder *> _folders;
+    // Helper for `checkPathValidity`. It first checks if the folder `path` exists, and if not recusively checks its parent. When a folder
+    // is found, it checks for sync root markers. See the documentation of `checkPathValidity` for when a path is valid. If the path
+    // is valid, a null-string is returned. When a path is invalid, an error string is returned.
+    //
+    // For example: start with /x/y/z
+    // First check is if z exists. If not, retry with /x/y.
+    // Now if /x/y exists, check for markers wether this is used as a spaces folder, or a sync root for another account. If it is, return an error message. If
+    // not, check /x. When a path is valid, the null string is returned.
+    static QString findExistingFolderAndCheckValidity(const QString &path, NewFolderType folderType, const QUuid &accountUuid);
+
     QString _folderConfigPath;
+    bool _ignoreHiddenFiles = true;
 
     /// Folder aliases from the settings that weren't read
     QSet<QString> _additionalBlockedFolderAliases;
@@ -465,7 +492,29 @@ private:
     mutable QMap<QString, Result<void, QString>> _unsupportedConfigurationError;
 
     static FolderMan *_instance;
+
+    // the inner hash contains the folder pointers hashed against their spaceId which makes any kind if retrieval *much*
+    // faster. the folders need to be split by account id for a variety of reasons, but a very important factor is that the "shares" space
+    // always has the same space id even across accounts.
+    // uuid is the account id, qstring is the folder's space id, folder is obvious I hope
+    QHash<QUuid, QHash<QString, Folder *>> _folders;
+
+
+    // similar to the _folders container, unsynced spaces need to be split by account id primarily because the "shares" space
+    // always has the same space id even across accounts.
+    // inner hash contains the unsynced spaces hashed by spaceid
+    // uuid is the account id, qstring is the space id, space is self explanatory
+    QHash<QUuid, QHash<QString, GraphApi::Space *>> _unsyncedSpaces;
+
+    // as far as I can tell these are paused folders, not to be confused with folders whose space is disabled. We add and remove folders to this
+    // set when they are paused/resumed but aside from that we don't really do anything with it.
+    QSet<Folder *> _disabledFolders;
+
     friend class OCC::Application;
+
+    // the literal is needed to get the tests to build
+    inline static const QString IgnoreHiddenFilesKey = QStringLiteral("ignoreHiddenFiles");
+    void scheduleFoldersForAccount(const QUuid &accountId);
 };
 
 } // namespace OCC

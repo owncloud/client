@@ -16,18 +16,15 @@
 
 #include "application.h"
 
-#include <random>
 
 #include "account.h"
 #include "accountmanager.h"
 #include "accountstate.h"
-#include "common/version.h"
 #include "common/vfs.h"
 #include "configfile.h"
 #include "folder.h"
 #include "folderman.h"
 #include "settingsdialog.h"
-#include "sharedialog.h"
 #include "socketapi/socketapi.h"
 #include "theme.h"
 
@@ -94,17 +91,18 @@ Application::Application(Platform *platform, const QString &displayLanguage, boo
     _gui = new ownCloudGui(this);
 
     connect(AccountManager::instance(), &AccountManager::accountAdded, this, &Application::slotAccountStateAdded);
-    connect(AccountManager::instance(), &AccountManager::accountRemoved, this, &Application::slotAccountStateRemoved);
+    connect(AccountManager::instance(), &AccountManager::lastAccountRemoved, this, &Application::lastAccountStateRemoved);
     for (const auto &ai : AccountManager::instance()->accounts()) {
         slotAccountStateAdded(ai);
     }
 
-    connect(FolderMan::instance()->socketApi(), &SocketApi::shareCommandReceived, _gui.data(), &ownCloudGui::slotShowShareDialog);
+    connect(FolderMan::instance()->socketApi(), &SocketApi::shareCommandReceived, _gui.data(), &ownCloudGui::slotShowShareInBrowser);
 
     // Refactoring example: this is oversimplified and really belongs in a dedicated app builder impl but the idea is illustrated:
     // don't handling everything "locally" -> request that the best entity for the job do it. Then make the proper connections between
     // requestor and responsible handler in a clearly defined, central location (e.g. an app builder, but for now, this will do)
     connect(_gui, &ownCloudGui::requestSetUpSyncFoldersForAccount, FolderMan::instance(), &FolderMan::setUpInitialSyncFolders);
+    connect(_gui, &ownCloudGui::requestLoadSpacesOnly, FolderMan::instance(), &FolderMan::setUpInitialSpaces);
 
 #ifdef WITH_AUTO_UPDATER
     // Update checks
@@ -125,31 +123,27 @@ Application::~Application()
     FolderMan::instance()->unloadAndDeleteAllFolders();
 }
 
-void Application::slotAccountStateRemoved() const
+void Application::lastAccountStateRemoved() const
 {
-    // if there is no more account, show the wizard.
+    // auto run the wizard if there are no existing accounts
     if (_gui && AccountManager::instance()->accounts().isEmpty()) {
-        // allow to add a new account if there is none anymore. Always think
-        // about single account theming!
-        gui()->runNewAccountWizard();
+        gui()->runAccountWizard();
     }
 }
 
-void Application::slotAccountStateAdded(AccountStatePtr accountState) const
+void Application::slotAccountStateAdded(AccountState *accountState) const
 {
+    if (!accountState || !accountState->account())
+        return;
     // Hook up the GUI slots to the account state's Q_SIGNALS:
-    connect(accountState.data(), &AccountState::stateChanged,
-        _gui.data(), &ownCloudGui::slotAccountStateChanged);
-    connect(accountState->account().data(), &Account::serverVersionChanged,
-        _gui.data(), [account = accountState->account().data(), this] {
-            _gui->slotTrayMessageIfServerUnsupported(account);
-        });
+    Account *account = accountState->account();
+
+    connect(accountState, &AccountState::stateChanged, _gui.data(), &ownCloudGui::slotComputeOverallSyncStatus);
+    connect(account, &Account::serverVersionChanged, _gui.data(), [account, this] { _gui->slotTrayMessageIfServerUnsupported(account); });
 
     // Hook up the folder manager slots to the account state's Q_SIGNALS:
-    connect(accountState.data(), &AccountState::isConnectedChanged, FolderMan::instance(), &FolderMan::slotIsConnectedChanged);
-    connect(accountState->account().data(), &Account::serverVersionChanged, FolderMan::instance(),
-        [account = accountState->account().data()] { FolderMan::instance()->slotServerVersionChanged(account); });
-    accountState->checkConnectivity();
+    connect(accountState, &AccountState::isConnectedChanged, FolderMan::instance(), &FolderMan::slotIsConnectedChanged);
+    connect(account, &Account::serverVersionChanged, FolderMan::instance(), [account] { FolderMan::instance()->slotServerVersionChanged(account); });
 }
 
 void Application::slotCleanup()
@@ -160,7 +154,7 @@ void Application::slotCleanup()
 
     // by now the credentials are supposed to be persisted
     // don't start async credentials jobs during shutdown
-    AccountManager::instance()->save(false);
+    AccountManager::instance()->save();
 
     FolderMan::instance()->unloadAndDeleteAllFolders();
 
@@ -168,28 +162,21 @@ void Application::slotCleanup()
     AccountManager::instance()->shutdown();
 }
 
-AccountStatePtr Application::addNewAccount(AccountPtr newAccount)
+void Application::updateAutoRun(bool firstRun)
 {
-    auto *accountMan = AccountManager::instance();
+    if (!firstRun)
+        return;
 
-    // first things first: we need to add the new account
-    auto accountStatePtr = accountMan->addAccount(newAccount);
+    bool shouldSetAutoStart = firstRun;
 
-    // if one account is configured: enable autostart
-    bool shouldSetAutoStart = (accountMan->accounts().size() == 1);
-#ifdef Q_OS_MAC
-    // Don't auto start when not being 'installed'
-    shouldSetAutoStart = shouldSetAutoStart
-        && QCoreApplication::applicationDirPath().startsWith(QLatin1String("/Applications/"));
-#endif
+    if (Utility::isMac()) {
+        // Don't auto start when not being 'installed'
+        shouldSetAutoStart = shouldSetAutoStart && QCoreApplication::applicationDirPath().startsWith(QLatin1String("/Applications/"));
+    }
+
     if (shouldSetAutoStart) {
         Utility::setLaunchOnStartup(Theme::instance()->appName(), Theme::instance()->appNameGUI(), true);
     }
-
-    // showing the UI to show the user that the account has been added successfully
-    _gui->slotShowSettings();
-
-    return accountStatePtr;
 }
 
 void Application::slotUseMonoIconsChanged(bool)

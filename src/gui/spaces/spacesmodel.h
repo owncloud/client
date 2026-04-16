@@ -13,8 +13,6 @@
  */
 #pragma once
 
-#include "accountfwd.h"
-
 #include <QAbstractItemModel>
 
 namespace OCC::GraphApi {

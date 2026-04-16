@@ -14,7 +14,6 @@
 
 #include "space.h"
 
-#include "libsync/account.h"
 #include "libsync/graphapi/spacesmanager.h"
 #include "libsync/networkjobs.h"
 #include "libsync/networkjobs/resources.h"
@@ -29,6 +28,11 @@ namespace {
 const auto personalC = QLatin1String("personal");
 
 // https://github.com/cs3org/reva/blob/0cde0a3735beaa14ebdfd8988c3eb77b3c2ab0e6/pkg/utils/utils.go#L56-L59
+
+// important detail about this id: the "shares" folder always has this id, even across different accounts!
+// this means that we can never assume that space id's are unique across accounts, to the contrary, if a share is
+// in play they most definitely are not. This concept could theoretically extend to other folders so we need to index
+// space id against account id for many operations.
 const auto sharesIdC = QLatin1String("a0ca6a90-a365-4782-871e-d44447bbc668$a0ca6a90-a365-4782-871e-d44447bbc668");
 }
 
@@ -41,16 +45,18 @@ Space::Space(SpacesManager *spacesManager, const OpenAPI::OAIDrive &drive, const
     // todo future refactoring: get this setDrive out of the ctr since it potentially kicks off a job for the SpaceImage before the Space is fully constructed
     // propose removing the drive arg from the ctr completely, and moving the call to setDrive to the spacesmanager such that any call to
     // "new" space is immediately followed by setDrive.
+    if (_spaceManager->account())
+        _accountId = _spaceManager->account()->uuid();
     setDrive(drive);
     connect(_image, &SpaceImage::imageChanged, this, &Space::imageChanged);
 }
 
-OpenAPI::OAIDrive Space::drive() const
+QUuid Space::accountId() const
 {
-    return _drive;
+    return _accountId;
 }
 
-void Space::setDrive(const OpenAPI::OAIDrive &drive)
+bool Space::setDrive(const OpenAPI::OAIDrive &drive)
 {
 
     // first config naturally has an empty drive - reality check that updated drives are always valid
@@ -63,10 +69,11 @@ void Space::setDrive(const OpenAPI::OAIDrive &drive)
     // as on changing the space image so we may have further wrinkles if there is an error in logic server side, but for now
     // we want to reduce updates to "only when something changed" else everything is auto-refreshed periodically (eg every 30s)
     if (curTag == newTag)
-        return;
+        return false;
 
     _drive = drive;
     _image->update();
+    return true;
 }
 
 QString Space::displayName() const
@@ -86,7 +93,13 @@ QString Space::displayName() const
     return _drive.getName();
 }
 
-uint32_t Space::priority() const
+QString Space::description() const
+{
+    return _drive.getDescription();
+}
+
+
+uint32_t Space::sortPriority() const
 {
     if (_drive.getDriveType() == personalC) {
         return 100;
@@ -112,9 +125,29 @@ QString Space::id() const
     return _drive.getRoot().getId();
 }
 
-QUrl Space::webdavUrl() const
+QUrl Space::webDavUrl() const
 {
     return QUrl(_drive.getRoot().getWebDavUrl());
+}
+
+QUrl Space::webUrl() const
+{
+    return QUrl(_drive.getRoot().getWebUrl());
+}
+
+QString Space::eTag() const
+{
+    return _drive.getETag();
+}
+
+QList<OpenAPI::OAIDriveItem> Space::getSpecialItems() const
+{
+    return _drive.getSpecial();
+}
+
+OpenAPI::OAIQuota Space::quota() const
+{
+    return _drive.getQuota();
 }
 
 SpaceImage::SpaceImage(Space *space)
@@ -125,12 +158,10 @@ SpaceImage::SpaceImage(Space *space)
 
 QIcon SpaceImage::image() const
 {
-    if (_image.isNull()) {
-        return Resources::getCoreIcon(QStringLiteral("space"));
-    }
     return _image;
 }
 
+// this has to stay until we get rid of the folderWizard
 QUrl SpaceImage::qmlImageUrl() const
 {
     if (!_image.isNull()) {
@@ -141,13 +172,18 @@ QUrl SpaceImage::qmlImageUrl() const
     }
 }
 
+// todo: ideally do the update WITH any other drive changes that may happen.
+// the current problem is that we can't rely on spaceChanged to tell us the image changed because spaceChanged is emitted
+// prior to calling this update (so if you get the image in response to spaceChanged you get the "old" image, not the new one).
+// this means we have to do some fancy tricks to ensure we connect to the imageChanged signal "at just the right time"
+// see the FolderItemUpdater for the example ick.
 void SpaceImage::update()
 {
-    const auto &special = _space->drive().getSpecial();
+    const auto &special = _space->getSpecialItems();
     const auto img = std::find_if(special.cbegin(), special.cend(), [](const auto &it) { return it.getSpecialFolder().getName() == QLatin1String("image"); });
     if (img != special.cend())
     {
-        // ssue 12057: verified the image etag does change when the space's icon has been updated via the web interface
+        // issue 12057: verified the image etag does change when the space's icon has been updated via the web interface
         // check the etag before updating the members and creating the job. This should eliminate *many* pointless resource jobs which
         // will exacerbate whatever is making the app crash when the space tries to clean up it's child jobs and one is already gone
         QString newEtag = Utility::normalizeEtag(img->getETag());
@@ -156,19 +192,16 @@ void SpaceImage::update()
 
         _etag = newEtag;
         _url = QUrl(img->getWebDavUrl());
-        // issue 12057: I am leaving the space as the parent of the job just to avoid having confusion about "new" destructor crashes. At least
-        // we'll get any future crashes on the space still. I don't think that changing the parent is going to eliminate the associate crash - save
-        // this for a future refactoring
-        auto job = _space->_spaceManager->account()->resourcesCache()->makeGetJob(_url, {}, _space);
 
-        // TODO: next problem = this routine is correctly run when the icon has changed on the server, but the icon in the gui does not get refreshed!
-        // The icon IS in the app cache, so it seems to have been brought back from the server correctly, but it is not shown until restart
-        // I did have a quick look at Resources::getCoreIcon - that is used in the SpaceImage::image function. Also sus is that I can't find any slot
-        // for the imageChanged signal but I think this may be connected in qml via the associated space image property.
+        // todo DC-150: this job should run in the spaces manager, then just set the image on this spaceImage object. We don't need all these deps floating
+        // around at every level and we *definitely* don't want the spaces manager to hand out the account to whoever wants it
+        auto job = _space->_spaceManager->account()->resourcesCache()->makeGetJob(_url, this);
+
         QObject::connect(job, &SimpleNetworkJob::finishedSignal, _space, [job, this] {
             if (job->httpStatusCode() == 200) {
                 _image = job->asIcon();
-                Q_EMIT imageChanged();
+                job->deleteLater();
+                emit imageChanged();
             }
         });
         job->start();

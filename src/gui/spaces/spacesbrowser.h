@@ -39,7 +39,7 @@ public:
     explicit SpacesBrowser(QWidget *parent = nullptr);
     ~SpacesBrowser();
 
-    void setAccount(OCC::AccountPtr acc);
+    void setSpacesManager(OCC::GraphApi::SpacesManager *spacesMgr);
 
     GraphApi::Space *currentSpace();
 
@@ -51,7 +51,6 @@ Q_SIGNALS:
 private:
     ::Ui::SpacesBrowser *ui;
 
-    OCC::AccountPtr _acc;
     SpacesModel *_model;
     QSortFilterProxyModel *_sortModel;
     GraphApi::Space *_currentSpace = nullptr;

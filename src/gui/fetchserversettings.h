@@ -14,9 +14,9 @@
 
 #pragma once
 
-#include "libsync/accountfwd.h"
-
+#include "account.h"
 #include <QObject>
+#include <QPointer>
 
 namespace OCC {
 class Capabilities;
@@ -27,7 +27,7 @@ class FetchServerSettingsJob : public QObject
 public:
     enum class Result { Success, TimeOut, InvalidCredentials, UnsupportedServer, Undefined };
     Q_ENUM(Result);
-    FetchServerSettingsJob(const AccountPtr &account, QObject *parent);
+    FetchServerSettingsJob(Account *account, QObject *parent);
 
     void start();
 
@@ -40,7 +40,7 @@ private:
     // returns whether the started jobs should be excluded from the retry queue
     bool isAuthJob() const;
 
-    const AccountPtr _account;
+    QPointer<Account> _account;
 };
 
 }

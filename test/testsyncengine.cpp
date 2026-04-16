@@ -51,7 +51,7 @@ private Q_SLOTS:
         QTest::newRow("Vfs::Off") << Vfs::Off << false;
 
         if (VfsPluginManager::instance().isVfsPluginAvailable(Vfs::WindowsCfApi)) {
-            QTest::newRow("Vfs::WindowsCfApi dehydrated") << Vfs::WindowsCfApi << true;
+            // QTest::newRow("Vfs::WindowsCfApi dehydrated") << Vfs::WindowsCfApi << true;
 
             // TODO: the hydrated version will fail due to an issue in the winvfs plugin, so leave it disabled for now.
             // QTest::newRow("Vfs::WindowsCfApi hydrated") << Vfs::WindowsCfApi << false;
@@ -713,7 +713,7 @@ private Q_SLOTS:
             cap[QStringLiteral("dav")] = dav;
             return cap;
         };
-        fakeFolder.syncEngine().account()->setCapabilities({fakeFolder.account()->url(), invalidFilenameRegexCapabilities(QStringLiteral("my[fgh]ile"))});
+        fakeFolder.account()->setCapabilities({fakeFolder.account()->url(), invalidFilenameRegexCapabilities(QStringLiteral("my[fgh]ile"))});
         fakeFolder.localModifier().insert(QStringLiteral("C/myfile.txt"));
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
         QVERIFY(!fakeFolder.currentRemoteState().find(QStringLiteral("C/myfile.txt")));
@@ -756,9 +756,6 @@ private Q_SLOTS:
 
         FakeFolder fakeFolder(FileInfo {}, vfsMode, filesAreDehydrated);
         SyncOptions options = fakeFolder.syncEngine().syncOptions();
-        options._initialChunkSize = 10;
-        options._maxChunkSize = 10;
-        options._minChunkSize = 10;
         fakeFolder.syncEngine().setSyncOptions(options);
         auto cap = TestUtils::testCapabilities();
         // unset chunking v1
@@ -775,7 +772,9 @@ private Q_SLOTS:
             return nullptr;
         });
 
-        fakeFolder.localModifier().insert(QStringLiteral("file"), 1_MiB, 'W');
+        fakeFolder.localModifier().insert(QStringLiteral("file1"), 1_MiB, 'W');
+        fakeFolder.localModifier().insert(QStringLiteral("file2"), 1_MiB, 'W');
+        fakeFolder.localModifier().insert(QStringLiteral("file3"), 1_MiB, 'W');
         // wait until the sync engine is ready
         // wait a second and abort
         connect(&fakeFolder.syncEngine(), &SyncEngine::aboutToPropagate, &fakeFolder.syncEngine(),

@@ -67,6 +67,7 @@ private Q_SLOTS:
 #endif
             QCOMPARE(setJob->error(), QKeychain::NoError);
             auto getJob = creds->get(key);
+            QVERIFY(getJob != nullptr);
             setFallbackEnabled(getJob->_job);
             connect(getJob, &CredentialJob::finished, this, [getJob, data, creds, this] {
                 QCOMPARE(getJob->error(), QKeychain::NoError);
@@ -77,7 +78,7 @@ private Q_SLOTS:
                 }
                 connect(jobs[0], &QKeychain::Job::finished, this, [creds, data, jobs, this] {
                     QCOMPARE(jobs[0]->error(), QKeychain::NoError);
-                    QVERIFY(creds->knownKeys().isEmpty());
+                    QVERIFY(creds->isEmpty());
                     _finished = true;
                 });
             });

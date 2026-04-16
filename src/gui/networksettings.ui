@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>623</width>
-    <height>581</height>
+    <height>360</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -94,7 +94,7 @@
            <item>
             <spacer name="horizontalSpacer">
              <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+              <enum>Qt::Orientation::Horizontal</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
@@ -206,7 +206,7 @@
                <string/>
               </property>
               <property name="echoMode">
-               <enum>QLineEdit::Password</enum>
+               <enum>QLineEdit::EchoMode::Password</enum>
               </property>
              </widget>
             </item>
@@ -227,214 +227,9 @@
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_7">
-     <item>
-      <widget class="QLabel" name="warningIcon">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>32</width>
-         <height>32</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>32</width>
-         <height>32</height>
-        </size>
-       </property>
-       <property name="text">
-        <string notr="true"/>
-       </property>
-       <property name="pixmap">
-        <pixmap resource="../resources/client.qrc">:/client/resources/core/states/warning.svg</pixmap>
-       </property>
-       <property name="scaledContents">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="warningLabel">
-       <property name="font">
-        <font>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>Bandwidth limits are deprecated and will be removed in a future release!</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_5">
-     <item>
-      <widget class="QGroupBox" name="downloadBox">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="title">
-        <string>Download Bandwidth</string>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout_2">
-        <item>
-         <widget class="QRadioButton" name="noDownloadLimitRadioButton">
-          <property name="text">
-           <string>No limit</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QRadioButton" name="autoDownloadLimitRadioButton">
-          <property name="toolTip">
-           <string>Limit to 3/4 of estimated bandwidth</string>
-          </property>
-          <property name="text">
-           <string>Limit automatically</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_6">
-          <item>
-           <widget class="QRadioButton" name="downloadLimitRadioButton">
-            <property name="text">
-             <string>Manual limit</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QSpinBox" name="downloadSpinBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="accessibleName">
-             <string>Download bandwidth in kilobytes per second</string>
-            </property>
-            <property name="maximum">
-             <number>9999</number>
-            </property>
-            <property name="value">
-             <number>80</number>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="label_3">
-            <property name="text">
-             <string>KBytes/s</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <spacer name="verticalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>147</width>
-            <height>25</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item>
-      <widget class="QGroupBox" name="uploadBox">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="title">
-        <string>Upload Bandwidth</string>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
-        <item>
-         <widget class="QRadioButton" name="noUploadLimitRadioButton">
-          <property name="text">
-           <string>No limit</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QRadioButton" name="autoUploadLimitRadioButton">
-          <property name="toolTip">
-           <string>Limit to 3/4 of estimated bandwidth</string>
-          </property>
-          <property name="text">
-           <string>Limit automatically</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_4">
-          <item>
-           <widget class="QRadioButton" name="uploadLimitRadioButton">
-            <property name="text">
-             <string>Manual limit</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QSpinBox" name="uploadSpinBox">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="accessibleName">
-             <string>Upload bandwidth in kilobytes per second</string>
-            </property>
-            <property name="minimum">
-             <number>1</number>
-            </property>
-            <property name="maximum">
-             <number>9999</number>
-            </property>
-            <property name="value">
-             <number>10</number>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="label_4">
-            <property name="text">
-             <string>KBytes/s</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item>
     <spacer name="verticalSpacer">
      <property name="orientation">
-      <enum>Qt::Vertical</enum>
+      <enum>Qt::Orientation::Vertical</enum>
      </property>
      <property name="sizeHint" stdset="0">
       <size>
@@ -457,52 +252,9 @@
   <tabstop>authRequiredcheckBox</tabstop>
   <tabstop>userLineEdit</tabstop>
   <tabstop>passwordLineEdit</tabstop>
-  <tabstop>noDownloadLimitRadioButton</tabstop>
-  <tabstop>autoDownloadLimitRadioButton</tabstop>
-  <tabstop>downloadLimitRadioButton</tabstop>
-  <tabstop>downloadSpinBox</tabstop>
-  <tabstop>noUploadLimitRadioButton</tabstop>
-  <tabstop>autoUploadLimitRadioButton</tabstop>
-  <tabstop>uploadLimitRadioButton</tabstop>
-  <tabstop>uploadSpinBox</tabstop>
  </tabstops>
- <resources>
-  <include location="../resources/client.qrc"/>
- </resources>
- <connections>
-  <connection>
-   <sender>downloadLimitRadioButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>downloadSpinBox</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>73</x>
-     <y>69</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>131</x>
-     <y>78</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>uploadLimitRadioButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>uploadSpinBox</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>322</x>
-     <y>101</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>411</x>
-     <y>106</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <resources/>
+ <connections/>
  <buttongroups>
   <buttongroup name="proxyButtonGroup"/>
  </buttongroups>

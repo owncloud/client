@@ -27,9 +27,6 @@ public:
     explicit AuthSuccessPageController(QWizardPage *page, QObject *parent);
     bool validate() override;
 
-Q_SIGNALS:
-    void requestAdvancedSettings();
-
 private:
     void buildPage();
 

@@ -9,7 +9,7 @@ import squish
 
 from helpers.SetupClientHelper import get_resource_path, get_temp_resource_path
 from helpers.SyncHelper import wait_for_client_to_be_ready
-from helpers.ConfigHelper import get_config
+from helpers.ConfigHelper import get_config, is_owncloud_client
 from helpers.FilesHelper import (
     build_conflicted_regex,
     sanitize_path,
@@ -19,7 +19,9 @@ from helpers.FilesHelper import (
     get_size_in_bytes,
     prefix_path_namespace,
     remember_path,
+    write_file,
 )
+from helpers.UserHelper import get_username_for_user
 
 
 def folder_exists(folder_path, timeout=1000):
@@ -62,11 +64,6 @@ def create_file_with_size(filename, filesize, is_temp_folder=False):
         f.write(b'\0')
 
 
-def write_file(resource, content):
-    with open(prefix_path_namespace(resource), 'w', encoding='utf-8') as f:
-        f.write(content)
-
-
 def wait_and_write_file(path, content):
     wait_for_client_to_be_ready()
     write_file(path, content)
@@ -103,6 +100,8 @@ def add_copy_suffix(resource_path, resource_type):
     'user "|any|" creates a file "|any|" with the following content inside the sync folder'
 )
 def step(context, username, filename):
+    if not is_owncloud_client():
+        username = get_username_for_user(username)
     file_content = '\n'.join(context.multiLineText)
     file = get_resource_path(filename, username)
     wait_and_write_file(file, file_content)
@@ -110,12 +109,16 @@ def step(context, username, filename):
 
 @When('user "|any|" creates a folder "|any|" inside the sync folder')
 def step(context, username, foldername):
+    if not is_owncloud_client():
+        username = get_username_for_user(username)
     wait_for_client_to_be_ready()
     create_folder(foldername, username)
 
 
 @Given('user "|any|" has created a folder "|any|" inside the sync folder')
 def step(context, username, foldername):
+    if not is_owncloud_client():
+        username = get_username_for_user(username)
     create_folder(foldername, username)
 
 
@@ -149,7 +152,7 @@ def step(context, file_path):
         contents = f.read()
     test.compare(
         expected,
-        contents,
+        contents.rstrip(),
         'file expected to exist with content '
         + expected
         + ' but does not have the expected content',
@@ -251,6 +254,8 @@ def step(context, item_type, resource):
 
 @When('user "|any|" creates the following files inside the sync folder:')
 def step(context, username):
+    if not is_owncloud_client():
+        username = get_username_for_user(username)
     wait_for_client_to_be_ready()
 
     for row in context.table[1:]:
@@ -284,6 +289,8 @@ def step(context, file_number, file_size, folder_name):
     regexp=True,
 )
 def step(context, username, _, resource_name):
+    if get_config('predefined_users'):
+        username = get_username_for_user(username)
     source_dir = join(get_config('tempFolderPath'), resource_name)
     destination_dir = get_resource_path('/', username)
     shutil.move(source_dir, destination_dir)
@@ -314,12 +321,18 @@ def step(context, username, source, destination):
 
 @Then('user "|any|" should be able to open the file "|any|" on the file system')
 def step(context, user, file_name):
+    if not is_owncloud_client():
+        user = get_username_for_user(user)
     file_path = get_resource_path(file_name, user)
+    if not os.path.exists(file_path):
+        raise ValueError(f'Could not find resource {file_path}')
     test.compare(can_read(file_path), True, 'File should be readable')
 
 
 @Then('as "|any|" the file "|any|" should have content "|any|" on the file system')
 def step(context, user, file_name, content):
+    if not is_owncloud_client():
+        user = get_username_for_user(user)
     file_path = get_resource_path(file_name, user)
     file_content = read_file_content(file_path)
     test.compare(file_content, content, 'Comparing file content')
@@ -327,7 +340,11 @@ def step(context, user, file_name, content):
 
 @Then('user "|any|" should not be able to edit the file "|any|" on the file system')
 def step(context, user, file_name):
+    if not is_owncloud_client():
+        user = get_username_for_user(user)
     file_path = get_resource_path(file_name, user)
+    if not os.path.exists(file_path):
+        raise ValueError(f'Could not find resource {file_path}')
     test.compare(not can_write(file_path), True, 'File should not be writable')
 
 
@@ -352,6 +369,8 @@ def step(context, zip_file_name):
 
 @When('user "|any|" unzips the zip file "|any|" inside the sync root')
 def step(context, username, zip_file_name):
+    if get_config('predefined_users'):
+        username = get_username_for_user(username)
     destination_dir = get_resource_path('/', username)
     zip_file_path = join(destination_dir, zip_file_name)
     extract_zip(zip_file_path, destination_dir)

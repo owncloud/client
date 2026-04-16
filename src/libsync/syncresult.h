@@ -36,19 +36,7 @@ public:
     // the order of the values markes their importance
     // higher values take prcedence when computing the
     // overall status
-    enum Status {
-        Undefined,
-        Success,
-        NotYetStarted,
-        SyncPrepare,
-        SyncRunning,
-        SyncAbortRequested,
-        Paused,
-        Offline,
-        Problem,
-        Error,
-        SetupError,
-    };
+    enum Status { Undefined, Success, NotYetStarted, SyncPrepare, SyncRunning, SyncAbortRequested, Paused, Offline, Problem, Error, SetupError, Unavailable };
     Q_ENUM(Status);
 
     SyncResult() = default;

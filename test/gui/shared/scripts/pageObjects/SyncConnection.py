@@ -6,9 +6,10 @@ from helpers.ConfigHelper import get_config
 
 
 class SyncConnection:
-    FOLDER_SYNC_CONNECTION_LIST = {
-        "container": names.quickWidget_scrollView_ScrollView,
-        "type": "ListView",
+    FOLDER_SYNC_CONNECTION_TREE = {
+        "container": names.stack_stackedWidget_QStackedWidget,
+        "name": "accountFoldersTreeView",
+        "type": "QTreeView",
         "visible": True,
     }
     FOLDER_SYNC_CONNECTION = {
@@ -18,114 +19,130 @@ class SyncConnection:
         "visible": 1,
     }
     FOLDER_SYNC_CONNECTION_LABEL = {
-        "container": names.quickWidget_scrollView_ScrollView,
-        "type": "Label",
-        "unnamed": 1,
-        "visible": True,
+        "container": names.stackedWidget_accountFoldersTreeView_QTreeView,
+        "type": "QModelIndex",
+        "column": 0,
     }
     FOLDER_SYNC_CONNECTION_MENU_BUTTON = {
-        "checkable": False,
-        "container": names.quickWidget_scrollView_ScrollView,
-        "type": "Button",
-        "unnamed": 1,
-        "visible": True,
-    }
-    MENU = {
-        "type": "QMenu",
-        "window": names.settings_OCC_SettingsDialog,
+        "columnIndex": 1,
+        "container": names.stackedWidget_accountFoldersTreeView_QTreeView,
+        "name": "buttonDelegateButton",
+        "type": "QPushButton",
         "visible": 1,
     }
     DISABLE_VFS_CONFIRMATION_BUTTON = {
-        "text": "Disable support",
-        "type": "QPushButton",
+        "name": "disableVfsButton",
+        "type": "QAction",
         "visible": 1,
-        "window": names.disable_virtual_file_support_QMessageBox,
+        "window": names.confirmDisableVfsDialog_QMessageBox,
     }
     SELECTIVE_SYNC_OK_BUTTON = {
         "container": names.settings_stack_QStackedWidget,
-        "text": "OK",
         "type": "QPushButton",
         "visible": 1,
     }
     CANCEL_FOLDER_SYNC_CONNECTION_DIALOG = {
-        "text": "Cancel",
+        "name": "cancelRemoveFolderSyncButton",
         "type": "QPushButton",
-        "unnamed": 1,
         "visible": 1,
-        "window": names.confirm_Folder_Sync_Connection_Removal_QMessageBox,
+        "window": names.confirmRemoveFolderSyncDialog_QMessageBox,
     }
     REMOVE_FOLDER_SYNC_CONNECTION_BUTTON = {
-        "text": "Remove Folder Sync Connection",
+        "name": "removeFolderSyncButton",
         "type": "QPushButton",
-        "unnamed": 1,
         "visible": 1,
-        "window": names.confirm_Folder_Sync_Connection_Removal_QMessageBox,
+        "window": names.confirmRemoveFolderSyncDialog_QMessageBox,
+    }
+    FORCE_SYNC_ACTION_MENU_OPTION = {
+        "container": names.settings_folderOptionsMenu_QMenu,
+        "name": "forceSyncAction",
+        "type": "QAction",
+        "visible": True,
+    }
+    PAUSE_SYNC_ACTION_MENU_OPTION = {
+        "container": names.settings_folderOptionsMenu_QMenu,
+        "name": "pauseSyncAction",
+        "type": "QAction",
+        "visible": True,
+    }
+    SELECTIVE_SYNC_ACTION_MENU_OPTION = {
+        "container": names.settings_folderOptionsMenu_QMenu,
+        "name": "selectiveSyncAction",
+        "type": "QAction",
+        "visible": True,
+    }
+    REMOVE_FOLDER_SYNC_ACTION_MENU_OPTION = {
+        "container": names.settings_folderOptionsMenu_QMenu,
+        "name": "removeFolderSyncAction",
+        "type": "QAction",
+        "visible": True,
+    }
+    ENABLE_VFS_ACTION_MENU_OPTION = {
+        "container": names.settings_folderOptionsMenu_QMenu,
+        "name": "enableVfsAction",
+        "type": "QAction",
+        "visible": True,
     }
 
     @staticmethod
     def open_menu(sync_folder=""):
         if get_config("ocis") and not sync_folder:
-            sync_folder = "Personal"
+            sync_folder = get_config("personal_sync_folder")
         elif not sync_folder:
             sync_folder = "ownCloud"
         selector = SyncConnection.FOLDER_SYNC_CONNECTION_LABEL.copy()
         selector.update({"text": sync_folder})
 
-        menu_button = None
+        folder_sync_connection = squish.waitForObject(selector)
+        squish.mouseClick(folder_sync_connection)
 
-        # get the parent of the sync folder label
-        parent = object.parent(
-            squish.waitForObject(selector)
-        ).parent.parent.parent.parent.parent
-        children = object.children(squish.waitForObject(parent))
-        for obj in children:
-            # get sync folder menu button
-            if obj.id == "moreButton":
-                menu_button = squish.waitForObject(obj)
+        menu_button_selector = SyncConnection.FOLDER_SYNC_CONNECTION_MENU_BUTTON.copy()
+        menu_button_selector.update({"rowIndex": folder_sync_connection.row})
+        menu_button = squish.waitForObject(menu_button_selector)
         squish.mouseClick(menu_button)
 
     @staticmethod
     def perform_action(action, sync_folder=""):
         SyncConnection.open_menu(sync_folder)
-        squish.activateItem(squish.waitForObjectItem(SyncConnection.MENU, action))
+        squish.activateItem(squish.waitForObject(action))
 
     @staticmethod
     def force_sync():
-        SyncConnection.perform_action("Force sync now")
+        SyncConnection.perform_action(SyncConnection.FORCE_SYNC_ACTION_MENU_OPTION)
 
     @staticmethod
     def pause_sync():
-        SyncConnection.perform_action("Pause sync")
+        SyncConnection.perform_action(SyncConnection.PAUSE_SYNC_ACTION_MENU_OPTION)
 
     @staticmethod
     def resume_sync():
-        SyncConnection.perform_action("Resume sync")
+        SyncConnection.perform_action(SyncConnection.PAUSE_SYNC_ACTION_MENU_OPTION)
 
     @staticmethod
     def enable_vfs():
-        SyncConnection.perform_action("Enable virtual file support")
+        SyncConnection.perform_action(SyncConnection.ENABLE_VFS_ACTION_MENU_OPTION)
 
     @staticmethod
     def disable_vfs():
-        SyncConnection.perform_action("Disable virtual file support")
+        SyncConnection.perform_action(SyncConnection.ENABLE_VFS_ACTION_MENU_OPTION)
         squish.clickButton(
             squish.waitForObject(SyncConnection.DISABLE_VFS_CONFIRMATION_BUTTON)
         )
 
     @staticmethod
     def has_menu_item(item):
-        return squish.waitForObjectItem(SyncConnection.MENU, item)
+        return squish.waitForObjectItem(names.settings_folderOptionsMenu_QMenu, item)
 
     @staticmethod
     def menu_item_exists(menu_item):
-        obj = SyncConnection.MENU.copy()
+        obj = names.settings_folderOptionsMenu_QMenu.copy()
         obj.update({"type": "QAction", "text": menu_item})
         return object.exists(obj)
 
     @staticmethod
     def choose_what_to_sync():
         SyncConnection.open_menu()
-        SyncConnection.perform_action("Choose what to sync")
+        SyncConnection.perform_action(SyncConnection.SELECTIVE_SYNC_ACTION_MENU_OPTION)
 
     @staticmethod
     def unselect_folder_in_selective_sync(folder_name):
@@ -158,11 +175,14 @@ class SyncConnection:
 
     @staticmethod
     def get_folder_connection_count():
-        return squish.waitForObject(SyncConnection.FOLDER_SYNC_CONNECTION_LIST).count
+        tree = squish.waitForObject(SyncConnection.FOLDER_SYNC_CONNECTION_TREE)
+        return tree.model().rowCount()
 
     @staticmethod
     def remove_folder_sync_connection(sync_folder=""):
-        SyncConnection.perform_action("Remove folder sync connection", sync_folder)
+        SyncConnection.perform_action(
+            SyncConnection.REMOVE_FOLDER_SYNC_ACTION_MENU_OPTION, sync_folder
+        )
 
     @staticmethod
     def cancel_folder_sync_connection_removal():

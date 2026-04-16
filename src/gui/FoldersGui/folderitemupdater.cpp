@@ -1,0 +1,150 @@
+/*
+ * Copyright (C) Lisa Reese <lisa.reese@kiteworks.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+ * for more details.
+ */
+#include "folderitemupdater.h"
+
+#include "folder.h"
+#include "folderitem.h"
+#include "resources.h"
+#include "space.h"
+
+namespace OCC {
+FolderItemUpdater::FolderItemUpdater(FolderItem *item)
+    : QObject{nullptr}
+    , _item(item)
+{
+    if (_item && _item->folder()) {
+        connect(_item->folder(), &Folder::spaceChanged, this, &FolderItemUpdater::onSpaceChanged);
+        connect(_item->folder(), &Folder::syncStateChange, this, &FolderItemUpdater::onSyncStateChanged);
+        if (_item->folder()->accountState())
+            connect(_item->folder()->accountState(), &AccountState::stateChanged, this, &FolderItemUpdater::onConnectedChanged);
+    }
+}
+
+// space changed is emitted, basically, any time the etag changes on the drive.
+// note that in spite of the fact that drive etag changes when the image is changed, we can't use this signal to trigger the image update
+// because spaceChanged is emitted *before* the new image is retrieved in a second step as a consequence of updating the drive.
+// This should be refactored after the folderWizard is gone and the goal should be to ensure that you can get any/all space changes, including
+// an updated image, when spaceChanged is handled.
+void FolderItemUpdater::onSpaceChanged()
+{
+    if (!_item->folder())
+        return;
+
+    // we need to possibly connect here to cover cases where a space/folder is added after start.
+    // in this scenario the account is already connected, so we have to use the first spaceChanged trigger
+    // which is associated with an emit from the folder constructor.
+    if (!_imageChangeConnection && _item->folder()->space()) {
+        _imageChangeConnection = connect(_item->folder()->space(), &GraphApi::Space::imageChanged, this, &FolderItemUpdater::onImageChanged);
+        onImageChanged();
+    }
+    _item->refresh();
+}
+
+void FolderItemUpdater::onConnectedChanged(AccountState::State newState)
+{
+    if (!_item->folder())
+        return;
+
+    // we may possibly need to connect here as the account may not have been connected during folder construction (eg on loading an account
+    // from config) in which the space is not available (yet). So to cover that case, connect to the space (if not already connected) asap
+    // after connection.
+    if (newState == AccountState::Connected && !_imageChangeConnection && _item->folder()->space()) {
+        _imageChangeConnection = connect(_item->folder()->space(), &GraphApi::Space::imageChanged, this, &FolderItemUpdater::onImageChanged);
+        onImageChanged();
+    } else {
+        // yes we need to drop this connection if the account is disconnected to ensure we fetch the "current" image on next connect
+        // in case it changed while the spaces/drives could not be updated
+        disconnect(_imageChangeConnection);
+    }
+
+    if (newState == AccountState::Connected)
+        _item->updateImage();
+    _item->refresh();
+}
+void FolderItemUpdater::onSyncStateChanged()
+{
+    if (!_item->folder())
+        return;
+
+    SyncResult::Status status = _item->folder()->syncResult().status();
+    if (status == SyncResult::SyncRunning) {
+        Q_ASSERT(!_progressInfoConnection); // ie it should not be connected already
+        _progressInfoConnection = connect(_item->folder(), &Folder::progressUpdate, this, &FolderItemUpdater::onProgressUpdated);
+    } else {
+        disconnect(_progressInfoConnection);
+    }
+
+    _item->refresh();
+
+    if (status == SyncResult::Error || status == SyncResult::Problem || status == SyncResult::SetupError) {
+        QStringList errors = _item->folder()->syncResult().errorStrings();
+
+        if (_item->folder()->syncResult().hasUnresolvedConflicts())
+            errors.append(tr("There are unresolved conflicts."));
+
+        for (const QString &error : std::as_const(errors)) {
+            QIcon errorIcon = Resources::getCoreIcon("states/warning");
+            QStandardItem *errorItem = new QStandardItem(errorIcon, error);
+            errorItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+
+            // just for testing to replace the normal error with something really long - will remove before merge
+            /*      QString longError =
+                      " I think trying to track overall total sizes using progress is just hopeless because a) when stuff is removed sync totals = 0. This means
+               we " "can't update a known total size using these progress values becausethey are never negative, to indicate a removal"; QStandardItem
+               *errorItem = new QStandardItem(errorIcon, longError);
+            */
+            QString accessibleError = tr("Sync error: %1").arg(error);
+            errorItem->setData(accessibleError, Qt::AccessibleTextRole);
+
+            QStandardItem *emptyEditorItem = new QStandardItem();
+            emptyEditorItem->setFlags(Qt::NoItemFlags);
+
+            _item->appendRow({errorItem, emptyEditorItem});
+        }
+
+    } else if (status == SyncResult::SyncPrepare && _item->hasChildren()) {
+        // I expect this check needs refinement - may want to wait until the sync has actually started before removing previous errors
+        _item->removeRows(0, _item->rowCount());
+    }
+}
+
+void FolderItemUpdater::onImageChanged()
+{
+    _item->updateImage();
+}
+
+void FolderItemUpdater::onProgressUpdated(const ProgressInfo &progress)
+{
+    // I think trying to track overall total sizes using progress is just hopeless because
+    // a) when stuff is removed sync totals = 0. This means we can't update a "known total size" using these progress values because
+    // they are never negative, to indicate a removal
+    // b) when discovery finds that nothing needs to be uploaded/downloaded, the totals are zero. I am not sure why a progress is even reported in this
+    // case as nothing is going to "progress" or happen at all! Maybe there is some other value in the progress that let's us identify that
+    // c) if sync totals are zero we don't know if it's because something was removed or there was no diff. I just don't see how this can
+    // work even if we try to maintain "last known totals" as these dual meaning "zeros" are a big problem.
+    // kw does not know total space size so we can't get it there
+    // calculating sizes "on the fly" by recursing a directory is expensive and would have to happen constantly, as far as I can tell,
+    // due to the problem of not knowing about deletion sizes (without vfs) and not knowing when user hydrates/dehydrates files (with vfs)
+
+    // I don't think we need to worry about the other states - propagation is the state where progress data seems to be provided, but double check this
+    if (progress.status() == ProgressInfo::Propagation) {
+        // slow down the updates just a bit - the default is too incremental
+        if (std::chrono::steady_clock::now() - _lastProgressUpdated > ProgressUpdateTimeout) {
+            _item->setProgress(progress);
+            _lastProgressUpdated = std::chrono::steady_clock::now();
+        }
+    } else
+        _lastProgressUpdated = {};
+}
+}

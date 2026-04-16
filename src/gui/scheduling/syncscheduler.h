@@ -54,16 +54,20 @@ public:
 
     void stop();
 
-    bool hasCurrentRunningSyncRunning() const;
-
     void setPauseSyncWhenMetered(bool pauseSyncWhenMetered);
 
+    void connectSpacesManager(OCC::GraphApi::SpacesManager *spaceMan);
+
+public Q_SLOTS:
+
+    void handleEnqueueFolder(Folder *f);
 
 private:
     void startNext();
 
     bool _running = false;
     bool _pauseSyncWhenMetered;
+    ETagWatcher *_watcher = nullptr;
     QPointer<Folder> _currentSync;
     FolderPriorityQueue *_queue;
 };

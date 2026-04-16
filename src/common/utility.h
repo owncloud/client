@@ -140,10 +140,10 @@ OCSYNC_EXPORT Q_DECLARE_LOGGING_CATEGORY(lcUtility)
     // if this function returns true, the file system is case preserving,
     // that means "test" means the same as "TEST" for filenames.
     // if false, the two cases are two different files.
-    OCSYNC_EXPORT bool fsCasePreserving();
+    OCSYNC_EXPORT bool fsCasePreservingButCaseInsensitive();
     inline auto fsCaseSensitivity()
     {
-        return fsCasePreserving() ? Qt::CaseInsensitive : Qt::CaseSensitive;
+        return fsCasePreservingButCaseInsensitive() ? Qt::CaseInsensitive : Qt::CaseSensitive;
     }
 
     // Check if two pathes that MUST exist are equal. This function
@@ -226,8 +226,7 @@ OCSYNC_EXPORT Q_DECLARE_LOGGING_CATEGORY(lcUtility)
 
     /** Returns a file name based on \a fn that's suitable for a conflict.
      */
-    OCSYNC_EXPORT QString makeConflictFileName(
-        const QString &fn, const QDateTime &dt, const QString &user);
+    OCSYNC_EXPORT QString makeConflictFileName(const QString &fn, const QDateTime &dt);
 
     /** Returns whether a file name indicates a conflict file
      */

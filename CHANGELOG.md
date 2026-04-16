@@ -1,6 +1,10 @@
 # Table of Contents
 
 * [Changelog for unreleased](#changelog-for-owncloud-desktop-client-unreleased-unreleased)
+* [Changelog for 6.0.3](#changelog-for-owncloud-desktop-client-603-2026-01-07)
+* [Changelog for 6.0.2](#changelog-for-owncloud-desktop-client-602-2025-11-03)
+* [Changelog for 6.0.1](#changelog-for-owncloud-desktop-client-601-2025-10-10)
+* [Changelog for 6.0.0](#changelog-for-owncloud-desktop-client-600-2025-09-08)
 * [Changelog for 5.3.2](#changelog-for-owncloud-desktop-client-532-2025-01-20)
 * [Changelog for 5.3.1](#changelog-for-owncloud-desktop-client-531-2024-06-11)
 * [Changelog for 5.3.0](#changelog-for-owncloud-desktop-client-530-2024-06-06)
@@ -42,7 +46,121 @@
 The following sections list the changes in ownCloud Desktop Client unreleased relevant to
 ownCloud admins and users.
 
-[unreleased]: https://github.com/owncloud/client/compare/v5.3.2...master
+[unreleased]: https://github.com/owncloud/client/compare/v6.0.3...master
+
+## Summary
+
+* Bugfix - Fix compatibility with extra-cmake-modules-6.19.0: [#12374](https://github.com/owncloud/client/pull/12374)
+* Change - Remove capability to upload conflict files: [#12369](https://github.com/owncloud/client/pull/12369)
+
+## Details
+
+* Bugfix - Fix compatibility with extra-cmake-modules-6.19.0: [#12374](https://github.com/owncloud/client/pull/12374)
+
+   Fix runtime crash at startup with ECM 6.19.
+
+   https://github.com/owncloud/client/pull/12374
+
+* Change - Remove capability to upload conflict files: [#12369](https://github.com/owncloud/client/pull/12369)
+
+   None of the supported servers implements (or plans on implementing) this
+   feature. This removal includes the `OWNCLOUD_UPLOAD_CONFLICT_FILES` environment
+   variable.
+
+   https://github.com/owncloud/client/pull/12369
+
+# Changelog for ownCloud Desktop Client [6.0.3] (2026-01-07)
+
+The following sections list the changes in ownCloud Desktop Client 6.0.3 relevant to
+ownCloud admins and users.
+
+[6.0.3]: https://github.com/owncloud/client/compare/v6.0.2...v6.0.3
+
+## Summary
+
+* Security - Fixing medium security vulnerability in password input handling: [#12430](https://github.com/owncloud/client/pull/12430)
+* Change - Third party upgrades in distributed binaries: [#12364](https://github.com/owncloud/client/pull/12364)
+
+## Details
+
+* Security - Fixing medium security vulnerability in password input handling: [#12430](https://github.com/owncloud/client/pull/12430)
+
+   CVE and security advisory will follow.
+
+   https://github.com/owncloud/client/pull/12430
+   https://github.com/owncloud/client/pull/12431
+
+* Change - Third party upgrades in distributed binaries: [#12364](https://github.com/owncloud/client/pull/12364)
+
+   We updated OpenSSL to 3.4.3
+
+   https://github.com/owncloud/client/pull/12364
+   https://github.com/owncloud/client/pull/12432
+
+# Changelog for ownCloud Desktop Client [6.0.2] (2025-11-03)
+
+The following sections list the changes in ownCloud Desktop Client 6.0.2 relevant to
+ownCloud admins and users.
+
+[6.0.2]: https://github.com/owncloud/client/compare/v6.0.1...v6.0.2
+
+## Summary
+
+* Security - Fixing high security vulnerability in MacOS client: [#12379](https://github.com/owncloud/client/pull/12379)
+
+## Details
+
+* Security - Fixing high security vulnerability in MacOS client: [#12379](https://github.com/owncloud/client/pull/12379)
+
+   CVE: CVE-2025-64441
+
+   https://github.com/owncloud/client/pull/12379
+   https://github.com/owncloud/client/pull/12389
+   https://github.com/owncloud/client/pull/12390
+
+# Changelog for ownCloud Desktop Client [6.0.1] (2025-10-10)
+
+The following sections list the changes in ownCloud Desktop Client 6.0.1 relevant to
+ownCloud admins and users.
+
+[6.0.1]: https://github.com/owncloud/client/compare/v6.0.0...v6.0.1
+
+## Summary
+
+* Bugfix - Fix VFS checkbox in folder wizard: [#12305](https://github.com/owncloud/client/pull/12305)
+* Bugfix - Reverting UTF-8 normalisation change: [#12334](https://github.com/owncloud/client/pull/12334)
+* Change - Move to trash-bin is enabled now by default: [#12338](https://github.com/owncloud/client/pull/12338)
+
+## Details
+
+* Bugfix - Fix VFS checkbox in folder wizard: [#12305](https://github.com/owncloud/client/pull/12305)
+
+   On the last page of the folder wizard, there is a checkbox to select/deselect
+   VFS. By default this is checked. The bug was that after unchecking this
+   checkbox, it could not be checked again. This has now been fixed.
+
+   https://github.com/owncloud/client/pull/12305
+
+* Bugfix - Reverting UTF-8 normalisation change: [#12334](https://github.com/owncloud/client/pull/12334)
+
+   The UTF-8 normalization change as per #12039 has been reverted.
+
+   https://github.com/owncloud/client/pull/12334
+   https://github.com/owncloud/client/pull/12039
+
+* Change - Move to trash-bin is enabled now by default: [#12338](https://github.com/owncloud/client/pull/12338)
+
+   To protect users from data loss the "move to trash" option is now enabled by
+   default.
+
+   https://github.com/owncloud/client/pull/12338
+
+# Changelog for ownCloud Desktop Client [6.0.0] (2025-09-08)
+
+The following sections list the changes in ownCloud Desktop Client 6.0.0 relevant to
+ownCloud admins and users.
+
+[6.0.0]: https://github.com/owncloud/client/compare/v5.3.2...v6.0.0
 
 ## Summary
 
@@ -60,6 +178,7 @@ ownCloud admins and users.
 * Bugfix - Don't log misleading error if dynamic registration failed: [#11839](https://github.com/owncloud/client/pull/11839)
 * Bugfix - Fix crash after resource job fails: [#12045](https://github.com/owncloud/client/pull/12045)
 * Bugfix - Remove any existing ResourceCache directories for accounts: [#12214](https://github.com/owncloud/client/pull/12214)
+* Bugfix - Delete account-specific caches when an account is removed: [#12224](https://github.com/owncloud/client/pull/12224)
 * Change - Revert local folder name back to pre 3.0 behavior: [#6390](https://github.com/owncloud/enterprise/issues/6390)
 * Change - Make messages translatable that occur early in start-up: [#11142](https://github.com/owncloud/client/issues/11142)
 * Change - Remove unused command line option --language: [#11245](https://github.com/owncloud/client/issues/11245)
@@ -76,6 +195,8 @@ ownCloud admins and users.
 * Change - Only allow to add un-synced spaces: [#11752](https://github.com/owncloud/client/issues/11752)
 * Change - Rewrite of the login widget in QML: [#11856](https://github.com/owncloud/client/pull/11856)
 * Change - Only support APFS on macOS: [#12044](https://github.com/owncloud/client/pull/12044)
+* Change - Bump minimum macOS version to 13.0: [#12245](https://github.com/owncloud/client/pull/12245)
+* Change - Update the sync exclude list for Infinite Scale: [#12262](https://github.com/owncloud/client/pull/12262)
 * Enhancement - Add option to pause synchronization on metered connections: [#4808](https://github.com/owncloud/client/issues/4808)
 * Enhancement - Add option to move files to trash instead of deleting: [#9001](https://github.com/owncloud/client/issues/9001)
 * Enhancement - Prevent same default sync folder for multiple accounts with Spaces: [#11204](https://github.com/owncloud/client/issues/11204)
@@ -188,6 +309,13 @@ ownCloud admins and users.
    directories are now cleaned up before creating a new cache.
 
    https://github.com/owncloud/client/pull/12214
+
+* Bugfix - Delete account-specific caches when an account is removed: [#12224](https://github.com/owncloud/client/pull/12224)
+
+   This includes the cache for space images, as well as certain cached network
+   jobs.
+
+   https://github.com/owncloud/client/pull/12224
 
 * Change - Revert local folder name back to pre 3.0 behavior: [#6390](https://github.com/owncloud/enterprise/issues/6390)
 
@@ -334,6 +462,19 @@ ownCloud admins and users.
 
    https://github.com/owncloud/client/pull/12044
 
+* Change - Bump minimum macOS version to 13.0: [#12245](https://github.com/owncloud/client/pull/12245)
+
+   https://github.com/owncloud/client/pull/12245
+   https://github.com/owncloud/client/pull/12246
+
+* Change - Update the sync exclude list for Infinite Scale: [#12262](https://github.com/owncloud/client/pull/12262)
+
+   Files with the extension `.space` and `.psec` are now excluded from sync by
+   default.
+
+   https://github.com/owncloud/client/pull/12262
+   https://github.com/owncloud/client/pull/12093
+
 * Enhancement - Add option to pause synchronization on metered connections: [#4808](https://github.com/owncloud/client/issues/4808)
 
    On platforms that support metered-connection detection, an option is now
@@ -442,7 +583,7 @@ ownCloud admins and users.
 
 * Security - Fixing high security vulnerability in Windows Installer: [#12010](https://github.com/owncloud/client/issues/12010)
 
-   CVE and security advisory will follow.
+   CVE: CVE-2025-24926
 
    https://github.com/owncloud/client/issues/12010
 
@@ -755,7 +896,7 @@ ownCloud admins and users.
 * Enhancement - Change how all files deleted is handled: [#8360](https://github.com/owncloud/client/issues/8360)
 * Enhancement - Port from QtSingleApplication to KDSingleApplication: [#8432](https://github.com/owncloud/client/issues/8432)
 * Enhancement - Enable crash reporter in commandline client: [#8991](https://github.com/owncloud/client/issues/8991)
-* Enhancement - Make "Show files versions..." context menu action available: [#10197](https://github.com/owncloud/client/issues/10197)
+* Enhancement - Make "Show files versions…" context menu action available: [#10197](https://github.com/owncloud/client/issues/10197)
 * Enhancement - Log http request when it is sent: [#10313](https://github.com/owncloud/client/issues/10313)
 * Enhancement - Allow selective sync of spaces in folder wizard: [#10596](https://github.com/owncloud/client/issues/10596)
 * Enhancement - Send a language header in all http requests: [#10619](https://github.com/owncloud/client/issues/10619)
@@ -965,7 +1106,7 @@ ownCloud admins and users.
 
    https://github.com/owncloud/client/issues/8991
 
-* Enhancement - Make "Show files versions..." context menu action available: [#10197](https://github.com/owncloud/client/issues/10197)
+* Enhancement - Make "Show files versions…" context menu action available: [#10197](https://github.com/owncloud/client/issues/10197)
 
    https://github.com/owncloud/client/issues/10197
 
@@ -1350,7 +1491,7 @@ ownCloud admins and users.
 
 * Enhancement - Open sharing options in Web: [#10590](https://github.com/owncloud/client/pull/10590)
 
-   When selecting "Share..." in the file browser context menu, we now not only
+   When selecting "Share…" in the file browser context menu, we now not only
    display that file in the web view but also directly show the sharing options.
 
    https://github.com/owncloud/client/pull/10590

@@ -12,10 +12,8 @@
  * for more details.
  */
 
-#ifndef CONFIGFILE_H
-#define CONFIGFILE_H
+#pragma once
 
-#include "common/result.h"
 #include "owncloudlib.h"
 
 #include <QNetworkProxy>
@@ -68,15 +66,10 @@ public:
 
     QString defaultConnection() const;
 
-    bool passwordStorageAllowed(const QString &connection = QString());
-
     /* Server poll interval in milliseconds */
     std::chrono::milliseconds remotePollInterval(std::chrono::seconds defaultVal, const QString &connection = QString()) const;
     /* Set poll interval. Value in milliseconds has to be larger than 5000 */
     void setRemotePollInterval(std::chrono::milliseconds interval, const QString &connection = QString());
-
-    /* Interval to check for new notifications */
-    std::chrono::milliseconds notificationRefreshInterval(const QString &connection = QString()) const;
 
     /* Force sync interval, in milliseconds */
     std::chrono::milliseconds forceSyncInterval(std::chrono::seconds remoteFromCapabilities, const QString &connection = QString()) const;
@@ -127,17 +120,6 @@ public:
     bool proxyNeedsAuth() const;
     QString proxyUser() const;
 
-    /** 0: no limit, 1: manual, >0: automatic */
-    int useUploadLimit() const;
-    int useDownloadLimit() const;
-    void setUseUploadLimit(int);
-    void setUseDownloadLimit(int);
-    /** in kbyte/s */
-    int uploadLimit() const;
-    int downloadLimit() const;
-    void setUploadLimit(int kbytes);
-    void setDownloadLimit(int kbytes);
-
     bool pauseSyncWhenMetered() const;
     void setPauseSyncWhenMetered(bool isChecked);
 
@@ -155,22 +137,12 @@ public:
     void setIssuesWidgetFilter(const QStringList &checked);
 
     std::chrono::seconds timeout() const;
-    qint64 chunkSize() const;
-    qint64 maxChunkSize() const;
-    qint64 minChunkSize() const;
-    std::chrono::milliseconds targetChunkUploadDuration() const;
 
     void saveGeometry(QWidget *w);
     void restoreGeometry(QWidget *w);
 
     // how often the check about new versions runs
     std::chrono::milliseconds updateCheckInterval(const QString &connection = QString()) const;
-
-    bool skipUpdateCheck(const QString &connection = QString()) const;
-    void setSkipUpdateCheck(bool, const QString &);
-
-    QString updateChannel() const;
-    void setUpdateChannel(const QString &channel);
 
     QString uiLanguage() const;
     void setUiLanguage(const QString &uiLanguage);
@@ -189,17 +161,7 @@ public:
     /// Add the system and user exclude file path to the ExcludedFiles instance.
     static void setupDefaultExcludeFilePaths(ExcludedFiles &excludedFiles);
 
-    /**
-     * The maximum versions that this client can read.
-     *
-     * We don't use these versions anymore, see https://github.com/owncloud/client/issues/10473 .
-     * These values are only written, and that prevents older clients from loading these newer
-     * settings.
-     */
-    static constexpr int UnusedLegacySettingsVersionNumber = 13;
-
 protected:
-    QVariant getPolicySetting(const QString &policy, const QVariant &defaultValue = QVariant()) const;
     void storeData(const QString &group, const QString &key, const QVariant &value);
     void removeData(const QString &group, const QString &key);
     bool dataExists(const QString &group, const QString &key) const;
@@ -216,4 +178,3 @@ private:
     static QString _confDir;
 };
 }
-#endif // CONFIGFILE_H

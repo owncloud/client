@@ -166,7 +166,7 @@ void PropagateLocalMkdir::start()
             }
         } else if (_item->instruction() == CSYNC_INSTRUCTION_CONFLICT) {
             QString error;
-            if (!propagator()->createConflict(_item, _associatedComposite, &error)) {
+            if (!propagator()->createConflict(_item, &error)) {
                 done(SyncFileItem::SoftError, error);
                 return;
             }
@@ -224,10 +224,10 @@ void PropagateLocalRename::start()
         propagator()->reportProgress(*_item, 0);
         qCDebug(lcPropagateLocalRename) << "MOVE " << existingFile << " => " << targetFile;
 
-        if (QString::compare(_item->_file, _item->_renameTarget, Qt::CaseInsensitive) != 0
-            && propagator()->localFileNameClash(_item->_renameTarget)) {
-            // Only use localFileNameClash for the destination if we know that the source was not
-            // the one conflicting  (renaming  A.txt -> a.txt is OK)
+        if (_item->_file.normalized(QString::NormalizationForm_C)
+                != _item->_renameTarget.normalized(QString::NormalizationForm_C) // Normalization-only changes are okay
+            && QString::compare(_item->_file, _item->_renameTarget, Qt::CaseInsensitive) != 0 // Case-only changes are ok
+            && propagator()->localFileNameClash(_item->_renameTarget)) { // Anything else: check for a name-clash
 
             // Fixme: the file that is the reason for the clash could be named here,
             // it would have to come out the localFileNameClash function

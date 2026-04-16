@@ -21,7 +21,6 @@
 #include "accountstate.h"
 #include "application.h"
 #include "common/checksums.h"
-#include "common/depreaction.h"
 #include "common/filesystembase.h"
 #include "common/syncjournalfilerecord.h"
 #include "common/version.h"
@@ -30,7 +29,6 @@
 #include "filesystem.h"
 #include "folderman.h"
 #include "folderwatcher.h"
-#include "gui/accountsettings.h"
 #include "libsync/graphapi/spacesmanager.h"
 #include "localdiscoverytracker.h"
 #include "scheduling/syncscheduler.h"
@@ -60,16 +58,6 @@ namespace {
  */
 constexpr int retrySyncLimitC = 3;
 
-/*
- * [Accounts]
- * 1\Folders\4\version=2
- * 1\FoldersWithPlaceholders\3\version=3
- */
-auto versionC()
-{
-    return QLatin1String("version");
-}
-
 auto davUrlC()
 {
     return QStringLiteral("davUrl");
@@ -85,7 +73,8 @@ auto displayNameC()
     return QLatin1String("displayString");
 }
 
-auto deployedC()
+// todo #52 - eliminate this config value and scrub configs next major release
+[[deprecated("deployed concept is no longer supported and will be removed in client 8.0")]] auto deployedC()
 {
     return QStringLiteral("deployed");
 }
@@ -102,7 +91,7 @@ using namespace FileSystem::SizeLiterals;
 
 Q_LOGGING_CATEGORY(lcFolder, "gui.folder", QtInfoMsg)
 
-Folder::Folder(const FolderDefinition &definition, const AccountStatePtr &accountState, std::unique_ptr<Vfs> &&vfs, QObject *parent)
+Folder::Folder(const FolderDefinition &definition, AccountState *accountState, std::unique_ptr<Vfs> &&vfs, bool ignoreHiddenFiles, QObject *parent)
     : QObject(parent)
     , _accountState(accountState)
     , _definition(definition)
@@ -118,8 +107,8 @@ Folder::Folder(const FolderDefinition &definition, const AccountStatePtr &accoun
         status = SyncResult::Paused;
     }
     setSyncState(status);
-    // check if the local path exists
-    if (checkLocalPath()) {
+    // check if the starting conditions are legit
+    if (_accountState && _accountState->account() && checkLocalPath()) {
         prepareFolder(path());
         // those errors should not persist over sessions
         _journal.wipeErrorBlacklistCategory(SyncJournalErrorBlacklistRecord::Category::LocalSoftError);
@@ -127,19 +116,22 @@ Folder::Folder(const FolderDefinition &definition, const AccountStatePtr &accoun
         // current impl can result in an invalid engine which is just a mess given the folder is useless without it
         _engine.reset(new SyncEngine(_accountState->account(), webDavUrl(), path(), remotePath(), &_journal));
         // pass the setting if hidden files are to be ignored, will be read in csync_update
-        _engine->setIgnoreHiddenFiles(_definition.ignoreHiddenFiles());
+        _engine->setIgnoreHiddenFiles(ignoreHiddenFiles);
 
         if (!_engine->loadDefaultExcludes()) {
             qCWarning(lcFolder, "Could not read system exclude file");
         }
 
-        connect(_accountState.data(), &AccountState::isConnectedChanged, this, &Folder::canSyncChanged);
+        connect(_accountState, &AccountState::isConnectedChanged, this, &Folder::canSyncChanged);
 
         connect(_engine.data(), &SyncEngine::started, this, &Folder::slotSyncStarted, Qt::QueuedConnection);
         connect(_engine.data(), &SyncEngine::finished, this, &Folder::slotSyncFinished, Qt::QueuedConnection);
 
         connect(_engine.data(), &SyncEngine::transmissionProgress, this,
             [this](const ProgressInfo &pi) { Q_EMIT ProgressDispatcher::instance()->progressInfo(this, pi); });
+
+        connect(_engine.data(), &SyncEngine::transmissionProgress, this, &Folder::progressUpdate);
+
         connect(_engine.data(), &SyncEngine::itemCompleted, this, &Folder::slotItemCompleted);
         connect(_engine.data(), &SyncEngine::seenLockedFile, FolderMan::instance(), &FolderMan::slotSyncOnceFileUnlocks);
         connect(_engine.data(), &SyncEngine::aboutToPropagate,
@@ -158,9 +150,11 @@ Folder::Folder(const FolderDefinition &definition, const AccountStatePtr &accoun
 
         connect(_accountState->account()->spacesManager(), &GraphApi::SpacesManager::spaceChanged, this, [this](GraphApi::Space *changedSpace) {
             if (_definition.spaceId() == changedSpace->id()) {
-                Q_EMIT spaceChanged();
+                emit spaceChanged();
             }
         });
+        if (space())
+            emit spaceChanged();
 
         // Potentially upgrade suffix vfs to windows vfs
         OC_ENFORCE(_vfs);
@@ -195,7 +189,7 @@ Result<void, QString> Folder::checkPathLength(const QString &path)
 
 GraphApi::Space *Folder::space() const
 {
-    if (_accountState->supportsSpaces() && _accountState->account()->spacesManager()) {
+    if (_accountState && _accountState->account() && _accountState->account()->spacesManager()) {
         return _accountState->account()->spacesManager()->space(_definition.spaceId());
     }
     return nullptr;
@@ -204,7 +198,7 @@ GraphApi::Space *Folder::space() const
 bool Folder::checkLocalPath()
 {
 #ifdef Q_OS_WIN
-    Utility::NtfsPermissionLookupRAII ntfs_perm;
+    QNtfsPermissionCheckGuard ntfs_perm;
 #endif
     const QFileInfo fi(_definition.localPath());
     _canonicalLocalPath = fi.canonicalFilePath();
@@ -259,15 +253,10 @@ SyncOptions Folder::loadSyncOptions()
     ConfigFile cfgFile;
 
     opt._moveFilesToTrash = cfgFile.moveToTrash();
-    opt._parallelNetworkJobs = _accountState->account()->isHttp2Supported() ? 20 : 6;
-
-    opt._initialChunkSize = cfgFile.chunkSize();
-    opt._minChunkSize = cfgFile.minChunkSize();
-    opt._maxChunkSize = cfgFile.maxChunkSize();
-    opt._targetChunkUploadDuration = cfgFile.targetChunkUploadDuration();
+    // got a nullptr hit here - this is so shady but best I can do for now
+    opt._parallelNetworkJobs = (_accountState && _accountState->account() && _accountState->account()->isHttp2Supported()) ? 20 : 6;
 
     opt.fillFromEnvironmentVariables();
-    opt.verifyChunkSizes();
     return opt;
 }
 
@@ -344,12 +333,9 @@ QString Folder::cleanPath() const
 
 QUrl Folder::webDavUrl() const
 {
-    const QString spaceId = _definition.spaceId();
-    if (!spaceId.isEmpty()) {
-        if (auto *space = _accountState->account()->spacesManager()->space(spaceId)) {
-            return QUrl(space->drive().getRoot().getWebDavUrl());
-        }
-    }
+    GraphApi::Space *sp = space();
+    if (sp)
+        return sp->webDavUrl();
     return _definition.webDavUrl();
 }
 
@@ -368,7 +354,9 @@ bool Folder::isSyncRunning() const
 
 bool Folder::canSync() const
 {
-    return _engine && !syncPaused() && accountState()->readyForSync() && isReady() && _accountState->account()->hasCapabilities() && _folderWatcher;
+    if (!_engine || !_accountState || !_accountState->account() || !_folderWatcher)
+        return false;
+    return isAvailable() && !syncPaused() && _accountState->readyForSync() && isReady() && _accountState->account()->hasCapabilities();
 }
 
 bool Folder::isReady() const
@@ -394,6 +382,29 @@ void Folder::setSyncPaused(bool paused)
         setSyncState(SyncResult::Paused);
     }
     Q_EMIT canSyncChanged();
+}
+
+void Folder::setAvailable(bool available)
+{
+    if (available != (space() != nullptr))
+        return;
+
+    _available = available;
+    _syncResult.reset();
+    if (!_available) {
+        _syncResult.setStatus(SyncResult::Status::Unavailable);
+        _syncResult.appendErrorString(tr("The folder has been disabled or removed from the server"));
+    } else {
+        _syncResult.setStatus(SyncResult::Status::NotYetStarted);
+    }
+
+    emit syncStateChange();
+    emit canSyncChanged();
+}
+
+bool Folder::isConnected()
+{
+    return (_accountState && _accountState->isConnected());
 }
 
 void Folder::setSyncState(SyncResult::Status state)
@@ -506,17 +517,25 @@ void Folder::createGuiLog(const QString &filename, LogStatus status, int count,
 
 void Folder::startVfs()
 {
+    if (!_accountState || !_accountState->account())
+        return;
+
     OC_ENFORCE(_vfs);
     OC_ENFORCE(_vfs->mode() == _definition.virtualFilesMode());
 
-    const auto result = Vfs::checkAvailability(path(), _vfs->mode());
-    if (!result) {
-        _syncResult.appendErrorString(result.error());
+    // todo: DC-219 check to see if this sync error makes it to the gui or not. We need to more clearly inform the user that they should
+    // create a new sync connection to the remote folder, and use improved checks in the folder wizard to make sure vfs is supported
+    // on the chosen path.
+    // ideally we want a check like this before we even get here, eg in the area of load folder from config - but need to be sure there is
+    // a place to clearly instruct the user that the folder sync needs to be re-built with a valid local path
+    QString result = Vfs::pathSupportDetail(path(), _vfs->mode());
+    if (!result.isEmpty()) {
+        _syncResult.appendErrorString(result);
         setSyncState(SyncResult::SetupError);
         return;
     }
 
-    VfsSetupParams vfsParams(_accountState->account(), webDavUrl(), groupInSidebar(), _engine.get());
+    VfsSetupParams vfsParams(_accountState->account(), webDavUrl(), _engine.get());
     vfsParams.filesystemPath = path();
     vfsParams.remotePath = remotePathTrailingSlash();
     vfsParams.journal = &_journal;
@@ -545,8 +564,6 @@ void Folder::startVfs()
             }
         });
         _vfsIsReady = true;
-        // Refactoring todo: NO. Just no.
-        Q_EMIT FolderMan::instance()->folderListChanged();
         // We are set up, schedule ourselves if we can.
         // If not the scheduler will take care of it later.
         if (canSync()) {
@@ -772,11 +789,6 @@ void Folder::changeVfsMode(Vfs::Mode newMode)
     Q_EMIT vfsModeChanged(this, newMode);
 }
 
-bool Folder::supportsSelectiveSync() const
-{
-    return !virtualFilesEnabled() && isReady();
-}
-
 bool Folder::isDeployed() const
 {
     return _definition.isDeployed();
@@ -865,7 +877,6 @@ bool Folder::reloadExcludes()
 
 void Folder::startSync()
 {
-    Q_ASSERT(isReady() && _folderWatcher);
     if (!isReady() || !_folderWatcher) {
         qCWarning(lcFolder) << "Folder sync attempted before ready and/or without valid folder watcher";
         return;
@@ -896,12 +907,6 @@ void Folder::startSync()
             this, [this] { slotSyncFinished(false); }, Qt::QueuedConnection);
         return;
     }
-    // Refactoring todo: why is this called every time a sync starts? the data seems to come from hard vals or the config which means
-    // the config is queried on every sync - not great.
-    // if it does it should just be updated once, after notification that the user changed it.
-    // This is part of what Erik wants to ditch - having user settable bandwidth limits is fairly nuts but until it's
-    // removed completely this has to still be handled.
-    setDirtyNetworkLimits();
 
     // get the latest touched files
     // this will enqueue this folder again, it doesn't matter
@@ -926,47 +931,9 @@ void Folder::startSync()
         _localDiscoveryTracker->startSyncFullDiscovery();
     }
 
-    // Refactoring todo: why is this set for every sync instead of when the value actually changes?!
-    // propose: remove the param from the def, and when Folder:setIgnoreHiddenFiles is called it updates the
-    // ENGINE, not the def. the value should not be stored in the folder def but in the general area of the config.
-    // if we ever graduate to allowing the user to set this value *per folder* we can refactor it, but the overhead
-    // of saving this val for every folder in the config is just silly when it's de facto a global setting.
-    // Erik has no objections
-    // generally when we change settings we pause syncs, update whatever values,
-    // then reschedule the newly paused syncs with top prio and start sync - see handling for changing vfs mode
-    // consider allowing the engine to run a "update routine" where it pauses and restarts itself.
-    _engine->setIgnoreHiddenFiles(_definition.ignoreHiddenFiles());
     QMetaObject::invokeMethod(_engine.data(), &SyncEngine::startSync, Qt::QueuedConnection);
 
     Q_EMIT syncStarted();
-}
-
-void Folder::setDirtyNetworkLimits()
-{
-    Q_ASSERT(isReady());
-    if (!isReady()) {
-        qCWarning(lcFolder) << "Folder is not ready";
-        return;
-    }
-
-    ConfigFile cfg;
-    int downloadLimit = -75; // 75%
-    int useDownLimit = cfg.useDownloadLimit();
-    if (useDownLimit >= 1) {
-        downloadLimit = cfg.downloadLimit() * 1000;
-    } else if (useDownLimit == 0) {
-        downloadLimit = 0;
-    }
-
-    int uploadLimit = -75; // 75%
-    int useUpLimit = cfg.useUploadLimit();
-    if (useUpLimit >= 1) {
-        uploadLimit = cfg.uploadLimit() * 1000;
-    } else if (useUpLimit == 0) {
-        uploadLimit = 0;
-    }
-
-    _engine->setNetworkLimits(uploadLimit, downloadLimit);
 }
 
 void Folder::reloadSyncOptions()
@@ -1190,6 +1157,11 @@ FolderDefinition::FolderDefinition(const QByteArray &id, const QUrl &davUrl, con
 {
 }
 
+FolderDefinition::FolderDefinition(const QUrl &davUrl, const QString &spaceId, const QString &displayName)
+    : FolderDefinition(QUuid::createUuid().toByteArray(QUuid::WithoutBraces), davUrl, spaceId, displayName)
+{
+}
+
 void FolderDefinition::setPriority(uint32_t newPriority)
 {
     _priority = newPriority;
@@ -1202,23 +1174,19 @@ uint32_t FolderDefinition::priority() const
 
 void FolderDefinition::save(QSettings &settings, const FolderDefinition &def)
 {
-    settings.setValue(QStringLiteral("localPath"), def.localPath());
-    settings.setValue(QStringLiteral("journalPath"), def.journalPath());
-    settings.setValue(QStringLiteral("targetPath"), def.targetPath());
+    settings.setValue("localPath", def.localPath());
+    settings.setValue("journalPath", def.journalPath());
+    settings.setValue("targetPath", def.targetPath());
     if (!def.spaceId().isEmpty()) {
         settings.setValue(spaceIdC(), def.spaceId());
     }
     settings.setValue(davUrlC(), def.webDavUrl());
     settings.setValue(displayNameC(), def.displayName());
-    settings.setValue(QStringLiteral("paused"), def.paused());
-    settings.setValue(QStringLiteral("ignoreHiddenFiles"), def.ignoreHiddenFiles());
+    settings.setValue("paused", def.paused());
     settings.setValue(deployedC(), def.isDeployed());
     settings.setValue(priorityC(), def.priority());
 
-    settings.setValue(QStringLiteral("virtualFilesMode"), Utility::enumToString(def.virtualFilesMode()));
-
-    // Prevent loading of profiles in old clients
-    settings.setValue(versionC(), ConfigFile::UnusedLegacySettingsVersionNumber);
+    settings.setValue("virtualFilesMode", Utility::enumToString(def.virtualFilesMode()));
 }
 
 FolderDefinition FolderDefinition::load(QSettings &settings, const QByteArray &id)
@@ -1226,11 +1194,10 @@ FolderDefinition FolderDefinition::load(QSettings &settings, const QByteArray &i
     Q_ASSERT(!id.isEmpty());
 
     FolderDefinition def{id, settings.value(davUrlC()).toUrl(), settings.value(spaceIdC()).toString(), settings.value(displayNameC()).toString()};
-    def.setLocalPath(settings.value(QStringLiteral("localPath")).toString());
-    def.setTargetPath(settings.value(QStringLiteral("targetPath")).toString());
-    def._journalPath = settings.value(QStringLiteral("journalPath")).toString();
-    def._paused = settings.value(QStringLiteral("paused")).toBool();
-    def._ignoreHiddenFiles = settings.value(QStringLiteral("ignoreHiddenFiles"), QVariant(true)).toBool();
+    def.setLocalPath(settings.value("localPath").toString());
+    def.setTargetPath(settings.value("targetPath").toString());
+    def._journalPath = settings.value("journalPath").toString();
+    def._paused = settings.value("paused").toBool();
     def._deployed = settings.value(deployedC(), false).toBool();
     def._priority = settings.value(priorityC(), 0).toUInt();
 
@@ -1238,6 +1205,18 @@ FolderDefinition FolderDefinition::load(QSettings &settings, const QByteArray &i
     QString vfsModeString = settings.value(QStringLiteral("virtualFilesMode")).toString();
     if (!vfsModeString.isEmpty()) {
         def._virtualFilesMode = Vfs::modeFromString(vfsModeString);
+    }
+
+    if (settings.contains("version")) {
+        // Migration from pre-7.0:
+        settings.remove("version");
+    }
+
+    const QVariant ignoreHiddenFiles = settings.value("ignoreHiddenFiles");
+    if (!ignoreHiddenFiles.isNull()) {
+        // Migration from pre-7.0:
+        settings.remove("ignoreHiddenFiles");
+        FolderMan::instance()->setIgnoreHiddenFiles(ignoreHiddenFiles.toBool());
     }
 
     return def;
@@ -1275,17 +1254,6 @@ QString FolderDefinition::displayName() const
         }
     }
     return _displayName;
-}
-
-bool Folder::groupInSidebar() const
-{
-    if (_accountState->account()->hasDefaultSyncRoot()) {
-        // QFileInfo is horrible and "/foo/" is treated different to "/foo"
-        const QString parentDir = QFileInfo(Utility::stripTrailingSlash(path())).dir().path();
-        // If parentDir == home, we would add the home dir to the sidebar.
-        return QFileInfo(parentDir) != QFileInfo(QDir::homePath()) && FileSystem::isChildPathOf(parentDir, _accountState->account()->defaultSyncRoot());
-    }
-    return false;
 }
 
 } // namespace OCC

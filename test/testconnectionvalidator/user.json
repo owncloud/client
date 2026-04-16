@@ -8,7 +8,7 @@
             "itemsperpage": ""
         },
         "data": {
-            "id": "test",
+            "id": "admin",
             "display-name": "test",
             "email": "test@test.com",
             "language": "en"

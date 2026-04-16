@@ -10,9 +10,9 @@ owncloud_add_test(SyncJournalDB)
 owncloud_add_test(SyncFileItem)
 owncloud_add_test(ConcatUrl)
 owncloud_add_test(XmlParse)
+owncloud_add_test(OAuthHtmlPage ../src/gui/creds/oauthhtmlpage.cpp)
 owncloud_add_test(ChecksumValidator)
 owncloud_add_test(ConnectionValidator)
-
 
 # TODO: we need keychain access for this test
 if (NOT APPLE OR NOT DEFINED ENV{GITHUB_ACTION})
@@ -22,6 +22,7 @@ endif()
 owncloud_add_test(ExcludedFiles)
 
 owncloud_add_test(Utility)
+owncloud_add_test(AppConfig ../src/libsync/owncloudtheme.cpp)
 
 owncloud_add_test(SyncEngine)
 owncloud_add_test(SyncMove)
@@ -30,7 +31,6 @@ owncloud_add_test(SyncDelete)
 owncloud_add_test(SyncConflict)
 owncloud_add_test(SyncFileStatusTracker)
 owncloud_add_test(Download)
-owncloud_add_test(ChunkingNg)
 owncloud_add_test(UploadReset)
 owncloud_add_test(Blacklist)
 owncloud_add_test(LocalDiscovery)
@@ -38,7 +38,14 @@ owncloud_add_test(RemoteDiscovery)
 owncloud_add_test(Permissions)
 owncloud_add_test(DatabaseError)
 owncloud_add_test(LockedFiles)
-owncloud_add_test(Adapters ../src/gui/networkadapters/discoverwebfingerserviceadapter.cpp)
+owncloud_add_test(Adapters
+    ../src/gui/networkadapters/determineauthtypeadapter.cpp
+    ../src/gui/networkadapters/discoverwebfingerserviceadapter.cpp
+    ../src/gui/networkadapters/fetchcapabilitiesadapter.cpp
+#    ../src/gui/networkadapters/resolveurladapter.cpp
+#    ../src/gui/tlserrordialog.cpp
+    ../src/gui/networkadapters/webfingerlookupadapter.cpp
+)
 
 if (WITH_AUTO_UPDATER)
     owncloud_add_test(Updater)
@@ -50,17 +57,26 @@ if( UNIX AND NOT APPLE )
     owncloud_add_test(InotifyWatcher)
 endif(UNIX AND NOT APPLE)
 
-
 owncloud_add_test(FileSystem)
 
 owncloud_add_test(FolderMan)
 
-owncloud_add_test(OAuth ../src/gui/creds/oauth.cpp ../src/gui/networkadapters/userinfoadapter.cpp)
+owncloud_add_test(OAuth ../src/gui/creds/oauth.cpp ../src/gui/networkadapters/userinfoadapter.cpp ../src/gui/creds/oauthhtmlpage.cpp)
 
 configure_file(test_journal.db "${PROJECT_BINARY_DIR}/bin/test_journal.db" COPYONLY)
 
-
 owncloud_add_test(JobQueue)
 
-
 add_subdirectory(modeltests)
+
+# if(WIN32)
+#     find_file(cldapi_FOUND CldApi.dll)
+#     if (cldapi_FOUND)
+#         include("${CMAKE_SOURCE_DIR}/test/owncloud_add_test.cmake")
+#         owncloud_add_test(WinVfs)
+#         target_link_libraries(WinVfsTest vfs_plugin_win_static)
+#         add_dependencies(WinVfsTest vfs_wincfapi)
+#     else()
+#         message(WARNING "Failed to detect CldApi.dll: Skipping WinVfsTest")
+#     endif()
+# endif()
