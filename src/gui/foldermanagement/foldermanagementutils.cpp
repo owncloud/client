@@ -1,0 +1,129 @@
+#include "foldermanagementutils.h"
+
+#include "common/asserts.h"
+#include "common/filesystembase.h"
+#include "theme.h"
+
+#include <QDir>
+#include <QFileInfo>
+#include <QSettings>
+#include <QString>
+
+#ifdef Q_OS_WIN
+#include "common/utility_win.h"
+#endif
+
+
+namespace OCC {
+
+Q_LOGGING_CATEGORY(lcFolderManagementUtils, "gui.foldermanagementutils", QtInfoMsg)
+
+bool FolderManagementUtils::prepareFolder(const QString &path)
+{
+    if (!QFileInfo::exists(path)) {
+        if (!OC_ENSURE(QDir().mkpath(path))) {
+            return false;
+        }
+#ifdef Q_OS_WIN
+        // First create a Desktop.ini so that the folder and favorite link show our application's icon.
+        const QFileInfo desktopIniPath{QStringLiteral("%1/Desktop.ini").arg(path)};
+        {
+            const QString updateIconKey = QStringLiteral("%1/UpdateIcon").arg(Theme::instance()->appName());
+            QSettings desktopIni(desktopIniPath.absoluteFilePath(), QSettings::IniFormat);
+            if (desktopIni.value(updateIconKey, true).toBool()) {
+                qCInfo(lcFolderManagementUtils) << "Creating" << desktopIni.fileName() << "to set a folder icon in Explorer.";
+                desktopIni.setValue(QStringLiteral(".ShellClassInfo/IconResource"), QDir::toNativeSeparators(qApp->applicationFilePath()));
+                desktopIni.setValue(updateIconKey, true);
+            } else {
+                qCInfo(lcFolderManagementUtils) << "Skip icon update for" << desktopIni.fileName() << "," << updateIconKey << "is disabled";
+            }
+        }
+
+        const QString longFolderPath = FileSystem::longWinPath(path);
+        const QString longDesktopIniPath = FileSystem::longWinPath(desktopIniPath.absoluteFilePath());
+        // Set the folder as system and Desktop.ini as hidden+system for explorer to pick it.
+        // https://msdn.microsoft.com/en-us/library/windows/desktop/cc144102
+        const DWORD folderAttrs = GetFileAttributesW(reinterpret_cast<const wchar_t *>(longFolderPath.utf16()));
+        if (!SetFileAttributesW(reinterpret_cast<const wchar_t *>(longFolderPath.utf16()), folderAttrs | FILE_ATTRIBUTE_SYSTEM)) {
+            const auto error = GetLastError();
+            qCWarning(lcFolderManagementUtils) << "SetFileAttributesW failed on" << longFolderPath << Utility::formatWinError(error);
+            return false;
+        }
+        if (!SetFileAttributesW(reinterpret_cast<const wchar_t *>(longDesktopIniPath.utf16()), FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM)) {
+            const auto error = GetLastError();
+            qCWarning(lcFolderManagementUtils) << "SetFileAttributesW failed on" << longDesktopIniPath << Utility::formatWinError(error);
+            return false;
+        }
+#else
+        QFile::Permissions perm = QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner;
+        QFile file(path);
+        if (!file.setPermissions(perm)) {
+            qCWarning(lcFolderManagementUtils) << "setPermissions failed on " << path;
+            return false;
+        }
+
+#endif
+    }
+    return true;
+}
+
+qsizetype FolderManagementUtils::numberOfSyncJournals(const QString &path)
+{
+    return QDir(path).entryList({QStringLiteral(".sync_*.db"), QStringLiteral("._sync_*.db")}, QDir::Hidden | QDir::Files).size();
+}
+
+QString FolderManagementUtils::checkPathLength(const QString &path)
+{
+#ifdef Q_OS_WIN
+    if (path.size() > MAX_PATH) {
+        if (!FileSystem::longPathsEnabledOnWindows()) {
+            return tr("The path '%1' is too long. Please enable long paths in the Windows settings or choose a different folder.").arg(path);
+        }
+    }
+#else
+    Q_UNUSED(path)
+#endif
+    return {};
+}
+
+QString FolderManagementUtils::validateFolderPath(const QString &path)
+{
+#ifdef Q_OS_WIN
+    QNtfsPermissionCheckGuard ntfs_perm;
+#endif
+    const QFileInfo fi(path);
+    QString error;
+    if (fi.isDir() && fi.isReadable() && fi.isWritable()) {
+        auto pathLengthCheck = FolderManagementUtils::checkPathLength(fi.canonicalFilePath());
+        if (!pathLengthCheck.isEmpty()) {
+            error = pathLengthCheck;
+        }
+
+        /* if (error.isEmpty()) {
+             qCDebug(lcFolderManagementUtils) << "Checked local path ok";
+             if (!_journal.open()) {
+                 error = tr("%1 failed to open the database.").arg(_definition.localPath());
+             }
+         }*/
+    } else {
+        // Check directory again
+        if (!FileSystem::fileExists(path, fi)) {
+            error = tr("Local folder %1 does not exist.").arg(path);
+        } else if (!fi.isDir()) {
+            error = tr("%1 should be a folder but is not.").arg(path);
+        } else if (!fi.isReadable()) {
+            error = tr("%1 is not readable.").arg(path);
+        } else if (!fi.isWritable()) {
+            error = tr("%1 is not writable.").arg(path);
+        }
+    }
+    if (!error.isEmpty()) {
+        qCWarning(lcFolderManagementUtils) << error;
+        //  _syncResult.appendErrorString(error);
+        //  setSyncState(SyncResult::SetupError);
+        // return error;
+    }
+    return error;
+}
+
+} // OCC

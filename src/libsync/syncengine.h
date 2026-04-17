@@ -61,13 +61,10 @@ public:
 
     bool isSyncRunning() const { return _syncRunning; }
 
-    const SyncOptions &syncOptions() const
-    {
-        Q_ASSERT(_syncOptions);
-        return *_syncOptions;
-    }
+    const SyncOptions &syncOptions() const { return _syncOptions; }
     void setSyncOptions(const SyncOptions &options)
     {
+        Q_ASSERT(options.isValid());
         _syncOptions = options;
     }
     bool ignoreHiddenFiles() const { return _ignore_hidden_files; }
@@ -230,7 +227,7 @@ private:
     // If ignored files should be ignored
     bool _ignore_hidden_files = false;
 
-    std::optional<SyncOptions> _syncOptions;
+    SyncOptions _syncOptions;
 
     bool _anotherSyncNeeded = false;
 

@@ -14,13 +14,15 @@
 
 #include "folderman.h"
 
+#include "accessmanager.h"
 #include "account.h"
 #include "accountmanager.h"
 #include "accountstate.h"
-#include "accessmanager.h"
 #include "common/asserts.h"
 #include "configfile.h"
 #include "folder.h"
+#include "foldermanagement/folderbuilder.h"
+#include "foldermanagement/foldermanagementutils.h"
 #include "gui/networkinformation.h"
 #include "guiutility.h"
 #include "libsync/syncengine.h"
@@ -45,13 +47,11 @@ using namespace std::chrono;
 using namespace std::chrono_literals;
 
 namespace {
-qsizetype numberOfSyncJournals(const QString &path)
-{
-    return QDir(path).entryList({QStringLiteral(".sync_*.db"), QStringLiteral("._sync_*.db")}, QDir::Hidden | QDir::Files).size();
-}
 }
 
 namespace OCC {
+
+
 Q_LOGGING_CATEGORY(lcFolderMan, "gui.folder.manager", QtInfoMsg)
 
 void TrayOverallStatusResult::addResult(Folder *f)
@@ -242,6 +242,7 @@ bool FolderMan::addFoldersFromConfigByAccount(QSettings &settings, AccountState 
 
         Folder *folder = addFolder(account, folderDefinition);
         if (!folder) {
+            // todo: decide if we should actively remove the folder data from the config! I think we should but let's see
             continue;
         }
 
@@ -306,7 +307,7 @@ void FolderMan::loadSpacesAndCreateFolders(AccountState *accountState, bool useV
         // prepare the root - reality check this as I think the user can change this from default? Yes they can but not for auto-loaded
         // folders eg on account creation, which is what is happening here.
         const QString localDir(accountState->account()->defaultSyncRoot());
-        if (!prepareFolder(localDir)) {
+        if (!FolderManagementUtils::prepareFolder(localDir)) {
             return;
         }
 
@@ -699,6 +700,15 @@ bool FolderMan::validateFolderDefinition(const FolderDefinition &folderDefinitio
 {
     if (folderDefinition.id().isEmpty() || folderDefinition.journalPath().isEmpty() || !ensureFilesystemSupported(folderDefinition))
         return false;
+
+    QString pathCheck = FolderManagementUtils::validateFolderPath(folderDefinition.localPath());
+    if (!pathCheck.isEmpty()) {
+        // does this warrant popping an error dialog?
+        qCWarning(lcFolderMan) << "Folder definition path check failed with error: " << pathCheck;
+        return false;
+    }
+
+
     return true;
 }
 
@@ -716,17 +726,17 @@ Folder *FolderMan::addFolder(AccountState *accountState, const FolderDefinition 
     QUuid accountId = accountState->account()->uuid();
 
     if (Folder *f = folder(accountId, folderDefinition.spaceId())) {
-        qCWarning(lcFolderMan) << "Trying to add folder" << folderDefinition.localPath() << "but it already exists in folder list";
+        qCWarning(lcFolderMan) << "Trying to add new folder for " << folderDefinition.localPath() << "but it already exists in folder list";
         return f;
     }
 
-    auto vfs = VfsPluginManager::instance().createVfsFromPlugin(folderDefinition.virtualFilesMode());
-    if (!vfs) {
-        qCWarning(lcFolderMan) << "Could not load plugin for mode" << folderDefinition.virtualFilesMode();
+    FolderBuilder builder(folderDefinition);
+    auto folder = builder.buildFolder(accountState, _ignoreHiddenFiles, this);
+
+    if (!folder) {
+        qCWarning(lcFolderMan) << "Unable to create Folder for " << folder->path() << " with spaceId " << folderDefinition.spaceId();
         return nullptr;
     }
-
-    auto folder = new Folder(folderDefinition, accountState, std::move(vfs), _ignoreHiddenFiles, this);
 
     qCInfo(lcFolderMan) << "Adding folder to Folder Map " << folder << folder->path();
     QString spaceId = folder->spaceId();
@@ -965,7 +975,7 @@ static QString checkPathForSyncRootMarkingRecursive(const QString &path, FolderM
         return FolderMan::tr("The selected path is not a folder.");
     }
 
-    if (numberOfSyncJournals(selectedPathInfo.filePath()) != 0) {
+    if (FolderManagementUtils::numberOfSyncJournals(selectedPathInfo.filePath()) != 0) {
         return FolderMan::tr("The folder %1 is used in a folder sync connection.").arg(QDir::toNativeSeparators(selectedPathInfo.filePath()));
     }
 
@@ -1048,9 +1058,9 @@ QString FolderMan::findExistingFolderAndCheckValidity(const QString &path, NewFo
     QNtfsPermissionCheckGuard ntfs_perm;
 #endif
 
-    auto pathLengthCheck = Folder::checkPathLength(path);
-    if (!pathLengthCheck) {
-        return pathLengthCheck.error();
+    auto pathLengthCheck = FolderManagementUtils::checkPathLength(path);
+    if (!pathLengthCheck.isEmpty()) {
+        return pathLengthCheck;
     }
 
     // If this is a new folder, recurse up to the first parent that exists, to see if we can use that to create a new folder
@@ -1148,7 +1158,7 @@ void FolderMan::slotReloadSyncOptions()
 
 Folder *FolderMan::addFolderFromScratch(AccountState *accountState, FolderDefinition &&folderDefinition, bool useVfs)
 {
-    if (!FolderMan::prepareFolder(folderDefinition.localPath())) {
+    if (!FolderManagementUtils::prepareFolder(folderDefinition.localPath())) {
         return nullptr;
     }
 
@@ -1170,9 +1180,9 @@ Folder *FolderMan::addFolderFromScratch(AccountState *accountState, FolderDefini
         if (newFolder->vfs().mode() != Vfs::WindowsCfApi) {
             Utility::setupFavLink(folderDefinition.localPath());
         }
-        qCDebug(lcFolderMan) << "Local sync folder" << folderDefinition.localPath() << "successfully created!";
+        qCDebug(lcFolderMan) << "Local sync folder" << folderDefinition.localPath() << "successfully created";
     } else {
-        qCWarning(lcFolderMan) << "Failed to create local sync folder!";
+        qCWarning(lcFolderMan) << "Failed to create local sync folder: " << folderDefinition.localPath();
     }
 
     // we should not emit any folder list change from this function because it can be called in bulk as well as individual operations
@@ -1218,19 +1228,7 @@ QString FolderMan::suggestSyncFolder(NewFolderType folderType, const QUuid &acco
     return FolderMan::instance()->findGoodPathForNewSyncFolder(QDir::homePath(), Theme::instance()->appName(), folderType, accountUuid);
 }
 
-bool FolderMan::prepareFolder(const QString &folder)
-{
-    if (!QFileInfo::exists(folder)) {
-        if (!OC_ENSURE(QDir().mkpath(folder))) {
-            return false;
-        }
-        // mac only
-        FileSystem::setFolderMinimumPermissions(folder);
-        // this is for windows - it sets up a desktop.ini file to handle the icon and deals with persmissions.
-        Folder::prepareFolder(folder);
-    }
-    return true;
-}
+
 
 std::unique_ptr<FolderMan> FolderMan::createInstance()
 {

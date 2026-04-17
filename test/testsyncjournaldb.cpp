@@ -21,7 +21,7 @@ class TestSyncJournalDB : public QObject
 
 public:
     TestSyncJournalDB()
-        : _db((_tempDir.path() + QStringLiteral("/sync.db")))
+        : _db((_tempDir.path() + QStringLiteral("/sync.db")), nullptr)
     {
         QVERIFY(_tempDir.isValid());
     }

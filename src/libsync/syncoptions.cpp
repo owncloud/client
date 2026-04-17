@@ -19,7 +19,7 @@
 
 using namespace OCC;
 
-SyncOptions::SyncOptions(QSharedPointer<Vfs> vfs)
+SyncOptions::SyncOptions(Vfs *vfs)
     : _vfs(vfs)
 {
 }
@@ -40,15 +40,20 @@ QRegularExpression SyncOptions::fileRegex() const
     return _fileRegex;
 }
 
-void SyncOptions::setFilePattern(const QString &pattern)
+/*void SyncOptions::setFilePattern(const QString &pattern)
 {
     // full match or a path ending with this pattern
     setPathPattern(QStringLiteral("(^|/|\\\\)") + pattern + QLatin1Char('$'));
-}
+}*/
 
-void SyncOptions::setPathPattern(const QString &pattern)
+/*void SyncOptions::setPathPattern(const QString &pattern)
 {
     _fileRegex.setPatternOptions(
         Utility::fsCasePreservingButCaseInsensitive() ? QRegularExpression::CaseInsensitiveOption : QRegularExpression::NoPatternOption);
     _fileRegex.setPattern(pattern);
+}*/
+
+bool SyncOptions::isValid() const
+{
+    return !_vfs.isNull();
 }

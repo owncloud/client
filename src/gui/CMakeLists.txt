@@ -118,6 +118,7 @@ add_subdirectory(newaccountwizard)
 add_subdirectory(socketapi)
 add_subdirectory(spaces)
 add_subdirectory(FoldersGui)
+add_subdirectory(foldermanagement)
 
 target_include_directories(owncloudGui PUBLIC
     ${CMAKE_SOURCE_DIR}/src/3rdparty/QProgressIndicator

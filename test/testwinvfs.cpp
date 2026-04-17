@@ -681,6 +681,7 @@ private Q_SLOTS:
         fakeFolder.localModifier().insert(QStringLiteral("A/a3"), 100_B);
         QVERIFY(fakeFolder.applyLocalModificationsWithoutSync());
 
+        // todo: review this. AFAIK it's already covered in FakeFolder::swtichToVfs or *should* be
         fakeFolder.vfs()->wipeDehydratedVirtualFiles();
         fakeFolder.vfs()->stop();
         fakeFolder.vfs()->unregisterFolder();
@@ -691,7 +692,7 @@ private Q_SLOTS:
         QVERIFY(!QFile::exists(l(QStringLiteral("A/B/b1"))));
 
         // Check that syncing with vfs disabled is fine
-        auto vfsOff = QSharedPointer<Vfs>(VfsPluginManager::instance().createVfsFromPlugin(Vfs::Off).release());
+        auto vfsOff = VfsPluginManager::instance().createVfsFromPlugin(Vfs::Off, &fakeFolder);
         QVERIFY(vfsOff);
         fakeFolder.switchToVfs(vfsOff);
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
@@ -757,7 +758,7 @@ private Q_SLOTS:
         fakeFolder.remoteModifier().insert(QStringLiteral("A/a1"), 64_B);
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
 
-        fakeFolder.switchToVfs(QSharedPointer<Vfs>(new VfsWin));
+        fakeFolder.switchToVfs(new VfsWin(&fakeFolder));
         QSignalSpy completeSpy(&fakeFolder.syncEngine(), SIGNAL(itemCompleted(const SyncFileItemPtr &)));
 
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());

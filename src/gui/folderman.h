@@ -52,6 +52,7 @@ private:
     SyncResult _overallStatus;
 };
 
+
 /**
  * @brief The FolderMan class
  * @ingroup gui
@@ -168,13 +169,16 @@ public:
     std::optional<qsizetype> setupFoldersFromConfig();
 
     /**
+     *
+     *  Extremely important refactoring todo: addFolder should not be public!
+     *  It is currently "required" for some tests which is not really cool, as it does not represent a complete/standalone impl.
+     *
      *  core step in any add folder routine. it validates the definition, instantiates vfs, instantiates the folder and validates whether
      *  it had setup errors.
      *
-     *  it is up to the caller to connect the folder, save it to settings, etc.
+     *  it is up to the caller to create the local sync folder (corresponding to the local path in the def) using the new FolderManagementUtils::prepareFolder,
+     *  connect the folder, save it to settings, etc.
      *
-     *  Refactoring todo: this should not be public! it is currently "required" for some tests which is not really cool, as it does not represent
-     *  a complete/standalone impl.
      */
     Folder *addFolder(AccountState *accountState, const FolderDefinition &folderDefinition);
 
@@ -355,13 +359,6 @@ private Q_SLOTS:
 
 private:
     explicit FolderMan();
-
-    /**
-     * @brief prepareFolder sets up the folder with mac and windows specific operations
-     * @param folder path
-     * @return true if the folder path exists or can be successfully created
-     */
-    [[nodiscard]] static bool prepareFolder(const QString &folder);
 
     /**
      * Adds a folder "from scratch" as oppossd to from config, which requires less setup than when you create the folder

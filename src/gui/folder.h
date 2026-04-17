@@ -45,10 +45,12 @@ class SyncRunFileLog;
 class FolderWatcher;
 class LocalDiscoveryTracker;
 
+
 /**
  * @brief The FolderDefinition class
  * @ingroup gui
  */
+
 class OWNCLOUDGUI_EXPORT FolderDefinition
 {
 public:
@@ -83,8 +85,11 @@ public:
     void setVirtualFilesMode(Vfs::Mode mode) { _virtualFilesMode = mode; }
 
     /// Ensure / as separator and trailing /.
+    /// calling set here also ensures the canonical local path is properly created
     void setLocalPath(const QString &path);
     QString localPath() const { return _localPath; }
+
+    QString canonicalPath() const { return _canonicalLocalPath; }
 
 
     /// Remove ending /, then ensure starting '/': so "/foo/bar" and "/".
@@ -141,6 +146,8 @@ private:
     QString _displayName;
     /// path on local machine (always trailing /)
     QString _localPath;
+    /// canonical local path
+    QString _canonicalLocalPath;
     /// path on remote (usually no trailing /, exception "/")
     QString _targetPath;
     bool _deployed = false;
@@ -174,11 +181,10 @@ public:
     };
     Q_ENUM(ChangeReason)
 
-    static void prepareFolder(const QString &path);
 
     /** Create a new Folder
      */
-    Folder(const FolderDefinition &definition, AccountState *accountState, std::unique_ptr<Vfs> &&vfs, bool ignoreHiddenFiles, QObject *parent = nullptr);
+    Folder(const FolderDefinition &definition, AccountState *accountState, SyncJournalDb *journal, Vfs *vfs, bool ignoreHiddenFiles, QObject *parent);
 
     ~Folder() override;
     /**
@@ -224,7 +230,7 @@ public:
     /**
      * canonical local folder path, always ends with /
      */
-    QString path() const { return _canonicalLocalPath; }
+    QString path() const { return _definition.canonicalPath(); }
 
     /**
      * cleaned canonical folder path, like path() but never ends with a /
@@ -304,10 +310,7 @@ public:
 
 
     // TODO: don't expose
-    SyncJournalDb *journalDb()
-    {
-        return &_journal;
-    }
+    SyncJournalDb *journalDb() { return _journal; }
     // TODO: don't expose
     SyncEngine &syncEngine()
     {
@@ -352,8 +355,6 @@ public:
     [[deprecated("see FolderDefinition::isDeployed")]] bool isDeployed() const;
 
     uint32_t sortPriority() const { return _definition.priority(); }
-
-    static Result<void, QString> checkPathLength(const QString &path);
 
     /**
      *
@@ -462,8 +463,6 @@ private Q_SLOTS:
 private:
     void showSyncResultPopup();
 
-    bool checkLocalPath();
-
     SyncOptions loadSyncOptions();
 
     /**
@@ -497,7 +496,7 @@ private:
 
     QPointer<AccountState> _accountState;
     FolderDefinition _definition;
-    QString _canonicalLocalPath; // As returned with QFileInfo:canonicalFilePath.  Always ends with "/"
+    // QString _canonicalLocalPath; // As returned with QFileInfo:canonicalFilePath.  Always ends with "/"
 
     SyncResult _syncResult;
     QScopedPointer<SyncEngine> _engine;
@@ -514,7 +513,7 @@ private:
     /// Reset when no follow-up is requested.
     int _consecutiveFollowUpSyncs = 0;
 
-    mutable SyncJournalDb _journal;
+    SyncJournalDb *_journal = nullptr;
 
     QScopedPointer<SyncRunFileLog> _fileLog;
 
@@ -562,6 +561,8 @@ private:
     // it is also false that it is never null - it is reset in wipeForRemoval
     // extra fun is I have no idea what happens to the instance in the SyncOptions - is it still alive relative to the engine?
     // I don't see any handling of the engine or SyncOptions whatsoever in wipeForRemoval so we'll need to go spelunking.
-    QSharedPointer<Vfs> _vfs;
+    // final endpoint is to make this a raw pointer, pass it around and let the deps wrap it in a qpointer
+    // reconsider parenting before this step is taken
+    Vfs *_vfs;
 };
 }

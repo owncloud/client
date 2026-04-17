@@ -141,7 +141,7 @@ public:
     using AvailabilityResult = Result<VfsItemAvailability, AvailabilityError>;
 
 public:
-    explicit Vfs(QObject* parent = nullptr);
+    explicit Vfs(QObject *parent);
     ~Vfs() override;
 
     virtual Mode mode() const = 0;
@@ -302,7 +302,7 @@ public:
     Vfs::Mode bestAvailableVfsMode() const;
 
     /// Create a VFS instance for the mode, returns nullptr on failure.
-    std::unique_ptr<Vfs> createVfsFromPlugin(Vfs::Mode mode) const;
+    Vfs *createVfsFromPlugin(Vfs::Mode mode, QObject *parent) const;
 
     static const VfsPluginManager &instance();
 
