@@ -1839,7 +1839,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/creds/oauth.cpp" line="309"/>
         <source>You logged-in with user &lt;em&gt;%1&lt;/em&gt;, but must login with user &lt;em&gt;%2&lt;/em&gt;.&lt;br&gt;Please return to the %3 client and restart the authentication.</source>
-        <translation type="unfinished"/>
+        <translation>U bent ingelogd met de gebruiker &lt;em&gt;%1&lt;/em&gt;, maar u moet inloggen met gebruiker &lt;em&gt;%2&lt;/em&gt;.&lt;br&gt;Ga terug naar de %3 client en herstart de authenticatie.</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/oauth.cpp" line="312"/>
@@ -2496,7 +2496,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="94"/>
         <source>IdP is unreachable. Contact your system administrator or try again later.</source>
-        <translation type="unfinished"/>
+        <translation>IdP is onbereikbaar. Neem contact op met uw systeembeheerder.</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="105"/>
@@ -2692,7 +2692,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="620"/>
         <source>Select new location…</source>
-        <translation type="unfinished"/>
+        <translation>Selecteer nieuwe locatie…</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="708"/>
@@ -2740,17 +2740,17 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
         <location filename="../src/gui/socketapi/socketapi.cpp" line="851"/>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="855"/>
         <source>Move and rename…</source>
-        <translation type="unfinished"/>
+        <translation>Verplaatsen en hernoemen…</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="858"/>
         <source>Move, rename and upload…</source>
-        <translation type="unfinished"/>
+        <translation>Verplaatsen, hernoemen en uploaden...</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="866"/>
         <source>Move and upload…</source>
-        <translation type="unfinished"/>
+        <translation>Verplaatsen en uploaden…</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="861"/>
@@ -2954,7 +2954,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="69"/>
         <source>%1 logo</source>
-        <translation type="unfinished"/>
+        <translation>%1 logo</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="71"/>
@@ -2984,12 +2984,12 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="210"/>
         <source>Invalid server URL: %1</source>
-        <translation type="unfinished"/>
+        <translation>Ongeldige server URL: %1</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="214"/>
         <source>Invalid URL scheme. Only https is accepted.</source>
-        <translation type="unfinished"/>
+        <translation>Ongeldig URL schema. Alleen https wordt ondersteund.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="242"/>
@@ -3087,7 +3087,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="672"/>
         <source>%1 is managed by another sync client</source>
-        <translation type="unfinished"/>
+        <translation>%1 is in gebruik door een andere synchronisatie applicatie</translation>
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="687"/>
@@ -3182,7 +3182,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
         <location filename="../src/gui/owncloudgui.cpp" line="240"/>
         <location filename="../src/gui/owncloudgui.cpp" line="255"/>
         <source>New account failure</source>
-        <translation type="unfinished"/>
+        <translation>Nieuw account fout</translation>
     </message>
     <message>
         <location filename="../src/gui/owncloudgui.cpp" line="240"/>
