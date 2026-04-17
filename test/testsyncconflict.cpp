@@ -82,8 +82,8 @@ private Q_SLOTS:
         QTest::newRow("Vfs::Off") << Vfs::Off << false;
 
         if (VfsPluginManager::instance().isVfsPluginAvailable(Vfs::WindowsCfApi)) {
-            // QTest::newRow("Vfs::WindowsCfApi dehydrated") << Vfs::WindowsCfApi << true;
-            // QTest::newRow("Vfs::WindowsCfApi hydrated") << Vfs::WindowsCfApi << false;
+            QTest::newRow("Vfs::WindowsCfApi dehydrated") << Vfs::WindowsCfApi << true;
+            QTest::newRow("Vfs::WindowsCfApi hydrated") << Vfs::WindowsCfApi << false;
         } else if (Utility::isWindows()) {
             qWarning("Skipping Vfs::WindowsCfApi");
         }
