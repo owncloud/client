@@ -33,17 +33,20 @@ jobs:
               os: windows-latest
               container:
               useSonarCloud: ${{ github.event_name != 'pull_request' }}
+              testOptions: --options '[Compile]Jobs=1'
             # TODO: align the target with the name
             - name: macos-clang-arm64
               target: macos-clang-arm64
               os: macos-latest
               container:
               useSonarCloud:
+              testOptions:
             - name: linux-gcc-x86_64
               target: linux-64-gcc
               os: ubuntu-latest
               container: owncloudci/appimage-build:sles15-amd64
               useSonarCloud:
+              testOptions:
     name: ${{ matrix.name }}
 
     runs-on: ${{ matrix.os }}
@@ -160,7 +163,7 @@ jobs:
 
     - name: Run tests
       run: |
-        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --no-cache --test owncloud/owncloud-client
+        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --no-cache --test ${{ matrix.testOptions }} owncloud/owncloud-client
 
     - name: Package
       run: |
