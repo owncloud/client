@@ -463,8 +463,6 @@ private Q_SLOTS:
 private:
     void showSyncResultPopup();
 
-    // bool checkLocalPath();
-
     SyncOptions loadSyncOptions();
 
     /**
@@ -565,6 +563,6 @@ private:
     // I don't see any handling of the engine or SyncOptions whatsoever in wipeForRemoval so we'll need to go spelunking.
     // final endpoint is to make this a raw pointer, pass it around and let the deps wrap it in a qpointer
     // reconsider parenting before this step is taken
-    QSharedPointer<Vfs> _vfs;
+    Vfs *_vfs;
 };
 }

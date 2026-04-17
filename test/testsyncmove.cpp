@@ -705,7 +705,7 @@ private Q_SLOTS:
             ItemCompletedSpy completeSpy(fakeFolder);
             if (filesAreDehydrated) {
                 // the dehydrating the placeholder failed as the metadata is out of sync
-                QSignalSpy spy(fakeFolder.vfs().get(), &Vfs::needSync);
+                QSignalSpy spy(fakeFolder.vfs(), &Vfs::needSync);
                 QVERIFY(!fakeFolder.applyLocalModificationsAndSync());
                 QVERIFY(spy.count() == 1);
                 QVERIFY(fakeFolder.syncOnce());
@@ -1013,7 +1013,7 @@ private Q_SLOTS:
 
         if (vfsMode != Vfs::Off)
         {
-            auto vfs = QSharedPointer<Vfs>(VfsPluginManager::instance().createVfsFromPlugin(vfsMode, nullptr));
+            auto vfs = VfsPluginManager::instance().createVfsFromPlugin(vfsMode, &fakeFolder);
             QVERIFY(vfs);
             fakeFolder.switchToVfs(vfs);
             fakeFolder.syncJournal().internalPinStates().setForPath("", PinState::OnlineOnly);

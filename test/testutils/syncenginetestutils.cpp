@@ -888,18 +888,14 @@ FakeFolder::FakeFolder(const FileInfo &fileTemplate, OCC::Vfs::Mode vfsMode, boo
     // TODO: davUrl
 
     _syncEngine.reset(new OCC::SyncEngine(account(), account()->davUrl(), localPath(), QString(), _journalDb.get()));
-    _syncEngine->setSyncOptions(OCC::SyncOptions{QSharedPointer<OCC::Vfs>(OCC::VfsPluginManager::instance().createVfsFromPlugin(vfsMode, nullptr))});
+    OCC::Vfs *vfs = OCC::VfsPluginManager::instance().createVfsFromPlugin(vfsMode, this);
+    Q_ASSERT(vfs->mode() == vfsMode);
+    Q_ASSERT(!_syncEngine->syncOptions().isValid());
 
     // Ignore temporary files from the download. (This is in the default exclude list, but we don't load it)
     _syncEngine->addManualExclude(QStringLiteral("]*.~*"));
 
-    auto vfs = _syncEngine->syncOptions()._vfs;
-    if (vfsMode != vfs->mode()) {
-        vfs.reset(OCC::VfsPluginManager::instance().createVfsFromPlugin(vfsMode, nullptr));
-        Q_ASSERT(vfs);
-    }
-
-    // Ensure we have a valid Vfs instance "running"
+    // start the vfs instance
     switchToVfs(vfs);
 
     if (vfsMode != OCC::Vfs::Off) {
@@ -916,16 +912,30 @@ FakeFolder::FakeFolder(const FileInfo &fileTemplate, OCC::Vfs::Mode vfsMode, boo
 
 FakeFolder::~FakeFolder() { }
 
-void FakeFolder::switchToVfs(QSharedPointer<OCC::Vfs> vfs)
+void FakeFolder::switchToVfs(OCC::Vfs *vfs)
 {
+    Q_ASSERT(vfs);
+
     auto opts = _syncEngine->syncOptions();
 
-    opts._vfs->stop();
-    opts._vfs->unregisterFolder();
-    QObject::disconnect(_syncEngine.get(), nullptr, opts._vfs.data(), nullptr);
+    if (opts.isValid()) {
+        // we might get strange problems with "dead" vfs instances that have not been stopped because the FakeFolder switchToVfs is missing
+        // *a lot* of extra steps that normal Folder implements when switching the mode
+        if (_syncEngine->isSyncRunning())
+            execUntilFinished();
+        OCC::Vfs *vfsToDie = opts._vfs;
+        vfsToDie->stop();
+        vfsToDie->unregisterFolder();
+        QObject::disconnect(_syncEngine.get(), nullptr, vfsToDie, nullptr);
+        QObject::disconnect(&_syncEngine->syncFileStatusTracker(), nullptr, vfsToDie, nullptr);
+        QObject::disconnect(vfsToDie);
+        // this is "nice" to avoid waiting for the parent folder to die
+        vfsToDie->deleteLater();
+    }
 
-    opts._vfs = vfs;
-    _syncEngine->setSyncOptions(opts);
+    // todo: nooooooo - the opts should be treated as immutable. that change is coming so this will have to end sometime, starting now.
+    // opts._vfs = vfs;
+    _syncEngine->setSyncOptions(OCC::SyncOptions{vfs});
 
     OCC::VfsSetupParams vfsParams(account(), account()->davUrl(), &syncEngine());
     vfsParams.filesystemPath = localPath();
@@ -935,17 +945,18 @@ void FakeFolder::switchToVfs(QSharedPointer<OCC::Vfs> vfs)
     vfsParams.providerDisplayName = QStringLiteral("OC-TEST");
     vfsParams.providerVersion = QVersionNumber(0, 1, 0);
     vfsParams.multipleAccountsRegistered = false;
+    /// ehhhh
     QObject::connect(_syncEngine.get(), &QObject::destroyed, this, [vfs]() {
-        vfs->stop();
-        vfs->unregisterFolder();
+        if (vfs) {
+            vfs->stop();
+            vfs->unregisterFolder();
+            // note the _syncEngine should be destroyed when the FakeFolder dies so the vfs instance should be auto-deleted
+        }
     });
-    QObject::connect(&_syncEngine->syncFileStatusTracker(), &OCC::SyncFileStatusTracker::fileStatusChanged,
-        vfs.data(), &OCC::Vfs::fileStatusChanged);
+    QObject::connect(&_syncEngine->syncFileStatusTracker(), &OCC::SyncFileStatusTracker::fileStatusChanged, vfs, &OCC::Vfs::fileStatusChanged);
 
-    QObject::connect(vfs.get(), &OCC::Vfs::error, vfs.get(), [](const QString &error) {
-        QFAIL(qUtf8Printable(error));
-    });
-    QSignalSpy spy(vfs.get(), &OCC::Vfs::started);
+    QObject::connect(vfs, &OCC::Vfs::error, vfs, [](const QString &error) { QFAIL(qUtf8Printable(error)); });
+    QSignalSpy spy(vfs, &OCC::Vfs::started);
     vfs->start(vfsParams);
 
     // don't use QVERIFY outside of the test slot
@@ -1005,7 +1016,7 @@ bool FakeFolder::isDehydratedPlaceholder(const QString &filePath)
     return vfs()->isDehydratedPlaceholder(filePath);
 }
 
-QSharedPointer<OCC::Vfs> FakeFolder::vfs() const
+OCC::Vfs *FakeFolder::vfs() const
 {
     return _syncEngine->syncOptions()._vfs;
 }

@@ -574,7 +574,7 @@ public:
     FakeFolder(const FileInfo &fileTemplate, OCC::Vfs::Mode vfsMode = OCC::Vfs::Off, bool filesAreDehydrated = false);
     ~FakeFolder();
 
-    void switchToVfs(QSharedPointer<OCC::Vfs> vfs);
+    void switchToVfs(OCC::Vfs *vfs);
 
     OCC::Account *account() const { return _accountState->account(); }
     OCC::SyncEngine &syncEngine() const { return *_syncEngine; }
@@ -626,7 +626,7 @@ public:
     }
 
     bool isDehydratedPlaceholder(const QString &filePath);
-    QSharedPointer<OCC::Vfs> vfs() const;
+    OCC::Vfs *vfs() const;
 
 private:
     static void toDisk(QDir &dir, const FileInfo &templateFi);

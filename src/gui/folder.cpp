@@ -103,8 +103,8 @@ Folder::Folder(const FolderDefinition &definition, AccountState *accountState, S
 
     // this is temporary! we only clear the parent on the vfs pointer because for the time being, we are wrapping this in a shared pointer
     // the shared pointer is marked for death, then we will be able to set the vfs parent to this, as it should be
-    vfs->setParent(nullptr);
-    _vfs.reset(vfs);
+    vfs->setParent(this);
+    _vfs = vfs;
 
     // the FolderBuilder should fail if the account state or account are dead, so this should never trigger
     Q_ASSERT(_accountState && _accountState->account());
@@ -184,66 +184,16 @@ GraphApi::Space *Folder::space() const
     return nullptr;
 }
 
-/*bool Folder::checkLocalPath()
-{
-#ifdef Q_OS_WIN
-    QNtfsPermissionCheckGuard ntfs_perm;
-#endif
-    const QFileInfo fi(_definition.localPath());
-    _canonicalLocalPath = fi.canonicalFilePath();
-#ifdef Q_OS_MAC
-    // Workaround QTBUG-55896  (Should be fixed in Qt 5.8)
-    _canonicalLocalPath = _canonicalLocalPath.normalized(QString::NormalizationForm_C);
-#endif
-    if (_canonicalLocalPath.isEmpty()) {
-        qCWarning(lcFolder) << "Broken symlink:" << _definition.localPath();
-        _canonicalLocalPath = _definition.localPath();
-    } else if (!_canonicalLocalPath.endsWith(QLatin1Char('/'))) {
-        _canonicalLocalPath.append(QLatin1Char('/'));
-    }
-
-    QString error;
-    if (fi.isDir() && fi.isReadable() && fi.isWritable()) {
-        auto pathLengthCheck = FolderManagementUtils::checkPathLength(_canonicalLocalPath);
-        if (!pathLengthCheck.isEmpty()) {
-            error = pathLengthCheck;
-        }
-
-        if (error.isEmpty()) {
-            qCDebug(lcFolder) << "Checked local path ok";
-            if (!_journal.open()) {
-                error = tr("%1 failed to open the database.").arg(_definition.localPath());
-            }
-        }
-    } else {
-        // Check directory again
-        if (!FileSystem::fileExists(_definition.localPath(), fi)) {
-            error = tr("Local folder %1 does not exist.").arg(_definition.localPath());
-        } else if (!fi.isDir()) {
-            error = tr("%1 should be a folder but is not.").arg(_definition.localPath());
-        } else if (!fi.isReadable()) {
-            error = tr("%1 is not readable.").arg(_definition.localPath());
-        } else if (!fi.isWritable()) {
-            error = tr("%1 is not writable.").arg(_definition.localPath());
-        }
-    }
-    if (!error.isEmpty()) {
-        qCWarning(lcFolder) << error;
-        _syncResult.appendErrorString(error);
-        setSyncState(SyncResult::SetupError);
-        return false;
-    }
-    return true;
-}*/
-
 SyncOptions Folder::loadSyncOptions()
 {
+    if (!_accountState || !_accountState->account() || !_vfs)
+        return SyncOptions();
+
     SyncOptions opt(_vfs);
     ConfigFile cfgFile;
 
     opt._moveFilesToTrash = cfgFile.moveToTrash();
-    // got a nullptr hit here - this is so shady but best I can do for now
-    opt._parallelNetworkJobs = (_accountState && _accountState->account() && _accountState->account()->isHttp2Supported()) ? 20 : 6;
+    opt._parallelNetworkJobs = _accountState->account()->isHttp2Supported() ? 20 : 6;
 
     opt.fillFromEnvironmentVariables();
     return opt;
@@ -498,10 +448,10 @@ void Folder::startVfs()
     vfsParams.providerVersion = Version::version();
     vfsParams.multipleAccountsRegistered = AccountManager::instance()->accounts().size() > 1;
 
-    connect(&_engine->syncFileStatusTracker(), &SyncFileStatusTracker::fileStatusChanged, _vfs.get(), &Vfs::fileStatusChanged);
+    connect(&_engine->syncFileStatusTracker(), &SyncFileStatusTracker::fileStatusChanged, _vfs, &Vfs::fileStatusChanged);
 
 
-    connect(_vfs.get(), &Vfs::started, this, [this] {
+    connect(_vfs, &Vfs::started, this, [this] {
         // Immediately mark the sqlite temporaries as excluded. They get recreated
         // on db-open and need to get marked again every time.
         QString stateDbFile = _journal->databaseFilePath();
@@ -510,7 +460,7 @@ void Folder::startVfs()
         _engine->setSyncOptions(loadSyncOptions());
         registerFolderWatcher();
 
-        connect(_vfs.get(), &Vfs::needSync, this, [this] {
+        connect(_vfs, &Vfs::needSync, this, [this] {
             if (canSync()) {
                 // the vfs plugin detected that its metadata is out of sync and requests a new sync
                 // the request has a high priority as it is probably issued after a user request
@@ -527,7 +477,7 @@ void Folder::startVfs()
             FolderMan::instance()->scheduler()->enqueueFolder(this);
         }
     });
-    connect(_vfs.get(), &Vfs::error, this, [this](const QString &error) {
+    connect(_vfs, &Vfs::error, this, [this](const QString &error) {
         _syncResult.appendErrorString(error);
         setSyncState(SyncResult::SetupError);
         _vfsIsReady = false;
@@ -716,8 +666,8 @@ void Folder::changeVfsMode(Vfs::Mode newMode)
     _vfsIsReady = false;
     _vfs->stop();
     _vfs->unregisterFolder();
-    disconnect(_vfs.get(), nullptr, this, nullptr);
-    disconnect(&_engine->syncFileStatusTracker(), nullptr, _vfs.get(), nullptr);
+    disconnect(_vfs, nullptr, this, nullptr);
+    disconnect(&_engine->syncFileStatusTracker(), nullptr, _vfs, nullptr);
 
     // _vfs is a shared pointer...
     // Refactor todo: who is it shared with? It appears to be shared with the SyncOptions. SyncOptions instance is then
@@ -725,14 +675,17 @@ void Folder::changeVfsMode(Vfs::Mode newMode)
     // new/reset instance but this should be high prio to work this out as wow this is dangerous. the todo is basically: eval the use of
     // this _vfs pointer and make it consistent and SAFE across uses
     // also todo: we have to cover the case that the createVfsFromPlugin returns nullptr!
-    _vfs.reset(newVfs);
+    Vfs *oldVfs = _vfs;
+    _vfs = newVfs;
+    oldVfs->deleteLater();
 
     // Restart VFS.
     _definition.setVirtualFilesMode(newMode);
 
+    // note this is "on top of" started slot handling defined in startVfs
     if (newMode != Vfs::Off) {
         // schedule blacklisted folders for rediscovery
-        connect(_vfs.get(), &Vfs::started, this, [oldBlacklist, this] {
+        connect(_vfs, &Vfs::started, this, [oldBlacklist, this] {
             for (const auto &entry : oldBlacklist) {
                 journalDb()->schedulePathForRemoteDiscovery(entry);
                 // Refactoring todo: from what I can see, in 98% of cases the return val of setPinState is ignored
@@ -821,7 +774,8 @@ void Folder::wipeForRemoval()
 
     _vfs->stop();
     _vfs->unregisterFolder();
-    _vfs.reset(nullptr); // warning: folder now in an invalid state
+
+    // don't kill vfs pointer, as it is a child of the Folder we should let it be auto-deleted by normal qobject destruction sequence.
 }
 
 bool Folder::reloadExcludes()
