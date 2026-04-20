@@ -946,10 +946,12 @@ void FakeFolder::switchToVfs(OCC::Vfs *vfs)
     vfsParams.providerVersion = QVersionNumber(0, 1, 0);
     vfsParams.multipleAccountsRegistered = false;
     /// ehhhh
-    QObject::connect(_syncEngine.get(), &QObject::destroyed, this, [vfs]() {
-        if (vfs) {
-            vfs->stop();
-            vfs->unregisterFolder();
+    QObject::connect(_syncEngine.get(), &QObject::destroyed, this, [this]() {
+        if (_syncEngine->syncOptions()._vfs) {
+            // it seems it's already dead. the sync engine should not randomly "own" the vfs instace, as IRL
+            // it belongs to the Folder, full stop.
+            _syncEngine->syncOptions()._vfs->stop();
+            _syncEngine->syncOptions()._vfs->unregisterFolder();
             // note the _syncEngine should be destroyed when the FakeFolder dies so the vfs instance should be auto-deleted
         }
     });
