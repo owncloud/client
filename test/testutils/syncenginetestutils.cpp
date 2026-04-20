@@ -910,7 +910,13 @@ FakeFolder::FakeFolder(const FileInfo &fileTemplate, OCC::Vfs::Mode vfsMode, boo
     OC_ENFORCE(syncOnce())
 }
 
-FakeFolder::~FakeFolder() { }
+FakeFolder::~FakeFolder()
+{
+    if (_syncEngine && _syncEngine->syncOptions().isValid()) {
+        _syncEngine->syncOptions()._vfs->stop();
+        _syncEngine->syncOptions()._vfs->unregisterFolder();
+    }
+}
 
 void FakeFolder::switchToVfs(OCC::Vfs *vfs)
 {
@@ -945,16 +951,7 @@ void FakeFolder::switchToVfs(OCC::Vfs *vfs)
     vfsParams.providerDisplayName = QStringLiteral("OC-TEST");
     vfsParams.providerVersion = QVersionNumber(0, 1, 0);
     vfsParams.multipleAccountsRegistered = false;
-    /// ehhhh
-    QObject::connect(_syncEngine.get(), &QObject::destroyed, this, [this]() {
-        if (_syncEngine->syncOptions()._vfs) {
-            // it seems it's already dead. the sync engine should not randomly "own" the vfs instace, as IRL
-            // it belongs to the Folder, full stop.
-            _syncEngine->syncOptions()._vfs->stop();
-            _syncEngine->syncOptions()._vfs->unregisterFolder();
-            // note the _syncEngine should be destroyed when the FakeFolder dies so the vfs instance should be auto-deleted
-        }
-    });
+
     QObject::connect(&_syncEngine->syncFileStatusTracker(), &OCC::SyncFileStatusTracker::fileStatusChanged, vfs, &OCC::Vfs::fileStatusChanged);
 
     QObject::connect(vfs, &OCC::Vfs::error, vfs, [](const QString &error) { QFAIL(qUtf8Printable(error)); });
