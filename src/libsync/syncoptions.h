@@ -42,14 +42,11 @@ public:
     Vfs *vfs() const { return _vfs; }
 
     /** If remotely deleted files are needed to move to trash */
-    bool _moveFilesToTrash = false;
+    // bool _moveFilesToTrash = false;
 
 
     /** The maximum number of active jobs in parallel  */
     int _parallelNetworkJobs = 6;
-
-    /** Reads settings from env vars where available. */
-    void fillFromEnvironmentVariables();
 
     /**
      * @brief isValid indicates if the options are complete

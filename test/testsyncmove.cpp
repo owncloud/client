@@ -1015,6 +1015,7 @@ private Q_SLOTS:
         {
             auto vfs = VfsPluginManager::instance().createVfsFromPlugin(vfsMode, &fakeFolder);
             QVERIFY(vfs);
+            // todo: this is going to kill the parallel jobs count set above - I don't know if it matters so need to check
             fakeFolder.switchToVfs(vfs);
             fakeFolder.syncJournal().internalPinStates().setForPath("", PinState::OnlineOnly);
 

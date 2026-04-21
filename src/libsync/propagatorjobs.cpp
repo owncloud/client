@@ -93,7 +93,7 @@ bool PropagateLocalRemove::removeRecursively(const QString &absolute)
 
 void PropagateLocalRemove::start()
 {
-    _moveToTrash = propagator()->syncOptions()._moveFilesToTrash;
+    _moveToTrash = propagator()->moveToTrash();
 
     if (propagator()->_abortRequested)
         return;

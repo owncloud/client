@@ -367,9 +367,10 @@ public:
     bool _finishedEmitted; // used to ensure that finished is only emitted once
 
 public:
-    OwncloudPropagator(
-        Account *account, const SyncOptions &options, const QUrl &baseUrl, const QString &localDir, const QString &remoteFolder, SyncJournalDb *progressDb)
-        : _journal(progressDb)
+    OwncloudPropagator(Account *account, const SyncOptions &options, const QUrl &baseUrl, const QString &localDir, const QString &remoteFolder,
+        SyncJournalDb *progressDb, QObject *parent)
+        : QObject(parent)
+        , _journal(progressDb)
         , _finishedEmitted(false)
         , _anotherSyncNeeded(false)
         , _account(account)
@@ -475,6 +476,9 @@ public:
      */
     DiskSpaceResult diskSpaceCheck() const;
 
+    bool moveToTrash() const { return _moveToTrash; }
+    void setMoveToTrash(bool trashIt) { _moveToTrash = trashIt; }
+
     /** Handles a conflict by renaming the file 'item'.
      *
      * Sets up conflict records.
@@ -540,10 +544,11 @@ private:
     QScopedPointer<PropagateRootDirectory> _rootJob;
     SyncOptions _syncOptions;
     bool _jobScheduled = false;
+    bool _moveToTrash = false;
 
     const QString _localDir; // absolute path to the local directory. ends with '/'
     const QString _remoteFolder; // remote folder, ends with '/'
-    const QUrl _webDavUrl; // full WebDAV URL, might be the same as in the account
+    const QUrl _webDavUrl; // full WebDAV URL, might be the same as in the
 };
 
 /**

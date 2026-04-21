@@ -333,7 +333,7 @@ public Q_SLOTS:
     void slotSyncOnceFileUnlocks(const QString &path, FileSystem::LockMode mode);
 
     /// This slot will tell all sync engines to reload the sync options.
-    void slotReloadSyncOptions();
+    void slotUpdateMoveToTrash(bool trashIt);
 
     // emits folderRemoved
     void removeFolderFromGui(Folder *f);

@@ -66,7 +66,7 @@ GeneralSettings::GeneralSettings(QWidget *parent)
     _ui->moveToTrashCheckBox->setVisible(true);
     connect(_ui->moveToTrashCheckBox, &QCheckBox::toggled, this, [this](bool checked) {
         ConfigFile().setMoveToTrash(checked);
-        Q_EMIT syncOptionsChanged();
+        Q_EMIT moveToTrashChanged(checked);
     });
 
     // OEM themes are not obliged to ship mono icons, so there

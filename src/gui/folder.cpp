@@ -126,6 +126,8 @@ Folder::Folder(const FolderDefinition &definition, AccountState *accountState, S
     _engine.reset(new SyncEngine(_accountState->account(), webDavUrl(), path(), remotePath(), _journal));
     // pass the setting if hidden files are to be ignored, will be read in csync_update
     _engine->setIgnoreHiddenFiles(ignoreHiddenFiles);
+    ConfigFile cfgFile;
+    _engine->setMoveToTrash(cfgFile.moveToTrash());
 
     if (!_engine->loadDefaultExcludes()) {
         qCWarning(lcFolder, "Could not read system exclude file");
@@ -190,9 +192,6 @@ SyncOptions Folder::loadSyncOptions()
         return SyncOptions();
 
     SyncOptions opt(_vfs);
-    ConfigFile cfgFile;
-
-    opt._moveFilesToTrash = cfgFile.moveToTrash();
     opt._parallelNetworkJobs = _accountState->account()->isHttp2Supported() ? 20 : 6;
 
     // apparently the env can override the default
@@ -854,9 +853,9 @@ void Folder::startSync()
     Q_EMIT syncStarted();
 }
 
-void Folder::reloadSyncOptions()
+void Folder::setMoveToTrash(bool trashIt)
 {
-    _engine->setSyncOptions(loadSyncOptions());
+    _engine->setMoveToTrash(trashIt);
 }
 
 void Folder::slotSyncError(const QString &message, ErrorCategory category)
