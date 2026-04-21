@@ -4171,7 +4171,7 @@ Are you sure you want to proceed?</source>
     <message>
         <location filename="../src/libsync/platform_win.cpp" line="111"/>
         <source>Shutting down %1</source>
-        <translation>ກຳລັງປິດ %1</translation>
+        <translation>ກຳລັງປປິດ %1</translation>
     </message>
 </context>
 <context>
