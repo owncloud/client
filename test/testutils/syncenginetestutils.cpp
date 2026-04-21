@@ -913,8 +913,8 @@ FakeFolder::FakeFolder(const FileInfo &fileTemplate, OCC::Vfs::Mode vfsMode, boo
 FakeFolder::~FakeFolder()
 {
     if (_syncEngine && _syncEngine->syncOptions().isValid()) {
-        _syncEngine->syncOptions()._vfs->stop();
-        _syncEngine->syncOptions()._vfs->unregisterFolder();
+        _syncEngine->syncOptions().vfs()->stop();
+        _syncEngine->syncOptions().vfs()->unregisterFolder();
     }
 }
 
@@ -929,7 +929,7 @@ void FakeFolder::switchToVfs(OCC::Vfs *vfs)
         // *a lot* of extra steps that normal Folder implements when switching the mode
         if (_syncEngine->isSyncRunning())
             execUntilFinished();
-        OCC::Vfs *vfsToDie = opts._vfs;
+        OCC::Vfs *vfsToDie = opts.vfs();
         vfsToDie->stop();
         vfsToDie->unregisterFolder();
         QObject::disconnect(_syncEngine.get(), nullptr, vfsToDie, nullptr);
@@ -1017,7 +1017,7 @@ bool FakeFolder::isDehydratedPlaceholder(const QString &filePath)
 
 OCC::Vfs *FakeFolder::vfs() const
 {
-    return _syncEngine->syncOptions()._vfs;
+    return _syncEngine->syncOptions().vfs();
 }
 
 void FakeFolder::toDisk(QDir &dir, const FileInfo &templateFi)

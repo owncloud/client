@@ -121,6 +121,10 @@ void PropagateRemoteMove::slotMoveJobFinished()
 
 void PropagateRemoteMove::finalize()
 {
+    if (!propagator()->syncOptions().isValid()) {
+        qCWarning(lcPropagateRemoteMove) << "vfs instance is null, unable to finalize";
+        return;
+    }
     // Retrieve old db data.
     // if reading from db failed still continue hoping that deleteFileRecord
     // reopens the db successfully.
@@ -128,7 +132,7 @@ void PropagateRemoteMove::finalize()
     // to the new record. It is not a problem to skip it here.
     SyncJournalFileRecord oldRecord;
     propagator()->_journal->getFileRecord(_item->_originalFile, &oldRecord);
-    auto &vfs = propagator()->syncOptions()._vfs;
+    Vfs *vfs = propagator()->syncOptions().vfs();
     auto pinState = vfs->pinState(_item->_originalFile);
 
     // Delete old db data.

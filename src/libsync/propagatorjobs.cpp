@@ -17,8 +17,6 @@
 #include "common/syncjournaldb.h"
 #include "common/syncjournalfilerecord.h"
 #include "filesystem.h"
-#include "owncloudpropagator.h"
-#include "owncloudpropagator_p.h"
 #include "propagateremotemove.h"
 #include <QCoreApplication>
 #include <QDateTime>
@@ -212,7 +210,7 @@ void PropagateLocalMkdir::setDeleteExistingFile(bool enabled)
 
 void PropagateLocalRename::start()
 {
-    if (propagator()->_abortRequested)
+    if (propagator()->_abortRequested || !propagator()->syncOptions().isValid())
         return;
 
     QString existingFile = propagator()->fullLocalPath(propagator()->adjustRenamedPath(_item->_file));
@@ -253,7 +251,7 @@ void PropagateLocalRename::start()
     propagator()->_journal->getFileRecord(_item->_originalFile, &oldRecord);
     propagator()->_journal->deleteFileRecord(_item->_originalFile);
 
-    auto &vfs = propagator()->syncOptions()._vfs;
+    Vfs *vfs = propagator()->syncOptions().vfs();
     auto pinState = vfs->pinState(_item->_originalFile);
     std::ignore = vfs->setPinState(_item->_originalFile, PinState::Inherited);
 

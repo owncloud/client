@@ -195,7 +195,11 @@ SyncOptions Folder::loadSyncOptions()
     opt._moveFilesToTrash = cfgFile.moveToTrash();
     opt._parallelNetworkJobs = _accountState->account()->isHttp2Supported() ? 20 : 6;
 
-    opt.fillFromEnvironmentVariables();
+    // apparently the env can override the default
+    int maxParallel = qEnvironmentVariableIntValue("OWNCLOUD_MAX_PARALLEL");
+    if (maxParallel > 0)
+        opt._parallelNetworkJobs = maxParallel;
+
     return opt;
 }
 
@@ -636,11 +640,11 @@ void Folder::changeVfsMode(Vfs::Mode newMode)
     // if we can't create the new mode, just ditch.
     Vfs *newVfs = VfsPluginManager::instance().createVfsFromPlugin(newMode, this);
     if (!newVfs) {
-        qCWarning(lcFolder) << "Unable to change vfs mode for Folder " << _definition.localPath();
+        qCWarning(lcFolder) << "Unable to change vfs mode for Folder " << _definition.localPath() << " from " << _definition.virtualFilesMode() << " to "
+                            << newMode << ". Leaving the original mode active.";
         return;
     }
 
-    // This is tested in TestSyncVirtualFiles::testWipeVirtualSuffixFiles, so for changes here, have them reflected in that test.
     const bool wasPaused = _definition.paused();
     if (!wasPaused) {
         setSyncPaused(true);

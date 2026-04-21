@@ -13,11 +13,11 @@
  */
 
 #include "propagateremotemkdir.h"
-#include "owncloudpropagator_p.h"
 #include "account.h"
-#include "common/syncjournalfilerecord.h"
-#include "propagateremotedelete.h"
 #include "common/asserts.h"
+#include "common/syncjournalfilerecord.h"
+#include "owncloudpropagator_p.h"
+#include "propagateremotedelete.h"
 
 #include <QFile>
 #include <QLoggingCategory>

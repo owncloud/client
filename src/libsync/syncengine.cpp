@@ -499,37 +499,7 @@ void SyncEngine::slotDiscoveryFinished()
             _anotherSyncNeeded = true;
         }
 
-        Q_ASSERT(std::is_sorted(_syncItems.begin(), _syncItems.end()));
-
-        const auto regex = syncOptions().fileRegex();
-        if (regex.isValid()) {
-            QSet<QStringView> names;
-            for (auto &i : _syncItems) {
-                if (regex.match(i->_file).hasMatch()) {
-                    int index = -1;
-                    QStringView ref;
-                    do {
-                        ref = QStringView(i->_file).mid(0, index);
-                        names.insert(ref);
-                        index = ref.lastIndexOf(QLatin1Char('/'));
-                    } while (index > 0);
-                }
-            }
-            //std::erase_if c++20
-            // https://en.cppreference.com/w/cpp/container/set/erase_if
-            const auto erase_if = [](auto &c, const auto &pred) {
-                auto old_size = c.size();
-                for (auto i = c.begin(), last = c.end(); i != last;) {
-                    if (pred(*i)) {
-                        i = c.erase(i);
-                    } else {
-                        ++i;
-                    }
-                }
-                return old_size - c.size();
-            };
-            erase_if(_syncItems, [&names](const SyncFileItemPtr &i) { return !names.contains(QStringView{i->_file}); });
-        }
+        Q_ASSERT(std::is_sorted(_syncItems.begin(), _syncItems.end())); 
 
         qCInfo(lcEngine) << "#### Reconcile (aboutToPropagate) ####################################################" << _duration.duration();
 

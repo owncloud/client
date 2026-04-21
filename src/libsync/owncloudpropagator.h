@@ -135,6 +135,7 @@ protected:
     OwncloudPropagator *propagator() const;
 
 private:
+    OwncloudPropagator *_propagator;
     QString _path;
     JobState _jobState;
 };

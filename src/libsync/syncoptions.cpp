@@ -28,31 +28,6 @@ SyncOptions::~SyncOptions()
 {
 }
 
-void SyncOptions::fillFromEnvironmentVariables()
-{
-    int maxParallel = qEnvironmentVariableIntValue("OWNCLOUD_MAX_PARALLEL");
-    if (maxParallel > 0)
-        _parallelNetworkJobs = maxParallel;
-}
-
-QRegularExpression SyncOptions::fileRegex() const
-{
-    return _fileRegex;
-}
-
-/*void SyncOptions::setFilePattern(const QString &pattern)
-{
-    // full match or a path ending with this pattern
-    setPathPattern(QStringLiteral("(^|/|\\\\)") + pattern + QLatin1Char('$'));
-}*/
-
-/*void SyncOptions::setPathPattern(const QString &pattern)
-{
-    _fileRegex.setPatternOptions(
-        Utility::fsCasePreservingButCaseInsensitive() ? QRegularExpression::CaseInsensitiveOption : QRegularExpression::NoPatternOption);
-    _fileRegex.setPattern(pattern);
-}*/
-
 bool SyncOptions::isValid() const
 {
     return !_vfs.isNull();
