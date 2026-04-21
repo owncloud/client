@@ -39,14 +39,11 @@ public:
     explicit SyncOptions(Vfs *vfs = nullptr);
     ~SyncOptions();
 
+    Vfs *vfs() const { return _vfs; }
+
     /** If remotely deleted files are needed to move to trash */
     bool _moveFilesToTrash = false;
 
-    /** Create a virtual file for new files instead of downloading. If vfs is null, isValid will return false indicating you should not use it
-     * implementation note: of course you can pass a nullptr to the ctr or it can be deleted from above so this is the "sanest" way to
-     *  handle it.
-     */
-    QPointer<Vfs> _vfs;
 
     /** The maximum number of active jobs in parallel  */
     int _parallelNetworkJobs = 6;
@@ -54,36 +51,18 @@ public:
     /** Reads settings from env vars where available. */
     void fillFromEnvironmentVariables();
 
-    /** A regular expression to match file names
-     * If no pattern is provided the default is an invalid regular expression.
-     */
-    QRegularExpression fileRegex() const;
-
-    /**
-     * A pattern like *.txt, matching only file names
-     * I don't find this used anywhere so it's dead to me
-     */
-    // void setFilePattern(const QString &pattern);
-
-    /**
-     * A pattern like /own.*\/.*txt matching the full path
-     * this was only used by setFilePattern so imo should go too
-     */
-    // void setPathPattern(const QString &pattern);
-
     /**
      * @brief isValid indicates if the options are complete
      * @return true if vfs is non-null, else false
      */
     bool isValid() const;
 
-
 private:
-    /**
-     * Only sync files that mathc the expression
-     * Invalid pattern by default.
+    /** Create a virtual file for new files instead of downloading. If vfs is null, isValid will return false indicating you should not use it
+     * implementation note: of course you can pass a nullptr to the ctr or it can be deleted from above so this is the "sanest" way to
+     *  handle it.
      */
-    QRegularExpression _fileRegex = QRegularExpression(QStringLiteral("("));
+    QPointer<Vfs> _vfs;
 };
 
 }

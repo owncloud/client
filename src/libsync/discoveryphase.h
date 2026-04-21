@@ -91,7 +91,7 @@ Q_SIGNALS:
 
     void itemDiscovered(SyncFileItemPtr item);
     void childIgnored(bool b);
-private Q_SLOTS:
+
 private:
     QString _localPath;
     OCC::Vfs* _vfs;

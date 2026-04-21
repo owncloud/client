@@ -12,19 +12,19 @@
  * for more details.
  */
 
-#include "account.h"
-#include "filesystem.h"
-#include "networkjobs.h"
-#include "owncloudpropagator_p.h"
-#include "propagateremotedelete.h"
-#include "propagateuploadfile.h"
-#include "syncengine.h"
+#include "propagateuploadcommon.h"
 
+#include "account.h"
 #include "common/asserts.h"
 #include "common/checksums.h"
 #include "common/syncjournaldb.h"
 #include "common/syncjournalfilerecord.h"
 #include "common/utility.h"
+#include "filesystem.h"
+#include "networkjobs.h"
+#include "owncloudpropagator_p.h"
+#include "propagateremotedelete.h"
+#include "syncengine.h"
 
 #include "libsync/theme.h"
 
@@ -32,7 +32,7 @@
 #include <QFileInfo>
 
 #include <chrono>
-#include <cmath>
+// #include <cmath>
 
 using namespace std::chrono_literals;
 
@@ -261,8 +261,7 @@ void PropagateUploadCommon::commonErrorHandling(AbstractNetworkJob *job)
     // Ensure errors that should eventually reset the chunked upload are tracked.
     checkResettingErrors();
 
-    SyncFileItem::Status status = classifyError(job->reply()->error(), _item->_httpErrorCode,
-        &propagator()->_anotherSyncNeeded, replyContent);
+    SyncFileItem::Status status = classifyError(job->reply()->error(), _item->_httpErrorCode, &propagator()->_anotherSyncNeeded, replyContent);
 
     // Insufficient remote storage.
     if (_item->_httpErrorCode == 507) {
@@ -359,7 +358,7 @@ QMap<QByteArray, QByteArray> PropagateUploadCommon::headers()
 
 void PropagateUploadCommon::finalize()
 {
-    OC_ENFORCE(state() != Finished);
+    OC_ENFORCE(state() != Finished && propagator()->syncOptions().isValid());
 
     // Update the quota, if known
     if (!_quotaUpdated) {
@@ -397,7 +396,7 @@ void PropagateUploadCommon::finalize()
     // Files that were new on the remote shouldn't have online-only pin state
     // even if their parent folder is online-only.
     if (_item->instruction() & (CSYNC_INSTRUCTION_NEW | CSYNC_INSTRUCTION_TYPE_CHANGE)) {
-        auto &vfs = propagator()->syncOptions()._vfs;
+        Vfs *vfs = propagator()->syncOptions().vfs();
         const auto pin = vfs->pinState(_item->_file);
         if (pin && *pin == PinState::OnlineOnly) {
             std::ignore = vfs->setPinState(_item->_file, PinState::Unspecified);
