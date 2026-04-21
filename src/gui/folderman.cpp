@@ -1146,12 +1146,11 @@ bool FolderMan::isSpaceSynced(GraphApi::Space *space) const
     return (space && folder(space->accountId(), space->id()) != nullptr);
 }
 
-// this only seems to be triggered when changing the move to trash setting?
-void FolderMan::slotReloadSyncOptions()
+void FolderMan::slotUpdateMoveToTrash(bool trashIt)
 {
     for (auto *f : folders()) {
         if (f) {
-            f->reloadSyncOptions();
+            f->setMoveToTrash(trashIt);
         }
     }
 }

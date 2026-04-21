@@ -518,18 +518,16 @@ void SyncEngine::slotDiscoveryFinished()
         // do a database commit
         _journal->commit(QStringLiteral("post treewalk"));
 
-        _propagator = QSharedPointer<OwncloudPropagator>::create(_account, syncOptions(), _baseUrl, _localPath, _remotePath, _journal);
-        connect(_propagator.data(), &OwncloudPropagator::itemCompleted,
-            this, &SyncEngine::slotItemCompleted);
-        connect(_propagator.data(), &OwncloudPropagator::progress,
-            this, &SyncEngine::slotProgress);
-        connect(_propagator.data(), &OwncloudPropagator::updateFileTotal,
-            this, &SyncEngine::updateFileTotal);
-        connect(_propagator.data(), &OwncloudPropagator::finished, this, &SyncEngine::slotPropagationFinished, Qt::QueuedConnection);
-        connect(_propagator.data(), &OwncloudPropagator::seenLockedFile, this, &SyncEngine::seenLockedFile);
-        connect(_propagator.data(), &OwncloudPropagator::insufficientLocalStorage, this, &SyncEngine::slotInsufficientLocalStorage);
-        connect(_propagator.data(), &OwncloudPropagator::insufficientRemoteStorage, this, &SyncEngine::slotInsufficientRemoteStorage);
-        connect(_propagator.data(), &OwncloudPropagator::newItem, this, &SyncEngine::slotNewItem);
+        _propagator = new OwncloudPropagator(_account, syncOptions(), _baseUrl, _localPath, _remotePath, _journal, this);
+        _propagator->setMoveToTrash(_moveToTrash);
+        connect(_propagator, &OwncloudPropagator::itemCompleted, this, &SyncEngine::slotItemCompleted);
+        connect(_propagator, &OwncloudPropagator::progress, this, &SyncEngine::slotProgress);
+        connect(_propagator, &OwncloudPropagator::updateFileTotal, this, &SyncEngine::updateFileTotal);
+        connect(_propagator, &OwncloudPropagator::finished, this, &SyncEngine::slotPropagationFinished, Qt::QueuedConnection);
+        connect(_propagator, &OwncloudPropagator::seenLockedFile, this, &SyncEngine::seenLockedFile);
+        connect(_propagator, &OwncloudPropagator::insufficientLocalStorage, this, &SyncEngine::slotInsufficientLocalStorage);
+        connect(_propagator, &OwncloudPropagator::insufficientRemoteStorage, this, &SyncEngine::slotInsufficientRemoteStorage);
+        connect(_propagator, &OwncloudPropagator::newItem, this, &SyncEngine::slotNewItem);
 
         deleteStaleDownloadInfos(_syncItems);
         deleteStaleUploadInfos(_syncItems);
@@ -607,7 +605,7 @@ void SyncEngine::finalize(bool success)
     Q_EMIT finished(success);
 
     // Delete the propagator only after emitting the signal.
-    _propagator.clear();
+    //  _propagator.clear();
     _seenConflictFiles.clear();
     _uniqueErrors.clear();
     _localDiscoveryPaths.clear();

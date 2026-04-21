@@ -70,6 +70,8 @@ public:
     bool ignoreHiddenFiles() const { return _ignore_hidden_files; }
     void setIgnoreHiddenFiles(bool ignore) { _ignore_hidden_files = ignore; }
 
+    void setMoveToTrash(bool trashIt) { _moveToTrash = trashIt; }
+
     bool isExcluded(QStringView filePath) const;
     void addManualExclude(const QString &filePath);
     void addExcludeList(const QString &filePath);
@@ -208,7 +210,7 @@ private:
     QString _remoteRootEtag;
     SyncJournalDb *_journal;
     std::unique_ptr<DiscoveryPhase> _discoveryPhase;
-    QSharedPointer<OwncloudPropagator> _propagator;
+    OwncloudPropagator *_propagator;
 
     // List of all files with conflicts
     QSet<QString> _seenConflictFiles;
@@ -226,6 +228,8 @@ private:
 
     // If ignored files should be ignored
     bool _ignore_hidden_files = false;
+    // should deleted files be moved to trash
+    bool _moveToTrash = false;
 
     SyncOptions _syncOptions;
 

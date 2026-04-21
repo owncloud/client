@@ -306,7 +306,7 @@ public:
 
     void setSyncState(SyncResult::Status state);
 
-    void reloadSyncOptions();
+    void setMoveToTrash(bool trashIt);
 
 
     // TODO: don't expose
