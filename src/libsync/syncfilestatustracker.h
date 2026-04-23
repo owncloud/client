@@ -71,6 +71,7 @@ private:
     void incSyncCountAndEmitStatusChanged(const QString &relativePath, SharedFlag sharedState);
     void decSyncCountAndEmitStatusChanged(const QString &relativePath, SharedFlag sharedState);
 
+    // also the parent - maybe make this a qpointer regardless?
     SyncEngine *_syncEngine;
 
     ProblemsMap _syncProblems;

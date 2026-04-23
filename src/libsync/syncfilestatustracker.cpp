@@ -83,7 +83,8 @@ static inline bool hasExcludedStatus(const SyncFileItem &item)
 }
 
 SyncFileStatusTracker::SyncFileStatusTracker(SyncEngine *syncEngine)
-    : _syncEngine(syncEngine)
+    : QObject(syncEngine)
+    , _syncEngine(syncEngine)
     , _caseSensitivity(Utility::fsCaseSensitivity())
 {
     connect(syncEngine, &SyncEngine::aboutToPropagate,

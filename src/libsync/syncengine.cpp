@@ -43,8 +43,9 @@ Q_LOGGING_CATEGORY(lcEngine, "sync.engine", QtInfoMsg)
 // doc in header
 std::chrono::seconds SyncEngine::minimumFileAgeForUpload(2s);
 
-SyncEngine::SyncEngine(Account *account, const QUrl &baseUrl, const QString &localPath, const QString &remotePath, OCC::SyncJournalDb *journal)
-    : _account(account)
+SyncEngine::SyncEngine(Account *account, const QUrl &baseUrl, const QString &localPath, const QString &remotePath, OCC::SyncJournalDb *journal, QObject *parent)
+    : QObject(parent)
+    , _account(account)
     , _baseUrl(baseUrl)
     , _needsUpdate(false)
     , _syncRunning(false)
@@ -58,12 +59,7 @@ SyncEngine::SyncEngine(Account *account, const QUrl &baseUrl, const QString &loc
     // be passed between threads and b) to just call it once.
     // suggest calling registration method in FolderMan or one of the other single instance managers on startup
     // one day it might belong in an app builder routine.
-    qRegisterMetaType<SyncFileItem>("SyncFileItem");
-    qRegisterMetaType<SyncFileItemPtr>("SyncFileItemPtr");
-    qRegisterMetaType<SyncFileItem::Status>("SyncFileItem::Status");
-    qRegisterMetaType<SyncFileStatus>("SyncFileStatus");
-    qRegisterMetaType<SyncFileItemSet>("SyncFileItemSet");
-    qRegisterMetaType<SyncFileItem::Direction>("SyncFileItem::Direction");
+
 
     // Everything in the SyncEngine expects a trailing slash for the localPath.
     OC_ASSERT(localPath.endsWith(QLatin1Char('/')));
@@ -616,8 +612,9 @@ void SyncEngine::finalize(bool success)
         _uniqueErrors.clear();
         _localDiscoveryPaths.clear();
         _localDiscoveryStyle = LocalDiscoveryStyle::FilesystemOnly;
+        // pretty sure we should not be emitting anything if the engine is already in destruction?
+        Q_EMIT finished(success);
     }
-    Q_EMIT finished(success);
 }
 
 void SyncEngine::slotProgress(const SyncFileItem &item, qint64 current)

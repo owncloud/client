@@ -45,7 +45,7 @@ private Q_SLOTS:
 
         FakeFolder fakeFolder(FileInfo::A12_B12_C12_S12(), vfsMode, filesAreDehydrated);
 
-        LocalDiscoveryTracker tracker;
+        LocalDiscoveryTracker tracker(nullptr);
         connect(&fakeFolder.syncEngine(), &SyncEngine::itemCompleted, &tracker, &LocalDiscoveryTracker::slotItemCompleted);
         connect(&fakeFolder.syncEngine(), &SyncEngine::finished, &tracker, &LocalDiscoveryTracker::slotSyncFinished);
 
@@ -145,7 +145,7 @@ private Q_SLOTS:
 
         FakeFolder fakeFolder(FileInfo::A12_B12_C12_S12(), vfsMode, filesAreDehydrated);
 
-        LocalDiscoveryTracker tracker;
+        LocalDiscoveryTracker tracker(nullptr);
         connect(&fakeFolder.syncEngine(), &SyncEngine::itemCompleted, &tracker, &LocalDiscoveryTracker::slotItemCompleted);
         connect(&fakeFolder.syncEngine(), &SyncEngine::finished, &tracker, &LocalDiscoveryTracker::slotSyncFinished);
         auto trackerContains = [&](const char *path) {
@@ -275,7 +275,7 @@ private Q_SLOTS:
         fakeFolder.remoteModifier().mkdir(QStringLiteral("P/B") + correct);
         fakeFolder.remoteModifier().insert(QStringLiteral("P/B") + correct + QStringLiteral("/b"));
 
-        LocalDiscoveryTracker tracker;
+        LocalDiscoveryTracker tracker(nullptr);
         connect(&fakeFolder.syncEngine(), &SyncEngine::itemCompleted, &tracker, &LocalDiscoveryTracker::slotItemCompleted);
         connect(&fakeFolder.syncEngine(), &SyncEngine::finished, &tracker, &LocalDiscoveryTracker::slotSyncFinished);
 

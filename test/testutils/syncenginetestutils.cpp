@@ -884,12 +884,14 @@ FakeFolder::FakeFolder(const FileInfo &fileTemplate, OCC::Vfs::Mode vfsMode, boo
     _fakeAm = dynamic_cast<FakeAM *>(_accountState->account()->accessManager());
     Q_ASSERT(_fakeAm);
 
-    _journalDb.reset(new OCC::SyncJournalDb(localPath() + QStringLiteral(".sync_test.db"), nullptr));
+    _journalDb = new OCC::SyncJournalDb(localPath() + QStringLiteral(".sync_test.db"), this);
     // TODO: davUrl
 
-    _syncEngine.reset(new OCC::SyncEngine(account(), account()->davUrl(), localPath(), QString(), _journalDb.get()));
+    _syncEngine = new OCC::SyncEngine(account(), account()->davUrl(), localPath(), QString(), _journalDb, this);
     OCC::Vfs *vfs = OCC::VfsPluginManager::instance().createVfsFromPlugin(vfsMode, this);
-    Q_ASSERT(vfs->mode() == vfsMode);
+    Q_ASSERT(vfs && vfs->mode() == vfsMode);
+
+    // make sure the sync engine options are *not* yet set - for the tests this happens in switchToVfs
     Q_ASSERT(!_syncEngine->syncOptions().isValid());
 
     // Ignore temporary files from the download. (This is in the default exclude list, but we don't load it)
@@ -932,7 +934,7 @@ void FakeFolder::switchToVfs(OCC::Vfs *vfs)
         OCC::Vfs *vfsToDie = opts.vfs();
         vfsToDie->stop();
         vfsToDie->unregisterFolder();
-        QObject::disconnect(_syncEngine.get(), nullptr, vfsToDie, nullptr);
+        QObject::disconnect(_syncEngine, nullptr, vfsToDie, nullptr);
         QObject::disconnect(&_syncEngine->syncFileStatusTracker(), nullptr, vfsToDie, nullptr);
         QObject::disconnect(vfsToDie);
         // this is "nice" to avoid waiting for the parent folder to die
@@ -946,7 +948,7 @@ void FakeFolder::switchToVfs(OCC::Vfs *vfs)
     OCC::VfsSetupParams vfsParams(account(), account()->davUrl(), &syncEngine());
     vfsParams.filesystemPath = localPath();
     vfsParams.remotePath = QLatin1Char('/');
-    vfsParams.journal = _journalDb.get();
+    vfsParams.journal = _journalDb;
     vfsParams.providerName = QStringLiteral("OC-TEST");
     vfsParams.providerDisplayName = QStringLiteral("OC-TEST");
     vfsParams.providerVersion = QVersionNumber(0, 1, 0);
@@ -984,18 +986,18 @@ QString FakeFolder::localPath() const
 void FakeFolder::scheduleSync()
 {
     // Have to be done async, else, an error before exec() does not terminate the event loop.
-    QMetaObject::invokeMethod(_syncEngine.get(), &OCC::SyncEngine::startSync, Qt::QueuedConnection);
+    QMetaObject::invokeMethod(_syncEngine, &OCC::SyncEngine::startSync, Qt::QueuedConnection);
 }
 
 void FakeFolder::execUntilBeforePropagation()
 {
-    QSignalSpy spy(_syncEngine.get(), &OCC::SyncEngine::aboutToPropagate);
+    QSignalSpy spy(_syncEngine, &OCC::SyncEngine::aboutToPropagate);
     QVERIFY(spy.wait());
 }
 
 void FakeFolder::execUntilItemCompleted(const QString &relativePath)
 {
-    QSignalSpy spy(_syncEngine.get(), &OCC::SyncEngine::itemCompleted);
+    QSignalSpy spy(_syncEngine, &OCC::SyncEngine::itemCompleted);
     QElapsedTimer t;
     t.start();
     while (t.elapsed() < 5000) {
@@ -1126,7 +1128,7 @@ FileInfo FakeFolder::dbState() const
 
 bool FakeFolder::execUntilFinished()
 {
-    QSignalSpy spy(_syncEngine.get(), &OCC::SyncEngine::finished);
+    QSignalSpy spy(_syncEngine, &OCC::SyncEngine::finished);
     bool ok = spy.wait(3600000);
     Q_ASSERT(ok && "Sync timed out");
     return spy[0][0].toBool();
@@ -1136,11 +1138,10 @@ bool FakeFolder::syncOnce()
 {
     QObject connectScope;
     QList<QPair<QString, OCC::ErrorCategory>> errors;
-    connect(_syncEngine.get(), &OCC::SyncEngine::syncError, &connectScope,
+    connect(_syncEngine, &OCC::SyncEngine::syncError, &connectScope,
         [&errors](const QString &message, OCC::ErrorCategory category) { errors << qMakePair(message, category); });
     OCC::SyncResult result;
-    connect(
-        _syncEngine.get(), &OCC::SyncEngine::itemCompleted, &connectScope, [&result](const OCC::SyncFileItemPtr &item) { result.processCompletedItem(item); });
+    connect(_syncEngine, &OCC::SyncEngine::itemCompleted, &connectScope, [&result](const OCC::SyncFileItemPtr &item) { result.processCompletedItem(item); });
     scheduleSync();
     const bool ok = execUntilFinished();
     if (!ok) {
