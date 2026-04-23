@@ -208,8 +208,10 @@ private:
     QString _localPath;
     QString _remotePath;
     QString _remoteRootEtag;
-    SyncJournalDb *_journal;
-    std::unique_ptr<DiscoveryPhase> _discoveryPhase;
+    // this is owned by the folder
+    QPointer<SyncJournalDb> _journal;
+    // both of these are "rebuilt" on every sync
+    DiscoveryPhase *_discoveryPhase;
     OwncloudPropagator *_propagator;
 
     // List of all files with conflicts

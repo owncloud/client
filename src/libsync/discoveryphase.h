@@ -228,7 +228,7 @@ class DiscoveryPhase : public QObject
 
 public:
     // input
-    DiscoveryPhase(Account *account, const SyncOptions &options, const QUrl &baseUrl, QObject *parent = nullptr)
+    DiscoveryPhase(Account *account, const SyncOptions &options, const QUrl &baseUrl, QObject *parent)
         : QObject(parent)
         , _syncOptions(options)
         , _baseUrl(baseUrl)
