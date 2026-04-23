@@ -455,7 +455,7 @@ void Folder::startVfs()
 
     // lord almighty - the engine should just emit this itself...these layers of indirection create so much noise and I'm betting there's no
     // good reason to have an accessor on the file status tracker
-    connect(&_engine->syncFileStatusTracker(), &SyncFileStatusTracker::fileStatusChanged, _vfs, &Vfs::fileStatusChanged);
+    connect(_engine->syncFileStatusTracker(), &SyncFileStatusTracker::fileStatusChanged, _vfs, &Vfs::fileStatusChanged);
 
 
     connect(_vfs, &Vfs::started, this, [this] {
@@ -674,7 +674,7 @@ void Folder::changeVfsMode(Vfs::Mode newMode)
     _vfs->stop();
     _vfs->unregisterFolder();
     disconnect(_vfs, nullptr, this, nullptr);
-    disconnect(&_engine->syncFileStatusTracker(), nullptr, _vfs, nullptr);
+    disconnect(_engine->syncFileStatusTracker(), nullptr, _vfs, nullptr);
 
     // _vfs is a shared pointer...
     // Refactor todo: who is it shared with? It appears to be shared with the SyncOptions. SyncOptions instance is then

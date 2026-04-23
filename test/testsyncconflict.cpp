@@ -63,7 +63,7 @@ bool expectAndWipeConflict(FakeFolder &fFolder, const QString &path)
 SyncJournalFileRecord dbRecord(FakeFolder &folder, const QString &path)
 {
     SyncJournalFileRecord record;
-    folder.syncJournal().getFileRecord(path, &record);
+    folder.syncJournal()->getFileRecord(path, &record);
     return record;
 }
 
@@ -133,22 +133,22 @@ private Q_SLOTS:
         // Make conflict records
         ConflictRecord conflictRecord;
         conflictRecord.path = "A/a1";
-        fakeFolder.syncJournal().setConflictRecord(conflictRecord);
+        fakeFolder.syncJournal()->setConflictRecord(conflictRecord);
         conflictRecord.path = "A/a2";
-        fakeFolder.syncJournal().setConflictRecord(conflictRecord);
+        fakeFolder.syncJournal()->setConflictRecord(conflictRecord);
 
         // A nothing-to-sync keeps them alive
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
-        QVERIFY(fakeFolder.syncJournal().conflictRecord("A/a1").isValid());
-        QVERIFY(fakeFolder.syncJournal().conflictRecord("A/a2").isValid());
+        QVERIFY(fakeFolder.syncJournal()->conflictRecord("A/a1").isValid());
+        QVERIFY(fakeFolder.syncJournal()->conflictRecord("A/a2").isValid());
 
         // When the file is removed, the record is removed too
         fakeFolder.localModifier().remove(QStringLiteral("A/a2"));
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
-        QVERIFY(fakeFolder.syncJournal().conflictRecord("A/a1").isValid());
-        QVERIFY(!fakeFolder.syncJournal().conflictRecord("A/a2").isValid());
+        QVERIFY(fakeFolder.syncJournal()->conflictRecord("A/a1").isValid());
+        QVERIFY(!fakeFolder.syncJournal()->conflictRecord("A/a2").isValid());
     }
 
     void testConflictRecordRemoval2()
@@ -185,14 +185,14 @@ private Q_SLOTS:
 
             // A nothing-to-sync keeps them alive
             QVERIFY(fakeFolder.applyLocalModificationsAndSync());
-            QVERIFY(fakeFolder.syncJournal().conflictRecord(a1conflict.toUtf8()).isValid());
-            QVERIFY(fakeFolder.syncJournal().conflictRecord(a2conflict.toUtf8()).isValid());
+            QVERIFY(fakeFolder.syncJournal()->conflictRecord(a1conflict.toUtf8()).isValid());
+            QVERIFY(fakeFolder.syncJournal()->conflictRecord(a2conflict.toUtf8()).isValid());
 
             // When the file is removed, the record is removed too
             fakeFolder.localModifier().remove(a2conflict);
             QVERIFY(fakeFolder.applyLocalModificationsAndSync());
-            QVERIFY(fakeFolder.syncJournal().conflictRecord(a1conflict.toUtf8()).isValid());
-            QVERIFY(!fakeFolder.syncJournal().conflictRecord(a2conflict.toUtf8()).isValid());
+            QVERIFY(fakeFolder.syncJournal()->conflictRecord(a1conflict.toUtf8()).isValid());
+            QVERIFY(!fakeFolder.syncJournal()->conflictRecord(a2conflict.toUtf8()).isValid());
         }
     }
 
@@ -313,7 +313,7 @@ private Q_SLOTS:
         QCOMPARE(conflicts.size(), 3);
         std::sort(conflicts.begin(), conflicts.end());
 
-        auto conflictRecords = fakeFolder.syncJournal().conflictRecordPaths();
+        auto conflictRecords = fakeFolder.syncJournal()->conflictRecordPaths();
         QCOMPARE(conflictRecords.size(), 3);
         std::sort(conflictRecords.begin(), conflictRecords.end());
 
@@ -390,7 +390,7 @@ private Q_SLOTS:
         QCOMPARE(conflicts.size(), 3);
         std::sort(conflicts.begin(), conflicts.end());
 
-        auto conflictRecords = fakeFolder.syncJournal().conflictRecordPaths();
+        auto conflictRecords = fakeFolder.syncJournal()->conflictRecordPaths();
         QCOMPARE(conflictRecords.size(), 3);
         std::sort(conflictRecords.begin(), conflictRecords.end());
 
@@ -484,7 +484,7 @@ private Q_SLOTS:
             QDir(fakeFolder.localPath() + conflict).removeRecursively();
         }
 
-        QCOMPARE(fakeFolder.syncEngine().isAnotherSyncNeeded(), true);
+        QCOMPARE(fakeFolder.syncEngine()->isAnotherSyncNeeded(), true);
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
     }

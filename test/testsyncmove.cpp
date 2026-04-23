@@ -116,8 +116,8 @@ private Q_SLOTS:
         auto expectedServerState = fakeFolder.currentRemoteState();
 
         // Remove subFolderA with selectiveSync:
-        fakeFolder.syncEngine().journal()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, {QStringLiteral("parentFolder/subFolderA/")});
-        fakeFolder.syncEngine().journal()->schedulePathForRemoteDiscovery(QByteArrayLiteral("parentFolder/subFolderA/"));
+        fakeFolder.syncEngine()->journal()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, {QStringLiteral("parentFolder/subFolderA/")});
+        fakeFolder.syncEngine()->journal()->schedulePathForRemoteDiscovery(QByteArrayLiteral("parentFolder/subFolderA/"));
 
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
 
@@ -1005,9 +1005,9 @@ private Q_SLOTS:
         const QString src = QStringLiteral("folder/folderA/file.txt");
         const QString dest = QStringLiteral("folder/folderB/file.txt");
         FakeFolder fakeFolder{ FileInfo{ QString(), { FileInfo{ QStringLiteral("folder"), { FileInfo{ QStringLiteral("folderA"), { { QStringLiteral("file.txt"), 400 } } }, QStringLiteral("folderB") } } } } };
-        auto syncOpts = fakeFolder.syncEngine().syncOptions();
+        auto syncOpts = fakeFolder.syncEngine()->syncOptions();
         syncOpts._parallelNetworkJobs = 0;
-        fakeFolder.syncEngine().setSyncOptions(syncOpts);
+        fakeFolder.syncEngine()->setSyncOptions(syncOpts);
 
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
 
@@ -1017,7 +1017,7 @@ private Q_SLOTS:
             QVERIFY(vfs);
             // todo: this is going to kill the parallel jobs count set above - I don't know if it matters so need to check
             fakeFolder.switchToVfs(vfs);
-            fakeFolder.syncJournal().internalPinStates().setForPath("", PinState::OnlineOnly);
+            fakeFolder.syncJournal()->internalPinStates().setForPath("", PinState::OnlineOnly);
 
             // make files virtual
             QVERIFY(fakeFolder.applyLocalModificationsAndSync());
@@ -1037,7 +1037,7 @@ private Q_SLOTS:
 
         if (vfsMode != Vfs::Off)
         {
-            fakeFolder.syncJournal().internalPinStates().setForPath("", PinState::AlwaysLocal);
+            fakeFolder.syncJournal()->internalPinStates().setForPath("", PinState::AlwaysLocal);
             QVERIFY(!fakeFolder.applyLocalModificationsAndSync());
         }
 

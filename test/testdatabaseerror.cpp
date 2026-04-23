@@ -75,14 +75,14 @@ private Q_SLOTS:
             fakeFolder.localModifier().rename(QStringLiteral("C"), QStringLiteral("NewDir/C"));
 
             // Set the counter
-            fakeFolder.syncJournal().autotestFailCounter = count;
+            fakeFolder.syncJournal()->autotestFailCounter = count;
 
             // run the sync
             bool result = fakeFolder.applyLocalModificationsAndSync();
 
             qInfo() << "Result of iteration" << count << "was" << result;
 
-            if (fakeFolder.syncJournal().autotestFailCounter >= 0) {
+            if (fakeFolder.syncJournal()->autotestFailCounter >= 0) {
                 // No error was thrown, we are finished
                 QVERIFY(result);
                 QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
@@ -91,9 +91,9 @@ private Q_SLOTS:
             }
 
             if (!result) {
-                fakeFolder.syncJournal().autotestFailCounter = -1;
+                fakeFolder.syncJournal()->autotestFailCounter = -1;
                 // esnure we actually sync and are not blocked by ignored files...
-                fakeFolder.syncJournal().wipeErrorBlacklist();
+                fakeFolder.syncJournal()->wipeErrorBlacklist();
                 // Try again
                 QVERIFY(fakeFolder.syncOnce());
             }

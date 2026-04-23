@@ -771,8 +771,8 @@ void FolderMan::connectFolder(Folder *folder)
         connect(folder, SIGNAL(vfsModeChanged(Folder*,Vfs::Mode)), this, SLOT(saveFolder(Folder*)));
         // clang-format on  
         connect(
-            &folder->syncEngine().syncFileStatusTracker(), &SyncFileStatusTracker::fileStatusChanged, _socketApi.get(), &SocketApi::broadcastStatusPushMessage);
-        connect(folder, &Folder::watchedFileChangedExternally, &folder->syncEngine().syncFileStatusTracker(), &SyncFileStatusTracker::slotPathTouched);
+            folder->syncEngine().syncFileStatusTracker(), &SyncFileStatusTracker::fileStatusChanged, _socketApi.get(), &SocketApi::broadcastStatusPushMessage);
+        connect(folder, &Folder::watchedFileChangedExternally, folder->syncEngine().syncFileStatusTracker(), &SyncFileStatusTracker::slotPathTouched);
 
         registerFolderWithSocketApi(folder);
     }
@@ -795,8 +795,8 @@ void FolderMan::disconnectFolder(Folder *folder)
         disconnect(folder, nullptr, this, nullptr);
         disconnect(&folder->syncEngine(), nullptr, folder, nullptr);
         disconnect(
-            &folder->syncEngine().syncFileStatusTracker(), &SyncFileStatusTracker::fileStatusChanged, _socketApi.get(), &SocketApi::broadcastStatusPushMessage);
-        disconnect(folder, nullptr, &folder->syncEngine().syncFileStatusTracker(), nullptr);
+            folder->syncEngine().syncFileStatusTracker(), &SyncFileStatusTracker::fileStatusChanged, _socketApi.get(), &SocketApi::broadcastStatusPushMessage);
+        disconnect(folder, nullptr, folder->syncEngine().syncFileStatusTracker(), nullptr);
     }
 }
 
