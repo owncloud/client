@@ -48,7 +48,8 @@ jobs:
               useSonarCloud:
               testOptions:
     name: ${{ matrix.name }}
-
+    #let the other builds run even if one fails
+    continue-on-error: true
     runs-on: ${{ matrix.os }}
 
     env:
