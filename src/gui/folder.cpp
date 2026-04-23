@@ -123,9 +123,10 @@ Folder::Folder(const FolderDefinition &definition, AccountState *accountState, S
 
     // todo: the engine needs to be created externally, presumably by the folderman, and passed in by injection
     // current impl can result in an invalid engine which is just a mess given the folder is useless without it
-    _engine.reset(new SyncEngine(_accountState->account(), webDavUrl(), path(), remotePath(), _journal));
+    _engine = new SyncEngine(_accountState->account(), webDavUrl(), path(), remotePath(), _journal, this);
     // pass the setting if hidden files are to be ignored, will be read in csync_update
     _engine->setIgnoreHiddenFiles(ignoreHiddenFiles);
+    // consider passing this in instead of hitting the config file again
     ConfigFile cfgFile;
     _engine->setMoveToTrash(cfgFile.moveToTrash());
 
@@ -135,25 +136,25 @@ Folder::Folder(const FolderDefinition &definition, AccountState *accountState, S
 
     connect(_accountState, &AccountState::isConnectedChanged, this, &Folder::canSyncChanged);
 
-    connect(_engine.data(), &SyncEngine::started, this, &Folder::slotSyncStarted, Qt::QueuedConnection);
-    connect(_engine.data(), &SyncEngine::finished, this, &Folder::slotSyncFinished, Qt::QueuedConnection);
+    connect(_engine, &SyncEngine::started, this, &Folder::slotSyncStarted, Qt::QueuedConnection);
+    connect(_engine, &SyncEngine::finished, this, &Folder::slotSyncFinished, Qt::QueuedConnection);
 
-    connect(_engine.data(), &SyncEngine::transmissionProgress, this,
-        [this](const ProgressInfo &pi) { Q_EMIT ProgressDispatcher::instance()->progressInfo(this, pi); });
+    connect(
+        _engine, &SyncEngine::transmissionProgress, this, [this](const ProgressInfo &pi) { Q_EMIT ProgressDispatcher::instance()->progressInfo(this, pi); });
 
-    connect(_engine.data(), &SyncEngine::transmissionProgress, this, &Folder::progressUpdate);
+    connect(_engine, &SyncEngine::transmissionProgress, this, &Folder::progressUpdate);
 
-    connect(_engine.data(), &SyncEngine::itemCompleted, this, &Folder::slotItemCompleted);
-    connect(_engine.data(), &SyncEngine::seenLockedFile, FolderMan::instance(), &FolderMan::slotSyncOnceFileUnlocks);
-    connect(_engine.data(), &SyncEngine::aboutToPropagate, this, &Folder::slotLogPropagationStart);
-    connect(_engine.data(), &SyncEngine::syncError, this, &Folder::slotSyncError);
+    connect(_engine, &SyncEngine::itemCompleted, this, &Folder::slotItemCompleted);
+    connect(_engine, &SyncEngine::seenLockedFile, FolderMan::instance(), &FolderMan::slotSyncOnceFileUnlocks);
+    connect(_engine, &SyncEngine::aboutToPropagate, this, &Folder::slotLogPropagationStart);
+    connect(_engine, &SyncEngine::syncError, this, &Folder::slotSyncError);
 
     connect(ProgressDispatcher::instance(), &ProgressDispatcher::folderConflicts, this, &Folder::slotFolderConflicts);
-    connect(_engine.data(), &SyncEngine::excluded, this, [this](const QString &path) { Q_EMIT ProgressDispatcher::instance()->excluded(this, path); });
+    connect(_engine, &SyncEngine::excluded, this, [this](const QString &path) { Q_EMIT ProgressDispatcher::instance()->excluded(this, path); });
 
-    _localDiscoveryTracker.reset(new LocalDiscoveryTracker);
-    connect(_engine.data(), &SyncEngine::finished, _localDiscoveryTracker.data(), &LocalDiscoveryTracker::slotSyncFinished);
-    connect(_engine.data(), &SyncEngine::itemCompleted, _localDiscoveryTracker.data(), &LocalDiscoveryTracker::slotItemCompleted);
+    _localDiscoveryTracker = new LocalDiscoveryTracker(this);
+    connect(_engine, &SyncEngine::finished, _localDiscoveryTracker, &LocalDiscoveryTracker::slotSyncFinished);
+    connect(_engine, &SyncEngine::itemCompleted, _localDiscoveryTracker, &LocalDiscoveryTracker::slotItemCompleted);
 
     connect(_accountState->account()->spacesManager(), &GraphApi::SpacesManager::spaceChanged, this, [this](GraphApi::Space *changedSpace) {
         if (_definition.spaceId() == changedSpace->id()) {
@@ -175,7 +176,7 @@ Folder::~Folder()
         _vfs->stop();
 
     // Reset then engine first as it will abort and try to access members of the Folder
-    _engine.reset();
+    // _engine.reset();
 }
 
 GraphApi::Space *Folder::space() const
@@ -442,7 +443,7 @@ void Folder::startVfs()
         return;
     }
 
-    VfsSetupParams vfsParams(_accountState->account(), webDavUrl(), _engine.get());
+    VfsSetupParams vfsParams(_accountState->account(), webDavUrl(), _engine);
     vfsParams.filesystemPath = path();
     vfsParams.remotePath = remotePathTrailingSlash();
     vfsParams.journal = _journal;
@@ -451,6 +452,8 @@ void Folder::startVfs()
     vfsParams.providerVersion = Version::version();
     vfsParams.multipleAccountsRegistered = AccountManager::instance()->accounts().size() > 1;
 
+    // lord almighty - the engine should just emit this itself...these layers of indirection create so much noise and I'm betting there's no
+    // good reason to have an accessor on the file status tracker
     connect(&_engine->syncFileStatusTracker(), &SyncFileStatusTracker::fileStatusChanged, _vfs, &Vfs::fileStatusChanged);
 
 
@@ -712,7 +715,7 @@ bool Folder::isDeployed() const
 
 bool Folder::isFileExcludedAbsolute(const QString &fullPath) const
 {
-    if (OC_ENSURE_NOT(_engine.isNull())) {
+    if (OC_ENSURE(_engine)) {
         return _engine->isExcluded(fullPath);
     }
     return true;
@@ -746,7 +749,8 @@ void Folder::wipeForRemoval()
     // stop reacting to changes
     // especially the upcoming deletion of the db
     // Refactoring todo: this may not be safe - using deleteLater on a real pointer is probably more reasonable.
-    _folderWatcher.reset();
+    // it's now a child of the folder so hopefully just goes away on its own now ;)
+    //_folderWatcher->deleteLater();
 
     // Delete files that have been partially downloaded.
     slotDiscardDownloadProgress();
@@ -756,7 +760,10 @@ void Folder::wipeForRemoval()
     _journal->close(); // close the sync journal
 
     // Remove db and temporaries
-    const QString stateDbFile = _engine->journal()->databaseFilePath();
+    // what is this? the engine's journal IS THE SAME as the folder member journal!!!!
+    // const QString stateDbFile = _engine->journal()->databaseFilePath();
+    const QString stateDbFile = _journal->databaseFilePath();
+
 
     QFile file(stateDbFile);
     if (file.exists()) {
@@ -848,7 +855,7 @@ void Folder::startSync()
         _localDiscoveryTracker->startSyncFullDiscovery();
     }
 
-    QMetaObject::invokeMethod(_engine.data(), &SyncEngine::startSync, Qt::QueuedConnection);
+    QMetaObject::invokeMethod(_engine, &SyncEngine::startSync, Qt::QueuedConnection);
 
     Q_EMIT syncStarted();
 }
@@ -1046,17 +1053,15 @@ void Folder::slotWatcherUnreliable(const QString &message)
 
 void Folder::registerFolderWatcher()
 {
-    if (!_folderWatcher.isNull()) {
+    if (_folderWatcher) {
         return;
     }
 
-    _folderWatcher.reset(new FolderWatcher(this));
-    connect(_folderWatcher.data(), &FolderWatcher::pathChanged, this,
-        [this](const QSet<QString> &paths) { slotWatchedPathsChanged(paths, Folder::ChangeReason::Other); });
-    connect(_folderWatcher.data(), &FolderWatcher::lostChanges,
-        this, &Folder::slotNextSyncFullLocalDiscovery);
-    connect(_folderWatcher.data(), &FolderWatcher::becameUnreliable,
-        this, &Folder::slotWatcherUnreliable);
+    _folderWatcher = new FolderWatcher(this);
+    connect(
+        _folderWatcher, &FolderWatcher::pathChanged, this, [this](const QSet<QString> &paths) { slotWatchedPathsChanged(paths, Folder::ChangeReason::Other); });
+    connect(_folderWatcher, &FolderWatcher::lostChanges, this, &Folder::slotNextSyncFullLocalDiscovery);
+    connect(_folderWatcher, &FolderWatcher::becameUnreliable, this, &Folder::slotWatcherUnreliable);
     _folderWatcher->init(path());
     _folderWatcher->startNotificatonTest(path() + QLatin1String(".owncloudsync.log"));
 }

@@ -50,8 +50,9 @@ class ProcessDirectoryJob;
 class OWNCLOUDSYNC_EXPORT SyncEngine : public QObject
 {
     Q_OBJECT
+
 public:
-    SyncEngine(Account *account, const QUrl &baseUrl, const QString &localPath, const QString &remotePath, SyncJournalDb *journal);
+    SyncEngine(Account *account, const QUrl &baseUrl, const QString &localPath, const QString &remotePath, SyncJournalDb *journal, QObject *parent);
     ~SyncEngine() override;
 
     Q_INVOKABLE void startSync();
@@ -253,3 +254,10 @@ private:
     bool _goingDown = false;
 };
 }
+
+static const int syncFileItemTypeId = qRegisterMetaType<OCC::SyncFileItem>("SyncFileItem");
+static const int syncFileItemPtrTypeId = qRegisterMetaType<OCC::SyncFileItemPtr>("SyncFileItemPtr");
+static const int syncFileItemStatusTypeId = qRegisterMetaType<OCC::SyncFileItem::Status>("SyncFileItem::Status");
+static const int syncFileStatusTypeId = qRegisterMetaType<OCC::SyncFileStatus>("SyncFileStatus");
+static const int syncFileItemSetTypeId = qRegisterMetaType<OCC::SyncFileItemSet>("SyncFileItemSet");
+static const int syncFileItemDirectionTypeId = qRegisterMetaType<OCC::SyncFileItem::Direction>("SyncFileItem::Direction");

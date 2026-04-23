@@ -567,8 +567,8 @@ class FakeFolder : public QObject
     DiskFileModifier _localModifier;
     OCC::TestUtils::TestUtilsPrivate::AccountStateRaii _accountState =
         OCC::TestUtils::TestUtilsPrivate::AccountStateRaii{nullptr, &OCC::TestUtils::TestUtilsPrivate::accountStateDeleter};
-    std::unique_ptr<OCC::SyncJournalDb> _journalDb;
-    std::unique_ptr<OCC::SyncEngine> _syncEngine;
+    OCC::SyncJournalDb *_journalDb;
+    OCC::SyncEngine *_syncEngine;
 
 public:
     FakeFolder(const FileInfo &fileTemplate, OCC::Vfs::Mode vfsMode = OCC::Vfs::Off, bool filesAreDehydrated = false);
