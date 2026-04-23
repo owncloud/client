@@ -125,8 +125,6 @@ public:
     /** Access the last sync run's local discovery style */
     LocalDiscoveryStyle lastLocalDiscoveryStyle() const { return _lastLocalDiscoveryStyle; }
 
-    // auto getPropagator() { return _propagator; } // for the test
-
 
 Q_SIGNALS:
     // During update, before reconcile
@@ -203,25 +201,28 @@ private:
     SyncFileItemSet _syncItems;
 
     QPointer<Account> _account;
+
     const QUrl _baseUrl;
     bool _needsUpdate;
     bool _syncRunning;
     QString _localPath;
     QString _remotePath;
     QString _remoteRootEtag;
+
     // this is owned by the folder
     QPointer<SyncJournalDb> _journal;
+
     // both of these are "rebuilt" on every sync
-    DiscoveryPhase *_discoveryPhase;
-    OwncloudPropagator *_propagator;
+    DiscoveryPhase *_discoveryPhase = nullptr;
+    OwncloudPropagator *_propagator = nullptr;
 
     // List of all files with conflicts
     QSet<QString> _seenConflictFiles;
 
-    QScopedPointer<ProgressInfo> _progressInfo;
+    ProgressInfo *_progressInfo = nullptr;
 
-    std::unique_ptr<class ExcludedFiles> _excludedFiles;
-    QScopedPointer<SyncFileStatusTracker> _syncFileStatusTracker;
+    ExcludedFiles *_excludedFiles = nullptr;
+    SyncFileStatusTracker *_syncFileStatusTracker = nullptr;
     Utility::ChronoElapsedTimer _duration;
 
     /**

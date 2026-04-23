@@ -64,16 +64,15 @@ SyncEngine::SyncEngine(Account *account, const QUrl &baseUrl, const QString &loc
     // Everything in the SyncEngine expects a trailing slash for the localPath.
     OC_ASSERT(localPath.endsWith(QLatin1Char('/')));
 
-    _excludedFiles.reset(new ExcludedFiles);
+    _excludedFiles = new ExcludedFiles(this);
 
-    _syncFileStatusTracker.reset(new SyncFileStatusTracker(this));
+    _syncFileStatusTracker = new SyncFileStatusTracker(this);
 }
 
 SyncEngine::~SyncEngine()
 {
     _goingDown = true;
     abort(tr("application exit", "abort reason"));
-    _excludedFiles.reset();
 }
 
 /**
@@ -380,7 +379,7 @@ void SyncEngine::startSync()
         _discoveryPhase->deleteLater();
     }
     _discoveryPhase = new DiscoveryPhase(_account, syncOptions(), _baseUrl, this);
-    _discoveryPhase->_excludes = _excludedFiles.get();
+    _discoveryPhase->_excludes = _excludedFiles;
     _discoveryPhase->_statedb = _journal;
     _discoveryPhase->_localDir = _localPath;
     if (!_discoveryPhase->_localDir.endsWith(QLatin1Char('/')))
@@ -411,8 +410,8 @@ void SyncEngine::startSync()
         finalize(false);
     });
     connect(_discoveryPhase, &DiscoveryPhase::finished, this, &SyncEngine::slotDiscoveryFinished);
-    connect(_discoveryPhase, &DiscoveryPhase::silentlyExcluded, _syncFileStatusTracker.data(), &SyncFileStatusTracker::slotAddSilentlyExcluded);
-    connect(_discoveryPhase, &DiscoveryPhase::excluded, _syncFileStatusTracker.data(), &SyncFileStatusTracker::slotAddSilentlyExcluded);
+    connect(_discoveryPhase, &DiscoveryPhase::silentlyExcluded, _syncFileStatusTracker, &SyncFileStatusTracker::slotAddSilentlyExcluded);
+    connect(_discoveryPhase, &DiscoveryPhase::excluded, _syncFileStatusTracker, &SyncFileStatusTracker::slotAddSilentlyExcluded);
     connect(_discoveryPhase, &DiscoveryPhase::excluded, this, &SyncEngine::excluded);
 
     auto discoveryJob = new ProcessDirectoryJob(_discoveryPhase, PinState::AlwaysLocal, _discoveryPhase);
