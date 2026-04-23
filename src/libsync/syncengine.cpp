@@ -289,7 +289,7 @@ void OCC::SyncEngine::slotItemDiscovered(const OCC::SyncFileItemPtr &item)
 
 void SyncEngine::startSync()
 {
-    if (!_account) {
+    if (!_account || !_syncOptions.isValid()) {
         finalize(false);
         return;
     }
@@ -379,9 +379,11 @@ void SyncEngine::startSync()
     _progressInfo->_status = ProgressInfo::Discovery;
     Q_EMIT transmissionProgress(*_progressInfo);
 
-    // TODO: add a constructor to DiscoveryPhase
-    // pass a syncEngine object rather than copying everything to another object
-    _discoveryPhase.reset(new DiscoveryPhase(_account, syncOptions(), _baseUrl));
+    if (_discoveryPhase) {
+        _discoveryPhase->disconnect();
+        _discoveryPhase->deleteLater();
+    }
+    _discoveryPhase = new DiscoveryPhase(_account, syncOptions(), _baseUrl, this);
     _discoveryPhase->_excludes = _excludedFiles.get();
     _discoveryPhase->_statedb = _journal;
     _discoveryPhase->_localDir = _localPath;
@@ -407,17 +409,17 @@ void SyncEngine::startSync()
     _discoveryPhase->_serverBlacklistedFiles = _account->capabilities().blacklistedFiles();
     _discoveryPhase->_ignoreHiddenFiles = ignoreHiddenFiles();
 
-    connect(_discoveryPhase.get(), &DiscoveryPhase::itemDiscovered, this, &SyncEngine::slotItemDiscovered);
-    connect(_discoveryPhase.get(), &DiscoveryPhase::fatalError, this, [this](const QString &errorString) {
+    connect(_discoveryPhase, &DiscoveryPhase::itemDiscovered, this, &SyncEngine::slotItemDiscovered);
+    connect(_discoveryPhase, &DiscoveryPhase::fatalError, this, [this](const QString &errorString) {
         Q_EMIT syncError(errorString);
         finalize(false);
     });
-    connect(_discoveryPhase.get(), &DiscoveryPhase::finished, this, &SyncEngine::slotDiscoveryFinished);
-    connect(_discoveryPhase.get(), &DiscoveryPhase::silentlyExcluded, _syncFileStatusTracker.data(), &SyncFileStatusTracker::slotAddSilentlyExcluded);
-    connect(_discoveryPhase.get(), &DiscoveryPhase::excluded, _syncFileStatusTracker.data(), &SyncFileStatusTracker::slotAddSilentlyExcluded);
-    connect(_discoveryPhase.get(), &DiscoveryPhase::excluded, this, &SyncEngine::excluded);
+    connect(_discoveryPhase, &DiscoveryPhase::finished, this, &SyncEngine::slotDiscoveryFinished);
+    connect(_discoveryPhase, &DiscoveryPhase::silentlyExcluded, _syncFileStatusTracker.data(), &SyncFileStatusTracker::slotAddSilentlyExcluded);
+    connect(_discoveryPhase, &DiscoveryPhase::excluded, _syncFileStatusTracker.data(), &SyncFileStatusTracker::slotAddSilentlyExcluded);
+    connect(_discoveryPhase, &DiscoveryPhase::excluded, this, &SyncEngine::excluded);
 
-    auto discoveryJob = new ProcessDirectoryJob(_discoveryPhase.get(), PinState::AlwaysLocal, _discoveryPhase.get());
+    auto discoveryJob = new ProcessDirectoryJob(_discoveryPhase, PinState::AlwaysLocal, _discoveryPhase);
     _discoveryPhase->startJob(discoveryJob);
     connect(discoveryJob, &ProcessDirectoryJob::etag, this, &SyncEngine::slotRootEtagReceived);
 }
@@ -483,6 +485,8 @@ void SyncEngine::slotDiscoveryFinished()
     Q_EMIT transmissionProgress(*_progressInfo);
 
     //    qCInfo(lcEngine) << "Permissions of the root folder: " << _csync_ctx->remote.root_perms.toString();
+
+    // why tf is this a lambda?!?!?! it just gets called after this bizarre def so why isn't it just a normal code block ffs?
     auto finish = [this]{
 
 
@@ -518,6 +522,13 @@ void SyncEngine::slotDiscoveryFinished()
         // do a database commit
         _journal->commit(QStringLiteral("post treewalk"));
 
+        // kill the old propagator and make a new one - this replaces the old QSharedPointer call to create
+        // it is not clear to me why the propagator needs to be killed on each run, look into some kind of internal reset
+        // so we can reuse the original member instance
+        if (_propagator) {
+            _propagator->disconnect();
+            _propagator->deleteLater();
+        }
         _propagator = new OwncloudPropagator(_account, syncOptions(), _baseUrl, _localPath, _remotePath, _journal, this);
         _propagator->setMoveToTrash(_moveToTrash);
         connect(_propagator, &OwncloudPropagator::itemCompleted, this, &SyncEngine::slotItemCompleted);
@@ -596,20 +607,17 @@ void SyncEngine::slotPropagationFinished(bool success)
 void SyncEngine::finalize(bool success)
 {
     qCInfo(lcEngine) << "Sync run took" << _duration.duration();
-    _duration.stop();
 
-    if (_discoveryPhase) {
-        _discoveryPhase.release()->deleteLater();
+    if (!_goingDown) {
+        _duration.stop();
+
+        _syncRunning = false;
+        _seenConflictFiles.clear();
+        _uniqueErrors.clear();
+        _localDiscoveryPaths.clear();
+        _localDiscoveryStyle = LocalDiscoveryStyle::FilesystemOnly;
     }
-    _syncRunning = false;
     Q_EMIT finished(success);
-
-    // Delete the propagator only after emitting the signal.
-    //  _propagator.clear();
-    _seenConflictFiles.clear();
-    _uniqueErrors.clear();
-    _localDiscoveryPaths.clear();
-    _localDiscoveryStyle = LocalDiscoveryStyle::FilesystemOnly;
 }
 
 void SyncEngine::slotProgress(const SyncFileItem &item, qint64 current)
@@ -735,7 +743,9 @@ void SyncEngine::abort(const QString &reason)
         aborting = true;
         // Delete the discovery and all child jobs after ensuring
         // it can't finish and start the propagator
-        disconnect(_discoveryPhase.get(), nullptr, this, nullptr);
+        disconnect(_discoveryPhase, nullptr, this, nullptr);
+        // I have not seen a delete in this function so assume the comment is out of date, but anyway it's generally covered in startSync.
+        //  the _discoveryPhase is a child of SyncEngine so on sync engine destruction it will just be deleted by parent child relationship
     }
     if (aborting) {
         qCInfo(lcEngine) << "Aborting sync, stated reason:" << reason;

@@ -513,7 +513,8 @@ private:
     /// Reset when no follow-up is requested.
     int _consecutiveFollowUpSyncs = 0;
 
-    SyncJournalDb *_journal = nullptr;
+    // the journal is created in the builder, and reparented in the folder ctr. It should NEVER be null if the Folder still exists!
+    QPointer<SyncJournalDb> _journal;
 
     QScopedPointer<SyncRunFileLog> _fileLog;
 
