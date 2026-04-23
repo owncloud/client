@@ -282,11 +282,11 @@ const VfsPluginManager &VfsPluginManager::instance()
 VfsSetupParams::VfsSetupParams(Account *account, const QUrl &baseUrl, SyncEngine *syncEngine)
     : account(account)
     , _baseUrl(baseUrl)
-//, _syncEngine(syncEngine)
+    , _syncEngine(syncEngine)
 {
 }
 
-/*SyncEngine *VfsSetupParams::syncEngine() const
+SyncEngine *VfsSetupParams::syncEngine() const
 {
     return _syncEngine;
-}*/
+}

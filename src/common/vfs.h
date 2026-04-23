@@ -81,13 +81,14 @@ struct OCSYNC_EXPORT VfsSetupParams
         return _baseUrl;
     }
 
-    // SyncEngine *syncEngine() const;
+    // sync engine is only used by win vfs impl
+    SyncEngine *syncEngine() const;
 
 private:
     QUrl _baseUrl;
     // this should be a QPointer but when I try to make it so, I get compile errors because std::isConvertible<SyncEngine *, QObject *> fails
     // no freaking idea but I'll figure it out later
-    // SyncEngine *_syncEngine;
+    SyncEngine *_syncEngine;
 };
 
 /** Interface describing how to deal with virtual/placeholder files.
