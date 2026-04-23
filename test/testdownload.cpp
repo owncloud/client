@@ -89,8 +89,8 @@ private Q_SLOTS:
         QFETCH_GLOBAL(bool, filesAreDehydrated);
 
         FakeFolder fakeFolder(FileInfo::A12_B12_C12_S12(), vfsMode, filesAreDehydrated);
-        fakeFolder.syncEngine().setIgnoreHiddenFiles(true);
-        QSignalSpy completeSpy(&fakeFolder.syncEngine(), &SyncEngine::itemCompleted);
+        fakeFolder.syncEngine()->setIgnoreHiddenFiles(true);
+        QSignalSpy completeSpy(fakeFolder.syncEngine(), &SyncEngine::itemCompleted);
         auto size = 30_MiB;
         fakeFolder.remoteModifier().insert(QStringLiteral("A/a0"), size);
 
@@ -108,7 +108,7 @@ private Q_SLOTS:
             QVERIFY(!fakeFolder.applyLocalModificationsAndSync()); // The sync should fail because not all the files were downloaded
             QCOMPARE(getItem(completeSpy, QStringLiteral("A/a0"))->_status, SyncFileItem::SoftError);
             QCOMPARE(getItem(completeSpy, QStringLiteral("A/a0"))->_errorString, QStringLiteral("The file could not be downloaded completely."));
-            QVERIFY(fakeFolder.syncEngine().isAnotherSyncNeeded());
+            QVERIFY(fakeFolder.syncEngine()->isAnotherSyncNeeded());
 
             // Now, we need to restart, this time, it should resume.
             QByteArray rangeRequest;
@@ -127,7 +127,7 @@ private Q_SLOTS:
                 }
                 return nullptr;
             });
-            fakeFolder.syncJournal().wipeErrorBlacklist();
+            fakeFolder.syncJournal()->wipeErrorBlacklist();
             QVERIFY(fakeFolder.applyLocalModificationsAndSync()); // now this should succeed
             QCOMPARE(rangeRequest, QByteArrayLiteral("bytes=") + QByteArray::number(stopAfter) + '-');
             QCOMPARE(rangeReply, QByteArrayLiteral("bytes ") + QByteArray::number(stopAfter) + '-');
@@ -147,8 +147,8 @@ private Q_SLOTS:
         QFETCH_GLOBAL(bool, filesAreDehydrated);
 
         FakeFolder fakeFolder(FileInfo::A12_B12_C12_S12(), vfsMode, filesAreDehydrated);
-        fakeFolder.syncEngine().setIgnoreHiddenFiles(true);
-        QSignalSpy completeSpy(&fakeFolder.syncEngine(), &SyncEngine::itemCompleted);
+        fakeFolder.syncEngine()->setIgnoreHiddenFiles(true);
+        QSignalSpy completeSpy(fakeFolder.syncEngine(), &SyncEngine::itemCompleted);
         constexpr auto size = 30_MiB;
         fakeFolder.remoteModifier().insert(QStringLiteral("A/a0"), size);
 
@@ -166,7 +166,7 @@ private Q_SLOTS:
             QVERIFY(!fakeFolder.applyLocalModificationsAndSync()); // The sync should fail because not all the files were downloaded
             QCOMPARE(getItem(completeSpy, QStringLiteral("A/a0"))->_status, SyncFileItem::SoftError);
             QCOMPARE(getItem(completeSpy, QStringLiteral("A/a0"))->_errorString, QStringLiteral("The file could not be downloaded completely."));
-            QVERIFY(fakeFolder.syncEngine().isAnotherSyncNeeded());
+            QVERIFY(fakeFolder.syncEngine()->isAnotherSyncNeeded());
 
             QByteArray ranges;
             fakeFolder.setServerOverride([&](QNetworkAccessManager::Operation op, const QNetworkRequest &request, QIODevice *) -> QNetworkReply * {
@@ -175,9 +175,9 @@ private Q_SLOTS:
                 }
                 return nullptr;
             });
-            fakeFolder.syncJournal().wipeErrorBlacklist();
+            fakeFolder.syncJournal()->wipeErrorBlacklist();
             // perform a partial sync
-            fakeFolder.syncEngine().setLocalDiscoveryOptions(OCC::LocalDiscoveryStyle::DatabaseAndFilesystem, {});
+            fakeFolder.syncEngine()->setLocalDiscoveryOptions(OCC::LocalDiscoveryStyle::DatabaseAndFilesystem, {});
             QVERIFY(fakeFolder.applyLocalModificationsAndSync()); // now this should succeed
             QCOMPARE(ranges, QByteArray("bytes=" + QByteArray::number(stopAfter) + "-"));
             QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
@@ -191,8 +191,8 @@ private Q_SLOTS:
         QFETCH_GLOBAL(bool, filesAreDehydrated);
 
         FakeFolder fakeFolder(FileInfo::A12_B12_C12_S12(), vfsMode, filesAreDehydrated);
-        fakeFolder.syncEngine().setIgnoreHiddenFiles(true);
-        QSignalSpy completeSpy(&fakeFolder.syncEngine(), &SyncEngine::itemCompleted);
+        fakeFolder.syncEngine()->setIgnoreHiddenFiles(true);
+        QSignalSpy completeSpy(fakeFolder.syncEngine(), &SyncEngine::itemCompleted);
         const auto size = 3_MiB + 500_KiB;
         fakeFolder.remoteModifier().insert(QStringLiteral("A/broken"), size);
 
@@ -214,9 +214,9 @@ private Q_SLOTS:
         });
 
         bool timedOut = false;
-        QTimer::singleShot(10s, &fakeFolder.syncEngine(), [&]() {
+        QTimer::singleShot(10s, fakeFolder.syncEngine(), [&]() {
             timedOut = true;
-            fakeFolder.syncEngine().abort({});
+            fakeFolder.syncEngine()->abort({});
         });
         if (filesAreDehydrated) {
             QVERIFY(fakeFolder.applyLocalModificationsAndSync()); // Success, because files are never downloaded
@@ -248,7 +248,7 @@ private Q_SLOTS:
             return nullptr;
         });
 
-        QSignalSpy completeSpy(&fakeFolder.syncEngine(), &SyncEngine::itemCompleted);
+        QSignalSpy completeSpy(fakeFolder.syncEngine(), &SyncEngine::itemCompleted);
         if (filesAreDehydrated) {
             QVERIFY(fakeFolder.applyLocalModificationsAndSync()); // Success, because files are never downloaded
         } else {
@@ -295,7 +295,7 @@ private Q_SLOTS:
             resendActual = 0;
             resendExpected = 10;
 
-            QSignalSpy completeSpy(&fakeFolder.syncEngine(), &SyncEngine::itemCompleted);
+            QSignalSpy completeSpy(fakeFolder.syncEngine(), &SyncEngine::itemCompleted);
             QVERIFY(!fakeFolder.applyLocalModificationsAndSync());
             QCOMPARE(resendActual, 6); // AbstractNetworkJob::MaxRetryCount + 1
             QCOMPARE(getItem(completeSpy, QStringLiteral("A/resendme"))->_status, SyncFileItem::NormalError);

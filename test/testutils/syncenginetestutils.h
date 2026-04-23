@@ -562,13 +562,14 @@ private:
 class FakeFolder : public QObject
 {
     Q_OBJECT
-    FakeAM *_fakeAm;
+    // oof, this has a default ctr but I don't see it ever instantiated?
+    FakeAM *_fakeAm = nullptr;
     const QTemporaryDir _tempDir = OCC::TestUtils::createTempDir();
     DiskFileModifier _localModifier;
     OCC::TestUtils::TestUtilsPrivate::AccountStateRaii _accountState =
         OCC::TestUtils::TestUtilsPrivate::AccountStateRaii{nullptr, &OCC::TestUtils::TestUtilsPrivate::accountStateDeleter};
-    OCC::SyncJournalDb *_journalDb;
-    OCC::SyncEngine *_syncEngine;
+    OCC::SyncJournalDb *_journalDb = nullptr;
+    OCC::SyncEngine *_syncEngine = nullptr;
 
 public:
     FakeFolder(const FileInfo &fileTemplate, OCC::Vfs::Mode vfsMode = OCC::Vfs::Off, bool filesAreDehydrated = false);
@@ -577,8 +578,8 @@ public:
     void switchToVfs(OCC::Vfs *vfs);
 
     OCC::Account *account() const { return _accountState->account(); }
-    OCC::SyncEngine &syncEngine() const { return *_syncEngine; }
-    OCC::SyncJournalDb &syncJournal() const { return *_journalDb; }
+    OCC::SyncEngine *syncEngine() const { return _syncEngine; }
+    OCC::SyncJournalDb *syncJournal() const { return _journalDb; }
 
     FileModifier &localModifier() { return _localModifier; }
     FileInfo &remoteModifier() { return _fakeAm->currentRemoteState(); }
@@ -654,7 +655,7 @@ inline const FileInfo *findConflict(FileInfo &dir, const QString &filename)
 struct ItemCompletedSpy : QSignalSpy
 {
     explicit ItemCompletedSpy(FakeFolder &folder)
-        : QSignalSpy(&folder.syncEngine(), &OCC::SyncEngine::itemCompleted)
+        : QSignalSpy(folder.syncEngine(), &OCC::SyncEngine::itemCompleted)
     {
     }
 

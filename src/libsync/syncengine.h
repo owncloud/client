@@ -80,7 +80,7 @@ public:
     bool reloadExcludes();
     void clearManualExcludes();
 
-    SyncFileStatusTracker &syncFileStatusTracker() { return *_syncFileStatusTracker; }
+    SyncFileStatusTracker *syncFileStatusTracker() { return _syncFileStatusTracker; }
 
     /* Returns whether another sync is needed to complete the sync */
     bool isAnotherSyncNeeded() { return _anotherSyncNeeded; }

@@ -861,9 +861,9 @@ void PropagatorJob::setState(JobState state)
 OwncloudPropagator *PropagatorJob::propagator() const
 {
     // this is so shady, but so far Linux tests seem to segfault all over the place if the member is returned.
-    // so shady.
-    return qobject_cast<OwncloudPropagator *>(parent());
-    // return _propagator;
+    // so shady. nope, it didn't fix anything that I could see
+    // return qobject_cast<OwncloudPropagator *>(parent());
+    return _propagator;
 }
 
 // ================================================================================

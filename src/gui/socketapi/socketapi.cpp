@@ -353,7 +353,7 @@ void SocketApi::slotUpdateFolderView(Folder *f)
             Q_FALLTHROUGH();
         case SyncResult::Error: {
             const QString rootPath = Utility::stripTrailingSlash(f->path());
-            broadcastStatusPushMessage(rootPath, f->syncEngine().syncFileStatusTracker().fileStatus(QString()));
+            broadcastStatusPushMessage(rootPath, f->syncEngine().syncFileStatusTracker()->fileStatus(QString()));
 
             broadcastMessage(buildMessage(QStringLiteral("UPDATE_VIEW"), rootPath));
             break;
@@ -768,7 +768,7 @@ SyncFileStatus SocketApi::FileData::syncFileStatus() const
     if (!folder || !folder->canSync()) {
         return SyncFileStatus::StatusNone;
     }
-    return folder->syncEngine().syncFileStatusTracker().fileStatus(folderRelativePath);
+    return folder->syncEngine().syncFileStatusTracker()->fileStatus(folderRelativePath);
 }
 
 SyncJournalFileRecord SocketApi::FileData::journalRecord() const

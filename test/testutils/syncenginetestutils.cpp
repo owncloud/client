@@ -902,7 +902,7 @@ FakeFolder::FakeFolder(const FileInfo &fileTemplate, OCC::Vfs::Mode vfsMode, boo
 
     if (vfsMode != OCC::Vfs::Off) {
         const auto pinState = filesAreDehydrated ? OCC::PinState::OnlineOnly : OCC::PinState::AlwaysLocal;
-        syncJournal().internalPinStates().setForPath("", pinState);
+        syncJournal()->internalPinStates().setForPath("", pinState);
         OC_ENFORCE(vfs->setPinState(QString(), pinState));
     }
 
@@ -923,19 +923,25 @@ FakeFolder::~FakeFolder()
 void FakeFolder::switchToVfs(OCC::Vfs *vfs)
 {
     Q_ASSERT(vfs);
+    qDebug() << "switching vfs to " << vfs->mode();
 
     auto opts = _syncEngine->syncOptions();
 
     if (opts.isValid()) {
+        qDebug() << "last vfs was valid with mode: " << opts.vfs()->mode();
+
         // we might get strange problems with "dead" vfs instances that have not been stopped because the FakeFolder switchToVfs is missing
         // *a lot* of extra steps that normal Folder implements when switching the mode
-        if (_syncEngine->isSyncRunning())
+        if (_syncEngine->isSyncRunning()) {
+            qDebug() << "sync was still running when switch vfs called, exec until done";
             execUntilFinished();
+        }
+        qDebug() << "killing old vfs";
         OCC::Vfs *vfsToDie = opts.vfs();
         vfsToDie->stop();
         vfsToDie->unregisterFolder();
         QObject::disconnect(_syncEngine, nullptr, vfsToDie, nullptr);
-        QObject::disconnect(&_syncEngine->syncFileStatusTracker(), nullptr, vfsToDie, nullptr);
+        QObject::disconnect(_syncEngine->syncFileStatusTracker(), nullptr, vfsToDie, nullptr);
         QObject::disconnect(vfsToDie);
         // this is "nice" to avoid waiting for the parent folder to die
         vfsToDie->deleteLater();
@@ -943,9 +949,10 @@ void FakeFolder::switchToVfs(OCC::Vfs *vfs)
 
     // todo: nooooooo - the opts should be treated as immutable. that change is coming so this will have to end sometime, starting now.
     // opts._vfs = vfs;
+    qDebug() << "setting new sync options on engine with new vfs";
     _syncEngine->setSyncOptions(OCC::SyncOptions{vfs});
 
-    OCC::VfsSetupParams vfsParams(account(), account()->davUrl(), &syncEngine());
+    OCC::VfsSetupParams vfsParams(account(), account()->davUrl(), syncEngine());
     vfsParams.filesystemPath = localPath();
     vfsParams.remotePath = QLatin1Char('/');
     vfsParams.journal = _journalDb;
@@ -954,7 +961,7 @@ void FakeFolder::switchToVfs(OCC::Vfs *vfs)
     vfsParams.providerVersion = QVersionNumber(0, 1, 0);
     vfsParams.multipleAccountsRegistered = false;
 
-    QObject::connect(&_syncEngine->syncFileStatusTracker(), &OCC::SyncFileStatusTracker::fileStatusChanged, vfs, &OCC::Vfs::fileStatusChanged);
+    QObject::connect(_syncEngine->syncFileStatusTracker(), &OCC::SyncFileStatusTracker::fileStatusChanged, vfs, &OCC::Vfs::fileStatusChanged);
 
     QObject::connect(vfs, &OCC::Vfs::error, vfs, [](const QString &error) { QFAIL(qUtf8Printable(error)); });
     QSignalSpy spy(vfs, &OCC::Vfs::started);
