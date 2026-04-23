@@ -36,7 +36,7 @@ SyncJournalDb *FolderBuilder::buildJournal()
         qCWarning(lcFolderBuilder) << "Could not open database when creating new folder: " << _definition.absoluteJournalPath();
         return nullptr;
     }
-    journal->close();
+    //  journal->close();
     // those errors should not persist over sessions so kill them if there are any in an existing journal
     journal->wipeErrorBlacklistCategory(SyncJournalErrorBlacklistRecord::Category::LocalSoftError);
     return journal;
