@@ -176,6 +176,7 @@ Folder::~Folder()
         _vfs->stop();
 
     // Reset then engine first as it will abort and try to access members of the Folder
+    // todo: follow up on that comment above. The engine abort should NOT be accessing anything that is not directly in its own realm!
     // _engine.reset();
 }
 

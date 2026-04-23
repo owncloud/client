@@ -66,7 +66,9 @@ class OCSYNC_EXPORT ExcludedFiles : public QObject
 {
     Q_OBJECT
 public:
-    ExcludedFiles();
+    // need to allow nullptr as this is also used in the selective sync routine as a straight object instance, so no parent
+    // is needed
+    ExcludedFiles(QObject *parent = nullptr);
     ~ExcludedFiles() override;
 
     /**
