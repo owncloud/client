@@ -135,7 +135,7 @@ private Q_SLOTS:
         connect(&fakeFolder.syncEngine(), &SyncEngine::seenLockedFile, &fakeFolder.syncEngine(),
                 [&](const QString &file) { seenLockedFiles.append(file); });
 
-        LocalDiscoveryTracker tracker;
+        LocalDiscoveryTracker tracker(nullptr);
         connect(&fakeFolder.syncEngine(), &SyncEngine::itemCompleted, &tracker, &LocalDiscoveryTracker::slotItemCompleted);
         connect(&fakeFolder.syncEngine(), &SyncEngine::finished, &tracker, &LocalDiscoveryTracker::slotSyncFinished);
         auto hasLocalDiscoveryPath = [&](const QString &path) {
