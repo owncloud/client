@@ -41,20 +41,20 @@ bool itemInstruction(const QSignalSpy &spy, const QString &path, const SyncInstr
 SyncJournalFileRecord dbRecord(FakeFolder &folder, const QString &path)
 {
     SyncJournalFileRecord record;
-    folder.syncJournal().getFileRecord(path, &record);
+    folder.syncJournal()->getFileRecord(path, &record);
     return record;
 }
 
 void markForDownload(FakeFolder &folder, const QByteArray &path)
 {
-    auto &journal = folder.syncJournal();
+    auto journal = folder.syncJournal();
     SyncJournalFileRecord record;
-    journal.getFileRecord(path, &record);
+    journal->getFileRecord(path, &record);
     if (!record.isValid())
         return;
     record._type = ItemTypeVirtualFileDownload;
-    journal.setFileRecord(record);
-    journal.schedulePathForRemoteDiscovery(record._path);
+    journal->setFileRecord(record);
+    journal->schedulePathForRemoteDiscovery(record._path);
 }
 
 bool isPlaceholder(const QString &path)
@@ -123,7 +123,7 @@ private Q_SLOTS:
         FakeFolder fakeFolder { FileInfo(), Vfs::WindowsCfApi, true };
         fakeFolder.account()->setCapabilities({fakeFolder.account()->url(), TestUtils::testCapabilities(CheckSums::Algorithm::SHA1)});
 
-        QSignalSpy completeSpy(&fakeFolder.syncEngine(), &SyncEngine::itemCompleted);
+        QSignalSpy completeSpy(fakeFolder.syncEngine(), &SyncEngine::itemCompleted);
         auto cleanup = [&]() {
             completeSpy.clear();
         };
@@ -274,7 +274,7 @@ private Q_SLOTS:
     {
         FakeFolder fakeFolder { FileInfo(), Vfs::WindowsCfApi, true };
 
-        QSignalSpy completeSpy(&fakeFolder.syncEngine(), SIGNAL(itemCompleted(const SyncFileItemPtr &)));
+        QSignalSpy completeSpy(fakeFolder.syncEngine(), SIGNAL(itemCompleted(const SyncFileItemPtr &)));
         auto cleanup = [&]() {
             completeSpy.clear();
         };
@@ -326,8 +326,8 @@ private Q_SLOTS:
         fakeFolder.remoteModifier().appendByte(QStringLiteral("A/a1"));
         fakeFolder.remoteModifier().appendByte(QStringLiteral("A/a2"));
         QVERIFY(fakeFolder.syncOnce());
-        QCOMPARE(*fakeFolder.vfs()->pinState(QStringLiteral("A/a1")), PinState::Unspecified); // since no attribute got propagated
-        QCOMPARE(*fakeFolder.vfs()->pinState(QStringLiteral("A/a2")), PinState::AlwaysLocal);
+        QCOMPARE(fakeFolder.vfs()->pinState(QStringLiteral("A/a1")), PinState::Unspecified); // since no attribute got propagated
+        QCOMPARE(fakeFolder.vfs()->pinState(QStringLiteral("A/a2")), PinState::AlwaysLocal);
         cleanup();
     }
 
@@ -336,7 +336,7 @@ private Q_SLOTS:
     {
         FakeFolder fakeFolder { FileInfo(), Vfs::WindowsCfApi, true };
 
-        QSignalSpy completeSpy(&fakeFolder.syncEngine(), SIGNAL(itemCompleted(const SyncFileItemPtr &)));
+        QSignalSpy completeSpy(fakeFolder.syncEngine(), SIGNAL(itemCompleted(const SyncFileItemPtr &)));
         auto cleanup = [&]() {
             completeSpy.clear();
         };
@@ -393,7 +393,7 @@ private Q_SLOTS:
     {
         FakeFolder fakeFolder { FileInfo(), Vfs::WindowsCfApi, true };
 
-        QSignalSpy completeSpy(&fakeFolder.syncEngine(), SIGNAL(itemCompleted(const SyncFileItemPtr &)));
+        QSignalSpy completeSpy(fakeFolder.syncEngine(), SIGNAL(itemCompleted(const SyncFileItemPtr &)));
         auto cleanup = [&]() {
             completeSpy.clear();
         };
@@ -438,7 +438,7 @@ private Q_SLOTS:
     {
         FakeFolder fakeFolder { FileInfo(), Vfs::WindowsCfApi, true };
 
-        QSignalSpy completeSpy(&fakeFolder.syncEngine(), SIGNAL(itemCompleted(const SyncFileItemPtr &)));
+        QSignalSpy completeSpy(fakeFolder.syncEngine(), SIGNAL(itemCompleted(const SyncFileItemPtr &)));
         auto cleanup = [&]() {
             completeSpy.clear();
         };
@@ -499,7 +499,7 @@ private Q_SLOTS:
         FakeFolder fakeFolder { FileInfo(), Vfs::WindowsCfApi, true };
         auto l = [&](const QString &p) { return QString(fakeFolder.localPath() + p); };
 
-        QSignalSpy completeSpy(&fakeFolder.syncEngine(), SIGNAL(itemCompleted(const SyncFileItemPtr &)));
+        QSignalSpy completeSpy(fakeFolder.syncEngine(), SIGNAL(itemCompleted(const SyncFileItemPtr &)));
         auto cleanup = [&]() {
             completeSpy.clear();
         };
@@ -579,7 +579,7 @@ private Q_SLOTS:
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
 
-        QSignalSpy completeSpy(&fakeFolder.syncEngine(), SIGNAL(itemCompleted(const SyncFileItemPtr &)));
+        QSignalSpy completeSpy(fakeFolder.syncEngine(), SIGNAL(itemCompleted(const SyncFileItemPtr &)));
         auto cleanup = [&]() {
             completeSpy.clear();
         };
@@ -696,7 +696,7 @@ private Q_SLOTS:
         QVERIFY(vfsOff);
         fakeFolder.switchToVfs(vfsOff);
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
-        auto conflicts = fakeFolder.syncJournal().conflictRecordPaths();
+        auto conflicts = fakeFolder.syncJournal()->conflictRecordPaths();
         QCOMPARE(conflicts.size(), 1);
         QFile::remove(l(QString::fromUtf8(conflicts[0])));
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
@@ -759,7 +759,7 @@ private Q_SLOTS:
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
 
         fakeFolder.switchToVfs(new VfsWin(&fakeFolder));
-        QSignalSpy completeSpy(&fakeFolder.syncEngine(), SIGNAL(itemCompleted(const SyncFileItemPtr &)));
+        QSignalSpy completeSpy(fakeFolder.syncEngine(), SIGNAL(itemCompleted(const SyncFileItemPtr &)));
 
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
         QVERIFY(itemInstruction(completeSpy, QStringLiteral("A/a1"), CSYNC_INSTRUCTION_UPDATE_METADATA));
