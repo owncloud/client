@@ -132,7 +132,7 @@ private Q_SLOTS:
         }
 
         QStringList seenLockedFiles;
-        connect(fakeFolder.syncEngine(), &SyncEngine::seenLockedFile, &fakeFolder.syncEngine(), [&](const QString &file) { seenLockedFiles.append(file); });
+        connect(fakeFolder.syncEngine(), &SyncEngine::seenLockedFile, fakeFolder.syncEngine(), [&](const QString &file) { seenLockedFiles.append(file); });
 
         LocalDiscoveryTracker tracker(nullptr);
         connect(fakeFolder.syncEngine(), &SyncEngine::itemCompleted, &tracker, &LocalDiscoveryTracker::slotItemCompleted);

@@ -37,7 +37,7 @@ static void assertCsyncJournalOk(SyncJournalDb *journal)
     QVERIFY(q.next().hasData);
     QCOMPARE(q.intValue(0), 0);
 #if defined(Q_OS_WIN) // Make sure the file does not appear in the FileInfo
-    FileSystem::setFileHidden(journal.databaseFilePath() + QStringLiteral("-shm"), true);
+    FileSystem::setFileHidden(journal->databaseFilePath() + QStringLiteral("-shm"), true);
 #endif
     journal->allowReopen();
 }
