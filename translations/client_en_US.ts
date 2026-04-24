@@ -248,7 +248,7 @@ File synchronisation desktop utility.</translation>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="209"/>
         <source>%1, sync status: %2</source>
         <extracomment>Accessible text, read out by a screen reader.</extracomment>
-        <translation type="unfinished"/>
+        <translation>%1, sync status: %2</translation>
         <extra-The>first argument is the displayed name of the folder.</extra-The>
     </message>
 </context>
@@ -1109,7 +1109,7 @@ This means that the synchronisation client might not upload local changes immedi
     <message>
         <location filename="../src/gui/FoldersGui/folderitemupdater.cpp" line="107"/>
         <source>Sync error: %1</source>
-        <translation type="unfinished"/>
+        <translation>Sync error: %1</translation>
     </message>
 </context>
 <context>
