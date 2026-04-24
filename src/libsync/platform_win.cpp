@@ -71,6 +71,7 @@ void WinPlatform::setApplication(QCoreApplication *application)
         // qml is going away so no, I am not going to take the time to find out how to load the other default windows
         // styles for qml. Frankly I'm pretty shocked it doesn't just work naturally the way normal style does.
         // also note: if we don't set the style to fusion, the qml is pretty ratty looking, eg dark mode is ignored.
+        //
         QQuickStyle::setStyle(QStringLiteral("Fusion"));
     }
 }
