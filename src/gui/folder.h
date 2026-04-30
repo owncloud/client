@@ -312,10 +312,7 @@ public:
     // TODO: don't expose
     SyncJournalDb *journalDb() { return _journal; }
     // TODO: don't expose
-    SyncEngine &syncEngine()
-    {
-        return *_engine;
-    }
+    SyncEngine *syncEngine() { return _engine; }
 
     Vfs &vfs()
     {

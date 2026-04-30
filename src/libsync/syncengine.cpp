@@ -67,6 +67,7 @@ SyncEngine::SyncEngine(Account *account, const QUrl &baseUrl, const QString &loc
     _excludedFiles = new ExcludedFiles(this);
 
     _syncFileStatusTracker = new SyncFileStatusTracker(this);
+    connect(_syncFileStatusTracker, &SyncFileStatusTracker::fileStatusChanged, this, &SyncEngine::fileStatusChanged);
 }
 
 SyncEngine::~SyncEngine()
@@ -445,7 +446,7 @@ void SyncEngine::slotRootEtagReceived(const QString &e, const QDateTime &time)
     if (_remoteRootEtag.isEmpty()) {
         qCDebug(lcEngine) << "Root etag:" << e;
         _remoteRootEtag = e;
-        Q_EMIT rootEtag(_remoteRootEtag, time);
+        Q_EMIT rootEtagDiscovered(_remoteRootEtag, time);
     }
 }
 
@@ -794,6 +795,19 @@ bool SyncEngine::loadDefaultExcludes()
 void SyncEngine::clearManualExcludes()
 {
     _excludedFiles->clearManualExcludes();
+}
+
+SyncFileStatus SyncEngine::fileStatus(const QString &relativePath)
+{
+    if (!_syncFileStatusTracker)
+        return SyncFileStatus::StatusNone;
+    return _syncFileStatusTracker->fileStatus(relativePath);
+}
+
+void SyncEngine::onPathTouched(const QString &fileName)
+{
+    if (_syncFileStatusTracker)
+        _syncFileStatusTracker->slotPathTouched(fileName);
 }
 
 bool SyncEngine::reloadExcludes()

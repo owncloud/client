@@ -242,7 +242,7 @@ public Q_SLOTS:
      * via the vfs plugin. The connection to SyncFileStatusTracker allows both to be based
      * on the same data.
      */
-    virtual void fileStatusChanged(const QString &systemFileName, SyncFileStatus fileStatus) = 0;
+    virtual void onFileStatusChanged(const QString &systemFileName, SyncFileStatus fileStatus) = 0;
 
 Q_SIGNALS:
     /// start complete

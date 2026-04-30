@@ -66,7 +66,7 @@ void ETagWatcher::onFolderAdded(const QUuid &accountId, Folder *folder)
 
     _lastEtagJobForSpace[accountId].insert(spaceId, ETagInfo{{}, folder});
 
-    connect(&folder->syncEngine(), &SyncEngine::rootEtag, this, [accountId, folder, this](const QString &etag, const QDateTime &time) {
+    connect(folder->syncEngine(), &SyncEngine::rootEtagDiscovered, this, [accountId, folder, this](const QString &etag, const QDateTime &time) {
         QString spaceId = folder->spaceId();
         if (_lastEtagJobForSpace.contains(accountId) && _lastEtagJobForSpace[accountId].contains(spaceId)) {
             auto &info = _lastEtagJobForSpace[accountId][spaceId];

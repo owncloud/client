@@ -763,6 +763,7 @@ private Q_SLOTS:
         cap.remove(QStringLiteral("dav"));
         fakeFolder.account()->setCapabilities({fakeFolder.account()->url(), cap});
 
+        // possible memory problems on linux start here
         auto counter = std::make_unique<OperationCounter>();
         fakeFolder.setServerOverride([counter = counter.get(), fakeFolder = &fakeFolder](
                                          QNetworkAccessManager::Operation op, const QNetworkRequest &request, QIODevice *device) -> QNetworkReply * {
@@ -781,7 +782,8 @@ private Q_SLOTS:
         connect(fakeFolder.syncEngine(), &SyncEngine::aboutToPropagate, fakeFolder.syncEngine(),
             [&]() { QTimer::singleShot(1s, fakeFolder.syncEngine(), [&]() { fakeFolder.syncEngine()->abort({}); }); });
         QVERIFY(!fakeFolder.applyLocalModificationsAndSync());
-
+        // for debugging memory problem on linux: I get output to here, including one nameless abort (above) then the abort associated with
+        //  syncengine dtr
         QCOMPARE(counter->nPUT, 3);
     }
 

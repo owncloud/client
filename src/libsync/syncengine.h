@@ -80,7 +80,9 @@ public:
     bool reloadExcludes();
     void clearManualExcludes();
 
-    SyncFileStatusTracker *syncFileStatusTracker() { return _syncFileStatusTracker; }
+    SyncFileStatus fileStatus(const QString &relativePath);
+    void onPathTouched(const QString &fileName);
+
 
     /* Returns whether another sync is needed to complete the sync */
     bool isAnotherSyncNeeded() { return _anotherSyncNeeded; }
@@ -127,8 +129,11 @@ public:
 
 
 Q_SIGNALS:
+
+    void fileStatusChanged(const QString &systemFileName, SyncFileStatus fileStatus);
+
     // During update, before reconcile
-    void rootEtag(const QString &, const QDateTime &);
+    void rootEtagDiscovered(const QString &, const QDateTime &);
 
     // after the above signals. with the items that actually need propagating
     void aboutToPropagate(const SyncFileItemSet &items);

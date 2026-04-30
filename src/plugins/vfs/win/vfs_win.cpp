@@ -474,7 +474,7 @@ void HydrationContext::validateTransmissionChecksum(quint64 fileSize)
         if (journal)
             journal->setFileRecord(record);
 
-        pluginInstance()->fileStatusChanged(filesystemPath, SyncFileStatus::StatusUpToDate);
+        pluginInstance()->onFileStatusChanged(filesystemPath, SyncFileStatus::StatusUpToDate);
         delete this;
     });
     QObject::connect(validator, &ValidateChecksumHeader::validationFailed, this, [this, opInfo, opParams](const QString &msg) mutable {
@@ -1150,7 +1150,7 @@ static Result<CF_PLACEHOLDER_BASIC_INFO, HRESULT> getBasicPlaceholderInfo(const 
     return getInfo<CF_PLACEHOLDER_BASIC_INFO>(*handle);
 }
 
-void VfsWin::fileStatusChanged(const QString &systemFileName, SyncFileStatus status)
+void VfsWin::onFileStatusChanged(const QString &systemFileName, SyncFileStatus status)
 {
     auto placeholderInfo = getBasicPlaceholderInfo(systemFileName);
     if (!placeholderInfo) {

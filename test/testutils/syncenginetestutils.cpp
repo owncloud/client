@@ -941,7 +941,6 @@ void FakeFolder::switchToVfs(OCC::Vfs *vfs)
         vfsToDie->stop();
         vfsToDie->unregisterFolder();
         QObject::disconnect(_syncEngine, nullptr, vfsToDie, nullptr);
-        QObject::disconnect(_syncEngine->syncFileStatusTracker(), nullptr, vfsToDie, nullptr);
         QObject::disconnect(vfsToDie);
         // this is "nice" to avoid waiting for the parent folder to die
         vfsToDie->deleteLater();
@@ -961,7 +960,7 @@ void FakeFolder::switchToVfs(OCC::Vfs *vfs)
     vfsParams.providerVersion = QVersionNumber(0, 1, 0);
     vfsParams.multipleAccountsRegistered = false;
 
-    QObject::connect(_syncEngine->syncFileStatusTracker(), &OCC::SyncFileStatusTracker::fileStatusChanged, vfs, &OCC::Vfs::fileStatusChanged);
+    QObject::connect(_syncEngine, &OCC::SyncEngine::fileStatusChanged, vfs, &OCC::Vfs::onFileStatusChanged);
 
     QObject::connect(vfs, &OCC::Vfs::error, vfs, [](const QString &error) { QFAIL(qUtf8Printable(error)); });
     QSignalSpy spy(vfs, &OCC::Vfs::started);

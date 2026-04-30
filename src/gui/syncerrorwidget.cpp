@@ -314,8 +314,10 @@ void SyncErrorWidget::slotProgressInfo(Folder *folder, const ProgressInfo &progr
     if (progress.status() == ProgressInfo::Reconcile) {
         // Wipe all non-persistent entries - as well as the persistent ones
         // in cases where a local discovery was done.
-        const auto &engine = folder->syncEngine();
-        const auto style = engine.lastLocalDiscoveryStyle();
+        SyncEngine *engine = folder->syncEngine();
+        if (!engine)
+            return;
+        const auto style = engine->lastLocalDiscoveryStyle();
         _model->remove_if([&](const ProtocolItem &item) {
             if (item.folder() != folder) {
                 return false;
@@ -340,7 +342,7 @@ void SyncErrorWidget::slotProgressInfo(Folder *folder, const ProgressInfo &progr
             if (path == QLatin1Char('.'))
                 path.clear();
 
-            return engine.shouldDiscoverLocally(path);
+            return engine->shouldDiscoverLocally(path);
         });
     }
     if (progress.status() == ProgressInfo::Done) {
