@@ -769,10 +769,10 @@ void FolderMan::connectFolder(Folder *folder)
         // clang-format off
         connect(folder, SIGNAL(syncPausedChanged(Folder*,bool)), this, SLOT(saveFolder(Folder*)));
         connect(folder, SIGNAL(vfsModeChanged(Folder*,Vfs::Mode)), this, SLOT(saveFolder(Folder*)));
-        // clang-format on  
+        // clang-format on
+
         connect(
             folder->syncEngine(), &SyncEngine::fileStatusChanged, _socketApi.get(), &SocketApi::broadcastStatusPushMessage);
-        connect(folder, &Folder::watchedFileChangedExternally, folder->syncEngine(), &SyncEngine::onPathTouched);
 
         registerFolderWithSocketApi(folder);
     }

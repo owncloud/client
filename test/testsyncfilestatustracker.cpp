@@ -383,8 +383,8 @@ private Q_SLOTS:
         statusSpy.clear();
 
         // Another sync after clearing the blacklist entry, everything should return to order.
-        fakeFolder.syncEngine()->journal()->wipeErrorBlacklistEntry(QStringLiteral("A/a1"));
-        fakeFolder.syncEngine()->journal()->wipeErrorBlacklistEntry(QStringLiteral("B/b0"));
+        fakeFolder.syncJournal()->wipeErrorBlacklistEntry(QStringLiteral("A/a1"));
+        fakeFolder.syncJournal()->wipeErrorBlacklistEntry(QStringLiteral("B/b0"));
         fakeFolder.scheduleSync();
         fakeFolder.execUntilBeforePropagation();
         verifyThatPushMatchesPull(fakeFolder, statusSpy);

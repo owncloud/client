@@ -73,6 +73,7 @@ public:
 
     void setMoveToTrash(bool trashIt) { _moveToTrash = trashIt; }
 
+    // file path must be absolute!
     bool isExcluded(QStringView filePath) const;
     void addManualExclude(const QString &filePath);
     void addExcludeList(const QString &filePath);
@@ -81,13 +82,13 @@ public:
     void clearManualExcludes();
 
     SyncFileStatus fileStatus(const QString &relativePath);
-    void onPathTouched(const QString &fileName);
+    void pathTouched(const QString &fileName);
 
 
     /* Returns whether another sync is needed to complete the sync */
     bool isAnotherSyncNeeded() { return _anotherSyncNeeded; }
 
-    SyncJournalDb *journal() const { return _journal; }
+    // SyncJournalDb *journal() const { return _journal; }
     QString localPath() const { return _localPath; }
 
     /** Duration in ms that uploads should be delayed after a file change

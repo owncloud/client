@@ -82,18 +82,13 @@ static inline bool hasExcludedStatus(const SyncFileItem &item)
         || status == SyncFileItem::Restoration;
 }
 
-SyncFileStatusTracker::SyncFileStatusTracker(SyncEngine *syncEngine)
+SyncFileStatusTracker::SyncFileStatusTracker(const QString &folderPath, SyncJournalDb *journal, SyncEngine *syncEngine)
     : QObject(syncEngine)
     , _syncEngine(syncEngine)
+    , _folderPath(folderPath)
+    , _journal(journal)
     , _caseSensitivity(Utility::fsCaseSensitivity())
-{
-    connect(syncEngine, &SyncEngine::aboutToPropagate,
-        this, &SyncFileStatusTracker::slotAboutToPropagate);
-    connect(syncEngine, &SyncEngine::itemCompleted,
-        this, &SyncFileStatusTracker::slotItemCompleted);
-    connect(syncEngine, &SyncEngine::finished, this, &SyncFileStatusTracker::slotSyncFinished);
-    connect(syncEngine, &SyncEngine::started, this, &SyncFileStatusTracker::slotSyncEngineRunningChanged);
-    connect(syncEngine, &SyncEngine::finished, this, &SyncFileStatusTracker::slotSyncEngineRunningChanged);
+{        
 }
 
 SyncFileStatus SyncFileStatusTracker::fileStatus(const QString &relativePath)
@@ -105,7 +100,7 @@ SyncFileStatus SyncFileStatusTracker::fileStatus(const QString &relativePath)
         return resolveSyncAndErrorStatus(QString(), NotShared);
     }
 
-    const QString absolutePath = _syncEngine->localPath() + relativePath;
+    const QString absolutePath = _folderPath + relativePath;
 
     if (!QFileInfo::exists(absolutePath)) {
         return SyncFileStatus(SyncFileStatus::StatusNone);
@@ -122,6 +117,9 @@ SyncFileStatus SyncFileStatusTracker::fileStatus(const QString &relativePath)
 
     // actually it does "hurt", to the extent that we have a sync engine member and public getter on the excludes
     // just to support stuff like this, all at the expense of decent encapsulation!
+    if (!_syncEngine)
+        return {};
+
     if (_syncEngine->isExcluded(absolutePath)) {
         return SyncFileStatus(SyncFileStatus::StatusExcluded);
     }
@@ -131,7 +129,7 @@ SyncFileStatus SyncFileStatusTracker::fileStatus(const QString &relativePath)
 
     // First look it up in the database to know if it's shared
     SyncJournalFileRecord rec;
-    if (_syncEngine->journal()->getFileRecord(relativePath, &rec) && rec.isValid()) {
+    if (_journal && _journal->getFileRecord(relativePath, &rec) && rec.isValid()) {
         return resolveSyncAndErrorStatus(relativePath, rec._remotePerm.hasPermission(RemotePermissions::IsShared) ? Shared : NotShared);
     }
 
@@ -139,18 +137,16 @@ SyncFileStatus SyncFileStatusTracker::fileStatus(const QString &relativePath)
     return resolveSyncAndErrorStatus(relativePath, NotShared, PathUnknown);
 }
 
-void SyncFileStatusTracker::slotPathTouched(const QString &fileName)
+void SyncFileStatusTracker::pathTouched(const QString &fileName)
 {
-    QString folderPath = _syncEngine->localPath();
-
-    OC_ASSERT(fileName.startsWith(folderPath));
-    QString localPath = fileName.mid(folderPath.size());
+    OC_ASSERT(fileName.startsWith(_folderPath));
+    QString localPath = fileName.mid(_folderPath.size());
     _dirtyPaths.insert(localPath);
 
     Q_EMIT fileStatusChanged(fileName, SyncFileStatus::StatusSync);
 }
 
-void SyncFileStatusTracker::slotAddSilentlyExcluded(const QString &folderPath)
+void SyncFileStatusTracker::slotAddExcluded(const QString &folderPath)
 {
     _syncProblems[folderPath] = SyncFileStatus::StatusExcluded;
     Q_EMIT fileStatusChanged(getSystemDestination(folderPath), resolveSyncAndErrorStatus(folderPath, NotShared));
@@ -199,7 +195,7 @@ void SyncFileStatusTracker::decSyncCountAndEmitStatusChanged(const QString &rela
     }
 }
 
-void SyncFileStatusTracker::slotAboutToPropagate(const SyncFileItemSet &items)
+void SyncFileStatusTracker::updateAboutToPropagate(const SyncFileItemSet &items)
 {
     OC_ASSERT(_syncCount.isEmpty());
 
@@ -248,7 +244,7 @@ void SyncFileStatusTracker::slotAboutToPropagate(const SyncFileItemSet &items)
     }
 }
 
-void SyncFileStatusTracker::slotItemCompleted(const SyncFileItemPtr &item)
+void SyncFileStatusTracker::updateItemCompleted(const SyncFileItemPtr &item)
 {
     qCDebug(lcStatusTracker) << "Item completed" << item->destination() << item->_status << item->instruction();
 
@@ -270,16 +266,17 @@ void SyncFileStatusTracker::slotItemCompleted(const SyncFileItemPtr &item)
     }
 }
 
-void SyncFileStatusTracker::slotSyncFinished()
+void SyncFileStatusTracker::updateSyncFinished()
 {
     // Clear the sync counts to reduce the impact of unsymmetrical inc/dec calls (e.g. when directory job abort)
     QHash<QString, int> oldSyncCount;
     std::swap(_syncCount, oldSyncCount);
     for (auto it = oldSyncCount.begin(); it != oldSyncCount.end(); ++it)
         Q_EMIT fileStatusChanged(getSystemDestination(it.key()), fileStatus(it.key()));
+    updateSyncRunningChanged();
 }
 
-void SyncFileStatusTracker::slotSyncEngineRunningChanged()
+void SyncFileStatusTracker::updateSyncRunningChanged()
 {
     Q_EMIT fileStatusChanged(getSystemDestination(QString()), resolveSyncAndErrorStatus(QString(), NotShared));
 }
@@ -318,7 +315,7 @@ void SyncFileStatusTracker::invalidateParentPaths(const QString &path)
 
 QString SyncFileStatusTracker::getSystemDestination(const QString &relativePath)
 {
-    QString systemPath = _syncEngine->localPath() + relativePath;
+    QString systemPath = _folderPath + relativePath;
     // SyncEngine::localPath() has a trailing slash, make sure to remove it if the
     // destination is empty.
     if (systemPath.endsWith(QLatin1Char('/'))) {

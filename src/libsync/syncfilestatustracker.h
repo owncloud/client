@@ -16,11 +16,12 @@
 #ifndef SYNCFILESTATUSTRACKER_H
 #define SYNCFILESTATUSTRACKER_H
 
-// #include "ownsql.h"
-#include "syncfileitem.h"
 #include "common/syncfilestatus.h"
-#include <map>
+#include "common/syncjournaldb.h"
+#include "syncfileitem.h"
+#include <QPointer>
 #include <QSet>
+#include <map>
 
 namespace OCC {
 
@@ -35,22 +36,23 @@ class OWNCLOUDSYNC_EXPORT SyncFileStatusTracker : public QObject
 {
     Q_OBJECT
 public:
-    explicit SyncFileStatusTracker(SyncEngine *syncEngine);
+    // sync engine is always parent
+    explicit SyncFileStatusTracker(const QString &folderPath, SyncJournalDb *journal, SyncEngine *syncEngine);
+
     SyncFileStatus fileStatus(const QString &relativePath);
+    void pathTouched(const QString &fileName);
+
+    void updateAboutToPropagate(const SyncFileItemSet &items);
+    void updateItemCompleted(const SyncFileItemPtr &item);
+    void updateSyncFinished();
+    void updateSyncRunningChanged();
 
 public Q_SLOTS:
-    void slotPathTouched(const QString &fileName);
     // path relative to folder
-    void slotAddSilentlyExcluded(const QString &folderPath);
+    void slotAddExcluded(const QString &folderPath);
 
 Q_SIGNALS:
     void fileStatusChanged(const QString &systemFileName, SyncFileStatus fileStatus);
-
-private Q_SLOTS:
-    void slotAboutToPropagate(const SyncFileItemSet &items);
-    void slotItemCompleted(const SyncFileItemPtr &item);
-    void slotSyncFinished();
-    void slotSyncEngineRunningChanged();
 
 private:
     struct PathComparator {
@@ -71,8 +73,11 @@ private:
     void incSyncCountAndEmitStatusChanged(const QString &relativePath, SharedFlag sharedState);
     void decSyncCountAndEmitStatusChanged(const QString &relativePath, SharedFlag sharedState);
 
-    // also the parent - maybe make this a qpointer regardless?
-    SyncEngine *_syncEngine;
+    // sync engine is also the parent. We *only* have this as a member to ask whether the path is excluded or not.
+    // consider replacing the sync engine as member with an instance of the exluded files list
+    QPointer<SyncEngine> _syncEngine;
+    QString _folderPath;
+    QPointer<SyncJournalDb> _journal;
 
     ProblemsMap _syncProblems;
     QSet<QString> _dirtyPaths;

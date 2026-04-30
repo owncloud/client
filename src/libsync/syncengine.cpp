@@ -54,19 +54,15 @@ SyncEngine::SyncEngine(Account *account, const QUrl &baseUrl, const QString &loc
     , _journal(journal)
     , _progressInfo(new ProgressInfo)
 {
-    // Refactoring todo: reality check that we actually need to use these types in queued connections. if so,
-    // we should move to a one shot registration method a) to make it really easy to see which types may
-    // be passed between threads and b) to just call it once.
-    // suggest calling registration method in FolderMan or one of the other single instance managers on startup
-    // one day it might belong in an app builder routine.
-
-
     // Everything in the SyncEngine expects a trailing slash for the localPath.
     OC_ASSERT(localPath.endsWith(QLatin1Char('/')));
 
     _excludedFiles = new ExcludedFiles(this);
 
-    _syncFileStatusTracker = new SyncFileStatusTracker(this);
+    // hmmm....I'd like to pass the excluded files too, because the tracker needs to know if a file is excluded or not,
+    // but that also requires knowing if hidden files are excluded which is a dynamic prop of the syncEngine...so
+    // for now leave it alone
+    _syncFileStatusTracker = new SyncFileStatusTracker(_localPath, journal, this);
     connect(_syncFileStatusTracker, &SyncFileStatusTracker::fileStatusChanged, this, &SyncEngine::fileStatusChanged);
 }
 
@@ -411,8 +407,8 @@ void SyncEngine::startSync()
         finalize(false);
     });
     connect(_discoveryPhase, &DiscoveryPhase::finished, this, &SyncEngine::slotDiscoveryFinished);
-    connect(_discoveryPhase, &DiscoveryPhase::silentlyExcluded, _syncFileStatusTracker, &SyncFileStatusTracker::slotAddSilentlyExcluded);
-    connect(_discoveryPhase, &DiscoveryPhase::excluded, _syncFileStatusTracker, &SyncFileStatusTracker::slotAddSilentlyExcluded);
+    connect(_discoveryPhase, &DiscoveryPhase::silentlyExcluded, _syncFileStatusTracker, &SyncFileStatusTracker::slotAddExcluded);
+    connect(_discoveryPhase, &DiscoveryPhase::excluded, _syncFileStatusTracker, &SyncFileStatusTracker::slotAddExcluded);
     connect(_discoveryPhase, &DiscoveryPhase::excluded, this, &SyncEngine::excluded);
 
     auto discoveryJob = new ProcessDirectoryJob(_discoveryPhase, PinState::AlwaysLocal, _discoveryPhase);
@@ -506,6 +502,7 @@ void SyncEngine::slotDiscoveryFinished()
         _localDiscoveryPaths.clear();
 
         // To announce the beginning of the sync
+        _syncFileStatusTracker->updateAboutToPropagate(_syncItems);
         Q_EMIT aboutToPropagate(_syncItems);
 
         qCInfo(lcEngine) << "#### Reconcile (aboutToPropagate OK) ####################################################" << _duration.duration();
@@ -542,8 +539,10 @@ void SyncEngine::slotDiscoveryFinished()
         _journal->commit(QStringLiteral("post stale entry removal"));
 
         // Emit the started signal only after the propagator has been set up.
-        if (_needsUpdate)
+        if (_needsUpdate) {
+            _syncFileStatusTracker->updateSyncRunningChanged();
             Q_EMIT started();
+        }
 
         _propagator->start(std::move(_syncItems));
 
@@ -566,6 +565,8 @@ void SyncEngine::slotItemCompleted(const SyncFileItemPtr &item)
     _progressInfo->setProgressComplete(*item);
 
     Q_EMIT transmissionProgress(*_progressInfo);
+
+    _syncFileStatusTracker->updateItemCompleted(item);
     Q_EMIT itemCompleted(item);
 }
 
@@ -612,7 +613,8 @@ void SyncEngine::finalize(bool success)
         _uniqueErrors.clear();
         _localDiscoveryPaths.clear();
         _localDiscoveryStyle = LocalDiscoveryStyle::FilesystemOnly;
-        // pretty sure we should not be emitting anything if the engine is already in destruction?
+        _syncFileStatusTracker->updateSyncFinished();
+        // need to reality check this: is there some universe where the dying sync engine needs to notify "finished"?
         Q_EMIT finished(success);
     }
 }
@@ -800,14 +802,14 @@ void SyncEngine::clearManualExcludes()
 SyncFileStatus SyncEngine::fileStatus(const QString &relativePath)
 {
     if (!_syncFileStatusTracker)
-        return SyncFileStatus::StatusNone;
+        return {};
     return _syncFileStatusTracker->fileStatus(relativePath);
 }
 
-void SyncEngine::onPathTouched(const QString &fileName)
+void SyncEngine::pathTouched(const QString &fileName)
 {
     if (_syncFileStatusTracker)
-        _syncFileStatusTracker->slotPathTouched(fileName);
+        _syncFileStatusTracker->pathTouched(fileName);
 }
 
 bool SyncEngine::reloadExcludes()
