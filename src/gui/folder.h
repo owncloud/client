@@ -372,12 +372,6 @@ Q_SIGNALS:
     void progressUpdate(const ProgressInfo &progress);
 
 
-    /**
-     * Fires for each change inside this folder that wasn't caused
-     * by sync activity.
-     */
-    void watchedFileChangedExternally(const QString &path);
-
 public Q_SLOTS:
     /**
        * terminate the current sync run

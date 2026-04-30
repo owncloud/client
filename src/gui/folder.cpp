@@ -124,6 +124,7 @@ Folder::Folder(const FolderDefinition &definition, AccountState *accountState, S
     // todo: the engine needs to be created externally, presumably by the folderman, and passed in by injection
     // current impl can result in an invalid engine which is just a mess given the folder is useless without it
     _engine = new SyncEngine(_accountState->account(), webDavUrl(), path(), remotePath(), _journal, this);
+
     // pass the setting if hidden files are to be ignored, will be read in csync_update
     _engine->setIgnoreHiddenFiles(ignoreHiddenFiles);
     // consider passing this in instead of hitting the config file again
@@ -569,7 +570,8 @@ void Folder::slotWatchedPathsChanged(const QSet<QString> &paths, ChangeReason re
         }
         warnOnNewExcludedItem(record, relativePath);
 
-        Q_EMIT watchedFileChangedExternally(path);
+        _engine->pathTouched(path);
+
         needSync = true;
     }
     if (needSync && canSync()) {
