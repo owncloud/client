@@ -453,17 +453,14 @@ void Folder::startVfs()
     vfsParams.providerVersion = Version::version();
     vfsParams.multipleAccountsRegistered = AccountManager::instance()->accounts().size() > 1;
 
-    // lord almighty - the engine should just emit this itself...these layers of indirection create so much noise and I'm betting there's no
-    // good reason to have an accessor on the file status tracker
-    connect(_engine->syncFileStatusTracker(), &SyncFileStatusTracker::fileStatusChanged, _vfs, &Vfs::fileStatusChanged);
-
+    connect(_engine, &SyncEngine::fileStatusChanged, _vfs, &Vfs::onFileStatusChanged);
 
     connect(_vfs, &Vfs::started, this, [this] {
         // Immediately mark the sqlite temporaries as excluded. They get recreated
         // on db-open and need to get marked again every time.
         QString stateDbFile = _journal->databaseFilePath();
-        _vfs->fileStatusChanged(stateDbFile + QStringLiteral("-wal"), SyncFileStatus::StatusExcluded);
-        _vfs->fileStatusChanged(stateDbFile + QStringLiteral("-shm"), SyncFileStatus::StatusExcluded);
+        _vfs->onFileStatusChanged(stateDbFile + QStringLiteral("-wal"), SyncFileStatus::StatusExcluded);
+        _vfs->onFileStatusChanged(stateDbFile + QStringLiteral("-shm"), SyncFileStatus::StatusExcluded);
         _engine->setSyncOptions(loadSyncOptions());
         registerFolderWatcher();
 
@@ -674,7 +671,7 @@ void Folder::changeVfsMode(Vfs::Mode newMode)
     _vfs->stop();
     _vfs->unregisterFolder();
     disconnect(_vfs, nullptr, this, nullptr);
-    disconnect(_engine->syncFileStatusTracker(), nullptr, _vfs, nullptr);
+    disconnect(_engine, nullptr, _vfs, nullptr);
 
     // _vfs is a shared pointer...
     // Refactor todo: who is it shared with? It appears to be shared with the SyncOptions. SyncOptions instance is then

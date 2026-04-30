@@ -771,8 +771,8 @@ void FolderMan::connectFolder(Folder *folder)
         connect(folder, SIGNAL(vfsModeChanged(Folder*,Vfs::Mode)), this, SLOT(saveFolder(Folder*)));
         // clang-format on  
         connect(
-            folder->syncEngine().syncFileStatusTracker(), &SyncFileStatusTracker::fileStatusChanged, _socketApi.get(), &SocketApi::broadcastStatusPushMessage);
-        connect(folder, &Folder::watchedFileChangedExternally, folder->syncEngine().syncFileStatusTracker(), &SyncFileStatusTracker::slotPathTouched);
+            folder->syncEngine(), &SyncEngine::fileStatusChanged, _socketApi.get(), &SocketApi::broadcastStatusPushMessage);
+        connect(folder, &Folder::watchedFileChangedExternally, folder->syncEngine(), &SyncEngine::onPathTouched);
 
         registerFolderWithSocketApi(folder);
     }
@@ -793,10 +793,10 @@ void FolderMan::disconnectFolder(Folder *folder)
 
         disconnect(folder, nullptr, _socketApi.get(), nullptr);
         disconnect(folder, nullptr, this, nullptr);
-        disconnect(&folder->syncEngine(), nullptr, folder, nullptr);
+        disconnect(folder->syncEngine(), nullptr, folder, nullptr);
         disconnect(
-            folder->syncEngine().syncFileStatusTracker(), &SyncFileStatusTracker::fileStatusChanged, _socketApi.get(), &SocketApi::broadcastStatusPushMessage);
-        disconnect(folder, nullptr, folder->syncEngine().syncFileStatusTracker(), nullptr);
+            folder->syncEngine(), &SyncEngine::fileStatusChanged, _socketApi.get(), &SocketApi::broadcastStatusPushMessage);
+        disconnect(folder, nullptr, folder->syncEngine(), nullptr);
     }
 }
 
@@ -1133,7 +1133,7 @@ void FolderMan::setIgnoreHiddenFiles(bool ignore)
     // creating it. See the todo in the Folder constructor.
     for (Folder *folder : folders()) {
         if (folder->canSync()) {
-            folder->syncEngine().setIgnoreHiddenFiles(ignore);
+            folder->syncEngine()->setIgnoreHiddenFiles(ignore);
         }
     }
 

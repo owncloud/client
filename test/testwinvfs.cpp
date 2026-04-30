@@ -715,9 +715,9 @@ private Q_SLOTS:
 
         // The Vfs property is only accessible when it's not "sync pending"
         auto updateSyncState = [&] {
-            fakeFolder.vfs()->fileStatusChanged(fakeFolder.localPath() + QStringLiteral("A/a1"), SyncFileStatus(SyncFileStatus::StatusUpToDate));
-            fakeFolder.vfs()->fileStatusChanged(fakeFolder.localPath() + QStringLiteral("A/a2"), SyncFileStatus(SyncFileStatus::StatusUpToDate));
-            fakeFolder.vfs()->fileStatusChanged(fakeFolder.localPath() + QStringLiteral("A"), SyncFileStatus(SyncFileStatus::StatusUpToDate));
+            fakeFolder.vfs()->onFileStatusChanged(fakeFolder.localPath() + QStringLiteral("A/a1"), SyncFileStatus(SyncFileStatus::StatusUpToDate));
+            fakeFolder.vfs()->onFileStatusChanged(fakeFolder.localPath() + QStringLiteral("A/a2"), SyncFileStatus(SyncFileStatus::StatusUpToDate));
+            fakeFolder.vfs()->onFileStatusChanged(fakeFolder.localPath() + QStringLiteral("A"), SyncFileStatus(SyncFileStatus::StatusUpToDate));
         };
 
         QVERIFY(fakeFolder.vfs()->setPinState(QStringLiteral("A"), PinState::AlwaysLocal));
