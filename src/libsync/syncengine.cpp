@@ -603,7 +603,7 @@ void SyncEngine::slotPropagationFinished(bool success)
 
 void SyncEngine::finalize(bool success)
 {
-    qCInfo(lcEngine) << "Sync run took" << _duration.duration();
+    qDebug() << "Sync run took" << _duration.duration() << " for folder: " << _localPath;
 
     if (!_goingDown) {
         _duration.stop();

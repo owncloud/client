@@ -64,10 +64,10 @@ GeneralSettings::GeneralSettings(QWidget *parent)
     _ui->crashreporterCheckBox->setVisible(Theme::instance()->withCrashReporter());
 
     _ui->moveToTrashCheckBox->setVisible(true);
-    connect(_ui->moveToTrashCheckBox, &QCheckBox::toggled, this, [this](bool checked) {
-        ConfigFile().setMoveToTrash(checked);
-        Q_EMIT moveToTrashChanged(checked);
-    });
+    connect(_ui->moveToTrashCheckBox, &QCheckBox::toggled, this, &GeneralSettings::moveToTrashChanged); /*[this](bool checked) {
+         ConfigFile().setMoveToTrash(checked);
+         Q_EMIT moveToTrashChanged(checked);
+     });*/
 
     // OEM themes are not obliged to ship mono icons, so there
     // is no point in offering an option
@@ -153,7 +153,7 @@ void GeneralSettings::slotIgnoreFilesEditor()
 void GeneralSettings::reloadConfig()
 {
     _ui->syncHiddenFilesCheckBox->setChecked(!FolderMan::instance()->ignoreHiddenFiles());
-    _ui->moveToTrashCheckBox->setChecked(ConfigFile().moveToTrash());
+    _ui->moveToTrashCheckBox->setChecked(FolderMan::instance()->moveToTrash());
     if (Utility::hasSystemLaunchOnStartup(Theme::instance()->appName())) {
         _ui->autostartCheckBox->setChecked(true);
         _ui->autostartCheckBox->setDisabled(true);

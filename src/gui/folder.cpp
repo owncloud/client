@@ -109,7 +109,7 @@ Folder::Folder(const FolderDefinition &definition, AccountState *accountState, S
     engine->setParent(this);
     _engine = engine;
 
-    // the FolderBuilder should fail under all of the following conditions, so none of thes asserts should never trigger
+    // the FolderBuilder should fail under all of the following conditions, so none of thes asserts should ever trigger
     Q_ASSERT(_accountState && _accountState->account());
     Q_ASSERT(_vfs);
     Q_ASSERT(_journal);
@@ -123,10 +123,6 @@ Folder::Folder(const FolderDefinition &definition, AccountState *accountState, S
         status = SyncResult::Paused;
     }
     setSyncState(status);
-
-    // consider passing this in instead of hitting the config file again
-    ConfigFile cfgFile;
-    _engine->setMoveToTrash(cfgFile.moveToTrash());
 
     connect(_accountState, &AccountState::isConnectedChanged, this, &Folder::canSyncChanged);
 

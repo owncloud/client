@@ -101,6 +101,13 @@ FolderMan::FolderMan()
         settings.setValue(IgnoreHiddenFilesKey, _ignoreHiddenFiles); // defaults to true
     }
 
+    if (settings.contains(MoveToTrashKey)) {
+        _moveToTrash = settings.value(MoveToTrashKey).toBool();
+    } else {
+        _moveToTrash = Theme::instance()->moveToTrashDefaultValue();
+        settings.setValue(MoveToTrashKey, _moveToTrash);
+    }
+
     connect(AccountManager::instance(), &AccountManager::accountRemoved, this, &FolderMan::slotRemoveFoldersForAccount);
 
     connect(_lockWatcher.data(), &LockWatcher::fileUnlocked, this, [this](const QString &path, FileSystem::LockMode) {
@@ -733,7 +740,7 @@ Folder *FolderMan::addFolder(AccountState *accountState, const FolderDefinition 
     }
 
     FolderBuilder builder(folderDefinition);
-    auto folder = builder.buildFolder(accountState, _ignoreHiddenFiles, this);
+    auto folder = builder.buildFolder(accountState, _ignoreHiddenFiles, _moveToTrash, this);
 
     if (!folder) {
         qCWarning(lcFolderMan) << "Unable to create Folder for " << folder->path() << " with spaceId " << folderDefinition.spaceId();
@@ -1142,19 +1149,32 @@ void FolderMan::setIgnoreHiddenFiles(bool ignore)
     setSyncEnabled(true);
 }
 
+bool FolderMan::moveToTrash() const
+{
+    return _moveToTrash;
+}
+
+void FolderMan::updateMoveToTrash(bool trashIt)
+{
+    if (_moveToTrash == trashIt)
+        return;
+
+    setSyncEnabled(false);
+    _moveToTrash = trashIt;
+    auto settings = ConfigFile::makeQSettings();
+    settings.setValue(MoveToTrashKey, _moveToTrash);
+    
+    for (auto *f : folders()) {
+        if (f) {
+            f->setMoveToTrash(_moveToTrash);
+        }
+    }
+    setSyncEnabled(true);
+}
 
 bool FolderMan::isSpaceSynced(GraphApi::Space *space) const
 {
     return (space && folder(space->accountId(), space->id()) != nullptr);
-}
-
-void FolderMan::slotUpdateMoveToTrash(bool trashIt)
-{
-    for (auto *f : folders()) {
-        if (f) {
-            f->setMoveToTrash(trashIt);
-        }
-    }
 }
 
 Folder *FolderMan::addFolderFromScratch(AccountState *accountState, FolderDefinition &&folderDefinition, bool useVfs)
