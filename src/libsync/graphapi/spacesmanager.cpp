@@ -55,6 +55,7 @@ void SpacesManager::refresh()
     }
 
     // TODO: leak the job until we fixed the ownership https://github.com/owncloud/client/issues/11203
+    // todo todo: I can't identify a leak here but who knows what lurks in the job handling...validate it's ok, as it seems to be
     auto drivesJob = new Drives(_account, nullptr);
     drivesJob->setTimeout(refreshTimeoutC);
     connect(drivesJob, &Drives::finishedSignal, this, [drivesJob, this] {

@@ -98,13 +98,6 @@ QString FolderManagementUtils::validateFolderPath(const QString &path)
         if (!pathLengthCheck.isEmpty()) {
             error = pathLengthCheck;
         }
-
-        /* if (error.isEmpty()) {
-             qCDebug(lcFolderManagementUtils) << "Checked local path ok";
-             if (!_journal.open()) {
-                 error = tr("%1 failed to open the database.").arg(_definition.localPath());
-             }
-         }*/
     } else {
         // Check directory again
         if (!FileSystem::fileExists(path, fi)) {
@@ -119,9 +112,6 @@ QString FolderManagementUtils::validateFolderPath(const QString &path)
     }
     if (!error.isEmpty()) {
         qCWarning(lcFolderManagementUtils) << error;
-        //  _syncResult.appendErrorString(error);
-        //  setSyncState(SyncResult::SetupError);
-        // return error;
     }
     return error;
 }

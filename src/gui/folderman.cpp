@@ -696,19 +696,21 @@ void FolderMan::slotFolderSyncFinished(const SyncResult &)
                         << f->accountState()->account()->displayNameWithHost() << "] with remote [" << f->remoteUrl().toDisplayString() << "]";
 }
 
+// consider moving this to FolderBuilder so we can "make" tests use it someday
 bool FolderMan::validateFolderDefinition(const FolderDefinition &folderDefinition)
 {
-    if (folderDefinition.id().isEmpty() || folderDefinition.journalPath().isEmpty() || !ensureFilesystemSupported(folderDefinition))
+    if (folderDefinition.id().isEmpty() || folderDefinition.webDavUrl().isEmpty() || folderDefinition.journalPath().isEmpty()
+        || !ensureFilesystemSupported(folderDefinition)) {
+        qCWarning(lcFolderMan) << "Folder definition is missing required value(s). Folder cannot be created from this definition.";
         return false;
+    }
 
     QString pathCheck = FolderManagementUtils::validateFolderPath(folderDefinition.localPath());
     if (!pathCheck.isEmpty()) {
         // does this warrant popping an error dialog?
-        qCWarning(lcFolderMan) << "Folder definition path check failed with error: " << pathCheck;
+        qCWarning(lcFolderMan) << "Folder definition path check failed with error: " << pathCheck << ". Folder cannot be created using this path.";
         return false;
     }
-
-
     return true;
 }
 
