@@ -249,6 +249,10 @@ public:
     bool ignoreHiddenFiles() const;
     void setIgnoreHiddenFiles(bool ignore);
 
+    bool moveToTrash() const;
+    /// This slot will tell all sync engines to reload the sync options.
+    void updateMoveToTrash(bool trashIt);
+
     /** Simple save and remove all folders on shut down
      *
      *  emits folderListChanged
@@ -331,9 +335,6 @@ public Q_SLOTS:
      * See slotWatchedFileUnlocked().
      */
     void slotSyncOnceFileUnlocks(const QString &path, FileSystem::LockMode mode);
-
-    /// This slot will tell all sync engines to reload the sync options.
-    void slotUpdateMoveToTrash(bool trashIt);
 
     // emits folderRemoved
     void removeFolderFromGui(Folder *f);
@@ -462,6 +463,8 @@ private:
     // pair this with _socketApi->slotUnregisterPath(folder);
     void registerFolderWithSocketApi(Folder *folder);
 
+    void scheduleFoldersForAccount(const QUuid &accountId);
+
     // Helper for `checkPathValidity`. It first checks if the folder `path` exists, and if not recusively checks its parent. When a folder
     // is found, it checks for sync root markers. See the documentation of `checkPathValidity` for when a path is valid. If the path
     // is valid, a null-string is returned. When a path is invalid, an error string is returned.
@@ -474,6 +477,7 @@ private:
 
     QString _folderConfigPath;
     bool _ignoreHiddenFiles = true;
+    bool _moveToTrash = false;
 
     /// Folder aliases from the settings that weren't read
     QSet<QString> _additionalBlockedFolderAliases;
@@ -511,7 +515,7 @@ private:
 
     // the literal is needed to get the tests to build
     inline static const QString IgnoreHiddenFilesKey = QStringLiteral("ignoreHiddenFiles");
-    void scheduleFoldersForAccount(const QUuid &accountId);
+    inline static const QString MoveToTrashKey = QStringLiteral("moveToTrash");
 };
 
 } // namespace OCC

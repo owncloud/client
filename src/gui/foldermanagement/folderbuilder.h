@@ -17,13 +17,13 @@ class FolderBuilder : public QObject
 public:
     FolderBuilder(const FolderDefinition &definition, QObject *parent = nullptr);
 
-    Folder *buildFolder(AccountState *accountState, bool ignoreHiddenFiles, QObject *parent);
+    Folder *buildFolder(AccountState *accountState, bool ignoreHiddenFiles, bool moveToTrash, QObject *parent);
 
 
 private:
     SyncJournalDb *buildJournal();
     Vfs *buildVfs();
-    SyncEngine *buildEngine(Account *account, SyncJournalDb *journal, bool ignoreHiddenFiles);
+    SyncEngine *buildEngine(Account *account, SyncJournalDb *journal, bool ignoreHiddenFiles, bool moveToTrash);
 
     FolderDefinition _definition;
 };

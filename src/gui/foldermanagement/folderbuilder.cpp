@@ -16,14 +16,14 @@ FolderBuilder::FolderBuilder(const FolderDefinition &definition, QObject *parent
 {
 }
 
-Folder *FolderBuilder::buildFolder(AccountState *accountState, bool ignoreHiddenFiles, QObject *parent)
+Folder *FolderBuilder::buildFolder(AccountState *accountState, bool ignoreHiddenFiles, bool moveToTrash, QObject *parent)
 {
     if (!accountState || !accountState->account())
         return nullptr;
 
     SyncJournalDb *db = buildJournal();
     Vfs *vfs = buildVfs();
-    SyncEngine *engine = buildEngine(accountState->account(), db, ignoreHiddenFiles);
+    SyncEngine *engine = buildEngine(accountState->account(), db, ignoreHiddenFiles, moveToTrash);
     if (db && vfs && engine) {
         // for unknown reasons I am getting a warning on potential memory leak for the engine only - it's safe to ignore this as
         // all pointers created in this class are parented by the builder (then transferred to folder) so even if
@@ -57,16 +57,17 @@ Vfs *FolderBuilder::buildVfs()
     return nullptr;
 }
 
-SyncEngine *FolderBuilder::buildEngine(Account *account, SyncJournalDb *journal, bool ignoreHiddenFiles)
+SyncEngine *FolderBuilder::buildEngine(Account *account, SyncJournalDb *journal, bool ignoreHiddenFiles, bool moveToTrash)
 {
     if (!account || !journal)
         return nullptr;
     SyncEngine *engine = new SyncEngine(account, _definition.webDavUrl(), _definition.canonicalPath(), _definition.targetPath(), journal, this);
-    engine->setIgnoreHiddenFiles(ignoreHiddenFiles);
     if (!engine->loadDefaultExcludes()) {
         qCWarning(lcFolderBuilder, "Engine could not read system exclude file. Aborting Folder build");
         return nullptr;
     }
+    engine->setIgnoreHiddenFiles(ignoreHiddenFiles);
+    engine->setMoveToTrash(moveToTrash);
     return engine;
 }
 
