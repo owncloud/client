@@ -1084,6 +1084,17 @@ FolderDefinition::FolderDefinition(const QByteArray &id, const QUrl &davUrl, con
     , _id(id)
     , _displayName(displayName)
 {
+    if (_webDavUrl.path().endsWith(QLatin1Char('/'))) {
+        // this is related to folder wizard adding trailing separator. No other impl adds trailing sep to the webDavUrl
+        // so we want to clean these corner cases up so the paths are consistent. the folder wizard has been updated to
+        // no longer add the trailing sep so this just cleans  up "legacy" paths from previously existing configs
+        QString path = _webDavUrl.path();
+        path.truncate(path.lastIndexOf('/'));
+        _webDavUrl.setPath(path);
+
+        // note if we want to add a trailing slash to the webDavUrl in future, it should be done in Space::webDavUrl since
+        // that is the ultimate source of the url. we should not be "fixing" separators all over the app.
+    }
 }
 
 FolderDefinition::FolderDefinition(const QUrl &davUrl, const QString &spaceId, const QString &displayName)
