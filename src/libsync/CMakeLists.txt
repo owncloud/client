@@ -78,6 +78,7 @@ INSTALL(
 )
 
 add_library(libsync SHARED ${libsync_SRCS}
+    libsync.qrc
     creds/credentialssupport.h)
 set_target_properties(libsync PROPERTIES EXPORT_NAME SyncCore)
 
@@ -105,11 +106,6 @@ ecm_add_qml_module(libsync
 )
 
 ecm_finalize_qml_module(libsync DESTINATION ${KDE_INSTALL_QMLDIR})
-
-set_source_files_properties(configfile.cpp
-    PROPERTIES
-        COMPILE_DEFINITIONS EXCLUDE_FILE_NAME="${EXCLUDE_FILE_NAME}"
-)
 
 target_link_libraries(libsync PUBLIC $<BUILD_INTERFACE:OpenAPI::LibreGraphAPI>)
 add_subdirectory(graphapi)

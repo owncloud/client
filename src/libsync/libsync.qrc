@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/libsync">
+        <file>sync-exclude.lst</file>
+    </qresource>
+</RCC>
