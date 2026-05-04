@@ -14,7 +14,7 @@
 using namespace OCC;
 
 namespace {
-const QString excludeListFileC = QStringLiteral(SOURCEDIR "/sync-exclude.lst");
+const QString excludeListFileC = QStringLiteral(":/libsync/sync-exclude.lst");
 }
 // The tests were converted from the old CMocka framework, that's why there is a global
 static QScopedPointer<ExcludedFiles> excludedFiles;
