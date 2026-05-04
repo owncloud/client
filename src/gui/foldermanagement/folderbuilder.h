@@ -22,8 +22,8 @@ public:
 
 private:
     SyncJournalDb *buildJournal();
-    SyncEngine *buildEngine();
     Vfs *buildVfs();
+    SyncEngine *buildEngine(Account *account, SyncJournalDb *journal, bool ignoreHiddenFiles);
 
     FolderDefinition _definition;
 };

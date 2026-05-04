@@ -206,29 +206,33 @@ private:
     // Must only be acessed during update and reconcile
     SyncFileItemSet _syncItems;
 
-    QPointer<Account> _account;
-
+    // this seems to be the folder davUrl - verifying before rename
     const QUrl _baseUrl;
+
     bool _needsUpdate;
     bool _syncRunning;
     QString _localPath;
     QString _remotePath;
     QString _remoteRootEtag;
 
+    // the ever present account pointer primarily used for running jobs
+    QPointer<Account> _account;
     // this is owned by the folder
     QPointer<SyncJournalDb> _journal;
 
-    // both of these are "rebuilt" on every sync
+    // both of these are parented/owned by the engine but are "rebuilt" on every sync
+    // todo: investigate to determine whether we can improve this pointer handling but simply clearing/resetting the
+    // states between runs (similar to ProgressInfo::reset, which contrary to the naming, is not related to smartpointers)
     DiscoveryPhase *_discoveryPhase = nullptr;
     OwncloudPropagator *_propagator = nullptr;
 
-    // List of all files with conflicts
-    QSet<QString> _seenConflictFiles;
-
+    // these pointers are all parented/owned by the engine
     ProgressInfo *_progressInfo = nullptr;
-
     ExcludedFiles *_excludedFiles = nullptr;
     SyncFileStatusTracker *_syncFileStatusTracker = nullptr;
+
+    // List of all files with conflicts
+    QSet<QString> _seenConflictFiles;
     Utility::ChronoElapsedTimer _duration;
 
     /**

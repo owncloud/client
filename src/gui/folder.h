@@ -184,7 +184,7 @@ public:
 
     /** Create a new Folder
      */
-    Folder(const FolderDefinition &definition, AccountState *accountState, SyncJournalDb *journal, Vfs *vfs, bool ignoreHiddenFiles, QObject *parent);
+    Folder(const FolderDefinition &definition, AccountState *accountState, SyncJournalDb *journal, Vfs *vfs, SyncEngine *engine, QObject *parent);
 
     ~Folder() override;
     /**
@@ -216,7 +216,7 @@ public:
      */
     QString remotePath() const { return _definition.targetPath(); }
 
-    // Normally this value comes from the space, but may come from the definition when the space is not available
+    // Normally this value comes from the space because it can change on the server side, but may come from the definition when the space is not available
     QString displayName() const;
 
     // Normally this value comes from the space, but may come from the definition when the space is not available

@@ -113,7 +113,7 @@ SyncFileStatus SyncFileStatusTracker::fileStatus(const QString &relativePath)
     // our ability to notify changes through the fileStatusChanged signal,
     // it's an acceptable compromise to treat all exclude types the same.
     // Update: This extra check shouldn't hurt even though silently excluded files
-    // are now available via slotAddSilentlyExcluded().
+    // are now available via slotAddExcluded().
 
     // actually it does "hurt", to the extent that we have a sync engine member and public getter on the excludes
     // just to support stuff like this, all at the expense of decent encapsulation!

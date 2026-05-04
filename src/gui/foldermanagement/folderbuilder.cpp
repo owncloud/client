@@ -23,9 +23,13 @@ Folder *FolderBuilder::buildFolder(AccountState *accountState, bool ignoreHidden
 
     SyncJournalDb *db = buildJournal();
     Vfs *vfs = buildVfs();
-    if (db && vfs)
-        return new Folder(_definition, accountState, db, vfs, ignoreHiddenFiles, parent);
-
+    SyncEngine *engine = buildEngine(accountState->account(), db, ignoreHiddenFiles);
+    if (db && vfs && engine) {
+        // for unknown reasons I am getting a warning on potential memory leak for the engine only - it's safe to ignore this as
+        // all pointers created in this class are parented by the builder (then transferred to folder) so even if
+        // the folder build fails, the pointers will be cleaned up when builder goes out of scope.
+        return new Folder(_definition, accountState, db, vfs, engine, parent);
+    }
     return nullptr;
 }
 
@@ -33,7 +37,7 @@ SyncJournalDb *FolderBuilder::buildJournal()
 {
     SyncJournalDb *journal = new SyncJournalDb(_definition.absoluteJournalPath(), this);
     if (!journal->open()) {
-        qCWarning(lcFolderBuilder) << "Could not open database when creating new folder: " << _definition.absoluteJournalPath();
+        qCWarning(lcFolderBuilder) << "Could not open database when creating new folder: " << _definition.absoluteJournalPath() << ". Aborting Folder build.";
         return nullptr;
     }
     journal->close();
@@ -49,13 +53,21 @@ Vfs *FolderBuilder::buildVfs()
     if (vfs)
         return vfs;
 
-    qCWarning(lcFolderBuilder) << "Could not load plugin for mode" << _definition.virtualFilesMode();
+    qCWarning(lcFolderBuilder) << "Could not load vfs plugin for mode" << _definition.virtualFilesMode() << ". Aborting Folder build.";
     return nullptr;
 }
 
-SyncEngine *FolderBuilder::buildEngine()
+SyncEngine *FolderBuilder::buildEngine(Account *account, SyncJournalDb *journal, bool ignoreHiddenFiles)
 {
-    return nullptr;
+    if (!account || !journal)
+        return nullptr;
+    SyncEngine *engine = new SyncEngine(account, _definition.webDavUrl(), _definition.canonicalPath(), _definition.targetPath(), journal, this);
+    engine->setIgnoreHiddenFiles(ignoreHiddenFiles);
+    if (!engine->loadDefaultExcludes()) {
+        qCWarning(lcFolderBuilder, "Engine could not read system exclude file. Aborting Folder build");
+        return nullptr;
+    }
+    return engine;
 }
 
 

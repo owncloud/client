@@ -92,7 +92,7 @@ using namespace FileSystem::SizeLiterals;
 
 Q_LOGGING_CATEGORY(lcFolder, "gui.folder", QtInfoMsg)
 
-Folder::Folder(const FolderDefinition &definition, AccountState *accountState, SyncJournalDb *journal, Vfs *vfs, bool ignoreHiddenFiles, QObject *parent)
+Folder::Folder(const FolderDefinition &definition, AccountState *accountState, SyncJournalDb *journal, Vfs *vfs, SyncEngine *engine, QObject *parent)
     : QObject(parent)
     , _accountState(accountState)
     , _definition(definition)
@@ -106,11 +106,14 @@ Folder::Folder(const FolderDefinition &definition, AccountState *accountState, S
     vfs->setParent(this);
     _vfs = vfs;
 
-    // the FolderBuilder should fail if the account state or account are dead, so this should never trigger
+    engine->setParent(this);
+    _engine = engine;
+
+    // the FolderBuilder should fail under all of the following conditions, so none of thes asserts should never trigger
     Q_ASSERT(_accountState && _accountState->account());
-    // FolderBuilder should also fail if it could not build the other dependencies so again, assert should never trigger
     Q_ASSERT(_vfs);
     Q_ASSERT(_journal);
+    Q_ASSERT(_engine);
 
     _timeSinceLastSyncStart.start();
     _timeSinceLastSyncDone.start();
@@ -121,22 +124,19 @@ Folder::Folder(const FolderDefinition &definition, AccountState *accountState, S
     }
     setSyncState(status);
 
-    // todo: the engine needs to be created externally, presumably by the folderman, and passed in by injection
-    // current impl can result in an invalid engine which is just a mess given the folder is useless without it
-    _engine = new SyncEngine(_accountState->account(), webDavUrl(), path(), remotePath(), _journal, this);
-
-    // pass the setting if hidden files are to be ignored, will be read in csync_update
-    _engine->setIgnoreHiddenFiles(ignoreHiddenFiles);
     // consider passing this in instead of hitting the config file again
     ConfigFile cfgFile;
     _engine->setMoveToTrash(cfgFile.moveToTrash());
 
-    if (!_engine->loadDefaultExcludes()) {
-        qCWarning(lcFolder, "Could not read system exclude file");
-    }
-
     connect(_accountState, &AccountState::isConnectedChanged, this, &Folder::canSyncChanged);
 
+    // connect engine to folderman:
+    connect(_engine, &SyncEngine::seenLockedFile, FolderMan::instance(), &FolderMan::slotSyncOnceFileUnlocks);
+
+    // connect progress dispatcher to this
+    connect(ProgressDispatcher::instance(), &ProgressDispatcher::folderConflicts, this, &Folder::slotFolderConflicts);
+
+    // connect engine to this:
     connect(_engine, &SyncEngine::started, this, &Folder::slotSyncStarted, Qt::QueuedConnection);
     connect(_engine, &SyncEngine::finished, this, &Folder::slotSyncFinished, Qt::QueuedConnection);
 
@@ -144,19 +144,17 @@ Folder::Folder(const FolderDefinition &definition, AccountState *accountState, S
         _engine, &SyncEngine::transmissionProgress, this, [this](const ProgressInfo &pi) { Q_EMIT ProgressDispatcher::instance()->progressInfo(this, pi); });
 
     connect(_engine, &SyncEngine::transmissionProgress, this, &Folder::progressUpdate);
-
     connect(_engine, &SyncEngine::itemCompleted, this, &Folder::slotItemCompleted);
-    connect(_engine, &SyncEngine::seenLockedFile, FolderMan::instance(), &FolderMan::slotSyncOnceFileUnlocks);
     connect(_engine, &SyncEngine::aboutToPropagate, this, &Folder::slotLogPropagationStart);
     connect(_engine, &SyncEngine::syncError, this, &Folder::slotSyncError);
-
-    connect(ProgressDispatcher::instance(), &ProgressDispatcher::folderConflicts, this, &Folder::slotFolderConflicts);
     connect(_engine, &SyncEngine::excluded, this, [this](const QString &path) { Q_EMIT ProgressDispatcher::instance()->excluded(this, path); });
 
+    // setup local discovery tracker
     _localDiscoveryTracker = new LocalDiscoveryTracker(this);
     connect(_engine, &SyncEngine::finished, _localDiscoveryTracker, &LocalDiscoveryTracker::slotSyncFinished);
     connect(_engine, &SyncEngine::itemCompleted, _localDiscoveryTracker, &LocalDiscoveryTracker::slotItemCompleted);
 
+    // this needs investigation as it looks sus. I would expect to get a signal like this from the space directly
     connect(_accountState->account()->spacesManager(), &GraphApi::SpacesManager::spaceChanged, this, [this](GraphApi::Space *changedSpace) {
         if (_definition.spaceId() == changedSpace->id()) {
             emit spaceChanged();
@@ -172,6 +170,11 @@ Folder::Folder(const FolderDefinition &definition, AccountState *accountState, S
 
 Folder::~Folder()
 {
+    // needs more review for possible weird side effects but this seems reasonable
+    if (_engine)
+        _engine->disconnect();
+    if (_journal)
+        _journal->close();
     // If wipeForRemoval() was called the vfs has already shut down.
     if (_vfs)
         _vfs->stop();
@@ -243,9 +246,13 @@ QString Folder::cleanPath() const
 
 QUrl Folder::webDavUrl() const
 {
+    // this doesn't make sense to me - the definition should always carry the correct webdav url so I'm
+    // changing this to a reality check against the space instead of relying on the space value first, if it exists,
     GraphApi::Space *sp = space();
-    if (sp)
-        return sp->webDavUrl();
+    if (sp) {
+        QUrl spUrl = sp->webDavUrl();
+        Q_ASSERT(spUrl == _definition.webDavUrl());
+    }
     return _definition.webDavUrl();
 }
 
