@@ -224,7 +224,7 @@ private:
     // todo: investigate to determine whether we can improve this pointer handling but simply clearing/resetting the
     // states between runs (similar to ProgressInfo::reset, which contrary to the naming, is not related to smartpointers)
     DiscoveryPhase *_discoveryPhase = nullptr;
-    OwncloudPropagator *_propagator = nullptr;
+    QPointer<OwncloudPropagator> _propagator;
 
     // these pointers are all parented/owned by the engine
     ProgressInfo *_progressInfo = nullptr;

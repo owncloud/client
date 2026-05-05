@@ -478,18 +478,14 @@ void SyncEngine::slotDiscoveryFinished()
 
     //    qCInfo(lcEngine) << "Permissions of the root folder: " << _csync_ctx->remote.root_perms.toString();
 
-    // why tf is this a lambda?!?!?! it just gets called after this bizarre def so why isn't it just a normal code block ffs?
-    auto finish = [this]{
 
-
-        auto databaseFingerprint = _journal->dataFingerprint();
-        // If databaseFingerprint is empty, this means that there was no information in the database
-        // (for example, upgrading from a previous version, or first sync, or server not supporting fingerprint)
-        if (!databaseFingerprint.isEmpty() && _discoveryPhase
-            && _discoveryPhase->_dataFingerprint != databaseFingerprint) {
-            qCInfo(lcEngine) << "data fingerprint changed, assume restore from backup" << databaseFingerprint << _discoveryPhase->_dataFingerprint;
-            restoreOldFiles(_syncItems);
-        }
+    auto databaseFingerprint = _journal->dataFingerprint();
+    // If databaseFingerprint is empty, this means that there was no information in the database
+    // (for example, upgrading from a previous version, or first sync, or server not supporting fingerprint)
+    if (!databaseFingerprint.isEmpty() && _discoveryPhase && _discoveryPhase->_dataFingerprint != databaseFingerprint) {
+        qCInfo(lcEngine) << "data fingerprint changed, assume restore from backup" << databaseFingerprint << _discoveryPhase->_dataFingerprint;
+        restoreOldFiles(_syncItems);
+    }
 
         if (_discoveryPhase->_anotherSyncNeeded) {
             _anotherSyncNeeded = true;
@@ -515,9 +511,9 @@ void SyncEngine::slotDiscoveryFinished()
         // do a database commit
         _journal->commit(QStringLiteral("post treewalk"));
 
-        // kill the old propagator and make a new one - this replaces the old QSharedPointer call to create
-        // it is not clear to me why the propagator needs to be killed on each run, look into some kind of internal reset
-        // so we can reuse the original member instance
+        // the propagator should already be cleaned up as part of the "finish" behavior. If it's still around, kill the old propagator and make a new one - this
+        // replaces the old QSharedPointer call to create it is not clear to me why the propagator needs to be killed on each run, look into some kind of
+        // internal reset so we can reuse the original member instance
         if (_propagator) {
             _propagator->disconnect();
             _propagator->deleteLater();
@@ -548,9 +544,6 @@ void SyncEngine::slotDiscoveryFinished()
 
 
         qCInfo(lcEngine) << "#### Post-Reconcile end ####################################################" << _duration.duration();
-    };
-
-    finish();
 }
 
 void SyncEngine::slotItemCompleted(const SyncFileItemPtr &item)
@@ -609,13 +602,18 @@ void SyncEngine::finalize(bool success)
         _duration.stop();
 
         _syncRunning = false;
+        // need to reality check this: is there some universe where the dying sync engine needs to notify "finished"?
+        Q_EMIT finished(success);
+        _syncFileStatusTracker->updateSyncFinished();
+
+        if (_propagator) {
+            _propagator->disconnect();
+            _propagator->deleteLater();
+        }
         _seenConflictFiles.clear();
         _uniqueErrors.clear();
         _localDiscoveryPaths.clear();
         _localDiscoveryStyle = LocalDiscoveryStyle::FilesystemOnly;
-        _syncFileStatusTracker->updateSyncFinished();
-        // need to reality check this: is there some universe where the dying sync engine needs to notify "finished"?
-        Q_EMIT finished(success);
     }
 }
 
@@ -738,6 +736,9 @@ void SyncEngine::abort(const QString &reason)
         aborting = true;
         // If we're already in the propagation phase, aborting that is sufficient
         _propagator->abort();
+        // no unfortunately not because the propagator triggers propagationFinished which causes finalize to be called *again*
+        // after the call below, and bad things happen.
+        // disconnect(_propagator, nullptr, this, nullptr);
     } else if (_discoveryPhase) {
         aborting = true;
         // Delete the discovery and all child jobs after ensuring
