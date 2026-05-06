@@ -57,7 +57,7 @@ public:
 
     Q_INVOKABLE void startSync();
 
-    /* Abort the sync. Called from the main thread */
+    /* Abort the sync. Called from the main thread primarily via the folder list pause sync action, but could also come from folder delete or shutdown */
     void abort(const QString &reason);
 
     bool isSyncRunning() const { return _syncRunning; }
@@ -206,7 +206,9 @@ private:
     // Must only be acessed during update and reconcile
     SyncFileItemSet _syncItems;
 
-    // this seems to be the folder davUrl - verifying before rename
+    // the ever present account pointer primarily used for running jobs
+    QPointer<Account> _account;
+
     const QUrl _baseUrl;
 
     bool _needsUpdate;
@@ -215,15 +217,13 @@ private:
     QString _remotePath;
     QString _remoteRootEtag;
 
-    // the ever present account pointer primarily used for running jobs
-    QPointer<Account> _account;
     // this is owned by the folder
     QPointer<SyncJournalDb> _journal;
 
     // both of these are parented/owned by the engine but are "rebuilt" on every sync
     // todo: investigate to determine whether we can improve this pointer handling but simply clearing/resetting the
     // states between runs (similar to ProgressInfo::reset, which contrary to the naming, is not related to smartpointers)
-    DiscoveryPhase *_discoveryPhase = nullptr;
+    QPointer<DiscoveryPhase> _discoveryPhase;
     QPointer<OwncloudPropagator> _propagator;
 
     // these pointers are all parented/owned by the engine
@@ -263,6 +263,8 @@ private:
 
     // destructor called
     bool _goingDown = false;
+    bool preSyncChecks();
+    void startDiscovery();
 };
 }
 
