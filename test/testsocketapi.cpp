@@ -15,7 +15,6 @@
 #include <QtTest>
 #include <QLocalSocket>
 #include <QSignalSpy>
-#include <QStandardPaths>
 #include <QTemporaryDir>
 
 #include <chrono>
@@ -24,6 +23,7 @@ using namespace std::chrono_literals;
 #include "socketapi/socketapi.h"
 #include "folderman.h"
 #include "accountmanager.h"
+#include "guiutility.h"
 
 #include "testutils/syncenginetestutils.h"
 #include "testutils/testutils.h"
@@ -77,14 +77,9 @@ class TestSocketApi : public QObject
     // Path of the folder registered during a test (reset by cleanup()).
     QString _registeredFolderPath;
 
-    // Compute the socket path the same way guiutility_unix.cpp does.
-    // Utility::socketApiSocketPath() provides the same logic, but it lives in the
-    // GUI library and is not exposed as a public method of SocketApi, so the
-    // computation is duplicated here rather than introducing an extra dependency.
     static QString socketApiPath()
     {
-        return QStringLiteral("%1/ownCloud/socket")
-            .arg(QStandardPaths::writableLocation(QStandardPaths::RuntimeLocation));
+        return Utility::socketApiSocketPath();
     }
 
     // Connect to the SocketApi's server and wait for the connection to be accepted
