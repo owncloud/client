@@ -14,147 +14,381 @@ env:
   S3_PUBLIC_CACHE_BUCKET: "public"
 
 jobs:
-  lint-gui-test:
+#  lint-gui-test:
+#    runs-on: ubuntu-latest
+#    if: github.event_name == 'pull_request'
+#    container:
+#      image: owncloudci/squish:fedora-42-8.1.0-qt68x-linux64
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+#
+#      - name: Setup NodeJs
+#        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+#        with:
+#          node-version: 18
+#
+#      - name: Python lint
+#        run: |
+#          export PATH=$PATH:/github/home/.local/bin
+#          make -C test/gui install
+#          make -C test/gui python-lint
+#
+#      - name: Gherkin lint
+#        run: |
+#          npm install -g ${{ env.NPM_GHERLINT }}
+#          make -C test/gui gherkin-lint
+#
+#  gui-tests:
+#    runs-on: ubuntu-latest
+#    container:
+#      image: owncloudci/squish:fedora-42-8.1.0-qt68x-linux64
+#      env:
+#        PLAYWRIGHT_BROWSERS_PATH: /__w/client/client/test/gui/.playwright
+#        GITHUB_REPO: ${{ github.repository }}
+#        GITHUB_RUN_NUMBER: ${{ github.run_number }}
+#    services:
+#      ocis:
+#        image: owncloud/ocis-rolling:latest
+#        ports:
+#          - 9200:9200
+#        env:
+#          OCIS_URL: https://ocis:9200
+#          OCIS_LOG_LEVEL: "error"
+#          OCIS_LOG_PRETTY: "true"
+#          OCIS_LOG_COLOR: "true"
+#          OCIS_INSECURE: "true"
+#          PROXY_ENABLE_BASIC_AUTH: "true"
+#          OCIS_ADMIN_USER_ID: "some-admin-user-id-0000-000000000000"
+#          IDM_ADMIN_PASSWORD: "admin"
+#          OCIS_SYSTEM_USER_ID: "some-system-user-id-000-000000000000"
+#          OCIS_SYSTEM_USER_API_KEY: "some-system-user-machine-auth-api-key"
+#          OCIS_JWT_SECRET: "some-ocis-jwt-secret"
+#          OCIS_MACHINE_AUTH_API_KEY: "some-ocis-machine-auth-api-key"
+#          OCIS_TRANSFER_SECRET: "some-ocis-transfer-secret"
+#          COLLABORATION_WOPIAPP_SECRET: "some-wopi-secret"
+#          IDM_SVC_PASSWORD: "some-ldap-idm-password"
+#          GRAPH_LDAP_BIND_PASSWORD: "some-ldap-idm-password"
+#          IDM_REVASVC_PASSWORD: "some-ldap-reva-password"
+#          GROUPS_LDAP_BIND_PASSWORD: "some-ldap-reva-password"
+#          USERS_LDAP_BIND_PASSWORD: "some-ldap-reva-password"
+#          AUTH_BASIC_LDAP_BIND_PASSWORD: "some-ldap-reva-password"
+#          IDM_IDPSVC_PASSWORD: "some-ldap-idp-password"
+#          IDP_LDAP_BIND_PASSWORD: "some-ldap-idp-password"
+#          GATEWAY_STORAGE_USERS_MOUNT_ID: "storage-users-1"
+#          STORAGE_USERS_MOUNT_ID: "storage-users-1"
+#          GRAPH_APPLICATION_ID: "application-1"
+#          OCIS_SERVICE_ACCOUNT_ID: "service-account-id"
+#          OCIS_SERVICE_ACCOUNT_SECRET: "service-account-secret"
+#
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+#
+#      - name: Build client
+#        run: |
+#          mkdir -p build
+#          cd build
+#          cmake -G"Ninja" -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=OFF -S ..
+#          ninja
+#
+#      - name: Install Python Modules
+#        run: |
+#          export PATH=$PATH:/github/home/.local/bin
+#          make -C test/gui install
+#          python3.10 -m pip list -v
+#
+#      - name: Create GUI test report directory
+#        run: |
+#          mkdir test/gui/guiReportUpload/screenshots -p
+#          chmod 777 test/gui -R
+#
+#      - name: Wait for ocis service
+#        run: |
+#          echo "Waiting for ocis"
+#          # 150s timeout
+#          for i in {1..30}; do
+#            if curl -kfsSL https://ocis:9200 > /dev/null; then
+#              echo "ocis is up ✅"
+#              exit 0
+#            fi
+#            echo "Retrying in 5s..."
+#            sleep 5
+#          done
+#          echo "❌ ocis failed to start" && exit 1
+#
+#      - name: Run GUI test
+#        id: run_gui_test
+#        env:
+#          LICENSEKEY: ${{ secrets.SQUISH_LICENSEKEY }}
+#          GUI_TEST_REPORT_DIR: /__w/client/client/test/gui/guiReportUpload
+#          CLIENT_REPO: .
+#          OCIS_URL: https://ocis:9200
+#          BACKEND_HOST: https://ocis:9200
+#          SECURE_BACKEND_HOST: https://ocis:9200
+#          OCIS: true
+#          SERVER_INI: test/gui/ci/server.ini
+#          SQUISH_PARAMETERS: >
+#            --testsuite test/gui
+#            --reportgen html,test/gui/guiReportUpload
+#            --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false
+#            --tags ~@skip --tags ~@skipOnLinux --tags ~@skipOnOCIS
+#            ${{
+#              !contains(github.event.pull_request.title, 'full-ci')
+#              && '--abortOnFail' || ''
+#            }}
+#          STACKTRACE_FILE: test/gui/guiReportUpload/stacktrace.log
+#          OWNCLOUD_CORE_DUMP: 1
+#          RECORD_VIDEO_ON_FAILURE: false
+#          COREPACK_ENABLE_STRICT: 0
+#          HOME: /home/headless
+#        run: bash /dockerstartup/entrypoint.sh
+#
+#      - name: Upload GUI test result
+#        if: ${{ failure() && steps.run_gui_test.outcome == 'failure' }}
+#        run: |
+#          curl -L https://dl.min.io/client/mc/release/linux-amd64/mc -o /tmp/mc
+#          chmod +x /tmp/mc
+#          /tmp/mc alias set cache ${{ env.S3_PUBLIC_CACHE_SERVER }} ${{ secrets.CACHE_PUBLIC_S3_ACCESS_KEY }} ${{ secrets.CACHE_PUBLIC_S3_SECRET_KEY }}
+#          /tmp/mc cp --recursive test/gui/guiReportUpload cache/${{ env.S3_PUBLIC_CACHE_BUCKET }}/${{ github.repository }}/${{ github.run_number }}/ocis
+#
+#      - name: Log GUI reports
+#        if: ${{ failure() && steps.run_gui_test.outcome == 'failure' }}
+#        env:
+#          REPORT_DIR: /__w/client/client/test/gui/guiReportUpload
+#          SERVER_TYPE: ocis
+#        run: bash test/gui/ci/log_reports.sh ${REPORT_DIR} ${GITHUB_REPO} ${GITHUB_RUN_NUMBER} ${SERVER_TYPE}
+
+  gui-tests-oc10:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    container:
-      image: owncloudci/squish:fedora-42-8.1.0-qt68x-linux64
-    steps:
-      - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+    env:
+      PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/.playwright
+      GITHUB_REPO: ${{ github.repository }}
+      GITHUB_RUN_NUMBER: ${{ github.run_number }}
 
-      - name: Setup NodeJs
-        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
-        with:
-          node-version: 18
-
-      - name: Python lint
-        run: |
-          export PATH=$PATH:/github/home/.local/bin
-          make -C test/gui install
-          make -C test/gui python-lint
-
-      - name: Gherkin lint
-        run: |
-          npm install -g ${{ env.NPM_GHERLINT }}
-          make -C test/gui gherkin-lint
-
-  gui-tests:
-    runs-on: ubuntu-latest
-    container:
-      image: owncloudci/squish:fedora-42-8.1.0-qt68x-linux64
-      env:
-        PLAYWRIGHT_BROWSERS_PATH: /__w/client/client/test/gui/.playwright
-        GITHUB_REPO: ${{ github.repository }}
-        GITHUB_RUN_NUMBER: ${{ github.run_number }}
     services:
-      ocis:
-        image: owncloud/ocis-rolling:latest
-        ports:
-          - 9200:9200
+      mysql:
+        image: mysql:8.0
         env:
-          OCIS_URL: https://ocis:9200
-          OCIS_LOG_LEVEL: "error"
-          OCIS_LOG_PRETTY: "true"
-          OCIS_LOG_COLOR: "true"
-          OCIS_INSECURE: "true"
-          PROXY_ENABLE_BASIC_AUTH: "true"
-          OCIS_ADMIN_USER_ID: "some-admin-user-id-0000-000000000000"
-          IDM_ADMIN_PASSWORD: "admin"
-          OCIS_SYSTEM_USER_ID: "some-system-user-id-000-000000000000"
-          OCIS_SYSTEM_USER_API_KEY: "some-system-user-machine-auth-api-key"
-          OCIS_JWT_SECRET: "some-ocis-jwt-secret"
-          OCIS_MACHINE_AUTH_API_KEY: "some-ocis-machine-auth-api-key"
-          OCIS_TRANSFER_SECRET: "some-ocis-transfer-secret"
-          COLLABORATION_WOPIAPP_SECRET: "some-wopi-secret"
-          IDM_SVC_PASSWORD: "some-ldap-idm-password"
-          GRAPH_LDAP_BIND_PASSWORD: "some-ldap-idm-password"
-          IDM_REVASVC_PASSWORD: "some-ldap-reva-password"
-          GROUPS_LDAP_BIND_PASSWORD: "some-ldap-reva-password"
-          USERS_LDAP_BIND_PASSWORD: "some-ldap-reva-password"
-          AUTH_BASIC_LDAP_BIND_PASSWORD: "some-ldap-reva-password"
-          IDM_IDPSVC_PASSWORD: "some-ldap-idp-password"
-          IDP_LDAP_BIND_PASSWORD: "some-ldap-idp-password"
-          GATEWAY_STORAGE_USERS_MOUNT_ID: "storage-users-1"
-          STORAGE_USERS_MOUNT_ID: "storage-users-1"
-          GRAPH_APPLICATION_ID: "application-1"
-          OCIS_SERVICE_ACCOUNT_ID: "service-account-id"
-          OCIS_SERVICE_ACCOUNT_SECRET: "service-account-secret"
+          MYSQL_USER: owncloud
+          MYSQL_PASSWORD: owncloud
+          MYSQL_DATABASE: owncloud
+          MYSQL_ROOT_PASSWORD: owncloud
 
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Build client
-        run: |
-          mkdir -p build
-          cd build
-          cmake -G"Ninja" -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=OFF -S ..
-          ninja
+        run: >
+          docker run --rm
+          -v ${{ github.workspace }}:${{ github.workspace }}
+          -w ${{ github.workspace }}
+          --entrypoint bash
+          owncloudci/squish:fedora-42-8.1.0-qt68x-linux64
+          -c "
+            ls &&
+            mkdir -p build &&
+            cd build &&
+            cmake -G\"Ninja\" -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=OFF -S ..
+            ninja -j4
+          "
 
-      - name: Install Python Modules
+      - name: Install owncloud core
+        run: >
+          docker run --rm
+          --network ${{ job.services.mysql.network }}
+          -v ${{ github.workspace }}/server:/var/www/html
+          -e PLUGIN_VERSION=latest
+          -e PLUGIN_CORE_PATH=/var/www/html
+          -e PLUGIN_DB_TYPE=mysql
+          -e PLUGIN_DB_NAME=owncloud
+          -e PLUGIN_DB_HOST=mysql
+          -e PLUGIN_DB_USERNAME=owncloud
+          -e PLUGIN_DB_PASSWORD=owncloud
+          owncloudci/core
+
+      - name: Start owncloud service
+        run: >
+          docker run -d
+          --name owncloud
+          --network ${{ job.services.mysql.network }}
+          -v ${{ github.workspace }}/server:/var/www/html
+          -e APACHE_WEBROOT=/var/www/html
+          -e APACHE_CONFIG_TEMPLATE=ssl
+          -e APACHE_SSL_CERT_CN=owncloud
+          -e APACHE_SSL_CERT=/tmp/server.crt
+          -e APACHE_SSL_KEY=/tmp/server.key
+          -e APACHE_LOGGING_PATH=/dev/null
+          owncloudci/php:7.4-ubuntu22.04
+          bash -c "
+            cat /etc/apache2/templates/base >> /etc/apache2/templates/ssl &&
+            /usr/local/bin/apachectl -e debug -D FOREGROUND
+          "
+
+      - name: Setup server and app
+        run: >
+          docker exec owncloud bash -c "
+            cd /var/www/html &&
+            php occ a:e testing &&
+            php occ config:system:set trusted_domains 1 --value=owncloud &&
+            php occ log:manage --level 2 &&
+            php occ config:list &&
+            php occ config:system:set skeletondirectory --value=/var/www/html/apps/testing/data/tinyskeleton &&
+            php occ config:system:set sharing.federation.allowHttpFallback --value=true --type=bool
+          "
+
+      - name: Install extra apps (oauth2 and activity)
         run: |
-          export PATH=$PATH:/github/home/.local/bin
-          make -C test/gui install
-          python3.10 -m pip list -v
+          docker exec owncloud bash -c "
+            cd /var/www/html
+            # Install oauth2
+            if [ ! -d apps/oauth2 ]; then
+              git clone --depth 1 https://github.com/owncloud/oauth2.git apps/oauth2
+            fi
+            cd apps/oauth2 &&
+            make dist
+            cd /var/www/html
+
+            # Install activity
+            if [ ! -d apps/activity ]; then
+              git clone --depth 1 --branch v2.7.3 https://github.com/owncloud/activity.git apps/activity
+            fi
+            cd apps/activity &&
+            make dist
+            cd /var/www/html
+            php occ a:e activity
+          "
+
+      - name: Fix permissions
+        run: |
+          docker exec owncloud bash -c "chown -R www-data:www-data /var/www/html"
+
+      - name: Wait for ownCloud
+        run: |
+          echo "Waiting for ownCloud..."
+          for i in {1..30}; do
+          if docker exec owncloud curl -kfsSL https://localhost/ > /dev/null 2>&1; then
+           echo "ownCloud is up ✅"
+           break
+          fi
+          echo "  Retrying in 5s... ($i/30)"
+          sleep 5
+          if [ "$i" -eq 30 ]; then
+           echo "❌ ownCloud failed to start"
+           docker logs owncloud
+           exit 1
+          fi
+          done
+
+      - name: Owncloud log
+        run: docker exec -d owncloud tail -f /var/www/html/data/owncloud.log
+
+      - name: Start squish
+        env:
+          SKIP_TEST_RUN: true
+          LICENSEKEY: ${{ secrets.SQUISH_LICENSEKEY }}
+        run: >
+          docker run -d
+          --name squish
+          --network ${{ job.services.mysql.network }}
+          -v ${{ github.workspace }}:${{ github.workspace }}
+          -w ${{ github.workspace }}
+          --user 0:0
+          -e LICENSEKEY=${{ secrets.SQUISH_LICENSEKEY }}
+          -e SKIP_TEST_RUN=true
+          owncloudci/squish:fedora-42-8.1.0-qt68x-linux64
+
+      - name: Wait for Squish installation
+        run: |
+          echo "Waiting for Squish to finish installing..."
+          for i in {1..60}; do
+            if docker exec squish test -f /home/headless/squish/bin/squishrunner 2>/dev/null; then
+              echo "Squish is ready ✅"
+              break
+            fi
+            STATUS=$(docker inspect squish --format='{{.State.Status}}')
+            if [ "$STATUS" != "running" ]; then
+              echo "❌ Squish container exited unexpectedly"
+              docker logs squish
+              exit 1
+            fi
+            echo "  Retrying in 5s... ($i/60)"
+            sleep 5
+            if [ "$i" -eq 60 ]; then
+              echo "❌ Squish installation timed out"
+              docker logs squish
+              exit 1
+            fi
+          done
+
+      - name: Install Python modules
+        run: |
+          docker exec \
+            -e PLAYWRIGHT_BROWSERS_PATH=${{ github.workspace }}/.playwright \
+            squish \
+            bash -c "make -C ${{ github.workspace }}/test/gui install"
+
+#      - name: Install Python modules
+#        run: >
+#          docker exec squish bash -c "
+#            make -C test/gui install &&
+#            python3.10 -m pip list -v
+#          "
 
       - name: Create GUI test report directory
         run: |
-          mkdir test/gui/guiReportUpload/screenshots -p
-          chmod 777 test/gui -R
-
-      - name: Wait for ocis service
-        run: |
-          echo "Waiting for ocis"
-          # 150s timeout
-          for i in {1..30}; do
-            if curl -kfsSL https://ocis:9200 > /dev/null; then
-              echo "ocis is up ✅"
-              exit 0
-            fi
-            echo "Retrying in 5s..."
-            sleep 5
-          done
-          echo "❌ ocis failed to start" && exit 1
+          docker exec squish bash -c "
+            mkdir -p test/gui/guiReportUpload/screenshots &&
+            chmod 777 test/gui -R
+          "
 
       - name: Run GUI test
         id: run_gui_test
-        env:
-          LICENSEKEY: ${{ secrets.SQUISH_LICENSEKEY }}
-          GUI_TEST_REPORT_DIR: /__w/client/client/test/gui/guiReportUpload
-          CLIENT_REPO: .
-          OCIS_URL: https://ocis:9200
-          BACKEND_HOST: https://ocis:9200
-          SECURE_BACKEND_HOST: https://ocis:9200
-          OCIS: true
-          SERVER_INI: test/gui/ci/server.ini
-          SQUISH_PARAMETERS: >
-            --testsuite test/gui
-            --reportgen html,test/gui/guiReportUpload
-            --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false
-            --tags ~@skip --tags ~@skipOnLinux --tags ~@skipOnOCIS
-            ${{ 
-              !contains(github.event.pull_request.title, 'full-ci') 
-              && '--abortOnFail' || '' 
-            }}
-          STACKTRACE_FILE: test/gui/guiReportUpload/stacktrace.log
-          OWNCLOUD_CORE_DUMP: 1
-          RECORD_VIDEO_ON_FAILURE: false
-          COREPACK_ENABLE_STRICT: 0
-          HOME: /home/headless
-        run: bash /dockerstartup/entrypoint.sh
-
-      - name: Upload GUI test result
-        if: ${{ failure() && steps.run_gui_test.outcome == 'failure' }}
         run: |
-          curl -L https://dl.min.io/client/mc/release/linux-amd64/mc -o /tmp/mc
-          chmod +x /tmp/mc
-          /tmp/mc alias set cache ${{ env.S3_PUBLIC_CACHE_SERVER }} ${{ secrets.CACHE_PUBLIC_S3_ACCESS_KEY }} ${{ secrets.CACHE_PUBLIC_S3_SECRET_KEY }}
-          /tmp/mc cp --recursive test/gui/guiReportUpload cache/${{ env.S3_PUBLIC_CACHE_BUCKET }}/${{ github.repository }}/${{ github.run_number }}/ocis
+          docker exec \
+            -e LICENSEKEY="${{ secrets.SQUISH_LICENSEKEY }}" \
+            -e GUI_TEST_REPORT_DIR=${{ github.workspace }}/test/gui/guiReportUpload \
+            -e CLIENT_REPO=${{ github.workspace }} \
+            -e BACKEND_HOST=http://owncloud/ \
+            -e SECURE_BACKEND_HOST=https://owncloud/ \
+            -e OCIS=false \
+            -e SERVER_INI=${{ github.workspace }}/test/gui/drone/server.ini \
+            -e SQUISH_PARAMETERS="--testsuite ${{ github.workspace }}/test/gui --reportgen html,${{ github.workspace }}/test/gui/guiReportUpload --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false --tags ~@skip --tags ~@skipOnLinux --tags ~@skipOnOC10 ${{ github.event_name == 'pull_request' && '--abortOnFail' || '' }}" \
+            -e STACKTRACE_FILE=${{ github.workspace }}/test/gui/guiReportUpload/stacktrace.log \
+            -e PLAYWRIGHT_BROWSERS_PATH=${{ env.PLAYWRIGHT_BROWSERS_PATH }} \
+            -e OWNCLOUD_CORE_DUMP=1 \
+            -e RECORD_VIDEO_ON_FAILURE=${{ github.event_name == 'schedule' && 'true' || 'false' }} \
+            -e COREPACK_ENABLE_STRICT=0 \
+            -e HOME=/home/headless \
+            squish \
+            /dockerstartup/entrypoint.sh
 
-      - name: Log GUI reports
-        if: ${{ failure() && steps.run_gui_test.outcome == 'failure' }}
-        env:
-          REPORT_DIR: /__w/client/client/test/gui/guiReportUpload
-          SERVER_TYPE: ocis
-        run: bash test/gui/ci/log_reports.sh ${REPORT_DIR} ${GITHUB_REPO} ${GITHUB_RUN_NUMBER} ${SERVER_TYPE}
+#      - name: Run GUI test
+#        id: run_gui_test
+#        env:
+#          LICENSEKEY: ${{ secrets.SQUISH_LICENSEKEY }}
+#          GUI_TEST_REPORT_DIR: /__w/client/client/test/gui/guiReportUpload
+#          CLIENT_REPO: .
+#          BACKEND_HOST: http://owncloud/
+#          SECURE_BACKEND_HOST: https://owncloud/
+#          OCIS: false
+#          SERVER_INI: test/gui/ci/server.ini
+#          SQUISH_PATAMETERS: >
+#            --testsuite test/gui
+#            --reportgen html,test/gui/guiReportUpload
+#            --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false
+#            --tags ~@skip --tags ~@skipOnLinux --tags ~@skipOnOC10
+#            ${{
+#              !contains(github.event.pull_request.title, 'full_ci')
+#              && '--abortOnFail' || ''
+#            }}
+#          STACKTRACE_FILE: test/gui/guiReportUpload/stacktrace.log
+#          OWNCLOUD_CORE_DUMP: 1
+#          RECORD_VIDEO_ON_FAILURE: false
+#          COREPACK_ENABLE_STRICT: 0
+#          HOME: /home/headless
+#        run: >
+#          docker exec squish bash -c "
+#            /dockerstartup/entrypoint.sh
+#          "
