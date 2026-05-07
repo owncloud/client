@@ -57,7 +57,7 @@ public:
 
     Q_INVOKABLE void startSync();
 
-    /* Abort the sync. Called from the main thread primarily via the folder list pause sync action, but could also come from folder delete or shutdown */
+    /* Abort the sync. Called from the main thread via the folder list pause sync action, but could also come from folder delete or shutdown */
     void abort(const QString &reason);
 
     bool isSyncRunning() const { return _syncRunning; }
@@ -72,11 +72,11 @@ public:
     void setIgnoreHiddenFiles(bool ignore) { _ignore_hidden_files = ignore; }
 
     void setMoveToTrash(bool trashIt) { _moveToTrash = trashIt; }
+    bool moveToTrash() const { return _moveToTrash; }
 
     // file path must be absolute!
     bool isExcluded(QStringView filePath) const;
     void addManualExclude(const QString &filePath);
-    void addExcludeList(const QString &filePath);
     bool loadDefaultExcludes();
     bool reloadExcludes();
     void clearManualExcludes();
@@ -88,7 +88,6 @@ public:
     /* Returns whether another sync is needed to complete the sync */
     bool isAnotherSyncNeeded() { return _anotherSyncNeeded; }
 
-    // SyncJournalDb *journal() const { return _journal; }
     QString localPath() const { return _localPath; }
 
     /** Duration in ms that uploads should be delayed after a file change
@@ -200,6 +199,13 @@ private:
     // Removes stale and adds missing conflict records after sync
     void conflictRecordMaintenance();
 
+    // do a preflight check to be sure we can really sync
+    bool preSyncChecks();
+    // start discovery
+    void startDiscovery();
+    // start propagation
+    void startPropagation();
+
     // cleanup and Q_EMIT the finished signal
     void finalize(bool success);
 
@@ -263,8 +269,6 @@ private:
 
     // destructor called
     bool _goingDown = false;
-    bool preSyncChecks();
-    void startDiscovery();
 };
 }
 
