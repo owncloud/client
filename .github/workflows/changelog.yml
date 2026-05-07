@@ -6,7 +6,8 @@ on:
     branches: [ master ]
     tags: [ "*" ]
 
-permissions: {}
+permissions:
+  contents: read
 
 jobs:
   changelog:
