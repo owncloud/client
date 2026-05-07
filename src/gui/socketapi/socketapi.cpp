@@ -38,6 +38,7 @@
 #include <QDir>
 #include <QFile>
 #include <QFileDialog>
+#include <QFileInfo>
 #include <QLocalSocket>
 #include <QMessageBox>
 #include <QMetaMethod>
@@ -54,6 +55,7 @@
 #include <QBuffer>
 
 #include <QClipboard>
+#include <QProcess>
 
 #ifdef Q_OS_MAC
 #include <CoreFoundation/CoreFoundation.h>
@@ -672,7 +674,15 @@ void SocketApi::command_OPEN_PRIVATE_LINK_VERSIONS(const QString &localFile, Soc
 
 void SocketApi::copyUrlToClipboard(const QUrl &link)
 {
-    QApplication::clipboard()->setText(link.toString());
+    if (!qgetenv("WAYLAND_DISPLAY").isEmpty()) {
+        QString wlCopy = QApplication::applicationDirPath() + QStringLiteral("/wl-copy");
+        if (!QFileInfo::exists(wlCopy)) {
+            wlCopy = QStringLiteral("wl-copy");
+        }
+        QProcess::startDetached(wlCopy, {link.toString()});
+    } else {
+        QApplication::clipboard()->setText(link.toString());
+    }
 }
 
 void SocketApi::command_MAKE_AVAILABLE_LOCALLY(const QString &filesArg, SocketListener *)
