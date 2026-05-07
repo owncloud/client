@@ -422,45 +422,10 @@ void SyncEngine::startDiscovery()
     _discoveryPhase->startJob(discoveryJob);
 }
 
-void SyncEngine::slotFolderDiscovered(bool local, const QString &folder)
-{
-    // Don't want to overload the UI
-    if (!_lastUpdateProgressCallbackCall.isValid()) {
-        _lastUpdateProgressCallbackCall.start(); // first call
-    } else if (_lastUpdateProgressCallbackCall.elapsed() < 200) {
-        return;
-    } else {
-        _lastUpdateProgressCallbackCall.start();
-    }
-
-    if (local) {
-        _progressInfo->_currentDiscoveredLocalFolder = folder;
-        _progressInfo->_currentDiscoveredRemoteFolder.clear();
-    } else {
-        _progressInfo->_currentDiscoveredRemoteFolder = folder;
-        _progressInfo->_currentDiscoveredLocalFolder.clear();
-    }
-    Q_EMIT transmissionProgress(*_progressInfo);
-}
-
-void SyncEngine::slotRootEtagReceived(const QString &e, const QDateTime &time)
-{
-    if (_remoteRootEtag.isEmpty()) {
-        qCDebug(lcEngine) << "Root etag:" << e;
-        _remoteRootEtag = e;
-        Q_EMIT rootEtagDiscovered(_remoteRootEtag, time);
-    }
-}
-
-void SyncEngine::slotNewItem(const SyncFileItemPtr &item)
-{
-    _progressInfo->adjustTotalsForFile(*item);
-}
-
 void SyncEngine::slotDiscoveryFinished()
 {
     if (!_discoveryPhase) {
-        // There was an error that was already taken care of
+        // There was an abort or error that was already finalized
         return;
     }
 
@@ -482,9 +447,6 @@ void SyncEngine::slotDiscoveryFinished()
     _progressInfo->_status = ProgressInfo::Reconcile;
     Q_EMIT transmissionProgress(*_progressInfo);
 
-    //    qCInfo(lcEngine) << "Permissions of the root folder: " << _csync_ctx->remote.root_perms.toString();
-
-
     auto databaseFingerprint = _journal->dataFingerprint();
     // If databaseFingerprint is empty, this means that there was no information in the database
     // (for example, upgrading from a previous version, or first sync, or server not supporting fingerprint)
@@ -493,86 +455,80 @@ void SyncEngine::slotDiscoveryFinished()
         restoreOldFiles(_syncItems);
     }
 
-        if (_discoveryPhase->_anotherSyncNeeded) {
-            _anotherSyncNeeded = true;
-        }
-
-        Q_ASSERT(std::is_sorted(_syncItems.begin(), _syncItems.end())); 
-
-        qCInfo(lcEngine) << "#### Reconcile (aboutToPropagate) ####################################################" << _duration.duration();
-
-        _localDiscoveryPaths.clear();
-
-        // To announce the beginning of the sync
-        _syncFileStatusTracker->updateAboutToPropagate(_syncItems);
-        Q_EMIT aboutToPropagate(_syncItems);
-
-        qCInfo(lcEngine) << "#### Reconcile (aboutToPropagate OK) ####################################################" << _duration.duration();
-
-        // it's important to do this before ProgressInfo::start(), to announce start of new sync
-        _progressInfo->_status = ProgressInfo::Propagation;
-        Q_EMIT transmissionProgress(*_progressInfo);
-        _progressInfo->startEstimateUpdates();
-
-        // do a database commit
-        _journal->commit(QStringLiteral("post treewalk"));
-
-        // the propagator should already be cleaned up as part of the "finish" behavior. If it's still around, kill the old propagator and make a new one - this
-        // replaces the old QSharedPointer call to create it is not clear to me why the propagator needs to be killed on each run, look into some kind of
-        // internal reset so we can reuse the original member instance
-        if (_propagator) {
-            _propagator->disconnect();
-            _propagator->deleteLater();
-        }
-        _propagator = new OwncloudPropagator(_account, syncOptions(), _baseUrl, _localPath, _remotePath, _journal, this);
-        _propagator->setMoveToTrash(_moveToTrash);
-        connect(_propagator, &OwncloudPropagator::itemCompleted, this, &SyncEngine::slotItemCompleted);
-        connect(_propagator, &OwncloudPropagator::progress, this, &SyncEngine::slotProgress);
-        connect(_propagator, &OwncloudPropagator::updateFileTotal, this, &SyncEngine::updateFileTotal);
-        connect(_propagator, &OwncloudPropagator::finished, this, &SyncEngine::slotPropagationFinished, Qt::QueuedConnection);
-        connect(_propagator, &OwncloudPropagator::seenLockedFile, this, &SyncEngine::seenLockedFile);
-        connect(_propagator, &OwncloudPropagator::insufficientLocalStorage, this, &SyncEngine::slotInsufficientLocalStorage);
-        connect(_propagator, &OwncloudPropagator::insufficientRemoteStorage, this, &SyncEngine::slotInsufficientRemoteStorage);
-        connect(_propagator, &OwncloudPropagator::newItem, this, &SyncEngine::slotNewItem);
-
-        deleteStaleDownloadInfos(_syncItems);
-        deleteStaleUploadInfos(_syncItems);
-        deleteStaleErrorBlacklistEntries(_syncItems);
-        _journal->commit(QStringLiteral("post stale entry removal"));
-
-        // Emit the started signal only after the propagator has been set up.
-        if (_needsUpdate) {
-            _syncFileStatusTracker->updateSyncRunningChanged();
-            Q_EMIT started();
-        }
-
-        _propagator->start(std::move(_syncItems));
-
-
-        qCInfo(lcEngine) << "#### Post-Reconcile end ####################################################" << _duration.duration();
+    if (_discoveryPhase->_anotherSyncNeeded) {
+        _anotherSyncNeeded = true;
+    }
+    startPropagation();
 }
 
-void SyncEngine::slotItemCompleted(const SyncFileItemPtr &item)
+void SyncEngine::startPropagation()
 {
-    Q_ASSERT([&] {
-        // ensure the item is not marked as finished twice
-        const bool finished = item->_finished;
-        item->_finished = true;
-        return !finished;
-    }());
+    Q_ASSERT(std::is_sorted(_syncItems.begin(), _syncItems.end()));
 
-    _progressInfo->setProgressComplete(*item);
+    qCInfo(lcEngine) << "#### Reconcile (aboutToPropagate) ####################################################" << _duration.duration();
 
+    _localDiscoveryPaths.clear();
+
+    // To announce the beginning of the sync
+    _syncFileStatusTracker->updateAboutToPropagate(_syncItems);
+    Q_EMIT aboutToPropagate(_syncItems);
+
+    qCInfo(lcEngine) << "#### Reconcile (aboutToPropagate OK) ####################################################" << _duration.duration();
+
+    // it's important to do this before ProgressInfo::start(), to announce start of new sync
+    _progressInfo->_status = ProgressInfo::Propagation;
     Q_EMIT transmissionProgress(*_progressInfo);
+    _progressInfo->startEstimateUpdates();
 
-    _syncFileStatusTracker->updateItemCompleted(item);
-    Q_EMIT itemCompleted(item);
+    // do a database commit
+    _journal->commit(QStringLiteral("post treewalk"));
+
+    // the propagator should already be cleaned up as part of the "finish" behavior. If it's still around, something is out of whack
+    Q_ASSERT(_propagator == nullptr);
+
+    // set up a new propagator and complete the sync
+    _propagator = new OwncloudPropagator(_account, syncOptions(), _baseUrl, _localPath, _remotePath, _journal, this);
+    _propagator->setMoveToTrash(_moveToTrash);
+    connect(_propagator, &OwncloudPropagator::itemCompleted, this, &SyncEngine::slotItemCompleted);
+    connect(_propagator, &OwncloudPropagator::progress, this, &SyncEngine::slotProgress);
+    connect(_propagator, &OwncloudPropagator::updateFileTotal, this, &SyncEngine::updateFileTotal);
+    connect(_propagator, &OwncloudPropagator::finished, this, &SyncEngine::slotPropagationFinished, Qt::QueuedConnection);
+    connect(_propagator, &OwncloudPropagator::seenLockedFile, this, &SyncEngine::seenLockedFile);
+    connect(_propagator, &OwncloudPropagator::insufficientLocalStorage, this, &SyncEngine::slotInsufficientLocalStorage);
+    connect(_propagator, &OwncloudPropagator::insufficientRemoteStorage, this, &SyncEngine::slotInsufficientRemoteStorage);
+    connect(_propagator, &OwncloudPropagator::newItem, this, &SyncEngine::slotNewItem);
+
+    deleteStaleDownloadInfos(_syncItems);
+    deleteStaleUploadInfos(_syncItems);
+    deleteStaleErrorBlacklistEntries(_syncItems);
+    _journal->commit(QStringLiteral("post stale entry removal"));
+
+    // Emit the started signal only after the propagator has been set up.
+    if (_needsUpdate) {
+        _syncFileStatusTracker->updateSyncRunningChanged();
+        Q_EMIT started();
+    }
+
+    _propagator->start(std::move(_syncItems));
+
+
+    qCInfo(lcEngine) << "#### Post-Reconcile end ####################################################" << _duration.duration();
 }
+
 
 void SyncEngine::slotPropagationFinished(bool success)
 {
     if (_propagator->_anotherSyncNeeded) {
         _anotherSyncNeeded = true;
+    }
+
+    // this is quite important to check, as if the folder is going down the abort may still be finishing but the journal has already been closed or even
+    // deleted.
+    if (!_journal || !_journal->isOpen()) {
+        qCWarning(lcEngine) << "journal is already closed or deleted while handling propagation finished";
+        // not sure about this but it seems like we should
+        finalize(success);
+        return;
     }
 
     if (success && _discoveryPhase) {
@@ -629,6 +585,40 @@ void SyncEngine::finalize(bool success)
         _localDiscoveryStyle = LocalDiscoveryStyle::FilesystemOnly;
     }
 }
+void SyncEngine::slotRootEtagReceived(const QString &e, const QDateTime &time)
+{
+    if (_remoteRootEtag.isEmpty()) {
+        qCDebug(lcEngine) << "Root etag:" << e;
+        _remoteRootEtag = e;
+        Q_EMIT rootEtagDiscovered(_remoteRootEtag, time);
+    }
+}
+
+void SyncEngine::slotNewItem(const SyncFileItemPtr &item)
+{
+    _progressInfo->adjustTotalsForFile(*item);
+}
+
+void SyncEngine::slotFolderDiscovered(bool local, const QString &folder)
+{
+    // Don't want to overload the UI
+    if (!_lastUpdateProgressCallbackCall.isValid()) {
+        _lastUpdateProgressCallbackCall.start(); // first call
+    } else if (_lastUpdateProgressCallbackCall.elapsed() < 200) {
+        return;
+    } else {
+        _lastUpdateProgressCallbackCall.start();
+    }
+
+    if (local) {
+        _progressInfo->_currentDiscoveredLocalFolder = folder;
+        _progressInfo->_currentDiscoveredRemoteFolder.clear();
+    } else {
+        _progressInfo->_currentDiscoveredRemoteFolder = folder;
+        _progressInfo->_currentDiscoveredLocalFolder.clear();
+    }
+    Q_EMIT transmissionProgress(*_progressInfo);
+}
 
 void SyncEngine::slotProgress(const SyncFileItem &item, qint64 current)
 {
@@ -641,6 +631,24 @@ void SyncEngine::updateFileTotal(const SyncFileItem &item, qint64 newSize)
     _progressInfo->updateTotalsForFile(item, newSize);
     Q_EMIT transmissionProgress(*_progressInfo);
 }
+
+void SyncEngine::slotItemCompleted(const SyncFileItemPtr &item)
+{
+    Q_ASSERT([&] {
+        // ensure the item is not marked as finished twice
+        const bool finished = item->_finished;
+        item->_finished = true;
+        return !finished;
+    }());
+
+    _progressInfo->setProgressComplete(*item);
+
+    Q_EMIT transmissionProgress(*_progressInfo);
+
+    _syncFileStatusTracker->updateItemCompleted(item);
+    Q_EMIT itemCompleted(item);
+}
+
 void SyncEngine::restoreOldFiles(SyncFileItemSet &syncItems)
 {
     /* When the server is trying to send us lots of file in the past, this means that a backup
@@ -750,17 +758,14 @@ void SyncEngine::abort(const QString &reason)
         aborting = true;
         // If we're already in the propagation phase, aborting that is sufficient
         _propagator->abort();
-        // no unfortunately not because the propagator triggers propagationFinished which causes finalize to be called *again*
-        // after the call below, and bad things happen.
-        // disconnect(_propagator, nullptr, this, nullptr);
+        // unfortunately we can't run finalize right away though, because it deletes the _propagator which may still be finishing the abort!
+        // the finalize now happens in slotPropagationFinished
         finalizeLater = true;
     } else if (_discoveryPhase) {
         aborting = true;
-        // Delete the discovery and all child jobs after ensuring
-        // it can't finish and start the propagator
+        // this appears to be: ensure discovery can't finish which might trigger the propagator
+        // _discoveryPhase is fully cleaned up in finalize
         disconnect(_discoveryPhase, nullptr, this, nullptr);
-        // I have not seen a delete in this function so assume the comment is out of date, but anyway it's generally covered in startSync.
-        //  the _discoveryPhase is a child of SyncEngine so on sync engine destruction it will just be deleted by parent child relationship
     }
     if (aborting) {
         qCInfo(lcEngine) << "Aborting sync, stated reason:" << reason;
@@ -835,11 +840,6 @@ void SyncEngine::pathTouched(const QString &fileName)
 bool SyncEngine::reloadExcludes()
 {
     return _excludedFiles->reloadExcludeFiles();
-}
-
-void SyncEngine::addExcludeList(const QString &filePath)
-{
-    _excludedFiles->addExcludeFilePath(filePath);
 }
 
 void SyncEngine::addManualExclude(const QString &filePath)
