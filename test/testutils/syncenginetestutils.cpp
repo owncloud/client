@@ -962,14 +962,12 @@ void FakeFolder::switchToVfs(OCC::Vfs *vfs)
 
     QObject::connect(_syncEngine, &OCC::SyncEngine::fileStatusChanged, vfs, &OCC::Vfs::onFileStatusChanged);
 
-    QObject::connect(vfs, &OCC::Vfs::error, vfs, [](const QString &error) { QFAIL(qUtf8Printable(error)); });
+    QObject::connect(vfs, &OCC::Vfs::error, vfs, [](const QString &error) { Q_ASSERT_X(false, {}, qUtf8Printable(error)); });
     QSignalSpy spy(vfs, &OCC::Vfs::started);
     vfs->start(vfsParams);
 
     // don't use QVERIFY outside of the test slot
-    if (spy.isEmpty() && !spy.wait()) {
-        QFAIL("VFS Setup failed");
-    }
+    Q_ASSERT_X(spy.isEmpty() && !spy.wait(), {}, "VFS Setup failed");
 }
 
 FileInfo FakeFolder::currentLocalState()
