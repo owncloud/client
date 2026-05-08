@@ -344,7 +344,7 @@ void ProcessDirectoryJob::processFileAnalyzeRemoteInfo(
     const RemoteInfo &serverEntry, const SyncJournalFileRecord &dbEntry)
 {
     if (!_discoveryData->_syncOptions.isValid()) {
-        qCWarning(lcDisco) << "vfs instance is null, unable to continue";
+        emit _discoveryData->fatalError(tr("the VFS instance is missing. Unable to continue."));
         return;
     }
 
@@ -666,7 +666,7 @@ void ProcessDirectoryJob::processFileAnalyzeLocalInfo(
     const RemoteInfo &serverEntry, const SyncJournalFileRecord &dbEntry, QueryMode recurseQueryServer)
 {
     if (!_discoveryData->_syncOptions.isValid()) {
-        qCWarning(lcDisco) << "vfs instance is null, unable to continue.";
+        emit _discoveryData->fatalError(tr("the VFS instance is missing. Unable to continue."));
         return;
     }
     const bool noServerEntry = (_queryServer != ParentNotChanged && !serverEntry.isValid()) || (_queryServer == ParentNotChanged && !dbEntry.isValid());
@@ -1311,13 +1311,13 @@ int ProcessDirectoryJob::processSubJobs(int nbJobs)
 
 void ProcessDirectoryJob::dbError()
 {
-    Q_EMIT _discoveryData->fatalError(tr("Error while reading the database"));
+    Q_EMIT _discoveryData->fatalError(tr("Error while reading the database."));
 }
 
 DiscoverySingleDirectoryJob *ProcessDirectoryJob::startAsyncServerQuery()
 {
     if (_discoveryData->_account == nullptr) {
-        Q_EMIT _discoveryData->fatalError(tr("account was deleted. Unable to continue"));
+        Q_EMIT _discoveryData->fatalError(tr("account was deleted. Unable to continue."));
         return nullptr;
     }
 
@@ -1376,7 +1376,7 @@ DiscoverySingleDirectoryJob *ProcessDirectoryJob::startAsyncServerQuery()
 void ProcessDirectoryJob::startAsyncLocalQuery()
 {
     if (!_discoveryData->_syncOptions.isValid()) {
-        qCInfo(lcDisco) << "vfs pointer is null, unable to continue";
+        emit _discoveryData->fatalError(tr("the VFS instance is missing. Unable to continue."));
         return;
     }
 
@@ -1433,7 +1433,7 @@ void ProcessDirectoryJob::startAsyncLocalQuery()
 void ProcessDirectoryJob::computePinState(PinState parentState)
 {
     if (!_discoveryData->_syncOptions.isValid()) {
-        qCInfo(lcDisco) << "vfs pointer is null, unable to continue";
+        emit _discoveryData->fatalError(tr("the VFS instance is missing. Unable to continue."));
         return;
     }
 

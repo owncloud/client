@@ -26,7 +26,6 @@
 #include "utility.h"
 
 #include <QObject>
-#include <QPointer>
 #include <QUrl>
 #include <QVersionNumber>
 
@@ -88,6 +87,8 @@ private:
     QUrl _baseUrl;
     // this should be a QPointer but when I try to make it so, I get compile errors because std::isConvertible<SyncEngine *, QObject *> fails
     // no freaking idea but I'll figure it out later
+    // update: nope! due to our "creative" splitting into libs I can't actually include sync engine to make a qpointer to it possible :D
+    // too bad
     SyncEngine *_syncEngine;
 };
 

@@ -910,6 +910,7 @@ void FolderMan::deleteFolderSync(Folder *f)
         f->slotTerminateSync(tr("Folder is about to be removed"));
     }
 
+    // this aborts any running sync so the sync engine should be idle 
     f->setSyncPaused(true);
 
     // this function includes the stuff to remove the database files.

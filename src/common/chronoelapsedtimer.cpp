@@ -34,7 +34,6 @@ void ChronoElapsedTimer::reset()
 
 void ChronoElapsedTimer::stop()
 {
-    // this assert is hit on pause sync
     Q_ASSERT(_end == std::chrono::steady_clock::time_point {});
     _end = std::chrono::steady_clock::now();
 }

@@ -141,9 +141,6 @@ void FileSystem::setFileReadOnly(const QString &filename, bool readonly)
     file.setPermissions(permissions);
 }
 
-void FileSystem::setFolderMinimumPermissions(const QString &filename) { }
-
-
 void FileSystem::setFileReadOnlyWeak(const QString &filename, bool readonly)
 {
     QFile file(filename);
