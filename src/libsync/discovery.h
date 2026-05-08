@@ -253,6 +253,7 @@ private:
     std::deque<ProcessDirectoryJob *> _queuedJobs;
     QVector<ProcessDirectoryJob *> _runningJobs;
 
+    // this is passed in from SyncEngine which owns the original pointer.
     QPointer<DiscoveryPhase> _discoveryData;
 
     PathTuple _currentFolder;

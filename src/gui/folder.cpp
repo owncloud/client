@@ -98,11 +98,10 @@ Folder::Folder(const FolderDefinition &definition, AccountState *accountState, S
     , _definition(definition)
     , _fileLog(new SyncRunFileLog)
 {
+    // reparent the injected dependencies and set them as members
     journal->setParent(this);
     _journal = journal;
 
-    // this is temporary! we only clear the parent on the vfs pointer because for the time being, we are wrapping this in a shared pointer
-    // the shared pointer is marked for death, then we will be able to set the vfs parent to this, as it should be
     vfs->setParent(this);
     _vfs = vfs;
 
@@ -166,18 +165,18 @@ Folder::Folder(const FolderDefinition &definition, AccountState *accountState, S
 
 Folder::~Folder()
 {
-    // needs more review for possible weird side effects but this seems reasonable
-    if (_engine)
-        _engine->disconnect();
-    if (_journal)
-        _journal->close();
-    // If wipeForRemoval() was called the vfs has already shut down.
+    // If wipeForRemoval() was called vfs has already shut down, and the journal has been closed.
+    // any sync the engine was running should have been paused/aborted in folderman as prep to remove the folder.
+    // this feels very sketchy to me and I'm not really sure we should outsource all of that responsibility!
+    // I think the main question is whether the child cleanup routines can finish in time before the pointers are deleted.
+    // this is especially true for sync engine (if it's running on dtr) but any of them could get humg up, in theory
+    // discuss with cohorts.
     if (_vfs)
         _vfs->stop();
-
-    // Reset then engine first as it will abort and try to access members of the Folder
-    // todo: follow up on that comment above. The engine abort should NOT be accessing anything that is not directly in its own realm!
-    // _engine.reset();
+    if (_engine)
+        Q_ASSERT(!_engine->isSyncRunning());
+    if (_journal)
+        _journal->close();
 }
 
 GraphApi::Space *Folder::space() const
@@ -678,12 +677,6 @@ void Folder::changeVfsMode(Vfs::Mode newMode)
     disconnect(_vfs, nullptr, this, nullptr);
     disconnect(_engine, nullptr, _vfs, nullptr);
 
-    // _vfs is a shared pointer...
-    // Refactor todo: who is it shared with? It appears to be shared with the SyncOptions. SyncOptions instance is then
-    // passed to the engine. It is not clear to me how/when the options vfs shared ptr gets updated to match this
-    // new/reset instance but this should be high prio to work this out as wow this is dangerous. the todo is basically: eval the use of
-    // this _vfs pointer and make it consistent and SAFE across uses
-    // also todo: we have to cover the case that the createVfsFromPlugin returns nullptr!
     Vfs *oldVfs = _vfs;
     _vfs = newVfs;
     oldVfs->deleteLater();
@@ -742,18 +735,22 @@ void Folder::slotTerminateSync(const QString &reason)
 
 void Folder::wipeForRemoval()
 {
+    // note we don't have to abort any running sync here as the folderman pauses the folder before this function is ever called.
+    Q_ASSERT(!isSyncRunning());
+
+    // I don't understand this logic so I'm removing it for now
+    // the setupError condition is related to failure to start vfs as far as I can tell.
+    // that doesn't mean the members don't exist, to the contrary! they are likely instantiated so let's
+    // let the wipe proceed.
     // we can't acces those variables
-    if (hasSetupError()) {
-        return;
-    }
+    // if (hasSetupError()) {
+    //   return;
+    // }
+
     // prevent interaction with the db etc
     _vfsIsReady = false;
 
-    // stop reacting to changes
-    // especially the upcoming deletion of the db
-    // Refactoring todo: this may not be safe - using deleteLater on a real pointer is probably more reasonable.
-    // it's now a child of the folder so hopefully just goes away on its own now ;)
-    //_folderWatcher->deleteLater();
+    _folderWatcher->disconnect();
 
     // Delete files that have been partially downloaded.
     slotDiscardDownloadProgress();
@@ -1167,12 +1164,7 @@ void FolderDefinition::setLocalPath(const QString &path)
 
     QFileInfo fi(_localPath);
     _canonicalLocalPath = fi.canonicalFilePath();
-    // commenting this out til I can verify it can really go away now. I checked the bug report and it was filed against QFileSystemWatcher,
-    // so I don't understand what it has to do with deriving the canonical path in the first place?
-    // #ifdef Q_OS_MAC
-    //  Workaround QTBUG-55896  (Should be fixed in Qt 5.8)
-    //    _canonicalLocalPath = _canonicalLocalPath.normalized(QString::NormalizationForm_C);
-    // #endif
+
     if (_canonicalLocalPath.isEmpty()) {
         qCWarning(lcFolder) << "Broken symlink:" << _localPath;
         _canonicalLocalPath = _localPath;

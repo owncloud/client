@@ -18,6 +18,7 @@
 #include "common/filesystembase.h"
 #include "common/vfs.h"
 
+#include <QPointer>
 #include <QRegularExpression>
 #include <QSharedPointer>
 #include <QString>
@@ -40,10 +41,6 @@ public:
     ~SyncOptions();
 
     Vfs *vfs() const { return _vfs; }
-
-    /** If remotely deleted files are needed to move to trash */
-    // bool _moveFilesToTrash = false;
-
 
     /** The maximum number of active jobs in parallel  */
     int _parallelNetworkJobs = 6;

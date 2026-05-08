@@ -807,7 +807,7 @@ QString OwncloudPropagator::adjustRenamedPath(const QString &original) const
 Result<Vfs::ConvertToPlaceholderResult, QString> OwncloudPropagator::updatePlaceholder(const SyncFileItem &item, const QString &fileName, const QString &replacesFile)
 {
     if (!_syncOptions.isValid()) {
-        QString error = "vfs instance is not available";
+        QString error = "vfs instance is not available.";
         return error;
     }
 
@@ -861,9 +861,7 @@ void PropagatorJob::setState(JobState state)
 
 OwncloudPropagator *PropagatorJob::propagator() const
 {
-    // this is so shady, but so far Linux tests seem to segfault all over the place if the member is returned.
-    // so shady. nope, it didn't fix anything that I could see
-    // return qobject_cast<OwncloudPropagator *>(parent());
+    // not a fan but...
     return _propagator;
 }
 

@@ -24,7 +24,7 @@ class VfsWin : public Vfs
     const QScopedPointer<VfsWinPrivate> d_ptr;
 
 public:
-    explicit VfsWin(QObject *parent = nullptr);
+    explicit VfsWin(QObject *parent);
     ~VfsWin();
 
     Mode mode() const override;
