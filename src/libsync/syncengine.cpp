@@ -286,6 +286,9 @@ void SyncEngine::startSync()
         return;
     }
 
+    // ugh. need to do this "first" so that we don't crash on _duration.stop() in finalize
+    _duration.reset();
+
     if (!_account || !_syncOptions.isValid()) {
         finalize(false);
         return;
@@ -296,7 +299,6 @@ void SyncEngine::startSync()
         return;
     }
 
-    _duration.reset();
     _syncRunning = true;
 
     // I think these probably belong in finalize but lower prio at the moment
