@@ -291,6 +291,11 @@ void SyncEngine::startSync()
         return;
     }
 
+    if (!preSyncChecks()) {
+        finalize(false);
+        return;
+    }
+
     _duration.reset();
     _syncRunning = true;
 
@@ -307,12 +312,6 @@ void SyncEngine::startSync()
     _journal->clearEtagStorageFilter();
     _lastLocalDiscoveryStyle = _localDiscoveryStyle;
 
-    if (!preSyncChecks()) {
-        // hmmmm we are doing an awful lot with finalize
-        finalize(false);
-        return;
-    }
-
     startDiscovery();
 }
 
@@ -320,7 +319,8 @@ bool SyncEngine::preSyncChecks()
 {
     if (!QFileInfo::exists(_localPath)) {
         // No _tr, it should only occur in non-mirall
-        Q_EMIT syncError(QStringLiteral("Unable to find local sync folder."));
+        Q_EMIT syncError(tr("Unable to sync: the local folder is missing."));
+        // todo: consider if we can/should somehow disable the folder in this case
         return false;
     }
     // Check free size on disk first.
@@ -341,11 +341,6 @@ bool SyncEngine::preSyncChecks()
         qCWarning(lcEngine) << "Could not determine free space available at" << _localPath;
     }
 
-    if (!_journal->exists()) {
-        qCInfo(lcEngine) << "New sync (no sync journal exists yet)";
-    } else {
-        qCInfo(lcEngine) << "Sync with existing sync journal";
-    }
     if (!_journal->open()) {
         qCWarning(lcEngine) << "Could not create a sync journal!";
         Q_EMIT syncError(tr("Unable to open or create the local sync database. Make sure you have write access in the sync folder."));
@@ -357,6 +352,13 @@ bool SyncEngine::preSyncChecks()
 
 void SyncEngine::startDiscovery()
 {
+    if (!_journal || !_journal->isOpen()) {
+        qCWarning(lcEngine) << "db is closed or deleted on start discovery";
+        Q_EMIT syncError(tr("Cannot open the sync journal."));
+        finalize(false);
+        return;
+    }
+
     qCInfo(lcEngine) << "#### Discovery start ####################################################" << _duration.duration();
     qCInfo(lcEngine) << "Server" << _account->capabilities().status().versionString() << (_account->isHttp2Supported() ? "Using HTTP/2" : "");
     _progressInfo->_status = ProgressInfo::Discovery;
@@ -432,9 +434,9 @@ void SyncEngine::slotDiscoveryFinished()
     qCInfo(lcEngine) << "#### Discovery end ####################################################" << _duration.duration();
 
     // Sanity check
-    if (!_journal->open()) {
-        qCWarning(lcEngine) << "Bailing out, DB failure";
-        Q_EMIT syncError(tr("Cannot open the sync journal"));
+    if (!_journal || !_journal->isOpen()) {
+        qCWarning(lcEngine) << "db is closed or deleted on discovery finished";
+        Q_EMIT syncError(tr("Cannot open the sync journal."));
         finalize(false);
         return;
     } else {
@@ -463,6 +465,13 @@ void SyncEngine::slotDiscoveryFinished()
 
 void SyncEngine::startPropagation()
 {
+    if (!_journal || !_journal->isOpen()) {
+        qCWarning(lcEngine) << "db is closed or deleted on start propagation";
+        Q_EMIT syncError(tr("Cannot open the sync journal."));
+        finalize(false);
+        return;
+    }
+
     Q_ASSERT(std::is_sorted(_syncItems.begin(), _syncItems.end()));
 
     qCInfo(lcEngine) << "#### Reconcile (aboutToPropagate) ####################################################" << _duration.duration();
@@ -483,7 +492,8 @@ void SyncEngine::startPropagation()
     // do a database commit
     _journal->commit(QStringLiteral("post treewalk"));
 
-    // the propagator should already be cleaned up as part of the "finish" behavior. If it's still around, something is out of whack
+    // the propagator should already be cleaned up as part of the finalize impl after last sync completed.
+    // If it's still around, something is out of whack
     Q_ASSERT(_propagator == nullptr);
 
     // set up a new propagator and complete the sync
@@ -518,17 +528,17 @@ void SyncEngine::startPropagation()
 
 void SyncEngine::slotPropagationFinished(bool success)
 {
-    if (_propagator->_anotherSyncNeeded) {
-        _anotherSyncNeeded = true;
-    }
-
     // this is quite important to check, as if the folder is going down the abort may still be finishing but the journal has already been closed or even
     // deleted.
     if (!_journal || !_journal->isOpen()) {
-        qCWarning(lcEngine) << "journal is already closed or deleted while handling propagation finished";
-        // not sure about this but it seems like we should
-        finalize(success);
+        qCWarning(lcEngine) << "db is closed or deleted on propagation finished";
+        Q_EMIT syncError(tr("Cannot open the sync journal."));
+        finalize(false);
         return;
+    }
+
+    if (_propagator->_anotherSyncNeeded) {
+        _anotherSyncNeeded = true;
     }
 
     if (success && _discoveryPhase) {
@@ -585,6 +595,37 @@ void SyncEngine::finalize(bool success)
         _localDiscoveryStyle = LocalDiscoveryStyle::FilesystemOnly;
     }
 }
+
+void SyncEngine::abort(const QString &reason)
+{
+    bool aborting = false;
+    bool finalizeLater = false;
+    if (_propagator) {
+        aborting = true;
+        // If we're already in the propagation phase, aborting that is sufficient
+        _propagator->abort();
+        // unfortunately we can't run finalize right away though, because it deletes the _propagator which may still be finishing the abort!
+        // the finalize now happens in slotPropagationFinished
+        finalizeLater = true;
+    } else if (_discoveryPhase) {
+        aborting = true;
+        // this appears to be: ensure discovery can't finish which might trigger the propagator
+        // _discoveryPhase is fully cleaned up in finalize
+        disconnect(_discoveryPhase, nullptr, this, nullptr);
+    }
+    if (aborting) {
+        qCInfo(lcEngine) << "Aborting sync, stated reason:" << reason;
+        if (!_goingDown) {
+            Q_EMIT syncError(tr("Aborted due to %1").arg(reason));
+        }
+        // I don't think this is correct. As originally implemented the first call to finalize deleted the discovery and propagator.
+        // the problem with this is that the propagator abort requires any already running jobs to finish. deleting the propagator
+        // before the propagator finishes is risky at best!
+        if (!finalizeLater)
+            finalize(false);
+    }
+}
+
 void SyncEngine::slotRootEtagReceived(const QString &e, const QDateTime &time)
 {
     if (_remoteRootEtag.isEmpty()) {
@@ -750,36 +791,6 @@ bool SyncEngine::shouldDiscoverLocally(const QString &path) const
     return false;
 }
 
-void SyncEngine::abort(const QString &reason)
-{
-    bool aborting = false;
-    bool finalizeLater = false;
-    if (_propagator) {
-        aborting = true;
-        // If we're already in the propagation phase, aborting that is sufficient
-        _propagator->abort();
-        // unfortunately we can't run finalize right away though, because it deletes the _propagator which may still be finishing the abort!
-        // the finalize now happens in slotPropagationFinished
-        finalizeLater = true;
-    } else if (_discoveryPhase) {
-        aborting = true;
-        // this appears to be: ensure discovery can't finish which might trigger the propagator
-        // _discoveryPhase is fully cleaned up in finalize
-        disconnect(_discoveryPhase, nullptr, this, nullptr);
-    }
-    if (aborting) {
-        qCInfo(lcEngine) << "Aborting sync, stated reason:" << reason;
-        if (!_goingDown) {
-            Q_EMIT syncError(tr("Aborted due to %1").arg(reason));
-        }
-        // I don't think this is correct. As originally implemented the first call to finalize deleted the discovery and propagator.
-        // the problem with this is that the propagator abort requires any already running jobs to finish. deleting the propagator
-        // before the propagator finishes is risky at best!
-        if (!finalizeLater)
-            finalize(false);
-    }
-}
-
 void SyncEngine::slotSummaryError(const QString &message)
 {
     if (_uniqueErrors.contains(message))
@@ -791,9 +802,8 @@ void SyncEngine::slotSummaryError(const QString &message)
 
 void SyncEngine::slotInsufficientLocalStorage()
 {
-    slotSummaryError(
-        tr("Disk space is low: Downloads that would reduce free space "
-           "below %1 were skipped.")
+    slotSummaryError(tr("Disk space is low: Downloads that would reduce free space "
+                        "below %1 were skipped.")
             .arg(Utility::octetsToString(freeSpaceLimit())));
 }
 
