@@ -966,8 +966,9 @@ void FakeFolder::switchToVfs(OCC::Vfs *vfs)
     QSignalSpy spy(vfs, &OCC::Vfs::started);
     vfs->start(vfsParams);
 
-    // don't use QVERIFY outside of the test slot
-    Q_ASSERT_X(spy.isEmpty() && !spy.wait(), {}, "VFS Setup failed");
+    if (spy.isEmpty() && !spy.wait()) {
+        Q_ASSERT_X(false, {}, "VFS Setup failed");
+    }
 }
 
 FileInfo FakeFolder::currentLocalState()
