@@ -33,12 +33,6 @@ Q_LOGGING_CATEGORY(lcNetworkHttp, "sync.httplogger", QtWarningMsg)
 
 const qint64 PeekSize = 1024 * 1024;
 
-bool isTextBody(const QString &s)
-{
-    static const QRegularExpression regexp(QStringLiteral("^(text/.*?|(application/(xml|.*?json|x-www-form-urlencoded)(;|$)))"));
-    return regexp.match(s).hasMatch();
-}
-
 struct HttpContext
 {
     HttpContext(const QNetworkRequest &request)
@@ -108,7 +102,7 @@ void logHttp(const QByteArray &verb, HttpContext *ctx, QJsonObject &&header, QIO
         if (contentType.isEmpty()) {
             contentType = header.value(QStringLiteral("content-type")).toString();
         }
-        if (isTextBody(contentType)) {
+        if (OCC::HttpLogger::isTextBody(contentType)) {
             if (!device->isOpen()) {
                 // should we close it again?
                 device->open(QIODevice::ReadOnly);
@@ -212,4 +206,9 @@ QByteArray HttpLogger::requestVerb(QNetworkAccessManager::Operation operation, c
     Q_UNREACHABLE();
 }
 
+bool HttpLogger::isTextBody(const QString &s)
+{
+    static const QRegularExpression regexp(QStringLiteral("^(text/.*?|(application/(xml|.*?json|x-www-form-urlencoded)(;|$)))"));
+    return regexp.match(s).hasMatch();
+}
 }
