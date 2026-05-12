@@ -335,6 +335,11 @@ public Q_SLOTS:
     void removeFolderFromGui(Folder *f);
     void forceFolderSync(Folder *f);
 
+    // this was private which then required Application be a friend of FolderMan...
+    // I am not sure why the Application seems to be the "master" minder of account manager signals
+    // but I think this will soon change
+    void slotServerVersionChanged(Account *account);
+
 private Q_SLOTS:
 
     void slotFolderSyncPauseChanged(Folder *, bool paused);
@@ -343,8 +348,6 @@ private Q_SLOTS:
     void slotFolderSyncFinished(const SyncResult &);
 
     void slotRemoveFoldersForAccount(AccountState *accountState);
-
-    void slotServerVersionChanged(Account *account);
 
     // saves folder using an internally created QSettings instance. This is used for "one off" persistence operations
     // that should be synced immediately - eg when the user adds a new folder sync from the gui or as slot to eg persist a property
@@ -509,8 +512,6 @@ private:
     // as far as I can tell these are paused folders, not to be confused with folders whose space is disabled. We add and remove folders to this
     // set when they are paused/resumed but aside from that we don't really do anything with it.
     QSet<Folder *> _disabledFolders;
-
-    friend class OCC::Application;
 
     // the literal is needed to get the tests to build
     inline static const QString IgnoreHiddenFilesKey = QStringLiteral("ignoreHiddenFiles");

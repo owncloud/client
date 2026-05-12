@@ -9,6 +9,10 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow();
 
+    QSize minimumSizeHint() const override;
+
+    void setVisible(bool visible) override;
+
 private:
     // hash of panel id's to panel widgets. the id is encapsulated in the main window's toolbar and menu actions
     // when the window "hears" that an action was triggered, it should just show the widget associated with the
