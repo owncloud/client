@@ -267,11 +267,15 @@ void ownCloudGui::slotShowSettings()
 
 void ownCloudGui::slotShutdown()
 {
+    // with the new mainWindow the geometry is autosaved without this shutdown routine
+    // todo: dc-300 or soon after, get rid of this whole function
+
     // explicitly close windows. This is somewhat of a hack to ensure
     // that saving the geometries happens ASAP during an OS shutdown
 
     // those do delete on close
-    _settingsDialog->close();
+    if (_settingsDialog)
+        _settingsDialog->close();
 }
 
 void ownCloudGui::slotToggleLogBrowser()

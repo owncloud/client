@@ -16,7 +16,7 @@
 #include "ui_settingsdialog.h"
 
 #include "accountmanager.h"
-#include "accountview.h"
+#include "accountsgui/accountview.h"
 #include "activitysettings.h"
 #include "application.h"
 #include "configfile.h"

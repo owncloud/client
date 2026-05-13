@@ -1,6 +1,9 @@
 #include "mainwindow.h"
 
 #include <QApplication>
+#include <QStackedWidget>
+#include <QToolBar>
+#include <QToolButton>
 
 #include "configfile.h"
 #include "theme.h"
@@ -22,8 +25,6 @@ MainWindow::MainWindow()
     setObjectName(QStringLiteral("MainWindow"));
     setWindowTitle(Theme::instance()->appNameGUI());
 
-    setMinimumSize(minimumSizeHint());
-
     // People perceive this as a Window, so also make Ctrl+W work
     addAction(tr("Hide"), Qt::CTRL | Qt::Key_W, this, &MainWindow::hide);
 
@@ -31,6 +32,56 @@ MainWindow::MainWindow()
 #ifdef Q_OS_MAC
     setActivationPolicy(ActivationPolicy::Accessory);
 #endif
+
+    buildWindow();
+}
+
+void MainWindow::buildWindow()
+{
+    // clang is complaining that call to minimumSizeHint bypasses virtual dispatch, but I'm not seeing any problem.
+    // the link to docs for that warning = 404 :D
+    // regardless, the evaluation is misleading as according to c++ standard, calling a virtual function in a ctr is guaranteed to
+    // call the override for the class being constructed. There is no problem here.
+    // this is part of the reason we have tidy turned off - it's a bit too touchy.
+    // question is, why is tidy butting in if we have it turned off? Figure this out later.
+    setMinimumSize(minimumSizeHint());
+
+    _toolbar = new QToolBar(this);
+    _toolbar->setObjectName("mainWindowToolbar");
+    _toolbar->setMovable(false);
+    _toolbar->setAccessibleDescription(tr("Main toolbar for the application"));
+    _toolbar->setAccessibleName(tr("Main toolbar"));
+    addToolBar(_toolbar);
+
+    QWidget *toolbarStretch = new QWidget(this);
+    // who knows, maybe someday we use the toolbar vertically
+    toolbarStretch->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    _toolbar->addWidget(toolbarStretch);
+
+    _toolbar->addSeparator();
+
+    _moreButton = new QToolButton(this);
+    _moreButton->setText("⋯");
+    //  _moreButton->setToolButtonStyle(Qt::ToolButtonTextOnly);
+    _moreButton->setPopupMode(QToolButton::InstantPopup);
+    _toolbar->addWidget(_moreButton);
+
+    _widgetStack = new QStackedWidget(this);
+    setCentralWidget(_widgetStack);
+}
+
+void MainWindow::setMoreMenuActions(const QList<QAction *> &actions)
+{
+    _moreButton->addActions(actions);
+}
+
+void MainWindow::showModalWidget(QWidget *w)
+{
+    // ownCloudGui::raise();
+    if (_widgetStack->indexOf(w) == -1) {
+        _widgetStack->addWidget(w);
+        _widgetStack->setCurrentWidget(w);
+    }
 }
 
 QSize MainWindow::minimumSizeHint() const

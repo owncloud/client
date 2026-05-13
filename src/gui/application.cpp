@@ -94,7 +94,7 @@ Application::Application(Platform *platform, const QString &displayLanguage, boo
 
 #ifdef USE_NEW_MAIN_WINDOW
     _mainWin = new MainWindow();
-    _mainController = new MainWindowController(this);
+    _mainController = new MainWindowController(_mainWin, this);
 #endif
 
     connect(AccountManager::instance(), &AccountManager::accountAdded, this, &Application::slotAccountStateAdded);

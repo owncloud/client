@@ -2,6 +2,10 @@
 
 #include <QMainWindow>
 
+class QToolBar;
+class QToolButton;
+class QStackedWidget;
+
 namespace OCC {
 class MainWindow : public QMainWindow
 {
@@ -13,7 +17,18 @@ public:
 
     void setVisible(bool visible) override;
 
+    void setMoreMenuActions(const QList<QAction *> &actions);
+
+    void showModalWidget(QWidget *w);
+
 private:
+    void buildWindow();
+
+    QToolBar *_toolbar = nullptr;
+    QStackedWidget *_widgetStack = nullptr;
+
+    QToolButton *_moreButton = nullptr;
+
     // hash of panel id's to panel widgets. the id is encapsulated in the main window's toolbar and menu actions
     // when the window "hears" that an action was triggered, it should just show the widget associated with the
     // action's id.

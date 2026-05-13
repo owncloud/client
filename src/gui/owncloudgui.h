@@ -23,7 +23,7 @@
 #include <QPointer>
 #include <QSystemTrayIcon>
 
-// #define USE_NEW_MAIN_WINDOW
+#define USE_NEW_MAIN_WINDOW
 
 namespace OCC {
 

@@ -24,6 +24,11 @@ namespace Ui {
     class AccountModalWidget;
 }
 
+// this class is basically a "wrapper" that hosts a widget/panel that we want to run in a modal concept.
+// basically it adds a title to the given widget, and provides buttons (normally ok/cancel) that control the lifetime of
+// the "modality"
+// the class is used in the AccountView with account related stuff
+// it's basically a reproduction of a modal dialog but it's embedded in the account view of the main window.
 class AccountModalWidget : public QWidget
 {
     Q_OBJECT
