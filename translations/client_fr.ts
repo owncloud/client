@@ -3372,7 +3372,7 @@ Veuillez vérifier la disponibilité du serveur, puis relancez l&apos;assistant.
         <translation>%1 %2</translation>
     </message>
     <message>
-        <location filename="../src/libsync/platform_win.cpp" line="111"/>
+        <location filename="../src/libsync/platform_win.cpp" line="116"/>
         <source>Shutting down %1</source>
         <translation>Extinction %1</translation>
     </message>
