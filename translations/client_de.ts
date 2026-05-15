@@ -3373,7 +3373,7 @@ Bitte prüfen Sie die Serververfügbarkeit und führen Sie den Assistenten erneu
         <translation>%1 %2</translation>
     </message>
     <message>
-        <location filename="../src/libsync/platform_win.cpp" line="111"/>
+        <location filename="../src/libsync/platform_win.cpp" line="116"/>
         <source>Shutting down %1</source>
         <translation>Herunterfahren von %1 </translation>
     </message>

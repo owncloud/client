@@ -3370,7 +3370,7 @@ Please check the server&apos;s availability then run the wizard again.</source>
         <translation>%1 %2</translation>
     </message>
     <message>
-        <location filename="../src/libsync/platform_win.cpp" line="111"/>
+        <location filename="../src/libsync/platform_win.cpp" line="116"/>
         <source>Shutting down %1</source>
         <translation>Spegnimento di %1</translation>
     </message>

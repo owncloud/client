@@ -3373,7 +3373,7 @@ Verifique a disponibilidade do servidor e execute o assistente novamente.</trans
         <translation>%1 %2</translation>
     </message>
     <message>
-        <location filename="../src/libsync/platform_win.cpp" line="111"/>
+        <location filename="../src/libsync/platform_win.cpp" line="116"/>
         <source>Shutting down %1</source>
         <translation>Desligando %1</translation>
     </message>
