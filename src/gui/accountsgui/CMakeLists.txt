@@ -3,7 +3,5 @@ target_sources(owncloudGui PRIVATE
   accountsguicontroller.h
   accountview.cpp
   accountview.h
-  modalwrapperwidget.cpp
-  modalwrapperwidget.h 
 )
 

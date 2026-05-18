@@ -3,5 +3,7 @@ target_sources(owncloudGui PRIVATE
     mainwindow.h
     mainwindowcontroller.cpp
     mainwindowcontroller.h
+    modalwrapperwidget.cpp
+    modalwrapperwidget.h 
 )
 
