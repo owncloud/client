@@ -13,7 +13,7 @@
  */
 #include "requestauthenticationcontroller.h"
 
-#include "accountview.h"
+#include "accountsgui/accountview.h"
 #include "application.h"
 #include "requestauthenticationwidget.h"
 

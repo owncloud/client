@@ -36,6 +36,8 @@ Q_DECLARE_LOGGING_CATEGORY(lcApplication)
 
 class Theme;
 class Folder;
+class MainWindow;
+class MainWindowController;
 
 /**
  * @brief The Application class
@@ -51,6 +53,9 @@ public:
     bool debugMode();
 
     ownCloudGui *gui() const;
+
+    // try to get rid of this before the end. currently needed to raise the main window via owncloudgui
+    MainWindow *mainWindow() { return _mainWin; }
 
     QString displayLanguage() const;
 
@@ -76,6 +81,9 @@ private:
     explicit Application(Platform *platform, const QString &displayLanguage, bool debugMode);
 
     QPointer<ownCloudGui> _gui = {};
+
+    MainWindow *_mainWin = nullptr;
+    MainWindowController *_mainController = nullptr;
 
     const bool _debugMode = false;
     QString _displayLanguage;

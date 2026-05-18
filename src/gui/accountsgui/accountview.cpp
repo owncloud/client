@@ -349,6 +349,10 @@ void AccountView::onRequestAccountModalWidget(OCC::AccountModalWidget *widget)
     addModalAccountWidget(widget);
 }
 
+// notes to self: the "modal" stuff is in this direction: the accountView sometimes wants to show something in a manner
+// that users should finish the activity. The accountview shows the gui the user should interact with, but it has to ask the
+// main window layer to block other user activity in the meantime. I think conceptually it's ok but the impl needs to be
+// simplified, especially to get rid of the legacy vs non legacy impls
 void AccountView::addModalAccountWidget(AccountModalWidget *widget)
 {
     if (!_accountState || !_accountState->account()) {

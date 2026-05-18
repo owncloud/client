@@ -437,6 +437,9 @@ int main(int argc, char **argv)
             return -1;
         }
 
+        // I think this could/should just be a local instance that just naturally goes out of scope. this will take some time though,
+        // as it's a singleton :/
+        // good news is that it's mostly used to handle the main window "modal" impls which will likely change or even go away soon-ish
         auto ocApp = Application::createInstance(platform.get(), displayLanguage, options.debugMode);
         ocApp->updateAutoRun(firstRun);
 

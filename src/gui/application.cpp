@@ -24,6 +24,8 @@
 #include "configfile.h"
 #include "folder.h"
 #include "folderman.h"
+#include "mainwindow/mainwindow.h"
+#include "mainwindow/mainwindowcontroller.h"
 #include "settingsdialog.h"
 #include "socketapi/socketapi.h"
 #include "theme.h"
@@ -90,6 +92,11 @@ Application::Application(Platform *platform, const QString &displayLanguage, boo
     // setup that follows, like folder setup
     _gui = new ownCloudGui(this);
 
+#ifdef USE_NEW_MAIN_WINDOW
+    _mainWin = new MainWindow();
+    _mainController = new MainWindowController(_mainWin, this);
+#endif
+
     connect(AccountManager::instance(), &AccountManager::accountAdded, this, &Application::slotAccountStateAdded);
     connect(AccountManager::instance(), &AccountManager::lastAccountRemoved, this, &Application::lastAccountStateRemoved);
     for (const auto &ai : AccountManager::instance()->accounts()) {
@@ -121,6 +128,11 @@ Application::~Application()
     // Make sure all folders are gone, otherwise removing the
     // accounts will remove the associated folders from the settings.
     FolderMan::instance()->unloadAndDeleteAllFolders();
+
+    if (_mainWin) {
+        _mainWin->disconnect();
+        delete _mainWin;
+    }
 }
 
 void Application::lastAccountStateRemoved() const

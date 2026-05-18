@@ -16,7 +16,7 @@
 #include "ui_settingsdialog.h"
 
 #include "accountmanager.h"
-#include "accountview.h"
+#include "accountsgui/accountview.h"
 #include "activitysettings.h"
 #include "application.h"
 #include "configfile.h"
@@ -128,6 +128,8 @@ SettingsDialog::SettingsDialog(ownCloudGui *gui, QWidget *parent)
     setActivationPolicy(ActivationPolicy::Accessory);
 #endif
 
+    // todo
+    // I don't see the point here insofar as I can't find any panels that change the app title
     connect(_ui->dialogStack, &QStackedWidget::currentChanged, this, [this] {
         auto *w = _ui->dialogStack->currentWidget();
         if (!w->windowTitle().isEmpty()) {

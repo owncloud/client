@@ -309,6 +309,11 @@ void Credentials::askFromUser()
 
     // the widget is parented to the AccountModalWidget when it's installed in the main window.
     // it will be cleaned up there - this is not a leak
+    // todo dc-300 : this needs to be handled as a "request" to show the gui. The creds are known to the Account
+    // the account view (or accountsguicontroller, more likely) should be able to connect auth request related signals
+    // between the account gui and the creds.
+    // essential to remember though, is that this auth widget is essentially a credentials editor.
+    // put a pin in it
     RequestAuthenticationWidget *widget = new RequestAuthenticationWidget();
     _requestAuth = new RequestAuthenticationController(widget, this);
     // we should not connect to the failed signal as we are forcing the user to make the decision using the gui.
