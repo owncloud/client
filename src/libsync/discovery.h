@@ -253,7 +253,8 @@ private:
     std::deque<ProcessDirectoryJob *> _queuedJobs;
     QVector<ProcessDirectoryJob *> _runningJobs;
 
-    DiscoveryPhase *_discoveryData;
+    // this is passed in from SyncEngine which owns the original pointer.
+    QPointer<DiscoveryPhase> _discoveryData;
 
     PathTuple _currentFolder;
     bool _childModified = false; // the directory contains modified item what would prevent deletion

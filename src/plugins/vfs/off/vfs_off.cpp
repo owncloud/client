@@ -91,6 +91,6 @@ Result<Vfs::ConvertToPlaceholderResult, QString> VfsOff::updateMetadata(const Sy
     return { ConvertToPlaceholderResult::Ok };
 }
 
-void VfsOff::fileStatusChanged(const QString &, SyncFileStatus)
+void VfsOff::onFileStatusChanged(const QString &, SyncFileStatus)
 {
 }

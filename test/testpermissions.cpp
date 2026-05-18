@@ -25,21 +25,21 @@ static void applyPermissionsFromName(FileInfo &info) {
 
 // Check if the expected rows in the DB are non-empty. Note that in some cases they might be, then we cannot use this function
 // https://github.com/owncloud/client/issues/2038
-static void assertCsyncJournalOk(SyncJournalDb &journal)
+static void assertCsyncJournalOk(SyncJournalDb *journal)
 {
     // The DB is openend in locked mode: close to allow us to access.
-    journal.close();
+    journal->close();
 
     SqlDatabase db;
-    QVERIFY(db.openReadOnly(journal.databaseFilePath()));
+    QVERIFY(db.openReadOnly(journal->databaseFilePath()));
     SqlQuery q("SELECT count(*) from metadata where length(fileId) == 0", db);
     QVERIFY(q.exec());
     QVERIFY(q.next().hasData);
     QCOMPARE(q.intValue(0), 0);
 #if defined(Q_OS_WIN) // Make sure the file does not appear in the FileInfo
-    FileSystem::setFileHidden(journal.databaseFilePath() + QStringLiteral("-shm"), true);
+    FileSystem::setFileHidden(journal->databaseFilePath() + QStringLiteral("-shm"), true);
 #endif
-    journal.allowReopen();
+    journal->allowReopen();
 }
 
 SyncFileItemPtr findDiscoveryItem(const SyncFileItemSet &spy, const QString &path)
@@ -101,9 +101,9 @@ private Q_SLOTS:
         // Some of this test depends on the order of discovery. With threading
         // that order becomes effectively random, but we want to make sure to test
         // all cases and thus disable threading.
-        auto syncOpts = fakeFolder.syncEngine().syncOptions();
+        auto syncOpts = fakeFolder.syncEngine()->syncOptions();
         syncOpts._parallelNetworkJobs = 1;
-        fakeFolder.syncEngine().setSyncOptions(syncOpts);
+        fakeFolder.syncEngine()->setSyncOptions(syncOpts);
 
         const auto cannotBeModifiedSize = 133_B;
         const auto canBeModifiedSize = 144_B;
@@ -391,9 +391,9 @@ private Q_SLOTS:
         // Some of this test depends on the order of discovery. With threading
         // that order becomes effectively random, but we want to make sure to test
         // all cases and thus disable threading.
-        auto syncOpts = fakeFolder.syncEngine().syncOptions();
+        auto syncOpts = fakeFolder.syncEngine()->syncOptions();
         syncOpts._parallelNetworkJobs = 1;
-        fakeFolder.syncEngine().setSyncOptions(syncOpts);
+        fakeFolder.syncEngine()->setSyncOptions(syncOpts);
 
         auto &lm = fakeFolder.localModifier();
         auto &rm = fakeFolder.remoteModifier();
@@ -444,7 +444,7 @@ private Q_SLOTS:
 
         // also hook into discovery!!
         SyncFileItemSet discovery;
-        connect(&fakeFolder.syncEngine(), &SyncEngine::aboutToPropagate, this, [&discovery](auto v) { discovery = v; });
+        connect(fakeFolder.syncEngine(), &SyncEngine::aboutToPropagate, this, [&discovery](auto v) { discovery = v; });
         ItemCompletedSpy completeSpy(fakeFolder);
         QVERIFY(!fakeFolder.applyLocalModificationsAndSync());
 
@@ -480,11 +480,11 @@ private Q_SLOTS:
         QVERIFY(itemInstruction(completeSpy, QStringLiteral("zallowed/file"), CSYNC_INSTRUCTION_NEW));
         QVERIFY(itemInstruction(completeSpy, QStringLiteral("zallowed/sub2"), CSYNC_INSTRUCTION_NEW));
         QVERIFY(itemInstruction(completeSpy, QStringLiteral("zallowed/sub2/file"), CSYNC_INSTRUCTION_NEW));
-        QCOMPARE(fakeFolder.syncEngine().isAnotherSyncNeeded(), true);
+        QCOMPARE(fakeFolder.syncEngine()->isAnotherSyncNeeded(), true);
 
         // A follow-up sync will restore allowed/file and allowed/sub2 and maintain the nocreatedir/file errors
         completeSpy.clear();
-        QCOMPARE(fakeFolder.syncJournal().wipeErrorBlacklist(), 4);
+        QCOMPARE(fakeFolder.syncJournal()->wipeErrorBlacklist(), 4);
         QVERIFY(!fakeFolder.applyLocalModificationsAndSync());
 
         QVERIFY(itemInstruction(completeSpy, QStringLiteral("nocreatefile/file"), CSYNC_INSTRUCTION_ERROR));
@@ -518,9 +518,9 @@ private Q_SLOTS:
         // Some of this test depends on the order of discovery. With threading
         // that order becomes effectively random, but we want to make sure to test
         // all cases and thus disable threading.
-        auto syncOpts = fakeFolder.syncEngine().syncOptions();
+        auto syncOpts = fakeFolder.syncEngine()->syncOptions();
         syncOpts._parallelNetworkJobs = 1;
-        fakeFolder.syncEngine().setSyncOptions(syncOpts);
+        fakeFolder.syncEngine()->setSyncOptions(syncOpts);
 
         auto &lm = fakeFolder.localModifier();
         auto &rm = fakeFolder.remoteModifier();

@@ -50,42 +50,44 @@ class ProcessDirectoryJob;
 class OWNCLOUDSYNC_EXPORT SyncEngine : public QObject
 {
     Q_OBJECT
+
 public:
-    SyncEngine(Account *account, const QUrl &baseUrl, const QString &localPath, const QString &remotePath, SyncJournalDb *journal);
+    SyncEngine(Account *account, const QUrl &baseUrl, const QString &localPath, const QString &remotePath, SyncJournalDb *journal, QObject *parent);
     ~SyncEngine() override;
 
     Q_INVOKABLE void startSync();
 
-    /* Abort the sync. Called from the main thread */
+    /* Abort the sync. Called from the main thread via the folder list pause sync action, but could also come from folder delete or shutdown */
     void abort(const QString &reason);
 
     bool isSyncRunning() const { return _syncRunning; }
 
-    const SyncOptions &syncOptions() const
-    {
-        Q_ASSERT(_syncOptions);
-        return *_syncOptions;
-    }
+    const SyncOptions &syncOptions() const { return _syncOptions; }
     void setSyncOptions(const SyncOptions &options)
     {
+        Q_ASSERT(options.isValid());
         _syncOptions = options;
     }
     bool ignoreHiddenFiles() const { return _ignore_hidden_files; }
     void setIgnoreHiddenFiles(bool ignore) { _ignore_hidden_files = ignore; }
 
+    void setMoveToTrash(bool trashIt) { _moveToTrash = trashIt; }
+    bool moveToTrash() const { return _moveToTrash; }
+
+    // file path must be absolute!
     bool isExcluded(QStringView filePath) const;
     void addManualExclude(const QString &filePath);
-    void addExcludeList(const QString &filePath);
     bool loadDefaultExcludes();
     bool reloadExcludes();
     void clearManualExcludes();
 
-    SyncFileStatusTracker &syncFileStatusTracker() { return *_syncFileStatusTracker; }
+    SyncFileStatus fileStatus(const QString &relativePath);
+    void pathTouched(const QString &fileName);
+
 
     /* Returns whether another sync is needed to complete the sync */
     bool isAnotherSyncNeeded() { return _anotherSyncNeeded; }
 
-    SyncJournalDb *journal() const { return _journal; }
     QString localPath() const { return _localPath; }
 
     /** Duration in ms that uploads should be delayed after a file change
@@ -125,12 +127,13 @@ public:
     /** Access the last sync run's local discovery style */
     LocalDiscoveryStyle lastLocalDiscoveryStyle() const { return _lastLocalDiscoveryStyle; }
 
-    auto getPropagator() { return _propagator; } // for the test
-
 
 Q_SIGNALS:
+
+    void fileStatusChanged(const QString &systemFileName, SyncFileStatus fileStatus);
+
     // During update, before reconcile
-    void rootEtag(const QString &, const QDateTime &);
+    void rootEtagDiscovered(const QString &, const QDateTime &);
 
     // after the above signals. with the items that actually need propagating
     void aboutToPropagate(const SyncFileItemSet &items);
@@ -196,30 +199,46 @@ private:
     // Removes stale and adds missing conflict records after sync
     void conflictRecordMaintenance();
 
+    // do a preflight check to be sure we can really sync
+    bool preSyncChecks();
+    // start discovery
+    void startDiscovery();
+    // start propagation
+    void startPropagation();
+
     // cleanup and Q_EMIT the finished signal
     void finalize(bool success);
 
     // Must only be acessed during update and reconcile
     SyncFileItemSet _syncItems;
 
+    // the ever present account pointer primarily used for running jobs
     QPointer<Account> _account;
+
     const QUrl _baseUrl;
+
     bool _needsUpdate;
     bool _syncRunning;
     QString _localPath;
     QString _remotePath;
     QString _remoteRootEtag;
-    SyncJournalDb *_journal;
-    std::unique_ptr<DiscoveryPhase> _discoveryPhase;
-    QSharedPointer<OwncloudPropagator> _propagator;
+
+    // this is owned by the folder
+    QPointer<SyncJournalDb> _journal;
+
+    // both of these are parented/owned by the engine but are "rebuilt" on every sync
+    // todo: investigate to determine whether we can improve this pointer handling but simply clearing/resetting the
+    // states between runs (similar to ProgressInfo::reset, which contrary to the naming, is not related to smartpointers)
+    QPointer<DiscoveryPhase> _discoveryPhase;
+    QPointer<OwncloudPropagator> _propagator;
+
+    // these pointers are all parented/owned by the engine
+    ProgressInfo *_progressInfo = nullptr;
+    ExcludedFiles *_excludedFiles = nullptr;
+    SyncFileStatusTracker *_syncFileStatusTracker = nullptr;
 
     // List of all files with conflicts
     QSet<QString> _seenConflictFiles;
-
-    QScopedPointer<ProgressInfo> _progressInfo;
-
-    std::unique_ptr<class ExcludedFiles> _excludedFiles;
-    QScopedPointer<SyncFileStatusTracker> _syncFileStatusTracker;
     Utility::ChronoElapsedTimer _duration;
 
     /**
@@ -229,8 +248,10 @@ private:
 
     // If ignored files should be ignored
     bool _ignore_hidden_files = false;
+    // should deleted files be moved to trash
+    bool _moveToTrash = false;
 
-    std::optional<SyncOptions> _syncOptions;
+    SyncOptions _syncOptions;
 
     bool _anotherSyncNeeded = false;
 
@@ -250,3 +271,10 @@ private:
     bool _goingDown = false;
 };
 }
+
+static const int syncFileItemTypeId = qRegisterMetaType<OCC::SyncFileItem>("SyncFileItem");
+static const int syncFileItemPtrTypeId = qRegisterMetaType<OCC::SyncFileItemPtr>("SyncFileItemPtr");
+static const int syncFileItemStatusTypeId = qRegisterMetaType<OCC::SyncFileItem::Status>("SyncFileItem::Status");
+static const int syncFileStatusTypeId = qRegisterMetaType<OCC::SyncFileStatus>("SyncFileStatus");
+static const int syncFileItemSetTypeId = qRegisterMetaType<OCC::SyncFileItemSet>("SyncFileItemSet");
+static const int syncFileItemDirectionTypeId = qRegisterMetaType<OCC::SyncFileItem::Direction>("SyncFileItem::Direction");

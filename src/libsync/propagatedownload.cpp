@@ -354,13 +354,12 @@ QString GETFileJob::errorString() const
 
 void PropagateDownloadFile::start()
 {
-    if (propagator()->_abortRequested)
+    if (propagator()->_abortRequested || !propagator()->syncOptions().isValid())
         return;
 
     _stopwatch.start();
 
-    auto &syncOptions = propagator()->syncOptions();
-    auto &vfs = syncOptions._vfs;
+    Vfs *vfs = propagator()->syncOptions().vfs();
 
 
     const QString fsPath = propagator()->fullLocalPath(_item->_file);

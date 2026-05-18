@@ -130,7 +130,7 @@ private Q_SLOTS:
         QScopedValueRollback<std::chrono::seconds> setHttpTimeout(AbstractNetworkJob::httpTimeout, errorKind == Timeout ? 1s : 10000s);
 
         ItemCompletedSpy completeSpy(fakeFolder);
-        QSignalSpy errorSpy(&fakeFolder.syncEngine(), &SyncEngine::syncError);
+        QSignalSpy errorSpy(fakeFolder.syncEngine(), &SyncEngine::syncError);
         QCOMPARE(fakeFolder.applyLocalModificationsAndSync(), syncSucceeds);
 
         // The folder B should not have been sync'ed (and in particular not removed)

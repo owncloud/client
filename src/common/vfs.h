@@ -26,7 +26,6 @@
 #include "utility.h"
 
 #include <QObject>
-#include <QPointer>
 #include <QUrl>
 #include <QVersionNumber>
 
@@ -81,10 +80,15 @@ struct OCSYNC_EXPORT VfsSetupParams
         return _baseUrl;
     }
 
+    // sync engine is only used by win vfs impl
     SyncEngine *syncEngine() const;
 
 private:
     QUrl _baseUrl;
+    // this should be a QPointer but when I try to make it so, I get compile errors because std::isConvertible<SyncEngine *, QObject *> fails
+    // no freaking idea but I'll figure it out later
+    // update: nope! due to our "creative" splitting into libs I can't actually include sync engine to make a qpointer to it possible :D
+    // too bad
     SyncEngine *_syncEngine;
 };
 
@@ -141,7 +145,7 @@ public:
     using AvailabilityResult = Result<VfsItemAvailability, AvailabilityError>;
 
 public:
-    explicit Vfs(QObject* parent = nullptr);
+    explicit Vfs(QObject *parent);
     ~Vfs() override;
 
     virtual Mode mode() const = 0;
@@ -239,7 +243,7 @@ public Q_SLOTS:
      * via the vfs plugin. The connection to SyncFileStatusTracker allows both to be based
      * on the same data.
      */
-    virtual void fileStatusChanged(const QString &systemFileName, SyncFileStatus fileStatus) = 0;
+    virtual void onFileStatusChanged(const QString &systemFileName, SyncFileStatus fileStatus) = 0;
 
 Q_SIGNALS:
     /// start complete
@@ -302,7 +306,7 @@ public:
     Vfs::Mode bestAvailableVfsMode() const;
 
     /// Create a VFS instance for the mode, returns nullptr on failure.
-    std::unique_ptr<Vfs> createVfsFromPlugin(Vfs::Mode mode) const;
+    Vfs *createVfsFromPlugin(Vfs::Mode mode, QObject *parent) const;
 
     static const VfsPluginManager &instance();
 

@@ -91,7 +91,7 @@ Q_SIGNALS:
 
     void itemDiscovered(SyncFileItemPtr item);
     void childIgnored(bool b);
-private Q_SLOTS:
+
 private:
     QString _localPath;
     OCC::Vfs* _vfs;
@@ -228,7 +228,7 @@ class DiscoveryPhase : public QObject
 
 public:
     // input
-    DiscoveryPhase(Account *account, const SyncOptions &options, const QUrl &baseUrl, QObject *parent = nullptr)
+    DiscoveryPhase(Account *account, const SyncOptions &options, const QUrl &baseUrl, QObject *parent)
         : QObject(parent)
         , _syncOptions(options)
         , _baseUrl(baseUrl)
