@@ -15,9 +15,7 @@
 
 #pragma once
 
-#include "owncloudpropagator.h"
 #include "syncfileitem.h"
-#include "networkjobs.h"
 #include <QLoggingCategory>
 #include <QNetworkReply>
 

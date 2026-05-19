@@ -52,6 +52,7 @@ private:
     SyncResult _overallStatus;
 };
 
+
 /**
  * @brief The FolderMan class
  * @ingroup gui
@@ -168,13 +169,16 @@ public:
     std::optional<qsizetype> setupFoldersFromConfig();
 
     /**
+     *
+     *  Extremely important refactoring todo: addFolder should not be public!
+     *  It is currently "required" for some tests which is not really cool, as it does not represent a complete/standalone impl.
+     *
      *  core step in any add folder routine. it validates the definition, instantiates vfs, instantiates the folder and validates whether
      *  it had setup errors.
      *
-     *  it is up to the caller to connect the folder, save it to settings, etc.
+     *  it is up to the caller to create the local sync folder (corresponding to the local path in the def) using the new FolderManagementUtils::prepareFolder,
+     *  connect the folder, save it to settings, etc.
      *
-     *  Refactoring todo: this should not be public! it is currently "required" for some tests which is not really cool, as it does not represent
-     *  a complete/standalone impl.
      */
     Folder *addFolder(AccountState *accountState, const FolderDefinition &folderDefinition);
 
@@ -244,6 +248,10 @@ public:
 
     bool ignoreHiddenFiles() const;
     void setIgnoreHiddenFiles(bool ignore);
+
+    bool moveToTrash() const;
+    /// This slot will tell all sync engines to reload the sync options.
+    void updateMoveToTrash(bool trashIt);
 
     /** Simple save and remove all folders on shut down
      *
@@ -328,9 +336,6 @@ public Q_SLOTS:
      */
     void slotSyncOnceFileUnlocks(const QString &path, FileSystem::LockMode mode);
 
-    /// This slot will tell all sync engines to reload the sync options.
-    void slotReloadSyncOptions();
-
     // emits folderRemoved
     void removeFolderFromGui(Folder *f);
     void forceFolderSync(Folder *f);
@@ -358,13 +363,6 @@ private Q_SLOTS:
 
 private:
     explicit FolderMan();
-
-    /**
-     * @brief prepareFolder sets up the folder with mac and windows specific operations
-     * @param folder path
-     * @return true if the folder path exists or can be successfully created
-     */
-    [[nodiscard]] static bool prepareFolder(const QString &folder);
 
     /**
      * Adds a folder "from scratch" as oppossd to from config, which requires less setup than when you create the folder
@@ -468,6 +466,8 @@ private:
     // pair this with _socketApi->slotUnregisterPath(folder);
     void registerFolderWithSocketApi(Folder *folder);
 
+    void scheduleFoldersForAccount(const QUuid &accountId);
+
     // Helper for `checkPathValidity`. It first checks if the folder `path` exists, and if not recusively checks its parent. When a folder
     // is found, it checks for sync root markers. See the documentation of `checkPathValidity` for when a path is valid. If the path
     // is valid, a null-string is returned. When a path is invalid, an error string is returned.
@@ -480,6 +480,7 @@ private:
 
     QString _folderConfigPath;
     bool _ignoreHiddenFiles = true;
+    bool _moveToTrash = false;
 
     /// Folder aliases from the settings that weren't read
     QSet<QString> _additionalBlockedFolderAliases;
@@ -515,7 +516,7 @@ private:
 
     // the literal is needed to get the tests to build
     inline static const QString IgnoreHiddenFilesKey = QStringLiteral("ignoreHiddenFiles");
-    void scheduleFoldersForAccount(const QUuid &accountId);
+    inline static const QString MoveToTrashKey = QStringLiteral("moveToTrash");
 };
 
 } // namespace OCC

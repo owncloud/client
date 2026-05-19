@@ -706,6 +706,7 @@ void OwncloudPropagator::abort()
 {
     if (_abortRequested)
         return;
+    _abortRequested = true;
     if (_rootJob) {
         // Connect to abortFinished  which signals that abort has been asynchronously finished
         connect(_rootJob.data(), &PropagateDirectory::abortFinished, this, &OwncloudPropagator::emitFinished);
@@ -805,18 +806,23 @@ QString OwncloudPropagator::adjustRenamedPath(const QString &original) const
 
 Result<Vfs::ConvertToPlaceholderResult, QString> OwncloudPropagator::updatePlaceholder(const SyncFileItem &item, const QString &fileName, const QString &replacesFile)
 {
+    if (!_syncOptions.isValid()) {
+        QString error = tr("vfs instance is not available.");
+        return error;
+    }
+
     Q_ASSERT([&] {
         if (item._type == ItemTypeVirtualFileDehydration) {
             // when dehydrating the file must not be pinned
             // don't use destination() with suffix placeholder
-            const auto pin = syncOptions()._vfs->pinState(item._file);
+            const auto pin = syncOptions().vfs()->pinState(item._file);
             if (pin && pin.get() == PinState::AlwaysLocal) {
                 return false;
             }
         }
         return true;
     }());
-    return syncOptions()._vfs->updateMetadata(item, fileName, replacesFile);
+    return syncOptions().vfs()->updateMetadata(item, fileName, replacesFile);
 }
 
 Result<Vfs::ConvertToPlaceholderResult, QString> OwncloudPropagator::updateMetadata(const SyncFileItem &item)
@@ -842,6 +848,7 @@ Result<Vfs::ConvertToPlaceholderResult, QString> OwncloudPropagator::updateMetad
 
 PropagatorJob::PropagatorJob(OwncloudPropagator *propagator, const QString &path)
     : QObject(propagator)
+    , _propagator(propagator)
     , _path(path)
     , _jobState(NotYetStarted)
 {
@@ -854,7 +861,8 @@ void PropagatorJob::setState(JobState state)
 
 OwncloudPropagator *PropagatorJob::propagator() const
 {
-    return qobject_cast<OwncloudPropagator *>(parent());
+    // not a fan but...
+    return _propagator;
 }
 
 // ================================================================================

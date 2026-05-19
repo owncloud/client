@@ -174,6 +174,7 @@ private Q_SLOTS:
         QDir dir2(dir.path());
 
         // Folder in config and on disk:
+        // todo: where is this added "to the config" and what is the "config" we are even talking about here?
         QVERIFY(dir2.mkpath(QStringLiteral("sub/ownCloud1/folder/f")));
         // Folders only on disk, not in configuration:
         QVERIFY(dir2.mkpath(QStringLiteral("ownCloud")));
@@ -186,12 +187,23 @@ private Q_SLOTS:
         auto newAccountState = createDummyAccount();
 
         FolderMan *folderman = TestUtils::folderMan();
-        // Add folder that is in the configuration, AND on disk:
+
+        // todo: addFolder needs to be made private to FolderMan because there are other important impls "around" it depending on how the folder
+        // is being created.
+        // The only reason it's not currently private is because it's used in the tests, which is dubious.
+        // AT THE VERY LEAST, the folder needs to exist on disk *before* calling addFolder and with new refactoring, addFolder will fail if that is not the case
+        // historically, calling addFolder without an existing local dir resulted in a hideously broken Folder instance that is just waiting to crash ;)
+        QVERIFY(dir2.mkpath(QStringLiteral("sub/ownCloud/")));
         QVERIFY(folderman->addFolder(
             newAccountState.get(), TestUtils::createDummyFolderDefinition(newAccountState->account(), dirPath + QStringLiteral("/sub/ownCloud/"))));
-        // Add folder that is in the configuration, not on disk:
+
+        QVERIFY(dir2.mkpath(QStringLiteral("ownCloud (2)/")));
         QVERIFY(folderman->addFolder(
             newAccountState.get(), TestUtils::createDummyFolderDefinition(newAccountState->account(), dirPath + QStringLiteral("/ownCloud (2)/"))));
+
+        // Test todo: verify that addFolder with path that has no existing local folder fails, and do some findGoodPathForNewSyncFolder tests around
+        // that too? With new updates, the folder will not be created, hence will not exist in the FolderMan folder container(s) which does change
+        // the results of the function under test, afaik
 
         // TEST
         const auto folderType = FolderMan::NewFolderType::SpacesFolder;
@@ -210,6 +222,7 @@ private Q_SLOTS:
 
         // REMOVE ownCloud2 from the filesystem, but keep a folder sync'ed to it.
         // We should still not suggest this folder as a new folder.
+        // todo: add a verify here to check if the folder exists in the first place before removing it
         QDir(dirPath + QStringLiteral("/ownCloud (2)/")).removeRecursively();
         QCOMPARE(folderman->findGoodPathForNewSyncFolder(dirPath, QStringLiteral("ownCloud"), folderType, uuid), dirPath + QStringLiteral("/ownCloud (3)"));
         QCOMPARE(folderman->findGoodPathForNewSyncFolder(dirPath, QStringLiteral("ownCloud2"), folderType, uuid),

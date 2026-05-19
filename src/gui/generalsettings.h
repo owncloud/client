@@ -41,7 +41,7 @@ public:
 
 Q_SIGNALS:
     void showAbout();
-    void syncOptionsChanged();
+    void moveToTrashChanged(bool trashIt);
 
 private Q_SLOTS:
     void saveMiscSettings();

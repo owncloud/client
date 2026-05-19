@@ -24,7 +24,7 @@ class VfsWin : public Vfs
     const QScopedPointer<VfsWinPrivate> d_ptr;
 
 public:
-    explicit VfsWin(QObject *parent = nullptr);
+    explicit VfsWin(QObject *parent);
     ~VfsWin();
 
     Mode mode() const override;
@@ -49,7 +49,7 @@ public:
     [[nodiscard]] AvailabilityResult availability(const QString &folderPath) override;
 
 public Q_SLOTS:
-    void fileStatusChanged(const QString &systemFileName, SyncFileStatus status) override;
+    void onFileStatusChanged(const QString &systemFileName, SyncFileStatus status) override;
 
 protected:
     [[nodiscard]] Result<ConvertToPlaceholderResult, QString> updateMetadata(const SyncFileItem &item, const QString &filePath, const QString &replacesFile = {}) override;

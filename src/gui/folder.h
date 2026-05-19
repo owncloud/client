@@ -45,10 +45,12 @@ class SyncRunFileLog;
 class FolderWatcher;
 class LocalDiscoveryTracker;
 
+
 /**
  * @brief The FolderDefinition class
  * @ingroup gui
  */
+
 class OWNCLOUDGUI_EXPORT FolderDefinition
 {
 public:
@@ -83,8 +85,11 @@ public:
     void setVirtualFilesMode(Vfs::Mode mode) { _virtualFilesMode = mode; }
 
     /// Ensure / as separator and trailing /.
+    /// calling set here also ensures the canonical local path is properly created
     void setLocalPath(const QString &path);
     QString localPath() const { return _localPath; }
+
+    QString canonicalPath() const { return _canonicalLocalPath; }
 
 
     /// Remove ending /, then ensure starting '/': so "/foo/bar" and "/".
@@ -141,6 +146,8 @@ private:
     QString _displayName;
     /// path on local machine (always trailing /)
     QString _localPath;
+    /// canonical local path
+    QString _canonicalLocalPath;
     /// path on remote (usually no trailing /, exception "/")
     QString _targetPath;
     bool _deployed = false;
@@ -174,11 +181,10 @@ public:
     };
     Q_ENUM(ChangeReason)
 
-    static void prepareFolder(const QString &path);
 
     /** Create a new Folder
      */
-    Folder(const FolderDefinition &definition, AccountState *accountState, std::unique_ptr<Vfs> &&vfs, bool ignoreHiddenFiles, QObject *parent = nullptr);
+    Folder(const FolderDefinition &definition, AccountState *accountState, SyncJournalDb *journal, Vfs *vfs, SyncEngine *engine, QObject *parent);
 
     ~Folder() override;
     /**
@@ -210,7 +216,7 @@ public:
      */
     QString remotePath() const { return _definition.targetPath(); }
 
-    // Normally this value comes from the space, but may come from the definition when the space is not available
+    // Normally this value comes from the space because it can change on the server side, but may come from the definition when the space is not available
     QString displayName() const;
 
     // Normally this value comes from the space, but may come from the definition when the space is not available
@@ -224,7 +230,7 @@ public:
     /**
      * canonical local folder path, always ends with /
      */
-    QString path() const { return _canonicalLocalPath; }
+    QString path() const { return _definition.canonicalPath(); }
 
     /**
      * cleaned canonical folder path, like path() but never ends with a /
@@ -274,10 +280,7 @@ public:
      */
     bool isReady() const;
 
-    bool hasSetupError() const
-    {
-        return _syncResult.status() == SyncResult::SetupError;
-    }
+    bool hasSetupError() const { return _syncResult.status() == SyncResult::SetupError; }
 
     void prepareToSync() { setSyncState(SyncResult::NotYetStarted); }
 
@@ -300,19 +303,13 @@ public:
 
     void setSyncState(SyncResult::Status state);
 
-    void reloadSyncOptions();
+    void setMoveToTrash(bool trashIt);
 
 
     // TODO: don't expose
-    SyncJournalDb *journalDb()
-    {
-        return &_journal;
-    }
+    SyncJournalDb *journalDb() { return _journal; }
     // TODO: don't expose
-    SyncEngine &syncEngine()
-    {
-        return *_engine;
-    }
+    SyncEngine *syncEngine() { return _engine; }
 
     Vfs &vfs()
     {
@@ -353,8 +350,6 @@ public:
 
     uint32_t sortPriority() const { return _definition.priority(); }
 
-    static Result<void, QString> checkPathLength(const QString &path);
-
     /**
      *
      * @return The corresponding space object or null
@@ -373,12 +368,6 @@ Q_SIGNALS:
     void imageChanged(); // probably part of space changed
     void progressUpdate(const ProgressInfo &progress);
 
-
-    /**
-     * Fires for each change inside this folder that wasn't caused
-     * by sync activity.
-     */
-    void watchedFileChangedExternally(const QString &path);
 
 public Q_SLOTS:
     /**
@@ -462,8 +451,6 @@ private Q_SLOTS:
 private:
     void showSyncResultPopup();
 
-    bool checkLocalPath();
-
     SyncOptions loadSyncOptions();
 
     /**
@@ -497,10 +484,8 @@ private:
 
     QPointer<AccountState> _accountState;
     FolderDefinition _definition;
-    QString _canonicalLocalPath; // As returned with QFileInfo:canonicalFilePath.  Always ends with "/"
 
     SyncResult _syncResult;
-    QScopedPointer<SyncEngine> _engine;
     QElapsedTimer _timeSinceLastSyncDone;
     QElapsedTimer _timeSinceLastSyncStart;
     QElapsedTimer _timeSinceLastFullLocalDiscovery;
@@ -514,8 +499,14 @@ private:
     /// Reset when no follow-up is requested.
     int _consecutiveFollowUpSyncs = 0;
 
-    mutable SyncJournalDb _journal;
+    // the journal, vfs and engine are created in the builder, and reparented in the folder ctr. these should NEVER be null if the Folder still exists!
+    SyncJournalDb *_journal = nullptr;
+    SyncEngine *_engine = nullptr;
 
+    // When vfs is not in play, vfs_off is the impl used.
+    Vfs *_vfs = nullptr;
+
+    // ehhh...it's not a qobject so this actually makes sense.
     QScopedPointer<SyncRunFileLog> _fileLog;
 
     QTimer _scheduleSelfTimer;
@@ -536,32 +527,13 @@ private:
     /**
      * Watches this folder's local directory for changes.
      *
-     * Created by registerFolderWatcher(), triggers slotWatchedPathsChanged()
+     * Created in registerFolderWatcher(), triggers slotWatchedPathsChanged()
      */
-    // Refactor todo: I think this should just be a normal pointer since it's not passed around and is truly a child of the
-    // parent Folder instance, so will be destructed along with the folder. Why are we making this so complicated?
-    // Further, I'm not even sure it's safe to use a scoped pointer here since the whole purpose is to auto delete the pointer
-    // when it goes "out of scope" - eg when this parent folder is destructed. If we have some real reason to keep it,
-    // I think at the very least we need to be sure to use the QScopedPointerDeleteLater custom deleter as described in the docs:
-    // QScopedPointer<MyCustomClass, ScopedPointerCustomDeleter> customPointer(new MyCustomClass);
-    QScopedPointer<FolderWatcher> _folderWatcher;
+    FolderWatcher *_folderWatcher = nullptr;
 
     /**
      * Keeps track of locally dirty files so we can skip local discovery sometimes.
      */
-    // Refactoring todo: as above, except we need to add the possibility to pass a parent to this class's ctr to allow auto-cleanup
-    // again: this should NOT be complicated
-    QScopedPointer<LocalDiscoveryTracker> _localDiscoveryTracker;
-
-    /**
-     * The vfs mode instance (created by plugin) to use. Never null. When vfs is not in play, vfs_off is the impl used.
-     */
-    // Refactoring todo: this is shared with the SyncOptions that are passed to the engine. This needs reevaluation and cleanup
-    // to ensure we don't keep it alive outside of usable scope. Would probably be simplest to make it a QPointer for use with the
-    // SyncOptions and rely on normal qt parenting scheme to ensure correct cleanup timing if it's not explicitly deleted.
-    // it is also false that it is never null - it is reset in wipeForRemoval
-    // extra fun is I have no idea what happens to the instance in the SyncOptions - is it still alive relative to the engine?
-    // I don't see any handling of the engine or SyncOptions whatsoever in wipeForRemoval so we'll need to go spelunking.
-    QSharedPointer<Vfs> _vfs;
+    LocalDiscoveryTracker *_localDiscoveryTracker = nullptr;
 };
 }

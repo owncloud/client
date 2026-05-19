@@ -8,8 +8,8 @@
 #include "testutils/syncenginetestutils.h"
 #include "testutils/testutils.h"
 
-#include <syncengine.h>
 #include <localdiscoverytracker.h>
+#include <syncengine.h>
 
 #include <QtTest>
 
@@ -45,9 +45,9 @@ private Q_SLOTS:
 
         FakeFolder fakeFolder(FileInfo::A12_B12_C12_S12(), vfsMode, filesAreDehydrated);
 
-        LocalDiscoveryTracker tracker;
-        connect(&fakeFolder.syncEngine(), &SyncEngine::itemCompleted, &tracker, &LocalDiscoveryTracker::slotItemCompleted);
-        connect(&fakeFolder.syncEngine(), &SyncEngine::finished, &tracker, &LocalDiscoveryTracker::slotSyncFinished);
+        LocalDiscoveryTracker tracker(nullptr);
+        connect(fakeFolder.syncEngine(), &SyncEngine::itemCompleted, &tracker, &LocalDiscoveryTracker::slotItemCompleted);
+        connect(fakeFolder.syncEngine(), &SyncEngine::finished, &tracker, &LocalDiscoveryTracker::slotSyncFinished);
 
         // More subdirectories are useful for testing
         fakeFolder.localModifier().mkdir(QStringLiteral("A/X"));
@@ -71,7 +71,7 @@ private Q_SLOTS:
         fakeFolder.remoteModifier().appendByte(QStringLiteral("C/c1"));
         tracker.addTouchedPath(QStringLiteral("A/X"));
 
-        fakeFolder.syncEngine().setLocalDiscoveryOptions(LocalDiscoveryStyle::DatabaseAndFilesystem, tracker.localDiscoveryPaths());
+        fakeFolder.syncEngine()->setLocalDiscoveryOptions(LocalDiscoveryStyle::DatabaseAndFilesystem, tracker.localDiscoveryPaths());
         tracker.startSyncPartialDiscovery();
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
 
@@ -80,12 +80,12 @@ private Q_SLOTS:
         QVERIFY(!fakeFolder.currentRemoteState().find(QStringLiteral("A/Y/y2")));
         QVERIFY(!fakeFolder.currentRemoteState().find(QStringLiteral("B/b3")));
         QVERIFY(fakeFolder.currentLocalState().find(QStringLiteral("C/c3")));
-        QCOMPARE(fakeFolder.syncEngine().lastLocalDiscoveryStyle(), LocalDiscoveryStyle::DatabaseAndFilesystem);
+        QCOMPARE(fakeFolder.syncEngine()->lastLocalDiscoveryStyle(), LocalDiscoveryStyle::DatabaseAndFilesystem);
         QVERIFY(tracker.localDiscoveryPaths().empty());
 
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
-        QCOMPARE(fakeFolder.syncEngine().lastLocalDiscoveryStyle(), LocalDiscoveryStyle::FilesystemOnly);
+        QCOMPARE(fakeFolder.syncEngine()->lastLocalDiscoveryStyle(), LocalDiscoveryStyle::FilesystemOnly);
         QVERIFY(tracker.localDiscoveryPaths().empty());
     }
 
@@ -95,45 +95,43 @@ private Q_SLOTS:
         QFETCH_GLOBAL(bool, filesAreDehydrated);
 
         FakeFolder fakeFolder(FileInfo::A12_B12_C12_S12(), vfsMode, filesAreDehydrated);
-        auto &engine = fakeFolder.syncEngine();
+        auto engine = fakeFolder.syncEngine();
 
-        QVERIFY(engine.shouldDiscoverLocally(QString()));
-        QVERIFY(engine.shouldDiscoverLocally(QStringLiteral("A")));
-        QVERIFY(engine.shouldDiscoverLocally(QStringLiteral("A/X")));
+        QVERIFY(engine->shouldDiscoverLocally(QString()));
+        QVERIFY(engine->shouldDiscoverLocally(QStringLiteral("A")));
+        QVERIFY(engine->shouldDiscoverLocally(QStringLiteral("A/X")));
 
-        fakeFolder.syncEngine().setLocalDiscoveryOptions(LocalDiscoveryStyle::DatabaseAndFilesystem,
+        fakeFolder.syncEngine()->setLocalDiscoveryOptions(LocalDiscoveryStyle::DatabaseAndFilesystem,
             {QStringLiteral("A/X"), QStringLiteral("A/X space"), QStringLiteral("A/X/beta"), QStringLiteral("foo bar space/touch"), QStringLiteral("foo/"),
                 QStringLiteral("zzz"), QStringLiteral("zzzz")});
 
-        QVERIFY(engine.shouldDiscoverLocally(QString()));
-        QVERIFY(engine.shouldDiscoverLocally(QStringLiteral("A")));
-        QVERIFY(engine.shouldDiscoverLocally(QStringLiteral("A/X")));
-        QVERIFY(!engine.shouldDiscoverLocally(QStringLiteral("B")));
-        QVERIFY(!engine.shouldDiscoverLocally(QStringLiteral("A B")));
-        QVERIFY(!engine.shouldDiscoverLocally(QStringLiteral("B/X")));
-        QVERIFY(engine.shouldDiscoverLocally(QStringLiteral("foo bar space")));
-        QVERIFY(engine.shouldDiscoverLocally(QStringLiteral("foo")));
-        QVERIFY(!engine.shouldDiscoverLocally(QStringLiteral("foo bar")));
-        QVERIFY(!engine.shouldDiscoverLocally(QStringLiteral("foo bar/touch")));
+        QVERIFY(engine->shouldDiscoverLocally(QString()));
+        QVERIFY(engine->shouldDiscoverLocally(QStringLiteral("A")));
+        QVERIFY(engine->shouldDiscoverLocally(QStringLiteral("A/X")));
+        QVERIFY(!engine->shouldDiscoverLocally(QStringLiteral("B")));
+        QVERIFY(!engine->shouldDiscoverLocally(QStringLiteral("A B")));
+        QVERIFY(!engine->shouldDiscoverLocally(QStringLiteral("B/X")));
+        QVERIFY(engine->shouldDiscoverLocally(QStringLiteral("foo bar space")));
+        QVERIFY(engine->shouldDiscoverLocally(QStringLiteral("foo")));
+        QVERIFY(!engine->shouldDiscoverLocally(QStringLiteral("foo bar")));
+        QVERIFY(!engine->shouldDiscoverLocally(QStringLiteral("foo bar/touch")));
         // These are within QStringLiteral("A/X") so they should be discovered
-        QVERIFY(engine.shouldDiscoverLocally(QStringLiteral("A/X/alpha")));
-        QVERIFY(engine.shouldDiscoverLocally(QStringLiteral("A/X beta")));
-        QVERIFY(engine.shouldDiscoverLocally(QStringLiteral("A/X/Y")));
-        QVERIFY(engine.shouldDiscoverLocally(QStringLiteral("A/X space")));
-        QVERIFY(engine.shouldDiscoverLocally(QStringLiteral("A/X space/alpha")));
-        QVERIFY(!engine.shouldDiscoverLocally(QStringLiteral("A/Xylo/foo")));
-        QVERIFY(engine.shouldDiscoverLocally(QStringLiteral("zzzz/hello")));
-        QVERIFY(!engine.shouldDiscoverLocally(QStringLiteral("zzza/hello")));
+        QVERIFY(engine->shouldDiscoverLocally(QStringLiteral("A/X/alpha")));
+        QVERIFY(engine->shouldDiscoverLocally(QStringLiteral("A/X beta")));
+        QVERIFY(engine->shouldDiscoverLocally(QStringLiteral("A/X/Y")));
+        QVERIFY(engine->shouldDiscoverLocally(QStringLiteral("A/X space")));
+        QVERIFY(engine->shouldDiscoverLocally(QStringLiteral("A/X space/alpha")));
+        QVERIFY(!engine->shouldDiscoverLocally(QStringLiteral("A/Xylo/foo")));
+        QVERIFY(engine->shouldDiscoverLocally(QStringLiteral("zzzz/hello")));
+        QVERIFY(!engine->shouldDiscoverLocally(QStringLiteral("zzza/hello")));
 
         QEXPECT_FAIL("", "There is a possibility of false positives if the set contains a path "
             "which is a prefix, and that prefix is followed by a character less than '/'", Continue);
-        QVERIFY(!engine.shouldDiscoverLocally(QStringLiteral("A/X o")));
+        QVERIFY(!engine->shouldDiscoverLocally(QStringLiteral("A/X o")));
 
-        fakeFolder.syncEngine().setLocalDiscoveryOptions(
-            LocalDiscoveryStyle::DatabaseAndFilesystem,
-            {});
+        fakeFolder.syncEngine()->setLocalDiscoveryOptions(LocalDiscoveryStyle::DatabaseAndFilesystem, {});
 
-        QVERIFY(!engine.shouldDiscoverLocally(QString()));
+        QVERIFY(!engine->shouldDiscoverLocally(QString()));
     }
 
     // Check whether item success and item failure adjusts the
@@ -145,9 +143,9 @@ private Q_SLOTS:
 
         FakeFolder fakeFolder(FileInfo::A12_B12_C12_S12(), vfsMode, filesAreDehydrated);
 
-        LocalDiscoveryTracker tracker;
-        connect(&fakeFolder.syncEngine(), &SyncEngine::itemCompleted, &tracker, &LocalDiscoveryTracker::slotItemCompleted);
-        connect(&fakeFolder.syncEngine(), &SyncEngine::finished, &tracker, &LocalDiscoveryTracker::slotSyncFinished);
+        LocalDiscoveryTracker tracker(nullptr);
+        connect(fakeFolder.syncEngine(), &SyncEngine::itemCompleted, &tracker, &LocalDiscoveryTracker::slotItemCompleted);
+        connect(fakeFolder.syncEngine(), &SyncEngine::finished, &tracker, &LocalDiscoveryTracker::slotSyncFinished);
         auto trackerContains = [&](const char *path) {
             return tracker.localDiscoveryPaths().find(QString::fromLatin1(path)) != tracker.localDiscoveryPaths().end();
         };
@@ -162,7 +160,7 @@ private Q_SLOTS:
         // We're not adding a4 as touched, it's in the same folder as a3 and will be seen.
         // And due to the error it should be added to the explicit list while a3 gets removed.
 
-        fakeFolder.syncEngine().setLocalDiscoveryOptions(LocalDiscoveryStyle::DatabaseAndFilesystem, tracker.localDiscoveryPaths());
+        fakeFolder.syncEngine()->setLocalDiscoveryOptions(LocalDiscoveryStyle::DatabaseAndFilesystem, tracker.localDiscoveryPaths());
         tracker.startSyncPartialDiscovery();
         QVERIFY(!fakeFolder.applyLocalModificationsAndSync());
 
@@ -172,7 +170,7 @@ private Q_SLOTS:
         QVERIFY(trackerContains("A/a4"));
         QVERIFY(trackerContains("A/spurious")); // not removed since overall sync not successful
 
-        fakeFolder.syncEngine().setLocalDiscoveryOptions(LocalDiscoveryStyle::FilesystemOnly);
+        fakeFolder.syncEngine()->setLocalDiscoveryOptions(LocalDiscoveryStyle::FilesystemOnly);
         tracker.startSyncFullDiscovery();
         QVERIFY(!fakeFolder.applyLocalModificationsAndSync());
 
@@ -181,10 +179,10 @@ private Q_SLOTS:
         QVERIFY(!trackerContains("A/spurious")); // removed due to full discovery
 
         fakeFolder.serverErrorPaths().clear();
-        fakeFolder.syncJournal().wipeErrorBlacklist();
+        fakeFolder.syncJournal()->wipeErrorBlacklist();
         tracker.addTouchedPath(QStringLiteral("A/newspurious")); // will be removed due to successful sync
 
-        fakeFolder.syncEngine().setLocalDiscoveryOptions(LocalDiscoveryStyle::DatabaseAndFilesystem, tracker.localDiscoveryPaths());
+        fakeFolder.syncEngine()->setLocalDiscoveryOptions(LocalDiscoveryStyle::DatabaseAndFilesystem, tracker.localDiscoveryPaths());
         tracker.startSyncPartialDiscovery();
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
 
@@ -204,9 +202,7 @@ private Q_SLOTS:
         fakeFolder.localModifier().insert(QStringLiteral("A/newDir/subDir/file"), 10_B);
 
         // Only "A" was modified according to the file system tracker
-        fakeFolder.syncEngine().setLocalDiscoveryOptions(
-            LocalDiscoveryStyle::DatabaseAndFilesystem,
-            { QStringLiteral("A") });
+        fakeFolder.syncEngine()->setLocalDiscoveryOptions(LocalDiscoveryStyle::DatabaseAndFilesystem, {QStringLiteral("A")});
 
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
 
@@ -275,9 +271,9 @@ private Q_SLOTS:
         fakeFolder.remoteModifier().mkdir(QStringLiteral("P/B") + correct);
         fakeFolder.remoteModifier().insert(QStringLiteral("P/B") + correct + QStringLiteral("/b"));
 
-        LocalDiscoveryTracker tracker;
-        connect(&fakeFolder.syncEngine(), &SyncEngine::itemCompleted, &tracker, &LocalDiscoveryTracker::slotItemCompleted);
-        connect(&fakeFolder.syncEngine(), &SyncEngine::finished, &tracker, &LocalDiscoveryTracker::slotSyncFinished);
+        LocalDiscoveryTracker tracker(nullptr);
+        connect(fakeFolder.syncEngine(), &SyncEngine::itemCompleted, &tracker, &LocalDiscoveryTracker::slotItemCompleted);
+        connect(fakeFolder.syncEngine(), &SyncEngine::finished, &tracker, &LocalDiscoveryTracker::slotSyncFinished);
 
         // First sync: discover that there are files/directories on the server that are not yet synced to the local end
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
@@ -294,7 +290,7 @@ private Q_SLOTS:
         qDebug() << "*** MARK"; // Log marker to check if a PUT/DELETE shows up in the second sync
 
         // Force a full local discovery on the next sync, which forces a walk of the (local) file system, reading back names (and file sizes/mtimes/etc.)...
-        fakeFolder.syncEngine().setLocalDiscoveryOptions(LocalDiscoveryStyle::DatabaseAndFilesystem, {QStringLiteral("P")});
+        fakeFolder.syncEngine()->setLocalDiscoveryOptions(LocalDiscoveryStyle::DatabaseAndFilesystem, {QStringLiteral("P")});
         tracker.startSyncFullDiscovery();
 
         // ... and start the second sync:

@@ -54,8 +54,7 @@ namespace FileSystem {
      * List of characters not allowd in filenames on Windows
      */
     constexpr_list auto IllegalFilenameCharsWindows = {
-        QLatin1Char('\\'), QLatin1Char(':'), QLatin1Char('?'), QLatin1Char('*'), QLatin1Char('"'), QLatin1Char('>'), QLatin1Char('<'), QLatin1Char('|')
-    };
+        QLatin1Char('\\'), QLatin1Char(':'), QLatin1Char('?'), QLatin1Char('*'), QLatin1Char('"'), QLatin1Char('>'), QLatin1Char('<'), QLatin1Char('|')};
 
     /**
      * @brief Mark the file as hidden  (only has effects on windows)
@@ -81,11 +80,6 @@ namespace FileSystem {
      */
     void OCSYNC_EXPORT setFileReadOnlyWeak(const QString &filename, bool readonly);
 
-    /**
-     * @brief Try to set permissions so that other users on the local machine can not
-     * go into the folder.
-     */
-    void OCSYNC_EXPORT setFolderMinimumPermissions(const QString &filename);
 
     /*
      * This function takes a path and converts it to a UNC representation of the

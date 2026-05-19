@@ -13,17 +13,18 @@ using namespace OCC;
 
 class StatusPushSpy : public QSignalSpy
 {
-    SyncEngine &_syncEngine;
+    SyncEngine *_syncEngine;
+
 public:
-    StatusPushSpy(SyncEngine &syncEngine)
-        : QSignalSpy(&syncEngine.syncFileStatusTracker(), &SyncFileStatusTracker::fileStatusChanged)
+    StatusPushSpy(SyncEngine *syncEngine)
+        : QSignalSpy(syncEngine, &SyncEngine::fileStatusChanged)
         , _syncEngine(syncEngine)
     {
     }
 
     SyncFileStatus statusOf(const QString &relativePath) const
     {
-        const QFileInfo file(_syncEngine.localPath(), relativePath);
+        const QFileInfo file(_syncEngine->localPath(), relativePath);
         // Start from the end to get the latest status
         for (auto it = crbegin(); it != crend(); ++it) {
             const auto info = QFileInfo(it->at(0).toString());
@@ -35,8 +36,8 @@ public:
     }
 
     bool statusEmittedBefore(const QString &firstPath, const QString &secondPath) const {
-        QFileInfo firstFile(_syncEngine.localPath(), firstPath);
-        QFileInfo secondFile(_syncEngine.localPath(), secondPath);
+        QFileInfo firstFile(_syncEngine->localPath(), firstPath);
+        QFileInfo secondFile(_syncEngine->localPath(), secondPath);
         // Start from the end to get the latest status
         int i = size() - 1;
         for (; i >= 0; --i) {
@@ -69,7 +70,7 @@ class TestSyncFileStatusTracker : public QObject
             QString filePath = it.next().mid(root.size());
             auto pushedStatus = statusSpy.statusOf(filePath);
             if (pushedStatus != SyncFileStatus()) {
-                QCOMPARE(fakeFolder.syncEngine().syncFileStatusTracker().fileStatus(filePath), pushedStatus);
+                QCOMPARE(fakeFolder.syncEngine()->fileStatus(filePath), pushedStatus);
             }
         }
     }
@@ -90,10 +91,10 @@ private Q_SLOTS:
         QCOMPARE(statusSpy.statusOf(QStringLiteral("B/b1")), SyncFileStatus(SyncFileStatus::StatusSync));
         QCOMPARE(statusSpy.statusOf(QStringLiteral("C")), SyncFileStatus(SyncFileStatus::StatusSync));
         QCOMPARE(statusSpy.statusOf(QStringLiteral("C/c1")), SyncFileStatus(SyncFileStatus::StatusSync));
-        QCOMPARE(fakeFolder.syncEngine().syncFileStatusTracker().fileStatus(QStringLiteral("A")), SyncFileStatus(SyncFileStatus::StatusUpToDate));
-        QCOMPARE(fakeFolder.syncEngine().syncFileStatusTracker().fileStatus(QStringLiteral("A/a1")), SyncFileStatus(SyncFileStatus::StatusUpToDate));
-        QCOMPARE(fakeFolder.syncEngine().syncFileStatusTracker().fileStatus(QStringLiteral("B/b2")), SyncFileStatus(SyncFileStatus::StatusUpToDate));
-        QCOMPARE(fakeFolder.syncEngine().syncFileStatusTracker().fileStatus(QStringLiteral("C/c2")), SyncFileStatus(SyncFileStatus::StatusUpToDate));
+        QCOMPARE(fakeFolder.syncEngine()->fileStatus(QStringLiteral("A")), SyncFileStatus(SyncFileStatus::StatusUpToDate));
+        QCOMPARE(fakeFolder.syncEngine()->fileStatus(QStringLiteral("A/a1")), SyncFileStatus(SyncFileStatus::StatusUpToDate));
+        QCOMPARE(fakeFolder.syncEngine()->fileStatus(QStringLiteral("B/b2")), SyncFileStatus(SyncFileStatus::StatusUpToDate));
+        QCOMPARE(fakeFolder.syncEngine()->fileStatus(QStringLiteral("C/c2")), SyncFileStatus(SyncFileStatus::StatusUpToDate));
         statusSpy.clear();
 
         fakeFolder.execUntilFinished();
@@ -122,10 +123,10 @@ private Q_SLOTS:
         QCOMPARE(statusSpy.statusOf(QStringLiteral("B/b0")), SyncFileStatus(SyncFileStatus::StatusSync));
         QCOMPARE(statusSpy.statusOf(QStringLiteral("C")), SyncFileStatus(SyncFileStatus::StatusSync));
         QCOMPARE(statusSpy.statusOf(QStringLiteral("C/c0")), SyncFileStatus(SyncFileStatus::StatusSync));
-        QCOMPARE(fakeFolder.syncEngine().syncFileStatusTracker().fileStatus(QStringLiteral("A")), SyncFileStatus(SyncFileStatus::StatusUpToDate));
-        QCOMPARE(fakeFolder.syncEngine().syncFileStatusTracker().fileStatus(QStringLiteral("A/a1")), SyncFileStatus(SyncFileStatus::StatusUpToDate));
-        QCOMPARE(fakeFolder.syncEngine().syncFileStatusTracker().fileStatus(QStringLiteral("B/b1")), SyncFileStatus(SyncFileStatus::StatusUpToDate));
-        QCOMPARE(fakeFolder.syncEngine().syncFileStatusTracker().fileStatus(QStringLiteral("C/c1")), SyncFileStatus(SyncFileStatus::StatusUpToDate));
+        QCOMPARE(fakeFolder.syncEngine()->fileStatus(QStringLiteral("A")), SyncFileStatus(SyncFileStatus::StatusUpToDate));
+        QCOMPARE(fakeFolder.syncEngine()->fileStatus(QStringLiteral("A/a1")), SyncFileStatus(SyncFileStatus::StatusUpToDate));
+        QCOMPARE(fakeFolder.syncEngine()->fileStatus(QStringLiteral("B/b1")), SyncFileStatus(SyncFileStatus::StatusUpToDate));
+        QCOMPARE(fakeFolder.syncEngine()->fileStatus(QStringLiteral("C/c1")), SyncFileStatus(SyncFileStatus::StatusUpToDate));
         statusSpy.clear();
 
         fakeFolder.execUntilFinished();
@@ -215,9 +216,9 @@ private Q_SLOTS:
         // Discovered as remotely removed, pending for local removal.
         QCOMPARE(statusSpy.statusOf(QStringLiteral("B/b1")), SyncFileStatus(SyncFileStatus::StatusSync));
         QCOMPARE(statusSpy.statusOf(QStringLiteral("C")), SyncFileStatus(SyncFileStatus::StatusSync));
-        QCOMPARE(fakeFolder.syncEngine().syncFileStatusTracker().fileStatus(QStringLiteral("A")), SyncFileStatus(SyncFileStatus::StatusUpToDate));
-        QCOMPARE(fakeFolder.syncEngine().syncFileStatusTracker().fileStatus(QStringLiteral("B/b2")), SyncFileStatus(SyncFileStatus::StatusUpToDate));
-        QCOMPARE(fakeFolder.syncEngine().syncFileStatusTracker().fileStatus(QStringLiteral("C/c2")), SyncFileStatus(SyncFileStatus::StatusUpToDate));
+        QCOMPARE(fakeFolder.syncEngine()->fileStatus(QStringLiteral("A")), SyncFileStatus(SyncFileStatus::StatusUpToDate));
+        QCOMPARE(fakeFolder.syncEngine()->fileStatus(QStringLiteral("B/b2")), SyncFileStatus(SyncFileStatus::StatusUpToDate));
+        QCOMPARE(fakeFolder.syncEngine()->fileStatus(QStringLiteral("C/c2")), SyncFileStatus(SyncFileStatus::StatusUpToDate));
         statusSpy.clear();
 
         fakeFolder.execUntilFinished();
@@ -231,8 +232,8 @@ private Q_SLOTS:
 
     void warningStatusForExcludedFile() {
         FakeFolder fakeFolder{FileInfo::A12_B12_C12_S12()};
-        fakeFolder.syncEngine().addManualExclude(QStringLiteral("A/a1"));
-        fakeFolder.syncEngine().addManualExclude(QStringLiteral("B"));
+        fakeFolder.syncEngine()->addManualExclude(QStringLiteral("A/a1"));
+        fakeFolder.syncEngine()->addManualExclude(QStringLiteral("B"));
         fakeFolder.localModifier().appendByte(QStringLiteral("A/a1"));
         fakeFolder.localModifier().appendByte(QStringLiteral("B/b1"));
         QVERIFY(fakeFolder.applyLocalModificationsWithoutSync());
@@ -254,12 +255,12 @@ private Q_SLOTS:
         QCOMPARE(statusSpy.statusOf(QStringLiteral("B/b1")), SyncFileStatus(SyncFileStatus::StatusExcluded));
         QEXPECT_FAIL("", "csync will stop at ignored directories without traversing children, so we don't currently push the status for newly ignored children of an ignored directory.", Continue);
         QCOMPARE(statusSpy.statusOf(QStringLiteral("B/b2")), SyncFileStatus(SyncFileStatus::StatusExcluded));
-        QCOMPARE(fakeFolder.syncEngine().syncFileStatusTracker().fileStatus(QString()), SyncFileStatus(SyncFileStatus::StatusUpToDate));
-        QCOMPARE(fakeFolder.syncEngine().syncFileStatusTracker().fileStatus(QStringLiteral("A")), SyncFileStatus(SyncFileStatus::StatusUpToDate));
+        QCOMPARE(fakeFolder.syncEngine()->fileStatus(QString()), SyncFileStatus(SyncFileStatus::StatusUpToDate));
+        QCOMPARE(fakeFolder.syncEngine()->fileStatus(QStringLiteral("A")), SyncFileStatus(SyncFileStatus::StatusUpToDate));
         statusSpy.clear();
 
         // Clears the exclude expr above
-        fakeFolder.syncEngine().clearManualExcludes();
+        fakeFolder.syncEngine()->clearManualExcludes();
         fakeFolder.scheduleSync();
         fakeFolder.execUntilBeforePropagation();
         QCOMPARE(statusSpy.statusOf(QString()), SyncFileStatus(SyncFileStatus::StatusSync));
@@ -282,23 +283,23 @@ private Q_SLOTS:
 
     void warningStatusForExcludedFile_CasePreserving() {
         FakeFolder fakeFolder{FileInfo::A12_B12_C12_S12()};
-        fakeFolder.syncEngine().addManualExclude(QStringLiteral("B"));
+        fakeFolder.syncEngine()->addManualExclude(QStringLiteral("B"));
         fakeFolder.serverErrorPaths().append(QStringLiteral("A/a1"));
         fakeFolder.localModifier().appendByte(QStringLiteral("A/a1"));
         QVERIFY(fakeFolder.applyLocalModificationsWithoutSync());
 
         fakeFolder.syncOnce();
-        QCOMPARE(fakeFolder.syncEngine().syncFileStatusTracker().fileStatus(QString()), SyncFileStatus(SyncFileStatus::StatusWarning));
-        QCOMPARE(fakeFolder.syncEngine().syncFileStatusTracker().fileStatus(QStringLiteral("A")), SyncFileStatus(SyncFileStatus::StatusWarning));
-        QCOMPARE(fakeFolder.syncEngine().syncFileStatusTracker().fileStatus(QStringLiteral("A/a1")), SyncFileStatus(SyncFileStatus::StatusError));
-        QCOMPARE(fakeFolder.syncEngine().syncFileStatusTracker().fileStatus(QStringLiteral("B")), SyncFileStatus(SyncFileStatus::StatusExcluded));
+        QCOMPARE(fakeFolder.syncEngine()->fileStatus(QString()), SyncFileStatus(SyncFileStatus::StatusWarning));
+        QCOMPARE(fakeFolder.syncEngine()->fileStatus(QStringLiteral("A")), SyncFileStatus(SyncFileStatus::StatusWarning));
+        QCOMPARE(fakeFolder.syncEngine()->fileStatus(QStringLiteral("A/a1")), SyncFileStatus(SyncFileStatus::StatusError));
+        QCOMPARE(fakeFolder.syncEngine()->fileStatus(QStringLiteral("B")), SyncFileStatus(SyncFileStatus::StatusExcluded));
 
         // Should still get the status for different casing on macOS and Windows.
-        QCOMPARE(fakeFolder.syncEngine().syncFileStatusTracker().fileStatus(QStringLiteral("a")),
+        QCOMPARE(fakeFolder.syncEngine()->fileStatus(QStringLiteral("a")),
             SyncFileStatus(Utility::fsCasePreservingButCaseInsensitive() ? SyncFileStatus::StatusWarning : SyncFileStatus::StatusNone));
-        QCOMPARE(fakeFolder.syncEngine().syncFileStatusTracker().fileStatus(QStringLiteral("A/A1")),
+        QCOMPARE(fakeFolder.syncEngine()->fileStatus(QStringLiteral("A/A1")),
             SyncFileStatus(Utility::fsCasePreservingButCaseInsensitive() ? SyncFileStatus::StatusError : SyncFileStatus::StatusNone));
-        QCOMPARE(fakeFolder.syncEngine().syncFileStatusTracker().fileStatus(QStringLiteral("b")),
+        QCOMPARE(fakeFolder.syncEngine()->fileStatus(QStringLiteral("b")),
             SyncFileStatus(Utility::fsCasePreservingButCaseInsensitive() ? SyncFileStatus::StatusExcluded : SyncFileStatus::StatusNone));
     }
 
@@ -326,7 +327,7 @@ private Q_SLOTS:
         QCOMPARE(statusSpy.statusOf(QString()), SyncFileStatus(SyncFileStatus::StatusWarning));
         QCOMPARE(statusSpy.statusOf(QStringLiteral("A")), SyncFileStatus(SyncFileStatus::StatusWarning));
         QCOMPARE(statusSpy.statusOf(QStringLiteral("A/a1")), SyncFileStatus(SyncFileStatus::StatusError));
-        QCOMPARE(fakeFolder.syncEngine().syncFileStatusTracker().fileStatus(QStringLiteral("A/a2")), SyncFileStatus(SyncFileStatus::StatusUpToDate));
+        QCOMPARE(fakeFolder.syncEngine()->fileStatus(QStringLiteral("A/a2")), SyncFileStatus(SyncFileStatus::StatusUpToDate));
         QCOMPARE(statusSpy.statusOf(QStringLiteral("B")), SyncFileStatus(SyncFileStatus::StatusWarning));
         QCOMPARE(statusSpy.statusOf(QStringLiteral("B/b0")), SyncFileStatus(SyncFileStatus::StatusError));
         statusSpy.clear();
@@ -348,7 +349,7 @@ private Q_SLOTS:
         QCOMPARE(statusSpy.statusOf(QString()), SyncFileStatus(SyncFileStatus::StatusWarning));
         QCOMPARE(statusSpy.statusOf(QStringLiteral("A")), SyncFileStatus(SyncFileStatus::StatusWarning));
         QCOMPARE(statusSpy.statusOf(QStringLiteral("A/a1")), SyncFileStatus(SyncFileStatus::StatusError));
-        QCOMPARE(fakeFolder.syncEngine().syncFileStatusTracker().fileStatus(QStringLiteral("A/a2")), SyncFileStatus(SyncFileStatus::StatusUpToDate));
+        QCOMPARE(fakeFolder.syncEngine()->fileStatus(QStringLiteral("A/a2")), SyncFileStatus(SyncFileStatus::StatusUpToDate));
         QCOMPARE(statusSpy.statusOf(QStringLiteral("B")), SyncFileStatus(SyncFileStatus::StatusWarning));
         QCOMPARE(statusSpy.statusOf(QStringLiteral("B/b0")), SyncFileStatus(SyncFileStatus::StatusError));
         statusSpy.clear();
@@ -374,7 +375,7 @@ private Q_SLOTS:
         QCOMPARE(statusSpy.statusOf(QString()), SyncFileStatus(SyncFileStatus::StatusWarning));
         QCOMPARE(statusSpy.statusOf(QStringLiteral("A")), SyncFileStatus(SyncFileStatus::StatusWarning));
         QCOMPARE(statusSpy.statusOf(QStringLiteral("A/a1")), SyncFileStatus(SyncFileStatus::StatusError));
-        QCOMPARE(fakeFolder.syncEngine().syncFileStatusTracker().fileStatus(QStringLiteral("A/a2")), SyncFileStatus(SyncFileStatus::StatusUpToDate));
+        QCOMPARE(fakeFolder.syncEngine()->fileStatus(QStringLiteral("A/a2")), SyncFileStatus(SyncFileStatus::StatusUpToDate));
         QCOMPARE(statusSpy.statusOf(QStringLiteral("B")), SyncFileStatus(SyncFileStatus::StatusWarning));
         QCOMPARE(statusSpy.statusOf(QStringLiteral("B/b0")), SyncFileStatus(SyncFileStatus::StatusError));
         QCOMPARE(statusSpy.statusOf(QStringLiteral("C")), SyncFileStatus(SyncFileStatus::StatusUpToDate));
@@ -382,8 +383,8 @@ private Q_SLOTS:
         statusSpy.clear();
 
         // Another sync after clearing the blacklist entry, everything should return to order.
-        fakeFolder.syncEngine().journal()->wipeErrorBlacklistEntry(QStringLiteral("A/a1"));
-        fakeFolder.syncEngine().journal()->wipeErrorBlacklistEntry(QStringLiteral("B/b0"));
+        fakeFolder.syncJournal()->wipeErrorBlacklistEntry(QStringLiteral("A/a1"));
+        fakeFolder.syncJournal()->wipeErrorBlacklistEntry(QStringLiteral("B/b0"));
         fakeFolder.scheduleSync();
         fakeFolder.execUntilBeforePropagation();
         verifyThatPushMatchesPull(fakeFolder, statusSpy);
@@ -418,18 +419,18 @@ private Q_SLOTS:
         fakeFolder.scheduleSync();
         fakeFolder.execUntilBeforePropagation();
         // The SyncFileStatusTraker won't push any status for all of them, test with a pull.
-        QCOMPARE(fakeFolder.syncEngine().syncFileStatusTracker().fileStatus(QString()), SyncFileStatus(SyncFileStatus::StatusSync));
-        QCOMPARE(fakeFolder.syncEngine().syncFileStatusTracker().fileStatus(QStringLiteral("A")), SyncFileStatus(SyncFileStatus::StatusSync));
-        QCOMPARE(fakeFolder.syncEngine().syncFileStatusTracker().fileStatus(QStringLiteral("A/a1")), SyncFileStatus(SyncFileStatus::StatusSync));
-        QCOMPARE(fakeFolder.syncEngine().syncFileStatusTracker().fileStatus(QStringLiteral("A/a")), SyncFileStatus(SyncFileStatus::StatusUpToDate));
+        QCOMPARE(fakeFolder.syncEngine()->fileStatus(QString()), SyncFileStatus(SyncFileStatus::StatusSync));
+        QCOMPARE(fakeFolder.syncEngine()->fileStatus(QStringLiteral("A")), SyncFileStatus(SyncFileStatus::StatusSync));
+        QCOMPARE(fakeFolder.syncEngine()->fileStatus(QStringLiteral("A/a1")), SyncFileStatus(SyncFileStatus::StatusSync));
+        QCOMPARE(fakeFolder.syncEngine()->fileStatus(QStringLiteral("A/a")), SyncFileStatus(SyncFileStatus::StatusUpToDate));
 
         fakeFolder.execUntilFinished();
         // We use string matching for paths in the implementation,
         // an error should affect only parents and not every path that starts with the problem path.
-        QCOMPARE(fakeFolder.syncEngine().syncFileStatusTracker().fileStatus(QString()), SyncFileStatus(SyncFileStatus::StatusWarning));
-        QCOMPARE(fakeFolder.syncEngine().syncFileStatusTracker().fileStatus(QStringLiteral("A")), SyncFileStatus(SyncFileStatus::StatusWarning));
-        QCOMPARE(fakeFolder.syncEngine().syncFileStatusTracker().fileStatus(QStringLiteral("A/a1")), SyncFileStatus(SyncFileStatus::StatusError));
-        QCOMPARE(fakeFolder.syncEngine().syncFileStatusTracker().fileStatus(QStringLiteral("A/a")), SyncFileStatus(SyncFileStatus::StatusUpToDate));
+        QCOMPARE(fakeFolder.syncEngine()->fileStatus(QString()), SyncFileStatus(SyncFileStatus::StatusWarning));
+        QCOMPARE(fakeFolder.syncEngine()->fileStatus(QStringLiteral("A")), SyncFileStatus(SyncFileStatus::StatusWarning));
+        QCOMPARE(fakeFolder.syncEngine()->fileStatus(QStringLiteral("A/a1")), SyncFileStatus(SyncFileStatus::StatusError));
+        QCOMPARE(fakeFolder.syncEngine()->fileStatus(QStringLiteral("A/a")), SyncFileStatus(SyncFileStatus::StatusUpToDate));
     }
 
     // Even for status pushes immediately following each other, macOS

@@ -121,7 +121,7 @@ SettingsDialog::SettingsDialog(ownCloudGui *gui, QWidget *parent)
     _generalSettings = new GeneralSettings;
     _ui->stack->addWidget(_generalSettings);
     connect(_generalSettings, &GeneralSettings::showAbout, gui, &ownCloudGui::slotAbout);
-    connect(_generalSettings, &GeneralSettings::syncOptionsChanged, FolderMan::instance(), &FolderMan::slotReloadSyncOptions);
+    connect(_generalSettings, &GeneralSettings::moveToTrashChanged, FolderMan::instance(), &FolderMan::updateMoveToTrash);
 
     ConfigFile().restoreGeometry(this);
 #ifdef Q_OS_MAC

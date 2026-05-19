@@ -141,18 +141,6 @@ void FileSystem::setFileReadOnly(const QString &filename, bool readonly)
     file.setPermissions(permissions);
 }
 
-void FileSystem::setFolderMinimumPermissions(const QString &filename)
-{
-#ifdef Q_OS_MAC
-    QFile::Permissions perm = QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner;
-    QFile file(filename);
-    file.setPermissions(perm);
-#else
-    Q_UNUSED(filename);
-#endif
-}
-
-
 void FileSystem::setFileReadOnlyWeak(const QString &filename, bool readonly)
 {
     QFile file(filename);

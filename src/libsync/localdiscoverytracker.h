@@ -50,7 +50,7 @@ class OWNCLOUDSYNC_EXPORT LocalDiscoveryTracker : public QObject
 {
     Q_OBJECT
 public:
-    LocalDiscoveryTracker();
+    LocalDiscoveryTracker(QObject *parent);
 
     /** Adds a path that must be locally rediscovered later.
      *
