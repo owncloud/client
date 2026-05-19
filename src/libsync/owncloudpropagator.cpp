@@ -807,7 +807,7 @@ QString OwncloudPropagator::adjustRenamedPath(const QString &original) const
 Result<Vfs::ConvertToPlaceholderResult, QString> OwncloudPropagator::updatePlaceholder(const SyncFileItem &item, const QString &fileName, const QString &replacesFile)
 {
     if (!_syncOptions.isValid()) {
-        QString error = "vfs instance is not available.";
+        QString error = tr("vfs instance is not available.");
         return error;
     }
 

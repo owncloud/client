@@ -88,7 +88,7 @@ private:
     // this should be a QPointer but when I try to make it so, I get compile errors because std::isConvertible<SyncEngine *, QObject *> fails
     // no freaking idea but I'll figure it out later
     // update: nope! due to our "creative" splitting into libs I can't actually include sync engine to make a qpointer to it possible :D
-    // too bad
+    // too bad. See comment on include of account.h above - we have the same problem if we try to include SyncEngine
     SyncEngine *_syncEngine;
 };
 

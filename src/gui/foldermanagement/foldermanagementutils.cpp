@@ -103,7 +103,7 @@ QString FolderManagementUtils::validateFolderPath(const QString &path)
         if (!FileSystem::fileExists(path, fi)) {
             error = tr("Local folder %1 does not exist.").arg(path);
         } else if (!fi.isDir()) {
-            error = tr("%1 should be a folder but is not.").arg(path);
+            error = tr("%1 is not a folder.").arg(path);
         } else if (!fi.isReadable()) {
             error = tr("%1 is not readable.").arg(path);
         } else if (!fi.isWritable()) {
