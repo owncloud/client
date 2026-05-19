@@ -1,7 +1,8 @@
 #include "mainwindowcontroller.h"
 
-#include "aboutdialog.h"
+#include "aboutview.h"
 #include "mainwindow.h"
+#include "modalwrapperwidget.h"
 #include "theme.h"
 
 #include <QAction>
@@ -45,9 +46,10 @@ void MainWindowController::buildMenuActions()
 
 void MainWindowController::onAbout()
 {
-    AboutDialog *aboutDialog = new AboutDialog(_window);
-    aboutDialog->setAttribute(Qt::WA_DeleteOnClose);
-    _window->showModalWidget(aboutDialog);
+    AboutView *aboutPanel = new AboutView(_window);
+    ModalWrapperWidget *wrapper = new ModalWrapperWidget(aboutPanel, _window);
+    // aboutDialog->setAttribute(Qt::WA_DeleteOnClose);
+    _window->showModalWidget(wrapper);
 }
 
 void MainWindowController::onQuit()

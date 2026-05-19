@@ -6,6 +6,7 @@
 #include <QToolButton>
 
 #include "configfile.h"
+#include "modalwrapperwidget.h"
 #include "theme.h"
 
 #ifdef Q_OS_MAC
@@ -75,13 +76,27 @@ void MainWindow::setMoreMenuActions(const QList<QAction *> &actions)
     _moreButton->addActions(actions);
 }
 
-void MainWindow::showModalWidget(QWidget *w)
+void MainWindow::showModalWidget(ModalWrapperWidget *w)
 {
     // ownCloudGui::raise();
-    if (_widgetStack->indexOf(w) == -1) {
-        _widgetStack->addWidget(w);
-        _widgetStack->setCurrentWidget(w);
-    }
+    // not sure if we should have an assert here but for real, the incoming modal widget should
+    // never be in the current stack
+    Q_ASSERT(_widgetStack->indexOf(w) == -1);
+
+    connect(w, &ModalWrapperWidget::finished, this, &MainWindow::endModalWidget);
+    _widgetStack->addWidget(w);
+    _widgetStack->setCurrentWidget(w);
+}
+
+void MainWindow::endModalWidget()
+{
+    QWidget *target = qobject_cast<QWidget *>(sender());
+    if (target == nullptr)
+        return;
+
+    if (_widgetStack->indexOf(target) >= 0)
+        _widgetStack->removeWidget(target);
+    target->deleteLater();
 }
 
 QSize MainWindow::minimumSizeHint() const

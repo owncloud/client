@@ -54,6 +54,11 @@ void RequestAuthenticationController::handleLogOut()
 
 void RequestAuthenticationController::startAuthentication(Account *account)
 {
+#ifdef USE_NEW_MAIN_WINDOW
+    handleLogOut();
+    return;
+#endif
+
     Q_ASSERT(account);
     if (_oauth) {
         delete _oauth;

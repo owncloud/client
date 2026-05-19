@@ -7,6 +7,9 @@ class QToolButton;
 class QStackedWidget;
 
 namespace OCC {
+
+class ModalWrapperWidget;
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -19,7 +22,10 @@ public:
 
     void setMoreMenuActions(const QList<QAction *> &actions);
 
-    void showModalWidget(QWidget *w);
+    void showModalWidget(ModalWrapperWidget *w);
+
+private slots:
+    void endModalWidget();
 
 private:
     void buildWindow();
