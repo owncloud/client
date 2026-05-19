@@ -22,7 +22,8 @@ using namespace OCC;
 
 Q_LOGGING_CATEGORY(lcLocalDiscoveryTracker, "sync.localdiscoverytracker", QtInfoMsg)
 
-LocalDiscoveryTracker::LocalDiscoveryTracker()
+LocalDiscoveryTracker::LocalDiscoveryTracker(QObject *parent)
+    : QObject(parent)
 {
 }
 

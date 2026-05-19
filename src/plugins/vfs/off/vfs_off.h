@@ -47,7 +47,7 @@ public:
     AvailabilityResult availability(const QString &) override;
 
 public Q_SLOTS:
-    void fileStatusChanged(const QString &, SyncFileStatus) override;
+    void onFileStatusChanged(const QString &, SyncFileStatus) override;
 
 protected:
     Result<ConvertToPlaceholderResult, QString> updateMetadata(const SyncFileItem &, const QString &, const QString &) override;

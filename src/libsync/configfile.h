@@ -123,10 +123,6 @@ public:
     bool pauseSyncWhenMetered() const;
     void setPauseSyncWhenMetered(bool isChecked);
 
-    /** If we should move the files deleted on the server in the trash  */
-    bool moveToTrash() const;
-    void setMoveToTrash(bool);
-
     /// Used for testing, so we do not change the user's config file.
     static bool setConfDir(const QString &value);
 

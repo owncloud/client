@@ -21,6 +21,9 @@ class FolderWatcherForTests : public OCC::FolderWatcher
 public:
     using OCC::FolderWatcher::FolderWatcher;
 
+    FolderWatcherForTests()
+        : FolderWatcher(nullptr) { };
+
     bool pathIsIgnored(const QString &) const override { return false; }
 };
 
@@ -134,7 +137,7 @@ public:
         TestUtils::writeRandomFile(_rootPath + QStringLiteral("/a2/renamefile"));
         TestUtils::writeRandomFile(_rootPath + QStringLiteral("/a1/movefile"));
 
-        _watcher.reset(new FolderWatcherForTests);
+        _watcher.reset(new FolderWatcherForTests());
         _watcher->init(_rootPath);
         _pathChangedSpy.reset(new QSignalSpy(_watcher.data(), &FolderWatcher::pathChanged));
     }

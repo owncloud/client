@@ -132,12 +132,11 @@ private Q_SLOTS:
         }
 
         QStringList seenLockedFiles;
-        connect(&fakeFolder.syncEngine(), &SyncEngine::seenLockedFile, &fakeFolder.syncEngine(),
-                [&](const QString &file) { seenLockedFiles.append(file); });
+        connect(fakeFolder.syncEngine(), &SyncEngine::seenLockedFile, fakeFolder.syncEngine(), [&](const QString &file) { seenLockedFiles.append(file); });
 
-        LocalDiscoveryTracker tracker;
-        connect(&fakeFolder.syncEngine(), &SyncEngine::itemCompleted, &tracker, &LocalDiscoveryTracker::slotItemCompleted);
-        connect(&fakeFolder.syncEngine(), &SyncEngine::finished, &tracker, &LocalDiscoveryTracker::slotSyncFinished);
+        LocalDiscoveryTracker tracker(nullptr);
+        connect(fakeFolder.syncEngine(), &SyncEngine::itemCompleted, &tracker, &LocalDiscoveryTracker::slotItemCompleted);
+        connect(fakeFolder.syncEngine(), &SyncEngine::finished, &tracker, &LocalDiscoveryTracker::slotSyncFinished);
         auto hasLocalDiscoveryPath = [&](const QString &path) {
             auto &paths = tracker.localDiscoveryPaths();
             return paths.find(path) != paths.end();
@@ -151,7 +150,7 @@ private Q_SLOTS:
         tracker.addTouchedPath(QStringLiteral("A/a1"));
         auto h1 = makeHandle(fakeFolder.localPath() + QStringLiteral("A/a1"), 0);
 
-        fakeFolder.syncEngine().setLocalDiscoveryOptions(LocalDiscoveryStyle::DatabaseAndFilesystem, tracker.localDiscoveryPaths());
+        fakeFolder.syncEngine()->setLocalDiscoveryOptions(LocalDiscoveryStyle::DatabaseAndFilesystem, tracker.localDiscoveryPaths());
         tracker.startSyncPartialDiscovery();
         QVERIFY(!fakeFolder.applyLocalModificationsAndSync());
 
@@ -161,9 +160,9 @@ private Q_SLOTS:
 
         CloseHandle(h1);
 
-        fakeFolder.syncEngine().setLocalDiscoveryOptions(LocalDiscoveryStyle::DatabaseAndFilesystem, tracker.localDiscoveryPaths());
+        fakeFolder.syncEngine()->setLocalDiscoveryOptions(LocalDiscoveryStyle::DatabaseAndFilesystem, tracker.localDiscoveryPaths());
         tracker.startSyncPartialDiscovery();
-        fakeFolder.syncJournal().wipeErrorBlacklist();
+        fakeFolder.syncJournal()->wipeErrorBlacklist();
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
 
@@ -177,7 +176,7 @@ private Q_SLOTS:
         QVERIFY(fakeFolder.applyLocalModificationsWithoutSync());
         auto h2 = makeHandle(fakeFolder.localPath() + QStringLiteral("A/a1"), 0);
 
-        fakeFolder.syncEngine().setLocalDiscoveryOptions(LocalDiscoveryStyle::DatabaseAndFilesystem, tracker.localDiscoveryPaths());
+        fakeFolder.syncEngine()->setLocalDiscoveryOptions(LocalDiscoveryStyle::DatabaseAndFilesystem, tracker.localDiscoveryPaths());
         tracker.startSyncPartialDiscovery();
         QVERIFY(!fakeFolder.applyLocalModificationsAndSync());
 
@@ -186,9 +185,9 @@ private Q_SLOTS:
 
         CloseHandle(h2);
 
-        fakeFolder.syncEngine().setLocalDiscoveryOptions(LocalDiscoveryStyle::DatabaseAndFilesystem, tracker.localDiscoveryPaths());
+        fakeFolder.syncEngine()->setLocalDiscoveryOptions(LocalDiscoveryStyle::DatabaseAndFilesystem, tracker.localDiscoveryPaths());
         tracker.startSyncPartialDiscovery();
-        fakeFolder.syncJournal().wipeErrorBlacklist();
+        fakeFolder.syncJournal()->wipeErrorBlacklist();
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
     }

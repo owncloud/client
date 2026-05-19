@@ -51,7 +51,7 @@ class OWNCLOUDGUI_EXPORT FolderWatcher : public QObject
     Q_OBJECT
 public:
     // Construct, connect signals, call init()
-    explicit FolderWatcher(Folder *folder = nullptr);
+    explicit FolderWatcher(Folder *folder);
     ~FolderWatcher() override;
 
     /**

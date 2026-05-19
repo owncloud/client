@@ -236,7 +236,7 @@ Vfs::Mode OCC::VfsPluginManager::bestAvailableVfsMode() const
     return Vfs::Off;
 }
 
-std::unique_ptr<Vfs> OCC::VfsPluginManager::createVfsFromPlugin(Vfs::Mode mode) const
+Vfs *OCC::VfsPluginManager::createVfsFromPlugin(Vfs::Mode mode, QObject *parent) const
 {
     auto name = Utility::enumToString(mode);
     if (name.isEmpty())
@@ -261,7 +261,7 @@ std::unique_ptr<Vfs> OCC::VfsPluginManager::createVfsFromPlugin(Vfs::Mode mode) 
         return nullptr;
     }
 
-    auto vfs = std::unique_ptr<Vfs>(qobject_cast<Vfs *>(factory->create(nullptr)));
+    Vfs *vfs = qobject_cast<Vfs *>(factory->create(parent));
     if (!vfs) {
         qCCritical(lcPlugin) << "Plugin" << loader.fileName() << "does not create a Vfs instance";
         return nullptr;
