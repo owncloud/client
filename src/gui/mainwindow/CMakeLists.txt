@@ -8,5 +8,8 @@ target_sources(owncloudGui PRIVATE
     aboutview.cpp
     aboutview.h
     aboutview.ui
+    settingsview.cpp
+    settingsview.h
+    settingsview.ui
 )
 

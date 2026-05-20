@@ -18,6 +18,7 @@ public:
 private:
     void buildMenuActions();
 
+    void onSettings();
     void onAbout();
     void onQuit();
 

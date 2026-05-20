@@ -3,6 +3,7 @@
 #include "aboutview.h"
 #include "mainwindow.h"
 #include "modalwrapperwidget.h"
+#include "settingsview.h"
 #include "theme.h"
 
 #include <QAction>
@@ -27,6 +28,11 @@ void MainWindowController::buildMenuActions()
 {
     QList<QAction *> menuActions;
 
+    QAction *settingsAction = new QAction("Settings...", this);
+    settingsAction->setObjectName("settingsAction");
+    connect(settingsAction, &QAction::triggered, this, &MainWindowController::onSettings);
+    menuActions.push_back(settingsAction);
+
     QAction *aboutAction = new QAction(tr("About..."), this);
     aboutAction->setObjectName("aboutAction");
     connect(aboutAction, &QAction::triggered, this, &MainWindowController::onAbout);
@@ -42,6 +48,13 @@ void MainWindowController::buildMenuActions()
     connect(quitAction, &QAction::triggered, this, &MainWindowController::onQuit);
     menuActions.push_back(quitAction);
     _window->setMoreMenuActions(menuActions);
+}
+
+void MainWindowController::onSettings()
+{
+    SettingsView *settings = new SettingsView(_window);
+    ModalWrapperWidget *wrapper = new ModalWrapperWidget(settings, _window);
+    _window->showModalWidget(wrapper);
 }
 
 void MainWindowController::onAbout()
