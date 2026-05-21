@@ -42,10 +42,16 @@ void MainWindow::buildWindow()
     // clang is complaining that call to minimumSizeHint bypasses virtual dispatch, but I'm not seeing any problem.
     // the link to docs for that warning = 404 :D
     // regardless, the evaluation is misleading as according to c++ standard, calling a virtual function in a ctr is guaranteed to
-    // call the override for the class being constructed. There is no problem here.
+    // call the override *for the class being constructed*. That is what we want so there is no problem here.
     // this is part of the reason we have tidy turned off - it's a bit too touchy.
     // question is, why is tidy butting in if we have it turned off? Figure this out later.
     setMinimumSize(minimumSizeHint());
+
+    _accountsToolbar = new QToolBar(this);
+    _accountsToolbar->setMovable(false);
+    _accountsToolbar->setIconSize(QSize(32, 32));
+    _accountsToolbar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    addToolBar(_accountsToolbar);
 
     _toolbar = new QToolBar(this);
     _toolbar->setObjectName("mainWindowToolbar");
@@ -63,7 +69,6 @@ void MainWindow::buildWindow()
 
     _moreButton = new QToolButton(this);
     _moreButton->setText("⋯");
-    //  _moreButton->setToolButtonStyle(Qt::ToolButtonTextOnly);
     _moreButton->setPopupMode(QToolButton::InstantPopup);
     _toolbar->addWidget(_moreButton);
 
@@ -86,6 +91,8 @@ void MainWindow::showModalWidget(ModalWrapperWidget *w)
     connect(w, &ModalWrapperWidget::finished, this, &MainWindow::endModalWidget);
     _widgetStack->addWidget(w);
     _widgetStack->setCurrentWidget(w);
+    _accountsToolbar->setEnabled(false);
+    _toolbar->setEnabled(false);
 }
 
 void MainWindow::endModalWidget()
@@ -97,6 +104,44 @@ void MainWindow::endModalWidget()
     if (_widgetStack->indexOf(target) >= 0)
         _widgetStack->removeWidget(target);
     target->deleteLater();
+    _accountsToolbar->setEnabled(true);
+    _toolbar->setEnabled(true);
+}
+
+void MainWindow::addAccountAction(QAction *action)
+{
+    QWidget *widget = action->data().value<QWidget *>();
+    if (widget) {
+        connect(action, &QAction::triggered, this, &MainWindow::onViewActionTriggered);
+        _accountsToolbar->addAction(action);
+        _widgetStack->addWidget(widget);
+        _widgetStack->setCurrentWidget(widget);
+    }
+}
+
+void MainWindow::removeAccountAction(QAction *action)
+{
+    QWidget *widget = action->data().value<QWidget *>();
+    if (widget) {
+        disconnect(action, nullptr, this, nullptr);
+        _accountsToolbar->removeAction(action);
+        _widgetStack->removeWidget(widget);
+        // something should just happen. Let's see what it is.
+        // _widgetStack->setCurrentWidget(widget);
+    }
+}
+
+void MainWindow::onViewActionTriggered(bool selected)
+{
+    if (!selected)
+        return;
+
+    QAction *sourceAction = qobject_cast<QAction *>(sender());
+    if (sourceAction) {
+        QWidget *widget = sourceAction->data().value<QWidget *>();
+        if (widget)
+            _widgetStack->setCurrentWidget(widget);
+    }
 }
 
 QSize MainWindow::minimumSizeHint() const
@@ -136,12 +181,4 @@ void MainWindow::setVisible(bool visible)
 
     QMainWindow::setVisible(visible);
 }
-// envisioning:
-// the actions for changing the current panel in the main window have a panel id as data
-// so the main window controller just needs to find this id in the panel collection and show it.
-// building the panel, its controller, and "installing" it on the main window with it's id should be up to
-// an application (window) builder so the main window isn't responsible for knowing how many or which panels live in it.
-// this is very powerful when it comes to adding or removing guis depending on....stuff.
-
-
 }

@@ -24,23 +24,20 @@ public:
 
     void showModalWidget(ModalWrapperWidget *w);
 
+    void addAccountAction(QAction *action);
+    void removeAccountAction(QAction *action);
+
 private slots:
     void endModalWidget();
+    void onViewActionTriggered(bool selected);
 
 private:
     void buildWindow();
 
+    QToolBar *_accountsToolbar = nullptr;
     QToolBar *_toolbar = nullptr;
     QStackedWidget *_widgetStack = nullptr;
 
     QToolButton *_moreButton = nullptr;
-
-    // hash of panel id's to panel widgets. the id is encapsulated in the main window's toolbar and menu actions
-    // when the window "hears" that an action was triggered, it should just show the widget associated with the
-    // action's id.
-    // this will need refinement for the elements that currently run in the "modal" impls - maybe those go away
-    // completely, no idea yet. but this is a good start so that the main window isn't controlling any of the activities related
-    // to the panels. they need to control themselves!
-    QHash<int, QWidget *> _panelLookup;
 };
 }

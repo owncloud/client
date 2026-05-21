@@ -3,5 +3,7 @@ target_sources(owncloudGui PRIVATE
   accountsguicontroller.h
   accountview.cpp
   accountview.h
+  accountviewcontroller.cpp
+  accountviewcontroller.h
 )
 

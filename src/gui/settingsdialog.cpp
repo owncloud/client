@@ -288,6 +288,7 @@ void SettingsDialog::setCurrentAccount(Account *account)
     Q_EMIT currentPageChanged();
 }
 
+// this is for qml support
 Account *SettingsDialog::currentAccount() const
 {
     return _currentAccount;

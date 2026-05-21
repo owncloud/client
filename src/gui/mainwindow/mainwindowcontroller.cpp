@@ -1,6 +1,7 @@
 #include "mainwindowcontroller.h"
 
 #include "aboutview.h"
+#include "accountsgui/accountsguicontroller.h"
 #include "mainwindow.h"
 #include "modalwrapperwidget.h"
 #include "settingsview.h"
@@ -22,6 +23,8 @@ MainWindowController::MainWindowController(MainWindow *window, QObject *parent)
 void MainWindowController::setup()
 {
     buildMenuActions();
+
+    AccountsGuiController *accountsController = new AccountsGuiController(_window, this);
 }
 
 void MainWindowController::buildMenuActions()
