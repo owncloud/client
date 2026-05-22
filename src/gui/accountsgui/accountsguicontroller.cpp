@@ -2,13 +2,18 @@
 
 #include <QAction>
 #include <QActionGroup>
+#include <QMessageBox>
 #include <QToolBar>
 
 #include "accountmanager.h"
 #include "accountstate.h"
 #include "accountview.h"
-#include "credentials.h"
+#include "creds/abstractcredentials.h"
+#include "folderman.h"
 #include "mainwindow/mainwindow.h"
+#include "newaccountwizard/newaccountbuilder.h"
+#include "newaccountwizard/newaccountwizard.h"
+#include "newaccountwizard/newaccountwizardcontroller.h"
 
 
 namespace OCC {
@@ -91,6 +96,39 @@ void AccountsGuiController::onAccountAvatarChanged()
     QAction *action = _actionForAccount.value(account->uuid(), nullptr);
     if (action)
         action->setIcon(account->avatar());
+}
+
+void AccountsGuiController::runAccountWizard()
+{
+    NewAccountWizard wizard(_window);
+    NewAccountModel model(nullptr);
+    NewAccountWizardController wizardController(&model, &wizard, nullptr);
+    ownCloudGui::raise();
+    int result = wizard.exec();
+    if (result == QDialog::Accepted) {
+        // the builder needs to be a pointer as it has to wait for the connection state to go to connected
+        // it will delete itself once it has completed its mission.
+        // pass this as parent only as a safeguard.
+        if (!model.isComplete()) {
+            QMessageBox::warning(
+                _window, tr("New account failure"), tr("The information required to create a new account is incomplete. Please run the wizard again."));
+        } else {
+            NewAccountBuilder *builder = new NewAccountBuilder(model, this);
+            FolderMan *folderman = FolderMan::instance();
+            connect(builder, &NewAccountBuilder::requestSetUpSyncFoldersForAccount, folderman, &FolderMan::setUpInitialSyncFolders);
+            connect(builder, &NewAccountBuilder::requestLoadSpacesOnly, folderman, &FolderMan::setUpInitialSpaces);
+            //   connect(builder, &NewAccountBuilder::requestFolderWizard, _settingsDialog, &SettingsDialog::runFolderWizard);
+            connect(builder, &NewAccountBuilder::unableToCompleteAccountCreation, this, &AccountsGuiController::handleAccountSetupError);
+            builder->buildAccount();
+        }
+    } else
+        qDebug() << "wizard rejected";
+}
+
+void AccountsGuiController::handleAccountSetupError(const QString &error)
+{
+    QMessageBox::warning(_window, tr("New account failure"),
+        tr("The account could not be created due to an error:\n%1\nPlease check the server's availability then run the wizard again.").arg(error));
 }
 
 void AccountsGuiController::setCurrentAccount(Account *account)

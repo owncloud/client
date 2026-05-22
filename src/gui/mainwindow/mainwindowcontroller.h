@@ -5,6 +5,7 @@
 namespace OCC {
 
 class MainWindow;
+class AccountsGuiController;
 
 class MainWindowController : public QObject
 {
@@ -18,11 +19,13 @@ public:
 private:
     void buildMenuActions();
 
+    void onAddAccount();
     void onSettings();
     void onAbout();
     void onQuit();
 
     MainWindow *_window = nullptr;
+    AccountsGuiController *_accountsController = nullptr;
 };
 
 }

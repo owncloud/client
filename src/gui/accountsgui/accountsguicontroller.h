@@ -14,7 +14,6 @@ namespace OCC {
 class AccountState;
 class Account;
 class MainWindow;
-// class AccountView;
 
 class AccountsGuiController : public QObject
 {
@@ -22,6 +21,8 @@ class AccountsGuiController : public QObject
 
 public:
     AccountsGuiController(MainWindow *window, QObject *parent);
+    void runAccountWizard();
+
 
 private:
     MainWindow *_window = nullptr;
@@ -32,5 +33,6 @@ private:
     void onAccountRemoved(AccountState *state);
     void setCurrentAccount(Account *account);
     void onAccountAvatarChanged();
+    void handleAccountSetupError(const QString &error);
 };
 }

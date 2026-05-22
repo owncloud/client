@@ -24,14 +24,19 @@ void MainWindowController::setup()
 {
     buildMenuActions();
 
-    AccountsGuiController *accountsController = new AccountsGuiController(_window, this);
+    _accountsController = new AccountsGuiController(_window, this);
 }
 
 void MainWindowController::buildMenuActions()
 {
     QList<QAction *> menuActions;
 
-    QAction *settingsAction = new QAction("Settings...", this);
+    QAction *addAccountAction = new QAction(tr("Add account..."), this);
+    addAccountAction->setObjectName("addAcountAction");
+    connect(addAccountAction, &QAction::triggered, this, &MainWindowController::onAddAccount);
+    menuActions.push_back(addAccountAction);
+
+    QAction *settingsAction = new QAction(tr("Settings..."), this);
     settingsAction->setObjectName("settingsAction");
     connect(settingsAction, &QAction::triggered, this, &MainWindowController::onSettings);
     menuActions.push_back(settingsAction);
@@ -51,6 +56,11 @@ void MainWindowController::buildMenuActions()
     connect(quitAction, &QAction::triggered, this, &MainWindowController::onQuit);
     menuActions.push_back(quitAction);
     _window->setMoreMenuActions(menuActions);
+}
+
+void MainWindowController::onAddAccount()
+{
+    _accountsController->runAccountWizard();
 }
 
 void MainWindowController::onSettings()
