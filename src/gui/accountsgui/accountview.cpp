@@ -364,9 +364,17 @@ void AccountView::addModalAccountWidget(AccountModalWidget *widget)
 
     connect(widget, &AccountModalWidget::finished, this, [widget, this] {
         widget->deleteLater();
+#ifdef USE_NEW_MAIN_WINDOW
+        emit accountEndModal();
+#else
         ocApp()->gui()->settingsDialog()->ceaseModality(_accountState->account());
+#endif
     });
+#ifdef USE_NEW_MAIN_WINDOW
+    emit accountBeginModal();
+#else
     ocApp()->gui()->settingsDialog()->requestModality(_accountState->account());
+#endif
 }
 
 

@@ -58,12 +58,18 @@ public:
     explicit AccountView(AccountState *accountState, QWidget *parent = nullptr);
     ~AccountView() override;
 
-    void addModalAccountWidget(AccountModalWidget *widget);
-
     // this is called by SettingsDialog directly but should be corrected to either respond to signal, or just make
     // it a normal function
     void slotAddFolder();
 
+    void onRequestAccountModalWidget(OCC::AccountModalWidget *widget);
+
+signals:
+    // these are sent when the account view starts and ends a "modal" operation
+    // currently the main window receives these signals to enable/disable the toolbar when the account view
+    // is "modal"
+    void accountEndModal();
+    void accountBeginModal();
 
 protected slots:
     void slotAccountStateChanged(AccountState::State state);
@@ -72,11 +78,11 @@ protected slots:
     void slotToggleSignInState();
     void slotFolderWizardAccepted();
     void onRequestShowModalWidget(QWidget *widget) { addModalLegacyDialog(widget, ModalWidgetSizePolicy::Expanding); }
-    void onRequestAccountModalWidget(OCC::AccountModalWidget *widget);
 
 protected:
     void accountSettingUpChanged(bool settingUp);
     void addModalLegacyDialog(QWidget *widget, ModalWidgetSizePolicy sizePolicy);
+    void addModalAccountWidget(AccountModalWidget *widget);
 
     void showEvent(QShowEvent *ev) override;
 

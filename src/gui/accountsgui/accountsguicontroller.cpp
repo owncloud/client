@@ -7,7 +7,9 @@
 #include "accountmanager.h"
 #include "accountstate.h"
 #include "accountview.h"
+#include "credentials.h"
 #include "mainwindow/mainwindow.h"
+
 
 namespace OCC {
 
@@ -43,9 +45,12 @@ void AccountsGuiController::onAccountAdded(AccountState *state)
 
     Account *account = state->account();
     connect(account, &Account::avatarChanged, this, &AccountsGuiController::onAccountAvatarChanged);
-    // connect(account->credentials(), &Credentials::requestUserSignIn, this, &AccountsGuiController::runSignIn);
 
     auto accountView = new AccountView(state, nullptr);
+    connect(account->credentials(), &AbstractCredentials::requestAccountModal, accountView, &AccountView::onRequestAccountModalWidget);
+    connect(accountView, &AccountView::accountBeginModal, _window, &MainWindow::startModal);
+    connect(accountView, &AccountView::accountEndModal, _window, &MainWindow::stopModal);
+
     QAction *accountAction = new QAction(this);
     _actionForAccount.insert(state->account()->uuid(), accountAction);
     accountAction->setIcon(account->avatar());

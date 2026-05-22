@@ -81,6 +81,18 @@ void MainWindow::setMoreMenuActions(const QList<QAction *> &actions)
     _moreButton->addActions(actions);
 }
 
+void MainWindow::startModal()
+{
+    _accountsToolbar->setEnabled(false);
+    _toolbar->setEnabled(false);
+}
+
+void MainWindow::stopModal()
+{
+    _accountsToolbar->setEnabled(true);
+    _toolbar->setEnabled(true);
+}
+
 void MainWindow::showModalWidget(ModalWrapperWidget *w)
 {
     // ownCloudGui::raise();
@@ -91,8 +103,7 @@ void MainWindow::showModalWidget(ModalWrapperWidget *w)
     connect(w, &ModalWrapperWidget::finished, this, &MainWindow::endModalWidget);
     _widgetStack->addWidget(w);
     _widgetStack->setCurrentWidget(w);
-    _accountsToolbar->setEnabled(false);
-    _toolbar->setEnabled(false);
+    startModal();
 }
 
 void MainWindow::endModalWidget()
@@ -104,8 +115,7 @@ void MainWindow::endModalWidget()
     if (_widgetStack->indexOf(target) >= 0)
         _widgetStack->removeWidget(target);
     target->deleteLater();
-    _accountsToolbar->setEnabled(true);
-    _toolbar->setEnabled(true);
+    stopModal();
 }
 
 void MainWindow::addAccountAction(QAction *action)

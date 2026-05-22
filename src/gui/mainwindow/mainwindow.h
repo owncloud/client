@@ -27,6 +27,11 @@ public:
     void addAccountAction(QAction *action);
     void removeAccountAction(QAction *action);
 
+    // these just disable the main toolbar so the user can't do anything while a "modal" widget is shown
+    // either in the account view stack or the main window stack
+    void startModal();
+    void stopModal();
+
 private slots:
     void endModalWidget();
     void onViewActionTriggered(bool selected);

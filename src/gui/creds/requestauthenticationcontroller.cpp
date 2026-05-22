@@ -54,11 +54,6 @@ void RequestAuthenticationController::handleLogOut()
 
 void RequestAuthenticationController::startAuthentication(Account *account)
 {
-#ifdef USE_NEW_MAIN_WINDOW
-    handleLogOut();
-    return;
-#endif
-
     Q_ASSERT(account);
     if (_oauth) {
         delete _oauth;
@@ -73,9 +68,14 @@ void RequestAuthenticationController::startAuthentication(Account *account)
         connect(_widget, &RequestAuthenticationWidget::connectClicked, this, &RequestAuthenticationController::handleSignIn);
         connect(_widget, &RequestAuthenticationWidget::stayLoggedOutClicked, this, &RequestAuthenticationController::handleLogOut);
 
+#ifdef USE_NEW_MAIN_WINDOW
+        _modalWidget = new AccountModalWidget(QString(), _widget, nullptr);
+        emit requestAccountModal(_modalWidget);
+#else
         AccountView *accountView = ocApp()->gui()->settingsDialog()->accountView(_account);
         _modalWidget = new AccountModalWidget(QString(), _widget, accountView);
         accountView->addModalAccountWidget(_modalWidget);
+#endif
     }
     _oauth->startAuthentication();
 }

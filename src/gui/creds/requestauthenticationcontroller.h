@@ -33,6 +33,7 @@ public:
     void startAuthentication(Account *account);
 
 Q_SIGNALS:
+    void requestAccountModal(OCC::AccountModalWidget *widget);
     void requestLogout();
     void authenticationSucceeded(const QString &token, const QString &refreshToken);
     // this is only emitted if the controller is running without a widget.
