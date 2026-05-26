@@ -48,12 +48,15 @@ void MainWindow::buildWindow()
     setMinimumSize(minimumSizeHint());
 
     _accountsToolbar = new QToolBar(this);
+    _accountsToolbar->setFocusPolicy(Qt::StrongFocus);
+    _accountsToolbar->setObjectName("mainWindowAccountsToolbar");
     _accountsToolbar->setMovable(false);
     _accountsToolbar->setIconSize(QSize(32, 32));
     _accountsToolbar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     addToolBar(_accountsToolbar);
 
     _toolbar = new QToolBar(this);
+    _toolbar->setFocusPolicy(Qt::StrongFocus);
     _toolbar->setObjectName("mainWindowToolbar");
     _toolbar->setMovable(false);
     _toolbar->setAccessibleDescription(tr("Main toolbar for the application"));

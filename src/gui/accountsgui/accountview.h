@@ -63,6 +63,8 @@ public:
     void slotAddFolder();
 
     void onRequestAccountModalWidget(OCC::AccountModalWidget *widget);
+    // todo: this should be protected/private but still "needed" by old impl
+    void addModalAccountWidget(AccountModalWidget *widget);
 
 signals:
     // these are sent when the account view starts and ends a "modal" operation
@@ -82,7 +84,6 @@ protected slots:
 protected:
     void accountSettingUpChanged(bool settingUp);
     void addModalLegacyDialog(QWidget *widget, ModalWidgetSizePolicy sizePolicy);
-    void addModalAccountWidget(AccountModalWidget *widget);
 
     void showEvent(QShowEvent *ev) override;
 
