@@ -71,7 +71,7 @@ AccountView::AccountView(AccountState *accountState, QWidget *parent)
         return;
 
     AccountFoldersController *foldersController = new AccountFoldersController(_accountState, ui->accountFoldersView, this);
-    connect(foldersController, &AccountFoldersController::requestShowModalWidget, this, &AccountView::onRequestShowModalWidget);
+    connect(foldersController, &AccountFoldersController::requestAddFolder, this, &AccountView::slotAddFolder);
     connect(foldersController, &AccountFoldersController::requestAccountModalWidget, this, &AccountView::onRequestAccountModalWidget);
 
     ui->connectionStatusLabel->clear();
@@ -113,12 +113,15 @@ void AccountView::slotAddFolder()
     }
 
     FolderWizard *folderWizard = new FolderWizard(_accountState->account(), this);
-    folderWizard->setAttribute(Qt::WA_DeleteOnClose);
 
     connect(folderWizard, &QDialog::accepted, this, &AccountView::slotFolderWizardAccepted);
     connect(folderWizard, &QDialog::rejected, this, [] { qCInfo(lcAccountView) << "Folder wizard cancelled"; });
 
-    addModalLegacyDialog(folderWizard, AccountView::ModalWidgetSizePolicy::Expanding);
+    // ignore clang analyzer warning about potential memory leak, please.
+    // the modal widget gets reparented to the stacked widget and is automatically deleted when the finished() signal is
+    // received
+    AccountModalWidget *widget = new AccountModalWidget({}, folderWizard, this);
+    addModalAccountWidget(widget);
 }
 
 void AccountView::slotFolderWizardAccepted()
@@ -284,59 +287,7 @@ void AccountView::slotAccountStateChanged(AccountState::State state)
         showConnectionLabel(tr("Disconnected"), StatusIcon::Disconnected);
         break;
     }
-}
-
-
-void AccountView::addModalLegacyDialog(QWidget *widget, ModalWidgetSizePolicy sizePolicy)
-{
-    if (!widget->testAttribute(Qt::WA_DeleteOnClose)) { // DEBUG CODE! See https://github.com/owncloud/client/issues/11673
-        // Early check to see if the attribute gets unset before the second/real check below
-        qCWarning(lcAccountView) << "Missing WA_DeleteOnClose! (1)" << widget->metaObject() << widget;
-    }
-
-    // create a widget filling the stacked widget
-    // this widget contains a wrapping group box with widget as content
-    auto *outerWidget = new QWidget;
-    auto *groupBox = new QGroupBox;
-
-    switch (sizePolicy) {
-    case ModalWidgetSizePolicy::Expanding: {
-        auto *outerLayout = new QHBoxLayout(outerWidget);
-        outerLayout->setContentsMargins(modalWidgetStretchedMarginC, modalWidgetStretchedMarginC, modalWidgetStretchedMarginC, modalWidgetStretchedMarginC);
-        outerLayout->addWidget(groupBox);
-        auto *layout = new QHBoxLayout(groupBox);
-        layout->addWidget(widget);
-    } break;
-    case ModalWidgetSizePolicy::Minimum: {
-        auto *outerLayout = new QGridLayout(outerWidget);
-        outerLayout->addWidget(groupBox, 0, 0, Qt::AlignCenter);
-        auto *layout = new QHBoxLayout(groupBox);
-        layout->addWidget(widget);
-    } break;
-    }
-    groupBox->setTitle(widget->windowTitle());
-
-    ui->stackedWidget->addWidget(outerWidget);
-    ui->stackedWidget->setCurrentWidget(outerWidget);
-
-    // the widget is supposed to behave like a dialog and we connect to its destuction
-    if (!widget->testAttribute(Qt::WA_DeleteOnClose)) { // DEBUG CODE! See https://github.com/owncloud/client/issues/11673
-        qCWarning(lcAccountView) << "Missing WA_DeleteOnClose! (2)" << widget->metaObject() << widget;
-    }
-    Q_ASSERT(widget->testAttribute(Qt::WA_DeleteOnClose));
-
-    // Refactoring todo: eval this more completely
-    Q_ASSERT(_accountState && _accountState->account());
-
-    connect(widget, &QWidget::destroyed, this, [this, outerWidget] {
-        outerWidget->deleteLater();
-        if (!_goingDown) {
-            ocApp()->gui()->settingsDialog()->ceaseModality(_accountState->account());
-        }
-    });
-    widget->setVisible(true);
-    ocApp()->gui()->settingsDialog()->requestModality(_accountState->account());
-}
+} 
 
 void AccountView::showEvent(QShowEvent *ev)
 {
@@ -362,21 +313,30 @@ void AccountView::addModalAccountWidget(AccountModalWidget *widget)
     ui->stackedWidget->addWidget(widget);
     ui->stackedWidget->setCurrentWidget(widget);
 
-    connect(widget, &AccountModalWidget::finished, this, [widget, this] {
-        widget->deleteLater();
+    connect(widget, &AccountModalWidget::finished, this, &AccountView::finishAccountModalWidget);
 #ifdef USE_NEW_MAIN_WINDOW
-        emit accountEndModal();
-#else
-        ocApp()->gui()->settingsDialog()->ceaseModality(_accountState->account());
-#endif
-    });
-#ifdef USE_NEW_MAIN_WINDOW
-    emit accountBeginModal();
+    emit accountBeginModal(_accountState->account()->uuid());
 #else
     ocApp()->gui()->settingsDialog()->requestModality(_accountState->account());
 #endif
 }
 
+void AccountView::finishAccountModalWidget(AccountModalWidget *widget)
+{
+    if (!widget)
+        return;
+
+    ui->stackedWidget->removeWidget(widget);
+    widget->deleteLater();
+
+    Q_ASSERT(_accountState && _accountState->account());
+
+#ifdef USE_NEW_MAIN_WINDOW
+    emit accountEndModal(_accountState->account()->uuid());
+#else
+    ocApp()->gui()->settingsDialog()->ceaseModality(_accountState->account());
+#endif
+}
 
 void AccountView::slotDeleteAccount()
 {

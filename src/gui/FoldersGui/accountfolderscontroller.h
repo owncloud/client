@@ -38,7 +38,8 @@ public:
 
 signals:
     void removeFolderFromGui(OCC::Folder *f);
-    void requestShowModalWidget(QWidget *widget);
+    void requestAddFolder();
+
     void requestAccountModalWidget(OCC::AccountModalWidget *widget);
 
 protected:

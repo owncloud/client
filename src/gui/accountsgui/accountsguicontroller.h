@@ -31,8 +31,10 @@ private:
 
     void onAccountAdded(AccountState *state);
     void onAccountRemoved(AccountState *state);
-    void setCurrentAccount(Account *account);
     void onAccountAvatarChanged();
     void handleAccountSetupError(const QString &error);
+    void runFolderWizard(Account *account);
+    void startModal(QUuid accountId);
+    void endModal(QUuid accountId);
 };
 }

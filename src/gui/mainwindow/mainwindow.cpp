@@ -51,7 +51,8 @@ void MainWindow::buildWindow()
     _accountsToolbar->setFocusPolicy(Qt::StrongFocus);
     _accountsToolbar->setObjectName("mainWindowAccountsToolbar");
     _accountsToolbar->setMovable(false);
-    _accountsToolbar->setIconSize(QSize(32, 32));
+    // 32 looks Baaaaaad
+    _accountsToolbar->setIconSize(QSize(24, 24));
     _accountsToolbar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     addToolBar(_accountsToolbar);
 
@@ -71,6 +72,9 @@ void MainWindow::buildWindow()
     _toolbar->addSeparator();
 
     _moreButton = new QToolButton(this);
+    // in theory yes, but the icon is hideously large - needs more space as border, maybe use the "no space" icon as example
+    // proportions
+    // _moreButton->setIcon(Resources::getCoreIcon("more"));
     _moreButton->setText("⋯");
     _moreButton->setPopupMode(QToolButton::InstantPopup);
     _toolbar->addWidget(_moreButton);
@@ -125,7 +129,7 @@ void MainWindow::addAccountAction(QAction *action)
 {
     QWidget *widget = action->data().value<QWidget *>();
     if (widget) {
-        connect(action, &QAction::triggered, this, &MainWindow::onViewActionTriggered);
+        connect(action, &QAction::toggled, this, &MainWindow::onViewActionTriggered);
         _accountsToolbar->addAction(action);
         _widgetStack->addWidget(widget);
         _widgetStack->setCurrentWidget(widget);

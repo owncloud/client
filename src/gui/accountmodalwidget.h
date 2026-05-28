@@ -29,6 +29,8 @@ namespace Ui {
 // the "modality"
 // the class is used in the AccountView with account related stuff
 // it's basically a reproduction of a modal dialog but it's embedded in the account view of the main window.
+// it's also possible to use it to wrap a QDialog, such as the FolderWizard, in which case the dialog's accept/reject
+// signals are taken over for the modal widget result
 class AccountModalWidget : public QWidget
 {
     Q_OBJECT
@@ -36,9 +38,7 @@ public:
     AccountModalWidget(const QString &title, QWidget *widget, QWidget *parent);
     AccountModalWidget(const QString &title, const QUrl &qmlSource, QObject *qmlContext, QWidget *parent);
 
-    enum class Result { Rejected, Accepted };
-    Q_ENUM(Result)
-
+    // if the widget is a QDialog, these functions silently do nothing (because the dialog buttons already exist)
     void setStandardButtons(QDialogButtonBox::StandardButtons buttons);
     QPushButton *addButton(const QString &text, QDialogButtonBox::ButtonRole role);
 
@@ -49,10 +49,12 @@ public Q_SLOTS:
 Q_SIGNALS:
     void accepted();
     void rejected();
-    void finished(Result result);
+    void finished(OCC::AccountModalWidget *widget);
 
 private:
     Ui::AccountModalWidget *ui;
+
+    bool _widgetHasButtons = false;
 };
 
 } // OCC

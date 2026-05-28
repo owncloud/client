@@ -14,6 +14,9 @@
 #include "newaccountwizard/newaccountbuilder.h"
 #include "newaccountwizard/newaccountwizard.h"
 #include "newaccountwizard/newaccountwizardcontroller.h"
+#include "resources.h"
+// this is only needed to use the pixmap function - when qml is gone move this to normal resources impl (I think)
+#include "resources/qmlresources.h"
 
 
 namespace OCC {
@@ -53,11 +56,12 @@ void AccountsGuiController::onAccountAdded(AccountState *state)
 
     auto accountView = new AccountView(state, nullptr);
     connect(account->credentials(), &AbstractCredentials::requestAccountModal, accountView, &AccountView::onRequestAccountModalWidget);
-    connect(accountView, &AccountView::accountBeginModal, _window, &MainWindow::startModal);
-    connect(accountView, &AccountView::accountEndModal, _window, &MainWindow::stopModal);
+    connect(accountView, &AccountView::accountBeginModal, this, &AccountsGuiController::startModal);
+    connect(accountView, &AccountView::accountEndModal, this, &AccountsGuiController::endModal);
 
     QAction *accountAction = new QAction(this);
     _actionForAccount.insert(state->account()->uuid(), accountAction);
+
     accountAction->setIcon(account->avatar());
     accountAction->setText(account->davUser());
     accountAction->setData(QVariant::fromValue(accountView));
@@ -66,7 +70,6 @@ void AccountsGuiController::onAccountAdded(AccountState *state)
     _actionGroup->addAction(accountAction);
     _window->addAccountAction(accountAction);
 
-    // this should autoselect the page from the data() value
     accountAction->setChecked(true);
 }
 
@@ -83,8 +86,13 @@ void AccountsGuiController::onAccountRemoved(AccountState *state)
         action->deleteLater();
         // just select something from the account actions - I don't think it really matters what but can adjust
         // if people complain
-        if (!_actionForAccount.isEmpty())
-            _actionForAccount.values().front()->setChecked(true);
+        if (!_actionForAccount.isEmpty()) {
+            const auto actions = _actionForAccount.values();
+            actions.first()->setChecked(true);
+            // I have tried EVERYTHING to get rid of clazy warnings about calling QList::front (which I never even call!)
+            // and/or QList::first on temporary and it simply will not go away.
+            // I honestly could not care less at this point. I think clazy is about as reliable as tidy at this point - it's just noise
+        }
     }
 }
 
@@ -94,8 +102,10 @@ void AccountsGuiController::onAccountAvatarChanged()
     if (!account)
         return;
     QAction *action = _actionForAccount.value(account->uuid(), nullptr);
-    if (action)
+
+    if (action) {
         action->setIcon(account->avatar());
+    }
 }
 
 void AccountsGuiController::runAccountWizard()
@@ -117,7 +127,7 @@ void AccountsGuiController::runAccountWizard()
             FolderMan *folderman = FolderMan::instance();
             connect(builder, &NewAccountBuilder::requestSetUpSyncFoldersForAccount, folderman, &FolderMan::setUpInitialSyncFolders);
             connect(builder, &NewAccountBuilder::requestLoadSpacesOnly, folderman, &FolderMan::setUpInitialSpaces);
-            //   connect(builder, &NewAccountBuilder::requestFolderWizard, _settingsDialog, &SettingsDialog::runFolderWizard);
+            connect(builder, &NewAccountBuilder::requestFolderWizard, this, &AccountsGuiController::runFolderWizard);
             connect(builder, &NewAccountBuilder::unableToCompleteAccountCreation, this, &AccountsGuiController::handleAccountSetupError);
             builder->buildAccount();
         }
@@ -131,17 +141,38 @@ void AccountsGuiController::handleAccountSetupError(const QString &error)
         tr("The account could not be created due to an error:\n%1\nPlease check the server's availability then run the wizard again.").arg(error));
 }
 
-void AccountsGuiController::setCurrentAccount(Account *account)
+void AccountsGuiController::runFolderWizard(Account *account)
 {
-    // if (!account || account == _currentAccount)
-    //    return;
+    if (!account)
+        return;
 
-    //_currentAccount = account;
+    QAction *action = _actionForAccount.value(account->uuid(), nullptr);
+    if (!action)
+        return;
 
-    //_ui->stack->setCurrentWidget(accountView(account));
-    //_currentPage = SettingsPage::Account;
+    action->setChecked(true);
+    AccountView *view = action->data().value<AccountView *>();
+    if (view)
+        view->slotAddFolder();
+}
 
-    // Q_EMIT currentAccountChanged();
-    // Q_EMIT currentPageChanged();
+void AccountsGuiController::startModal(QUuid accountId)
+{
+    QAction *action = _actionForAccount.value(accountId, nullptr);
+    if (!action)
+        return;
+
+    action->setIcon(Resources::getCoreIcon("states/warning"));
+    action->setChecked(true);
+    ownCloudGui::raise();
+}
+
+void AccountsGuiController::endModal(QUuid accountId)
+{
+    QAction *action = _actionForAccount.value(accountId, nullptr);
+    if (!action)
+        return;
+    // get the icon from the account again and put it back on the action
+    // action->setIcon(account->avatar());
 }
 }

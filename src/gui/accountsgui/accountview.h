@@ -68,28 +68,25 @@ public:
 
 signals:
     // these are sent when the account view starts and ends a "modal" operation
-    // currently the main window receives these signals to enable/disable the toolbar when the account view
-    // is "modal"
-    void accountEndModal();
-    void accountBeginModal();
+    // at the moment I'm not blocking access to main window toolbar actions as there is really no need, imo,
+    // just because the account is in the middle of something. At least we will try it this way and see
+    // if it's preferred. So long as the account modal widget blocks *account* related activity I think we're good
+    void accountEndModal(QUuid accountId);
+    void accountBeginModal(QUuid accountId);
 
 protected slots:
-    void slotAccountStateChanged(AccountState::State state);
+    void slotAccountStateChanged(OCC::AccountState::State state);
     void slotDeleteAccount();
     void slotOpenAccountInBrowser();
     void slotToggleSignInState();
     void slotFolderWizardAccepted();
-    void onRequestShowModalWidget(QWidget *widget) { addModalLegacyDialog(widget, ModalWidgetSizePolicy::Expanding); }
 
 protected:
     void accountSettingUpChanged(bool settingUp);
-    void addModalLegacyDialog(QWidget *widget, ModalWidgetSizePolicy sizePolicy);
-
     void showEvent(QShowEvent *ev) override;
-
+    void finishAccountModalWidget(AccountModalWidget *widget);
 
 private:
-
     enum class StatusIcon { None, Connected, Disconnected, Info, Warning };
     void showConnectionLabel(const QString &message, StatusIcon statusIcon, QStringList errors = QStringList());
 
@@ -109,3 +106,5 @@ private:
 };
 
 } // namespace OCC
+
+Q_DECLARE_METATYPE(OCC::AccountView)

@@ -27,17 +27,18 @@ public:
     void addAccountAction(QAction *action);
     void removeAccountAction(QAction *action);
 
-    // these just disable the main toolbar so the user can't do anything while a "modal" widget is shown
-    // either in the account view stack or the main window stack
-    void startModal();
-    void stopModal();
-
 private slots:
     void endModalWidget();
     void onViewActionTriggered(bool selected);
 
 private:
     void buildWindow();
+    // these just disable the main toolbar so the user can't do anything while a "modal" widget is shown
+    // in main window stack. We are adjusting the behavior of account modal widgets to *not* disable other functions as it should
+    // not cause any problems to eg switch to local/error activity view, or trigger one of the more menu actions while an account
+    // is "waiting" for the user to complete something there.
+    void startModal();
+    void stopModal();
 
     QToolBar *_accountsToolbar = nullptr;
     QToolBar *_toolbar = nullptr;
