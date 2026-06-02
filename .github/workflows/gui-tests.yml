@@ -367,3 +367,32 @@ jobs:
           path: test/gui/guiReportUpload
           if-no-files-found: warn
           retention-days: 7
+
+  gui-tests:
+    if: ${{ always() }}
+    needs:
+      - gui-tests-ocis
+      - gui-tests-oc10
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check GUI test results
+        run: |
+          echo "gui-tests-ocis result: ${{ needs.gui-tests-ocis.result }}"
+          echo "gui-tests-oc10 result: ${{ needs.gui-tests-oc10.result }}"
+
+          failed_jobs=""
+
+          if [ "${{ needs.gui-tests-ocis.result }}" != "success" ]; then
+            failed_jobs="${failed_jobs} gui-tests-ocis=${{ needs.gui-tests-ocis.result }}"
+          fi
+
+          if [ "${{ needs.gui-tests-oc10.result }}" != "success" ]; then
+            failed_jobs="${failed_jobs} gui-tests-oc10=${{ needs.gui-tests-oc10.result }}"
+          fi
+
+          if [ -n "$failed_jobs" ]; then
+            echo "GUI test(s) failed:${failed_jobs}"
+            exit 1
+          fi
+
+          echo "All GUI tests passed"
