@@ -10,8 +10,6 @@ on:
 
 env:
   NPM_GHERLINT: "@gherlint/gherlint@1.1.0"
-  S3_PUBLIC_CACHE_SERVER: "https://cache.owncloud.com"
-  S3_PUBLIC_CACHE_BUCKET: "public"
 
 jobs:
   lint-gui-test:
@@ -39,7 +37,7 @@ jobs:
           npm install -g ${{ env.NPM_GHERLINT }}
           make -C test/gui gherkin-lint
 
-  gui-tests:
+  gui-tests-ocis:
     runs-on: ubuntu-latest
     container:
       image: owncloudci/squish:fedora-42-8.1.0-qt68x-linux64
@@ -146,15 +144,255 @@ jobs:
 
       - name: Upload GUI test result
         if: ${{ failure() && steps.run_gui_test.outcome == 'failure' }}
-        run: |
-          curl -L https://dl.min.io/client/mc/release/linux-amd64/mc -o /tmp/mc
-          chmod +x /tmp/mc
-          /tmp/mc alias set cache ${{ env.S3_PUBLIC_CACHE_SERVER }} ${{ secrets.CACHE_PUBLIC_S3_ACCESS_KEY }} ${{ secrets.CACHE_PUBLIC_S3_SECRET_KEY }}
-          /tmp/mc cp --recursive test/gui/guiReportUpload cache/${{ env.S3_PUBLIC_CACHE_BUCKET }}/${{ github.repository }}/${{ github.run_number }}/ocis
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: gui-report-ocis-${{ github.run_number }}
+          path: test/gui/guiReportUpload
+          if-no-files-found: warn
+          retention-days: 7
 
-      - name: Log GUI reports
-        if: ${{ failure() && steps.run_gui_test.outcome == 'failure' }}
+  gui-tests-oc10:
+    runs-on: ubuntu-latest
+    container:
+      image: owncloudci/squish:fedora-42-8.1.0-qt68x-linux64
+      env:
+        PLAYWRIGHT_BROWSERS_PATH: /__w/client/client/test/gui/.playwright
+        GITHUB_REPO: ${{ github.repository }}
+        GITHUB_RUN_NUMBER: ${{ github.run_number }}
+        DOCKER_HOST: tcp://docker:2375
+
+    services:
+      docker:
+        image: docker:27-dind
         env:
-          REPORT_DIR: /__w/client/client/test/gui/guiReportUpload
-          SERVER_TYPE: ocis
-        run: bash test/gui/ci/log_reports.sh ${REPORT_DIR} ${GITHUB_REPO} ${GITHUB_RUN_NUMBER} ${SERVER_TYPE}
+          DOCKER_TLS_CERTDIR: ""
+        options: --privileged
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Install Docker
+        run: |
+          set -euo pipefail
+          DOCKER_VERSION=27.5.1
+          curl -fsSL "https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_VERSION}.tgz" -o /tmp/docker.tgz
+          tar -xzf /tmp/docker.tgz -C /tmp
+          mkdir -p "$HOME/.local/bin"
+          cp /tmp/docker/docker "$HOME/.local/bin/docker"
+          chmod +x "$HOME/.local/bin/docker"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          "$HOME/.local/bin/docker" --version
+
+      - name: Check docker
+        run: |
+          i=1
+          while [ "$i" -le 15 ]; do
+            if docker info > /dev/null 2>&1; then
+              docker version
+              exit 0
+            fi
+            echo "Waiting for Docker daemon... ($i/30)"
+            sleep 2
+            i=$((i + 1))
+          done
+          echo "Docker daemon did not become ready"
+          exit 1
+
+      - name: Start MySQL in dind
+        run: |
+          docker network create oc10net
+          docker run -d \
+            --name mysql \
+            --network oc10net \
+            -e MYSQL_USER=owncloud \
+            -e MYSQL_PASSWORD=owncloud \
+            -e MYSQL_DATABASE=owncloud \
+            -e MYSQL_ROOT_PASSWORD=owncloud \
+            mysql:8.0
+
+      - name: Wait for MySQL in dind
+        run: |
+          i=1
+          while [ "$i" -le 15 ]; do
+            if docker exec mysql mysqladmin ping -h 127.0.0.1 -u root -powncloud --silent > /dev/null 2>&1; then
+              echo "MySQL is up"
+              exit 0
+            fi
+            echo "Waiting for MySQL... ($i/60)"
+            sleep 2
+            i=$((i + 1))
+          done
+          echo "MySQL did not become ready"
+          docker logs mysql || true
+          exit 1
+
+      - name: Build client
+        run: |
+          mkdir -p build
+          cd build
+          cmake -G"Ninja" -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=OFF -S ..
+          ninja
+
+      - name: Install Python modules
+        run: make -C test/gui install
+
+      - name: Install ownCloud core
+        run: >
+          docker run --rm
+          --network oc10net
+          -v /__w/client/client/server:/var/www/html
+          -e PLUGIN_VERSION=latest
+          -e PLUGIN_CORE_PATH=/var/www/html
+          -e PLUGIN_DB_TYPE=mysql
+          -e PLUGIN_DB_NAME=owncloud
+          -e PLUGIN_DB_HOST=mysql
+          -e PLUGIN_DB_USERNAME=owncloud
+          -e PLUGIN_DB_PASSWORD=owncloud
+          owncloudci/core
+
+      - name: Start ownCloud service
+        run: >
+          docker run -d
+          --name owncloud
+          --network oc10net
+          -p 80:80
+          -p 443:443
+          -v /__w/client/client/server:/var/www/html
+          -e APACHE_WEBROOT=/var/www/html
+          -e APACHE_CONFIG_TEMPLATE=ssl
+          -e APACHE_SSL_CERT_CN=owncloud
+          -e APACHE_SSL_CERT=/tmp/server.crt
+          -e APACHE_SSL_KEY=/tmp/server.key
+          -e APACHE_LOGGING_PATH=/dev/null
+          owncloudci/php:7.4-ubuntu22.04
+          bash -c "
+            cat /etc/apache2/templates/base >> /etc/apache2/templates/ssl &&
+            /usr/local/bin/apachectl -e debug -D FOREGROUND
+          "
+
+      - name: Setup server and app
+        run: |
+          docker exec owncloud bash -c '
+            cd /var/www/html &&
+            php occ a:e testing &&
+            php occ config:system:set trusted_domains 1 --value=owncloud &&
+            php occ config:system:set trusted_domains 2 --value=docker &&
+            php occ log:manage --level 2 &&
+            php occ config:list &&
+            php occ config:system:set skeletondirectory --value=/var/www/html/apps/testing/data/tinySkeleton &&
+            php occ config:system:set sharing.federation.allowHttpFallback --value=true --type=bool
+          '
+
+      - name: Install extra apps (oauth2 and activity)
+        run: |
+          docker exec owncloud bash -c "
+            cd /var/www/html
+            # Install oauth2
+            if [ ! -d apps/oauth2 ]; then
+              git clone --depth 1 https://github.com/owncloud/oauth2.git apps/oauth2
+            fi
+            cd apps/oauth2 &&
+            make dist
+            cd /var/www/html
+
+            # Install activity
+            if [ ! -d apps/activity ]; then
+              git clone --depth 1 --branch v2.7.3 https://github.com/owncloud/activity.git apps/activity
+            fi
+            cd apps/activity &&
+            make dist
+            cd /var/www/html
+            php occ a:e activity
+          "
+
+      - name: Fix permissions
+        run: docker exec owncloud bash -c "chown -R www-data:www-data /var/www/html"
+
+      - name: Wait for ownCloud
+        run: |
+          echo "Waiting for ownCloud..."
+          for i in {1..30}; do
+            if docker exec owncloud curl -kfsSL https://localhost/ > /dev/null 2>&1; then
+              echo "ownCloud is up ✅"
+              break
+            fi
+            echo "  Retrying in 5s... ($i/30)"
+            sleep 5
+            if [ "$i" -eq 30 ]; then
+              echo "❌ ownCloud failed to start"
+              docker logs owncloud
+              exit 1
+            fi
+          done
+
+      - name: Start ownCloud log tail
+        run: docker exec -d owncloud tail -f /var/www/html/data/owncloud.log
+
+      - name: Create GUI test report directory
+        run: |
+          mkdir test/gui/guiReportUpload/screenshots -p
+          chmod 777 test/gui -R
+
+      - name: Run GUI tests
+        id: run_gui_test
+        env:
+          LICENSEKEY: ${{ secrets.SQUISH_LICENSEKEY }}
+          GUI_TEST_REPORT_DIR: /__w/client/client/test/gui/guiReportUpload
+          CLIENT_REPO: .
+          BACKEND_HOST: http://docker/
+          SECURE_BACKEND_HOST: https://docker/
+          OCIS: false
+          SERVER_INI: test/gui/ci/server.ini
+          SQUISH_PARAMETERS: >-
+            --testsuite test/gui
+            --reportgen html,test/gui/guiReportUpload
+            --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false
+            --tags ~@skip
+            --tags ~@skipOnLinux
+            --tags ~@skipOnOC10
+            ${{ github.event_name == 'pull_request' && '--abortOnFail' || '' }}
+          STACKTRACE_FILE: test/gui/guiReportUpload/stacktrace.log
+          OWNCLOUD_CORE_DUMP: 1
+          RECORD_VIDEO_ON_FAILURE: ${{ github.event_name == 'schedule' && 'true' || 'false' }}
+          COREPACK_ENABLE_STRICT: 0
+          HOME: /home/headless
+        run: bash /dockerstartup/entrypoint.sh
+
+      - name: Upload GUI test result
+        if: ${{ failure() && steps.run_gui_test.outcome == 'failure' }}
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: gui-report-oc10-${{ github.run_number }}
+          path: test/gui/guiReportUpload
+          if-no-files-found: warn
+          retention-days: 7
+
+  gui-tests:
+    if: ${{ always() }}
+    needs:
+      - gui-tests-ocis
+      - gui-tests-oc10
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check GUI test results
+        run: |
+          echo "gui-tests-ocis result: ${{ needs.gui-tests-ocis.result }}"
+          echo "gui-tests-oc10 result: ${{ needs.gui-tests-oc10.result }}"
+
+          failed_jobs=""
+
+          if [ "${{ needs.gui-tests-ocis.result }}" != "success" ]; then
+            failed_jobs="${failed_jobs} gui-tests-ocis=${{ needs.gui-tests-ocis.result }}"
+          fi
+
+          if [ "${{ needs.gui-tests-oc10.result }}" != "success" ]; then
+            failed_jobs="${failed_jobs} gui-tests-oc10=${{ needs.gui-tests-oc10.result }}"
+          fi
+
+          if [ -n "$failed_jobs" ]; then
+            echo "GUI test(s) failed:${failed_jobs}"
+            exit 1
+          fi
+
+          echo "All GUI tests passed"
