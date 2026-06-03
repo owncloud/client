@@ -64,18 +64,10 @@ void MainWindowController::buildMenuActions()
 
 void MainWindowController::createSyncErrorsAction()
 {
-    QAction *syncErrorsAction = new QAction(tr("Errors"), this);
+    QAction *syncErrorsAction = new QAction(tr("Errors: %1").arg(0), this);
     syncErrorsAction->setObjectName("syncErrorsAction");
     syncErrorsAction->setCheckable(true);
     auto syncErrorWidget = new SyncErrorWidget(_window);
-    // Resources::getCoreIcon(QStringLiteral("states/warning")), QString());
-    // if (cnt) {
-    //: %1 is the number of not synced files.
-    //     cntText = tr("Not Synced (%1)").arg(cnt);
-    //}
-
-    // adapt this to show the error count on the action text, itself
-    //_tab->setTabText(_syncErrorTabId, cntText);
     connect(
         syncErrorWidget, &SyncErrorWidget::issueCountUpdated, this, [syncErrorsAction](int count) { syncErrorsAction->setText(tr("Errors: %1").arg(count)); });
 
@@ -110,7 +102,6 @@ void MainWindowController::onAbout()
 {
     AboutView *aboutPanel = new AboutView(_window);
     ModalWrapperWidget *wrapper = new ModalWrapperWidget(aboutPanel, _window);
-    // aboutDialog->setAttribute(Qt::WA_DeleteOnClose);
     _window->showModalWidget(wrapper);
 }
 

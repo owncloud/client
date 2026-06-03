@@ -131,6 +131,8 @@ void MainWindow::endModalWidget()
         _widgetStack->removeWidget(target);
     target->deleteLater();
     stopModal();
+    // ensure the current stack widget matches the currently "checked" action in the toolbar
+    _actionGroup->checkedAction()->toggled(true);
 }
 
 void MainWindow::addPanelAction(QAction *action)
