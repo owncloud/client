@@ -27,7 +27,6 @@ public:
 private:
     MainWindow *_window = nullptr;
     QHash<QUuid, QAction *> _actionForAccount;
-    QActionGroup *_actionGroup = nullptr;
 
     void onAccountAdded(AccountState *state);
     void onAccountRemoved(AccountState *state);

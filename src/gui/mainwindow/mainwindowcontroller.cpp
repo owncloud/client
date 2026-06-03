@@ -2,9 +2,11 @@
 
 #include "aboutview.h"
 #include "accountsgui/accountsguicontroller.h"
+#include "localactivitywidget.h"
 #include "mainwindow.h"
 #include "modalwrapperwidget.h"
 #include "settingsview.h"
+#include "syncerrorwidget.h"
 #include "theme.h"
 
 #include <QAction>
@@ -22,6 +24,8 @@ MainWindowController::MainWindowController(MainWindow *window, QObject *parent)
 
 void MainWindowController::setup()
 {
+    createSyncErrorsAction();
+    createActivityAction();
     buildMenuActions();
 
     _accountsController = new AccountsGuiController(_window, this);
@@ -56,6 +60,38 @@ void MainWindowController::buildMenuActions()
     connect(quitAction, &QAction::triggered, this, &MainWindowController::onQuit);
     menuActions.push_back(quitAction);
     _window->setMoreMenuActions(menuActions);
+}
+
+void MainWindowController::createSyncErrorsAction()
+{
+    QAction *syncErrorsAction = new QAction(tr("Errors"), this);
+    syncErrorsAction->setObjectName("syncErrorsAction");
+    syncErrorsAction->setCheckable(true);
+    auto syncErrorWidget = new SyncErrorWidget(_window);
+    // Resources::getCoreIcon(QStringLiteral("states/warning")), QString());
+    // if (cnt) {
+    //: %1 is the number of not synced files.
+    //     cntText = tr("Not Synced (%1)").arg(cnt);
+    //}
+
+    // adapt this to show the error count on the action text, itself
+    //_tab->setTabText(_syncErrorTabId, cntText);
+    connect(
+        syncErrorWidget, &SyncErrorWidget::issueCountUpdated, this, [syncErrorsAction](int count) { syncErrorsAction->setText(tr("Errors: %1").arg(count)); });
+
+    syncErrorsAction->setData(QVariant::fromValue(syncErrorWidget));
+    _window->addPanelAction(syncErrorsAction);
+}
+
+void MainWindowController::createActivityAction()
+{
+    QAction *activityAction = new QAction(tr("Activity"), this);
+    activityAction->setObjectName("activityAction");
+    activityAction->setCheckable(true);
+    auto localActivityWidget = new LocalActivityWidget(_window);
+    activityAction->setData(QVariant::fromValue(localActivityWidget));
+    _window->addPanelAction(activityAction);
+    // Resources::getCoreIcon(QStringLiteral("states/sync")), tr("Local Activity"));
 }
 
 void MainWindowController::onAddAccount()

@@ -2,9 +2,11 @@
 
 #include <QMainWindow>
 
+class QAction;
 class QToolBar;
 class QToolButton;
 class QStackedWidget;
+class QActionGroup;
 
 namespace OCC {
 
@@ -27,6 +29,8 @@ public:
     void addAccountAction(QAction *action);
     void removeAccountAction(QAction *action);
 
+    void addPanelAction(QAction *action);
+
 private slots:
     void endModalWidget();
     void onViewActionTriggered(bool selected);
@@ -39,11 +43,13 @@ private:
     // is "waiting" for the user to complete something there.
     void startModal();
     void stopModal();
+    void configurePanelAction(QAction *action);
 
     QToolBar *_accountsToolbar = nullptr;
     QToolBar *_toolbar = nullptr;
     QStackedWidget *_widgetStack = nullptr;
-
+    QAction *_separatorAction = nullptr;
     QToolButton *_moreButton = nullptr;
+    QActionGroup *_actionGroup = nullptr;
 };
 }

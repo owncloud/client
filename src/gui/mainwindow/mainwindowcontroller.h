@@ -18,6 +18,8 @@ public:
 
 private:
     void buildMenuActions();
+    void createSyncErrorsAction();
+    void createActivityAction();
 
     void onAddAccount();
     void onSettings();
@@ -27,5 +29,4 @@ private:
     MainWindow *_window = nullptr;
     AccountsGuiController *_accountsController = nullptr;
 };
-
 }

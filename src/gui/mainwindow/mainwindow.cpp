@@ -1,5 +1,7 @@
 #include "mainwindow.h"
 
+#include <QAction>
+#include <QActionGroup>
 #include <QApplication>
 #include <QStackedWidget>
 #include <QToolBar>
@@ -47,6 +49,9 @@ void MainWindow::buildWindow()
     // question is, why is tidy butting in if we have it turned off? Figure this out later.
     setMinimumSize(minimumSizeHint());
 
+    _actionGroup = new QActionGroup(this);
+    _actionGroup->setExclusive(true);
+
     _accountsToolbar = new QToolBar(this);
     _accountsToolbar->setFocusPolicy(Qt::StrongFocus);
     _accountsToolbar->setObjectName("mainWindowAccountsToolbar");
@@ -69,7 +74,10 @@ void MainWindow::buildWindow()
     toolbarStretch->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     _toolbar->addWidget(toolbarStretch);
 
-    _toolbar->addSeparator();
+    _separatorAction = new QAction(this);
+    _separatorAction->setSeparator(true);
+
+    _toolbar->addAction(_separatorAction);
 
     _moreButton = new QToolButton(this);
     // in theory yes, but the icon is hideously large - needs more space as border, maybe use the "no space" icon as example
@@ -125,17 +133,34 @@ void MainWindow::endModalWidget()
     stopModal();
 }
 
+void MainWindow::addPanelAction(QAction *action)
+{
+    QWidget *widget = action->data().value<QWidget *>();
+    if (widget) {
+        _toolbar->insertAction(_separatorAction, action);
+        configurePanelAction(action);
+    }
+}
+
 void MainWindow::addAccountAction(QAction *action)
 {
     QWidget *widget = action->data().value<QWidget *>();
     if (widget) {
-        connect(action, &QAction::toggled, this, &MainWindow::onViewActionTriggered);
         _accountsToolbar->addAction(action);
-        _widgetStack->addWidget(widget);
-        _widgetStack->setCurrentWidget(widget);
+        configurePanelAction(action);
     }
 }
 
+void MainWindow::configurePanelAction(QAction *action)
+{
+    QWidget *widget = action->data().value<QWidget *>();
+    if (widget) {
+        connect(action, &QAction::toggled, this, &MainWindow::onViewActionTriggered);
+        _widgetStack->addWidget(widget);
+        _widgetStack->setCurrentWidget(widget);
+        _actionGroup->addAction(action);
+    }
+}
 void MainWindow::removeAccountAction(QAction *action)
 {
     QWidget *widget = action->data().value<QWidget *>();

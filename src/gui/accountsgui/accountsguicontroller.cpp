@@ -25,11 +25,6 @@ AccountsGuiController::AccountsGuiController(MainWindow *window, QObject *parent
     : QObject(parent)
     , _window(window)
 {
-    // I think this should move to main window because we will need to add other actions to the group, eg the error view
-    // and possibly the local activity view - if that does not go into a modal impl via the menu
-    _actionGroup = new QActionGroup(this);
-    _actionGroup->setExclusive(true);
-
     // load any existing accounts from the manager.
     const auto accounts = AccountManager::instance()->accounts();
     for (const auto &accountState : accounts) {
@@ -67,7 +62,6 @@ void AccountsGuiController::onAccountAdded(AccountState *state)
     accountAction->setData(QVariant::fromValue(accountView));
     accountAction->setCheckable(true);
 
-    _actionGroup->addAction(accountAction);
     _window->addAccountAction(accountAction);
 
     accountAction->setChecked(true);
