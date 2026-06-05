@@ -65,6 +65,7 @@ void MainWindowController::buildMenuActions()
 void MainWindowController::createSyncErrorsAction()
 {
     QAction *syncErrorsAction = new QAction(tr("Errors: %1").arg(0), this);
+    syncErrorsAction->setIcon(Resources::getCoreIcon("states/error"));
     syncErrorsAction->setObjectName("syncErrorsAction");
     syncErrorsAction->setCheckable(true);
     auto syncErrorWidget = new SyncErrorWidget(_window);
@@ -78,12 +79,12 @@ void MainWindowController::createSyncErrorsAction()
 void MainWindowController::createActivityAction()
 {
     QAction *activityAction = new QAction(tr("Activity"), this);
+    activityAction->setIcon(Resources::getCoreIcon("states/sync"));
     activityAction->setObjectName("activityAction");
     activityAction->setCheckable(true);
     auto localActivityWidget = new LocalActivityWidget(_window);
     activityAction->setData(QVariant::fromValue(localActivityWidget));
     _window->addPanelAction(activityAction);
-    // Resources::getCoreIcon(QStringLiteral("states/sync")), tr("Local Activity"));
 }
 
 void MainWindowController::onAddAccount()

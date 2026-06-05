@@ -6,6 +6,7 @@
 #include <QToolBar>
 
 #include "accountmanager.h"
+#include "accountplaceholderwidget.h"
 #include "accountstate.h"
 #include "accountview.h"
 #include "creds/abstractcredentials.h"
@@ -15,9 +16,6 @@
 #include "newaccountwizard/newaccountwizard.h"
 #include "newaccountwizard/newaccountwizardcontroller.h"
 #include "resources.h"
-// this is only needed to use the pixmap function - when qml is gone move this to normal resources impl (I think)
-#include "resources/qmlresources.h"
-
 
 namespace OCC {
 
@@ -36,6 +34,12 @@ AccountsGuiController::AccountsGuiController(MainWindow *window, QObject *parent
 
     connect(AccountManager::instance(), &AccountManager::accountAdded, this, &AccountsGuiController::onAccountAdded);
     connect(AccountManager::instance(), &AccountManager::accountRemoved, this, &AccountsGuiController::onAccountRemoved);
+
+    if (accounts.isEmpty()) {
+        // this is a genuinely reasonable use of timer to execute an operation after construction and any
+        // other event loop actions have finished
+        QTimer::singleShot(0, this, &AccountsGuiController::runAccountWizard);
+    }
 }
 
 void AccountsGuiController::onAccountAdded(AccountState *state)
@@ -47,15 +51,21 @@ void AccountsGuiController::onAccountAdded(AccountState *state)
     // that goes on in there
 
     Account *account = state->account();
+    QUuid accountId = account->uuid();
     connect(account, &Account::avatarChanged, this, &AccountsGuiController::onAccountAvatarChanged);
 
     auto accountView = new AccountView(state, nullptr);
+    // for both the view and the action, we create a unique objectName using the account uuid
+    // to support squish test object identification
+    accountView->setObjectName(QString("accountView_%1").arg(accountId.toString()));
+
     connect(account->credentials(), &AbstractCredentials::requestAccountModal, accountView, &AccountView::onRequestAccountModalWidget);
     connect(accountView, &AccountView::accountBeginModal, this, &AccountsGuiController::startModal);
     connect(accountView, &AccountView::accountEndModal, this, &AccountsGuiController::endModal);
 
     QAction *accountAction = new QAction(this);
-    _actionForAccount.insert(state->account()->uuid(), accountAction);
+    accountAction->setObjectName(QString("accountAction_%1").arg(accountId.toString()));
+    _actionForAccount.insert(accountId, accountAction);
 
     accountAction->setIcon(account->avatar());
     accountAction->setText(account->davUser());
@@ -65,27 +75,31 @@ void AccountsGuiController::onAccountAdded(AccountState *state)
     _window->addAccountAction(accountAction);
 
     accountAction->setChecked(true);
+
+    if (_actionForAccount.contains(QUuid()))
+        removeAccountPlaceholder();
 }
 
 void AccountsGuiController::onAccountRemoved(AccountState *state)
 {
     if (!state || !state->account())
         return;
-    // todo: #37. using the account after we know it's been removed is not ok.
-    Account *acc = state->account();
 
-    if (QAction *action = _actionForAccount.value(acc->uuid(), nullptr)) {
+    Account *acc = state->account();
+    QUuid uid = acc->uuid();
+    if (_actionForAccount.contains(uid)) {
+        QAction *action = _actionForAccount[uid];
         _window->removeAccountAction(action);
-        _actionForAccount.remove(acc->uuid());
+        _actionForAccount.remove(uid);
         action->deleteLater();
-        // just select something from the account actions - I don't think it really matters what but can adjust
-        // if people complain
-        if (!_actionForAccount.isEmpty()) {
-            const auto actions = _actionForAccount.values();
-            actions.first()->setChecked(true);
-            // I have tried EVERYTHING to get rid of clazy warnings about calling QList::front (which I never even call!)
-            // and/or QList::first on temporary and it simply will not go away.
-            // I honestly could not care less at this point. I think clazy is about as reliable as tidy at this point - it's just noise
+
+        const QList<AccountState *> accounts = AccountManager::instance()->accounts();
+        if (accounts.isEmpty()) {
+            runAccountWizard();
+        } else {
+            QUuid newuid = accounts.last()->account()->uuid();
+            if (_actionForAccount.contains(newuid))
+                _actionForAccount[newuid]->setChecked(true);
         }
     }
 }
@@ -125,14 +139,56 @@ void AccountsGuiController::runAccountWizard()
             connect(builder, &NewAccountBuilder::unableToCompleteAccountCreation, this, &AccountsGuiController::handleAccountSetupError);
             builder->buildAccount();
         }
-    } else
-        qDebug() << "wizard rejected";
+    } else {
+        // if there are no accounts, add a placeholder "page" to the main window that informs the user how to create one
+        setupAccountPlaceholder();
+    }
+}
+
+void AccountsGuiController::setupAccountPlaceholder()
+{
+    if (!AccountManager::instance()->accounts().isEmpty())
+        return;
+
+    QUuid uid;
+    QAction *placeholderAccountAction = nullptr;
+    if (_actionForAccount.contains(uid)) {
+        placeholderAccountAction = _actionForAccount[uid];
+    } else {
+        placeholderAccountAction = new QAction(tr("Accounts"));
+        placeholderAccountAction->setObjectName("placeholderAccountAction");
+        placeholderAccountAction->setCheckable(true);
+        placeholderAccountAction->setIcon(Resources::getCoreIcon("warning"));
+        // use null uuid for placeholder action since there IS no account for it
+        _actionForAccount.insert(QUuid(), placeholderAccountAction);
+        auto placeholderWidget = new AccountPlaceholderWidget(_window);
+        placeholderAccountAction->setData(QVariant::fromValue(placeholderWidget));
+        _window->addAccountAction(placeholderAccountAction);
+    }
+    placeholderAccountAction->setChecked(true);
+}
+
+void AccountsGuiController::removeAccountPlaceholder()
+{
+    QUuid uid;
+    if (_actionForAccount.contains(uid)) {
+        QAction *action = _actionForAccount[uid];
+        _window->removeAccountAction(action);
+        _actionForAccount.remove(uid);
+        action->deleteLater();
+    }
 }
 
 void AccountsGuiController::handleAccountSetupError(const QString &error)
 {
     QMessageBox::warning(_window, tr("New account failure"),
         tr("The account could not be created due to an error:\n%1\nPlease check the server's availability then run the wizard again.").arg(error));
+
+    // note that the current behavior for the setup failure is that the account wizard auto-pops again because the
+    // accountState for the new account was already created and it is subsequently deleted by the account builder if the final
+    // setup fails for some reason. The accountRemoved handler then runs the wizard again if there are no other accounts.
+    // In case we change that in future, this will create the dummy account page if the wizard doesn't auto-run again
+    setupAccountPlaceholder();
 }
 
 void AccountsGuiController::runFolderWizard(Account *account)

@@ -35,5 +35,7 @@ private:
     void runFolderWizard(Account *account);
     void startModal(QUuid accountId);
     void endModal(QUuid accountId);
+    void setupAccountPlaceholder();
+    void removeAccountPlaceholder();
 };
 }

@@ -48,22 +48,32 @@ void MainWindow::buildWindow()
     // this is part of the reason we have tidy turned off - it's a bit too touchy.
     // question is, why is tidy butting in if we have it turned off? Figure this out later.
     setMinimumSize(minimumSizeHint());
+    QSize iconsSize(24, 24);
 
     _actionGroup = new QActionGroup(this);
     _actionGroup->setExclusive(true);
 
     _accountsToolbar = new QToolBar(this);
-    _accountsToolbar->setFocusPolicy(Qt::StrongFocus);
     _accountsToolbar->setObjectName("mainWindowAccountsToolbar");
+    _accountsToolbar->setFocusPolicy(Qt::StrongFocus);
     _accountsToolbar->setMovable(false);
     // 32 looks Baaaaaad
-    _accountsToolbar->setIconSize(QSize(24, 24));
+    _accountsToolbar->setIconSize(iconsSize);
     _accountsToolbar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     addToolBar(_accountsToolbar);
 
     _toolbar = new QToolBar(this);
-    _toolbar->setFocusPolicy(Qt::StrongFocus);
     _toolbar->setObjectName("mainWindowToolbar");
+    // the height is in play if the toolbar is vertically oriented
+    // not sure what the default separator width is, but without setting this style sheet
+    // the space "around" the separator line itself was visibly "extra" if you eg select the activity button
+    // which makes the button "edge" clear. Anyway without this fix, the  ... button looked really weird
+    // looked like it was pushed too far to the right with a larger gap on the left side vs the right
+    // this change helped a lot.
+    _toolbar->setStyleSheet("QToolBar::Separator { width: 1px; height: 1px; }");
+    _toolbar->setFocusPolicy(Qt::StrongFocus);
+    _toolbar->setIconSize(iconsSize);
+    _toolbar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     _toolbar->setMovable(false);
     _toolbar->setAccessibleDescription(tr("Main toolbar for the application"));
     _toolbar->setAccessibleName(tr("Main toolbar"));
@@ -74,17 +84,26 @@ void MainWindow::buildWindow()
     toolbarStretch->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     _toolbar->addWidget(toolbarStretch);
 
-    _separatorAction = new QAction(this);
-    _separatorAction->setSeparator(true);
-
-    _toolbar->addAction(_separatorAction);
+    // need to stash the separator action so we can insert other actions before it, ie after the stretch section
+    _separatorAction = _toolbar->addSeparator();
 
     _moreButton = new QToolButton(this);
-    // in theory yes, but the icon is hideously large - needs more space as border, maybe use the "no space" icon as example
-    // proportions
-    // _moreButton->setIcon(Resources::getCoreIcon("more"));
-    _moreButton->setText("⋯");
+    _moreButton->setObjectName("toolbarMoreButton");
+    // for whatever reason, as soon as you slap an icon on a QToolButton the stupid menu indicator shows up
+    // this does NOT happen with text only QToolButton with menu.
+    // Even with the separator style fix above, I *still* had the change the right padding here to make it look
+    // correct
+    // and no, I tried setting eg content margin on the _moreButton didn't do squat! No idea what qt is doing with styling
+    // but the content margin should always do something. grrrrr. at least it didn't work on mac.
+    _moreButton->setStyleSheet("QToolButton { padding-right: 10px; } QToolButton::menu-indicator { image: none; }");
+    _moreButton->setIconSize(iconsSize);
+    _moreButton->setIcon(Resources::getCoreIcon("more"));
     _moreButton->setPopupMode(QToolButton::InstantPopup);
+    // QToolButtons have default fixed size, shaped to their content (watch out if it's text only, especially!).
+    // In this toolbar all action buttons have icon+text which makes them effectively "taller" than the more button so there is
+    // dead space which doesn't accept clicks above and below the more icon
+    // So, make the more button expand vertically so you can click anywhere in the area, just like all the others.
+    _moreButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
     _toolbar->addWidget(_moreButton);
 
     _widgetStack = new QStackedWidget(this);
@@ -158,9 +177,8 @@ void MainWindow::configurePanelAction(QAction *action)
     QWidget *widget = action->data().value<QWidget *>();
     if (widget) {
         connect(action, &QAction::toggled, this, &MainWindow::onViewActionTriggered);
-        _widgetStack->addWidget(widget);
-        _widgetStack->setCurrentWidget(widget);
         _actionGroup->addAction(action);
+        _widgetStack->addWidget(widget);
     }
 }
 void MainWindow::removeAccountAction(QAction *action)
@@ -168,10 +186,9 @@ void MainWindow::removeAccountAction(QAction *action)
     QWidget *widget = action->data().value<QWidget *>();
     if (widget) {
         disconnect(action, nullptr, this, nullptr);
+        _actionGroup->removeAction(action);
         _accountsToolbar->removeAction(action);
         _widgetStack->removeWidget(widget);
-        // something should just happen. Let's see what it is.
-        // _widgetStack->setCurrentWidget(widget);
     }
 }
 

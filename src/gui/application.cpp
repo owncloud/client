@@ -137,10 +137,12 @@ Application::~Application()
 
 void Application::lastAccountStateRemoved() const
 {
+#ifndef USE_NEW_MAIN_WINDOW
     // auto run the wizard if there are no existing accounts
     if (_gui && AccountManager::instance()->accounts().isEmpty()) {
         gui()->runAccountWizard();
     }
+#endif
 }
 
 void Application::slotAccountStateAdded(AccountState *accountState) const

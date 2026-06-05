@@ -107,8 +107,10 @@ void ownCloudGui::slotOpenSettingsDialog()
             _settingsDialog->close();
         }
     } else {
+#ifndef USE_NEW_MAIN_WINDOW
         qCInfo(lcApplication) << "No configured folders yet, starting setup wizard";
         runAccountWizard();
+#endif
     }
 }
 
