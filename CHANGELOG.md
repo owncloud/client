@@ -1,6 +1,6 @@
 # Table of Contents
 
-* [Changelog for 7.1.0](#changelog-for-owncloud-desktop-client-710-2026-04-25)
+* [Changelog for 7.1.0](#changelog-for-owncloud-desktop-client-710-2026-06-08)
 * [Changelog for 6.0.3](#changelog-for-owncloud-desktop-client-603-2026-01-07)
 * [Changelog for 6.0.2](#changelog-for-owncloud-desktop-client-602-2025-11-03)
 * [Changelog for 6.0.1](#changelog-for-owncloud-desktop-client-601-2025-10-10)
@@ -41,7 +41,7 @@
 * [Changelog for 2.6.3](#changelog-for-owncloud-desktop-client-263-2020-06-10)
 * [Changelog for 2.6.2](#changelog-for-owncloud-desktop-client-262-2020-02-21)
 * [Changelog for 2.6.1 versions and below](#changelog-for-261-versions-and-below)
-# Changelog for ownCloud Desktop Client [7.1.0] (2026-04-25)
+# Changelog for ownCloud Desktop Client [7.1.0] (2026-06-08)
 
 The following sections list the changes in ownCloud Desktop Client 7.1.0 relevant to
 ownCloud admins and users.
