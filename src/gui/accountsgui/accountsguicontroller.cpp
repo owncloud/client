@@ -34,6 +34,7 @@ AccountsGuiController::AccountsGuiController(MainWindow *window, QObject *parent
 
     connect(AccountManager::instance(), &AccountManager::accountAdded, this, &AccountsGuiController::onAccountAdded);
     connect(AccountManager::instance(), &AccountManager::accountRemoved, this, &AccountsGuiController::onAccountRemoved);
+    connect(AccountManager::instance(), &AccountManager::lastAccountRemoved, this, &AccountsGuiController::onLastAccountRemoved);
 
     if (accounts.isEmpty()) {
         // this is a genuinely reasonable use of timer to execute an operation after construction and any
@@ -94,14 +95,17 @@ void AccountsGuiController::onAccountRemoved(AccountState *state)
         action->deleteLater();
 
         const QList<AccountState *> accounts = AccountManager::instance()->accounts();
-        if (accounts.isEmpty()) {
-            runAccountWizard();
-        } else {
+        if (!accounts.isEmpty()) {
             QUuid newuid = accounts.last()->account()->uuid();
             if (_actionForAccount.contains(newuid))
                 _actionForAccount[newuid]->setChecked(true);
         }
     }
+}
+
+void AccountsGuiController::onLastAccountRemoved()
+{
+    runAccountWizard();
 }
 
 void AccountsGuiController::onAccountAvatarChanged()

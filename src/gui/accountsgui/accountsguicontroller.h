@@ -37,5 +37,6 @@ private:
     void endModal(QUuid accountId);
     void setupAccountPlaceholder();
     void removeAccountPlaceholder();
+    void onLastAccountRemoved();
 };
 }
