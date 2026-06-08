@@ -234,6 +234,7 @@ void AccountsGuiController::endModal(QUuid accountId)
     if (!action)
         return;
     // get the icon from the account again and put it back on the action
-    // action->setIcon(account->avatar());
+    Account *account = AccountManager::instance()->accountState(accountId)->account();
+    action->setIcon(account->avatar());
 }
 }

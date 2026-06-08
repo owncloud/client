@@ -98,6 +98,7 @@ void MainWindow::buildWindow()
     _moreButton->setStyleSheet("QToolButton { padding-right: 10px; } QToolButton::menu-indicator { image: none; }");
     _moreButton->setIconSize(iconsSize);
     _moreButton->setIcon(Resources::getCoreIcon("more"));
+    _moreButton->setToolTip(tr("More"));
     _moreButton->setPopupMode(QToolButton::InstantPopup);
     // QToolButtons have default fixed size, shaped to their content (watch out if it's text only, especially!).
     // In this toolbar all action buttons have icon+text which makes them effectively "taller" than the more button so there is
