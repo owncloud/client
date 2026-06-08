@@ -1,6 +1,7 @@
 #include "mainwindowcontroller.h"
 
 #include "aboutview.h"
+#include "accountmanager.h"
 #include "accountsgui/accountsguicontroller.h"
 #include "localactivitywidget.h"
 #include "mainwindow.h"
@@ -28,7 +29,7 @@ void MainWindowController::setup()
     createActivityAction();
     buildMenuActions();
 
-    _accountsController = new AccountsGuiController(_window, this);
+    _accountsController = new AccountsGuiController(AccountManager::instance(), _window, this);
 }
 
 void MainWindowController::buildMenuActions()

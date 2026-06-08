@@ -19,12 +19,14 @@
 
 namespace OCC {
 
-AccountsGuiController::AccountsGuiController(MainWindow *window, QObject *parent)
+AccountsGuiController::AccountsGuiController(AccountManager *accountMgr, MainWindow *window, QObject *parent)
     : QObject(parent)
+    , _accountMgr(accountMgr)
     , _window(window)
 {
+    Q_ASSERT(_accountMgr && _window);
     // load any existing accounts from the manager.
-    const auto accounts = AccountManager::instance()->accounts();
+    const auto accounts = _accountMgr->accounts();
     for (const auto &accountState : accounts) {
         onAccountAdded(accountState);
     }
@@ -32,9 +34,9 @@ AccountsGuiController::AccountsGuiController(MainWindow *window, QObject *parent
         _actionForAccount.value(accounts.first()->account()->uuid(), nullptr)->setChecked(true);
     }
 
-    connect(AccountManager::instance(), &AccountManager::accountAdded, this, &AccountsGuiController::onAccountAdded);
-    connect(AccountManager::instance(), &AccountManager::accountRemoved, this, &AccountsGuiController::onAccountRemoved);
-    connect(AccountManager::instance(), &AccountManager::lastAccountRemoved, this, &AccountsGuiController::onLastAccountRemoved);
+    connect(_accountMgr, &AccountManager::accountAdded, this, &AccountsGuiController::onAccountAdded);
+    connect(_accountMgr, &AccountManager::accountRemoved, this, &AccountsGuiController::onAccountRemoved);
+    connect(_accountMgr, &AccountManager::lastAccountRemoved, this, &AccountsGuiController::onLastAccountRemoved);
 
     if (accounts.isEmpty()) {
         // this is a genuinely reasonable use of timer to execute an operation after construction and any
@@ -45,7 +47,7 @@ AccountsGuiController::AccountsGuiController(MainWindow *window, QObject *parent
 
 void AccountsGuiController::onAccountAdded(AccountState *state)
 {
-    if (!state || !state->account())
+    if (!_window || !state || !state->account())
         return;
     // asap we need to create some kind of accountView builder that will instantiate a controller and view + whatever else
     // as currently everything is in the view which is absolutely not ok, especially given the multitude of "heavy lifting"
@@ -90,7 +92,7 @@ void AccountsGuiController::onAccountAdded(AccountState *state)
 
 void AccountsGuiController::onAccountRemoved(AccountState *state)
 {
-    if (!state || !state->account())
+    if (!_window || !state || !state->account())
         return;
 
     Account *acc = state->account();
@@ -101,7 +103,10 @@ void AccountsGuiController::onAccountRemoved(AccountState *state)
         _actionForAccount.remove(uid);
         action->deleteLater();
 
-        const QList<AccountState *> accounts = AccountManager::instance()->accounts();
+        if (!_accountMgr)
+            return;
+
+        const QList<AccountState *> accounts = _accountMgr->accounts();
         if (!accounts.isEmpty()) {
             QUuid newuid = accounts.last()->account()->uuid();
             if (_actionForAccount.contains(newuid))
@@ -129,6 +134,8 @@ void AccountsGuiController::onAccountAvatarChanged()
 
 void AccountsGuiController::runAccountWizard()
 {
+    if (!_window)
+        return;
     NewAccountWizard wizard(_window);
     NewAccountModel model(nullptr);
     NewAccountWizardController wizardController(&model, &wizard, nullptr);
@@ -158,7 +165,7 @@ void AccountsGuiController::runAccountWizard()
 
 void AccountsGuiController::setupAccountPlaceholder()
 {
-    if (!AccountManager::instance()->accounts().isEmpty())
+    if (!_window || !_accountMgr || !_accountMgr->accounts().isEmpty())
         return;
 
     QUuid uid;
@@ -181,6 +188,8 @@ void AccountsGuiController::setupAccountPlaceholder()
 
 void AccountsGuiController::removeAccountPlaceholder()
 {
+    if (!_window)
+        return;
     QUuid uid;
     if (_actionForAccount.contains(uid)) {
         QAction *action = _actionForAccount[uid];
@@ -192,6 +201,9 @@ void AccountsGuiController::removeAccountPlaceholder()
 
 void AccountsGuiController::handleAccountSetupError(const QString &error)
 {
+    if (!_window)
+        return;
+
     QMessageBox::warning(_window, tr("New account failure"),
         tr("The account could not be created due to an error:\n%1\nPlease check the server's availability then run the wizard again.").arg(error));
 
@@ -230,11 +242,19 @@ void AccountsGuiController::startModal(QUuid accountId)
 
 void AccountsGuiController::endModal(QUuid accountId)
 {
+    if (!_accountMgr)
+        return;
+
     QAction *action = _actionForAccount.value(accountId, nullptr);
     if (!action)
         return;
     // get the icon from the account again and put it back on the action
-    Account *account = AccountManager::instance()->accountState(accountId)->account();
-    action->setIcon(account->avatar());
+    AccountState *state = _accountMgr->accountState(accountId);
+    if (state && state->account()) {
+        Account *account = _accountMgr->accountState(accountId)->account();
+        action->setIcon(account->avatar());
+    }
+    // I don't think we need to set the action checked again
+    Q_ASSERT(action->isChecked());
 }
 }

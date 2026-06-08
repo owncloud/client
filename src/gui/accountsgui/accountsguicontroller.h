@@ -1,6 +1,10 @@
 #pragma once
 
 #include <QObject>
+#include <QPointer>
+
+// #include "accountmanager.h"
+// #include "mainwindow/mainwindow.h"
 
 #include <QHash>
 #include <QUuid>
@@ -12,6 +16,7 @@ class QActionGroup;
 namespace OCC {
 
 class AccountState;
+class AccountManager;
 class Account;
 class MainWindow;
 
@@ -20,12 +25,13 @@ class AccountsGuiController : public QObject
     Q_OBJECT
 
 public:
-    AccountsGuiController(MainWindow *window, QObject *parent);
+    AccountsGuiController(AccountManager *accountMgr, MainWindow *window, QObject *parent);
     void runAccountWizard();
 
 
 private:
-    MainWindow *_window = nullptr;
+    QPointer<AccountManager> _accountMgr;
+    QPointer<MainWindow> _window;
     QHash<QUuid, QAction *> _actionForAccount;
 
     void onAccountAdded(AccountState *state);
