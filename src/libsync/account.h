@@ -95,6 +95,9 @@ public:
      * The user associated with the account.
      * This value is immutable after construction.
      *
+     * note that this isn't always a human readable "user name" - with some servers it will be an account id
+     * and not a normal "name"
+     *
      */
     QString davUser() const;
 

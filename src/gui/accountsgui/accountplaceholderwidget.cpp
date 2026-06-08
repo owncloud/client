@@ -10,6 +10,7 @@ namespace OCC {
 AccountPlaceholderWidget::AccountPlaceholderWidget(QWidget *parent)
     : QWidget{parent}
 {
+    setObjectName("accountPlaceholderWidget");
     QString appName = Theme::instance()->appNameGUI();
 
     QLabel *logoLabel = new QLabel({}, this);
@@ -19,10 +20,7 @@ AccountPlaceholderWidget::AccountPlaceholderWidget(QWidget *parent)
     logoLabel->setAccessibleName(tr("%1 logo").arg(appName));
 
     QLabel *instructionLabel = new QLabel(
-        tr("You don't have any connected accounts yet. Please create an account by selecting the \"Add account\" option on the more button menu."), this);
-    QFont font = instructionLabel->font();
-    font.setPixelSize(14);
-    instructionLabel->setFont(font);
+        tr("You don't have any connected accounts yet.\n\nPlease create an account by selecting the \"Add account...\" option on the More button menu."), this);
     instructionLabel->setWordWrap(true);
     instructionLabel->setAlignment(Qt::AlignCenter);
     instructionLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
