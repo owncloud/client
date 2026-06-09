@@ -74,7 +74,7 @@ void MainWindowController::createSyncErrorsAction()
         syncErrorWidget, &SyncErrorWidget::issueCountUpdated, this, [syncErrorsAction](int count) { syncErrorsAction->setText(tr("Errors: %1").arg(count)); });
 
     syncErrorsAction->setData(QVariant::fromValue(syncErrorWidget));
-    _window->addPanelAction(syncErrorsAction);
+    _window->addGeneralAction(syncErrorsAction);
 }
 
 void MainWindowController::createActivityAction()
@@ -85,7 +85,7 @@ void MainWindowController::createActivityAction()
     activityAction->setCheckable(true);
     auto localActivityWidget = new LocalActivityWidget(_window);
     activityAction->setData(QVariant::fromValue(localActivityWidget));
-    _window->addPanelAction(activityAction);
+    _window->addGeneralAction(activityAction);
 }
 
 void MainWindowController::onAddAccount()

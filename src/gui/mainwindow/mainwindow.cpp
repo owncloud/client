@@ -158,7 +158,7 @@ void MainWindow::endModalWidget()
     _actionGroup->checkedAction()->toggled(true);
 }
 
-void MainWindow::addPanelAction(QAction *action)
+void MainWindow::addGeneralAction(QAction *action)
 {
     _toolbar->insertAction(_separatorAction, action);
     configureAction(action);
@@ -190,11 +190,11 @@ void MainWindow::configureAction(QAction *action)
         _widgetStack->addWidget(widget);
     }
 }
-void MainWindow::removeAccountAction(QAction *action)
+void MainWindow::removeAction(QAction *action)
 {
     QWidget *widget = action->data().value<QWidget *>();
     if (widget) {
-        disconnect(action, nullptr, this, nullptr);
+        action->disconnect();
         _actionGroup->removeAction(action);
         _toolbar->removeAction(action);
         _widgetStack->removeWidget(widget);
@@ -231,7 +231,6 @@ void MainWindow::updateFocusChain()
                 prevItem = widget;
                 continue;
             }
-            qDebug() << prevItem->objectName() << widget->objectName();
             _toolbar->setTabOrder(prevItem, widget);
             prevItem = widget;
         }
@@ -265,13 +264,13 @@ void MainWindow::setVisible(bool visible)
         cfg.saveGeometry(this);
     }
 
-#ifdef Q_OS_MAC
-    if (visible) {
-        setActivationPolicy(ActivationPolicy::Regular);
-    } else {
-        setActivationPolicy(ActivationPolicy::Accessory);
+    if (Utility::isMac()) {
+        if (visible) {
+            setActivationPolicy(ActivationPolicy::Regular);
+        } else {
+            setActivationPolicy(ActivationPolicy::Accessory);
+        }
     }
-#endif
 
     QMainWindow::setVisible(visible);
 }

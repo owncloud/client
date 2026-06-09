@@ -27,9 +27,9 @@ public:
     void showModalWidget(ModalWrapperWidget *w);
 
     void addAccountAction(QAction *action);
-    void removeAccountAction(QAction *action);
+    void removeAction(QAction *action);
 
-    void addPanelAction(QAction *action);
+    void addGeneralAction(QAction *action);
 
 private slots:
     void endModalWidget();

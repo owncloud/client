@@ -99,7 +99,7 @@ void AccountsGuiController::onAccountRemoved(AccountState *state)
     QUuid uid = acc->uuid();
     if (_actionForAccount.contains(uid)) {
         QAction *action = _actionForAccount[uid];
-        _window->removeAccountAction(action);
+        _window->removeAction(action);
         _actionForAccount.remove(uid);
         action->deleteLater();
 
@@ -193,7 +193,7 @@ void AccountsGuiController::removeAccountPlaceholder()
     QUuid uid;
     if (_actionForAccount.contains(uid)) {
         QAction *action = _actionForAccount[uid];
-        _window->removeAccountAction(action);
+        _window->removeAction(action);
         _actionForAccount.remove(uid);
         action->deleteLater();
     }
