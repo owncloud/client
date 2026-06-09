@@ -7,6 +7,8 @@
 #include <QToolBar>
 #include <QToolButton>
 
+#include <QMenu>
+
 #include "configfile.h"
 #include "modalwrapperwidget.h"
 #include "theme.h"
@@ -32,9 +34,8 @@ MainWindow::MainWindow()
     addAction(tr("Hide"), Qt::CTRL | Qt::Key_W, this, &MainWindow::hide);
 
     ConfigFile().restoreGeometry(this);
-#ifdef Q_OS_MAC
-    setActivationPolicy(ActivationPolicy::Accessory);
-#endif
+    if (Utility::isMac())
+        setActivationPolicy(ActivationPolicy::Accessory);
 
     buildWindow();
 }
@@ -53,14 +54,6 @@ void MainWindow::buildWindow()
     _actionGroup = new QActionGroup(this);
     _actionGroup->setExclusive(true);
 
-    _accountsToolbar = new QToolBar(this);
-    _accountsToolbar->setObjectName("mainWindowAccountsToolbar");
-    _accountsToolbar->setFocusPolicy(Qt::StrongFocus);
-    _accountsToolbar->setMovable(false);
-    // 32 looks Baaaaaad
-    _accountsToolbar->setIconSize(iconsSize);
-    _accountsToolbar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    addToolBar(_accountsToolbar);
 
     _toolbar = new QToolBar(this);
     _toolbar->setObjectName("mainWindowToolbar");
@@ -71,41 +64,47 @@ void MainWindow::buildWindow()
     // looked like it was pushed too far to the right with a larger gap on the left side vs the right
     // this change helped a lot.
     _toolbar->setStyleSheet("QToolBar::Separator { width: 1px; height: 1px; }");
-    _toolbar->setFocusPolicy(Qt::StrongFocus);
     _toolbar->setIconSize(iconsSize);
     _toolbar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     _toolbar->setMovable(false);
     _toolbar->setAccessibleDescription(tr("Main toolbar for the application"));
     _toolbar->setAccessibleName(tr("Main toolbar"));
-    addToolBar(_toolbar);
+    addToolBar(Qt::TopToolBarArea, _toolbar);
+
 
     QWidget *toolbarStretch = new QWidget(this);
+    toolbarStretch->setFocusPolicy(Qt::NoFocus);
     // who knows, maybe someday we use the toolbar vertically
     toolbarStretch->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    _toolbar->addWidget(toolbarStretch);
+    _stretchAction = _toolbar->addWidget(toolbarStretch);
 
     // need to stash the separator action so we can insert other actions before it, ie after the stretch section
     _separatorAction = _toolbar->addSeparator();
 
-    _moreButton = new QToolButton(this);
-    _moreButton->setObjectName("toolbarMoreButton");
-    // for whatever reason, as soon as you slap an icon on a QToolButton the stupid menu indicator shows up
-    // this does NOT happen with text only QToolButton with menu.
-    // Even with the separator style fix above, I *still* had the change the right padding here to make it look
-    // correct
-    // and no, I tried setting eg content margin on the _moreButton didn't do squat! No idea what qt is doing with styling
-    // but the content margin should always do something. grrrrr. at least it didn't work on mac.
-    _moreButton->setStyleSheet("QToolButton { padding-right: 10px; } QToolButton::menu-indicator { image: none; }");
-    _moreButton->setIconSize(iconsSize);
-    _moreButton->setIcon(Resources::getCoreIcon("more"));
-    _moreButton->setToolTip(tr("More"));
+    QAction *moreAction = new QAction(tr("More"), this);
+    moreAction->setObjectName("moreAction");
+    moreAction->setIcon(Resources::getCoreIcon("more"));
+    moreAction->setToolTip(tr("More"));
+    _toolbar->addAction(moreAction);
+    _moreButton = qobject_cast<QToolButton *>(_toolbar->widgetForAction(moreAction));
+    _moreButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
+    _moreButton->setFocusPolicy(Qt::StrongFocus);
+    if (Utility::isMac()) {
+        // does not work for QToolButton:
+        // button->setAttribute(Qt::WA_MacShowFocusRect, true);
+        // so add it to the style sheet
+        _moreButton->setStyleSheet("QToolButton:focus { border: 2px solid palette(highlight); }"
+                                   "QToolButton::menu-indicator { image: none; }");
+    } else {
+        _moreButton->setStyleSheet("QToolButton::menu-indicator { image: none; }");
+    }
+
     _moreButton->setPopupMode(QToolButton::InstantPopup);
     // QToolButtons have default fixed size, shaped to their content (watch out if it's text only, especially!).
     // In this toolbar all action buttons have icon+text which makes them effectively "taller" than the more button so there is
     // dead space which doesn't accept clicks above and below the more icon
     // So, make the more button expand vertically so you can click anywhere in the area, just like all the others.
     _moreButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
-    _toolbar->addWidget(_moreButton);
 
     _widgetStack = new QStackedWidget(this);
     setCentralWidget(_widgetStack);
@@ -113,18 +112,22 @@ void MainWindow::buildWindow()
 
 void MainWindow::setMoreMenuActions(const QList<QAction *> &actions)
 {
-    _moreButton->addActions(actions);
+    QMenu *moreMenu = _moreButton->menu();
+    if (moreMenu)
+        moreMenu->clear();
+    else
+        moreMenu = new QMenu(_moreButton);
+    moreMenu->addActions(actions);
+    _moreButton->setMenu(moreMenu);
 }
 
 void MainWindow::startModal()
 {
-    _accountsToolbar->setEnabled(false);
     _toolbar->setEnabled(false);
 }
 
 void MainWindow::stopModal()
 {
-    _accountsToolbar->setEnabled(true);
     _toolbar->setEnabled(true);
 }
 
@@ -157,26 +160,31 @@ void MainWindow::endModalWidget()
 
 void MainWindow::addPanelAction(QAction *action)
 {
-    QWidget *widget = action->data().value<QWidget *>();
-    if (widget) {
-        _toolbar->insertAction(_separatorAction, action);
-        configurePanelAction(action);
-    }
+    _toolbar->insertAction(_separatorAction, action);
+    configureAction(action);
+    updateFocusChain();
 }
 
 void MainWindow::addAccountAction(QAction *action)
 {
-    QWidget *widget = action->data().value<QWidget *>();
-    if (widget) {
-        _accountsToolbar->addAction(action);
-        configurePanelAction(action);
-    }
+    _toolbar->insertAction(_stretchAction, action);
+    configureAction(action);
+    updateFocusChain();
 }
 
-void MainWindow::configurePanelAction(QAction *action)
+void MainWindow::configureAction(QAction *action)
 {
     QWidget *widget = action->data().value<QWidget *>();
     if (widget) {
+        QWidget *button = _toolbar->widgetForAction(action);
+        Q_ASSERT(button);
+        button->setFocusPolicy(Qt::StrongFocus);
+        if (Utility::isMac()) {
+            // does not work for QToolButton:
+            // button->setAttribute(Qt::WA_MacShowFocusRect, true);
+            button->setStyleSheet("QToolButton:focus { border: 2px solid palette(highlight); }");
+        }
+
         connect(action, &QAction::toggled, this, &MainWindow::onViewActionTriggered);
         _actionGroup->addAction(action);
         _widgetStack->addWidget(widget);
@@ -188,7 +196,7 @@ void MainWindow::removeAccountAction(QAction *action)
     if (widget) {
         disconnect(action, nullptr, this, nullptr);
         _actionGroup->removeAction(action);
-        _accountsToolbar->removeAction(action);
+        _toolbar->removeAction(action);
         _widgetStack->removeWidget(widget);
     }
 }
@@ -203,6 +211,30 @@ void MainWindow::onViewActionTriggered(bool selected)
         QWidget *widget = sourceAction->data().value<QWidget *>();
         if (widget)
             _widgetStack->setCurrentWidget(widget);
+    }
+}
+
+void MainWindow::updateFocusChain()
+{
+    const auto actions = _toolbar->actions();
+    if (actions.isEmpty())
+        return;
+
+    QWidget *prevItem = nullptr;
+    for (QAction *action : actions) {
+        if (action->objectName().isEmpty())
+            continue;
+        if (QWidget *widget = _toolbar->widgetForAction(action)) {
+            if (widget->focusPolicy() == Qt::NoFocus)
+                continue;
+            if (prevItem == nullptr) {
+                prevItem = widget;
+                continue;
+            }
+            qDebug() << prevItem->objectName() << widget->objectName();
+            _toolbar->setTabOrder(prevItem, widget);
+            prevItem = widget;
+        }
     }
 }
 

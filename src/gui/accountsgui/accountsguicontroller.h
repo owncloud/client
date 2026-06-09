@@ -3,9 +3,6 @@
 #include <QObject>
 #include <QPointer>
 
-// #include "accountmanager.h"
-// #include "mainwindow/mainwindow.h"
-
 #include <QHash>
 #include <QUuid>
 
@@ -36,13 +33,17 @@ private:
 
     void onAccountAdded(AccountState *state);
     void onAccountRemoved(AccountState *state);
+    void onLastAccountRemoved();
+
     void onAccountAvatarChanged();
-    void handleAccountSetupError(const QString &error);
+
     void runFolderWizard(Account *account);
+    void handleAccountSetupError(const QString &error);
+
     void startModal(QUuid accountId);
     void endModal(QUuid accountId);
+
     void setupAccountPlaceholder();
     void removeAccountPlaceholder();
-    void onLastAccountRemoved();
 };
 }

@@ -43,12 +43,13 @@ private:
     // is "waiting" for the user to complete something there.
     void startModal();
     void stopModal();
-    void configurePanelAction(QAction *action);
+    void configureAction(QAction *action);
+    void updateFocusChain();
 
-    QToolBar *_accountsToolbar = nullptr;
     QToolBar *_toolbar = nullptr;
     QStackedWidget *_widgetStack = nullptr;
     QAction *_separatorAction = nullptr;
+    QAction *_stretchAction = nullptr;
     QToolButton *_moreButton = nullptr;
     QActionGroup *_actionGroup = nullptr;
 };
