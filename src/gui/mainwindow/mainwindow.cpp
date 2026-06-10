@@ -34,8 +34,10 @@ MainWindow::MainWindow()
     addAction(tr("Hide"), Qt::CTRL | Qt::Key_W, this, &MainWindow::hide);
 
     ConfigFile().restoreGeometry(this);
-    if (Utility::isMac())
-        setActivationPolicy(ActivationPolicy::Accessory);
+
+#ifdef Q_OS_MAC
+    setActivationPolicy(ActivationPolicy::Accessory);
+#endif
 
     buildWindow();
 }
@@ -264,13 +266,13 @@ void MainWindow::setVisible(bool visible)
         cfg.saveGeometry(this);
     }
 
-    if (Utility::isMac()) {
-        if (visible) {
-            setActivationPolicy(ActivationPolicy::Regular);
-        } else {
-            setActivationPolicy(ActivationPolicy::Accessory);
-        }
+#ifdef Q_OS_MAC
+    if (visible) {
+        setActivationPolicy(ActivationPolicy::Regular);
+    } else {
+        setActivationPolicy(ActivationPolicy::Accessory);
     }
+#endif
 
     QMainWindow::setVisible(visible);
 }
