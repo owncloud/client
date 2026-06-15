@@ -2748,7 +2748,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/selectivesyncwidget.cpp" line="110"/>
         <source>An error occurred while loading the list of subfolders.</source>
-        <translation>サーバーからフォルダーのリスト取得時にエラーが発生しました。</translation>
+        <translation>サーバーからフォルダーの一覧取得時にエラーが発生しました。</translation>
     </message>
 </context>
 <context>
