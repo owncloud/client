@@ -18,15 +18,12 @@
 #include "common/version.h"
 #include "common/vfs.h"
 #include "config.h"
-#include "configfile.h"
 
-#include "resources/qmlresources.h"
+// #include "resources/qmlresources.h"
 #include "resources/resources.h"
 
 #include <QSslSocket>
 #include <QStyle>
-#include <QtCore>
-#include <QtGui>
 
 #include "themewatcher.h"
 
@@ -66,11 +63,6 @@ QmlUrlButton::QmlUrlButton(const std::tuple<QString, QString, QUrl> &tuple)
     , name(std::get<1>(tuple))
     , url(std::get<2>(tuple))
 {
-}
-
-bool QmlButtonColor::valid() const
-{
-    return color.isValid() && textColor.isValid() && textColorDisabled.isValid();
 }
 
 Theme *Theme::instance()
@@ -175,23 +167,6 @@ QList<QmlUrlButton> Theme::qmlUrlButtons() const
     return out;
 }
 
-// If this option returns true, the client only supports one folder to sync.
-// The Add-Button is removed accordingly.
-bool Theme::singleSyncFolder() const
-{
-    return false;
-}
-
-bool Theme::multiAccount() const
-{
-    return true;
-}
-
-QString Theme::defaultServerFolder() const
-{
-    return QStringLiteral("/");
-}
-
 QString Theme::helpUrl() const
 {
     return QStringLiteral("https://doc.owncloud.com/desktop/latest/");
@@ -241,11 +216,6 @@ QUrl Theme::updateCheckUrl() const
 #else
     return QUrl(QStringLiteral(APPLICATION_UPDATE_URL));
 #endif
-}
-
-bool Theme::wizardSkipAdvancedPage() const
-{
-    return false;
 }
 
 QString Theme::gitSHA1(VersionFormat format) const
@@ -385,16 +355,6 @@ QColor Theme::wizardHeaderBackgroundColor() const
     return QColor();
 }
 
-QmlButtonColor Theme::primaryButtonColor() const
-{
-    return {};
-}
-
-QmlButtonColor Theme::secondaryButtonColor() const
-{
-    return {};
-}
-
 QIcon Theme::wizardHeaderLogo() const
 {
     return applicationIcon();
@@ -415,55 +375,9 @@ QColor Theme::avatarColorChecked() const
     return {};
 }
 
-QString Theme::webDavPath() const
-{
-    return QStringLiteral("remote.php/webdav/");
-}
-
-bool Theme::linkSharing() const
-{
-    return true;
-}
-
-bool Theme::userGroupSharing() const
-{
-    return true;
-}
-
 bool Theme::forceSystemNetworkProxy() const
 {
     return false;
-}
-
-Theme::UserIDType Theme::userIDType() const
-{
-    return UserIDType::UserIDUserName;
-}
-
-QString Theme::customUserID() const
-{
-    return QString();
-}
-
-QString Theme::userIDHint() const
-{
-    return QString();
-}
-
-
-QString Theme::wizardUrlPostfix() const
-{
-    return QString();
-}
-
-QString Theme::wizardUrlPlaceholder() const
-{
-    return QString();
-}
-
-QString Theme::quotaBaseFolder() const
-{
-    return QStringLiteral("/");
 }
 
 QString Theme::oauthClientId() const
@@ -474,16 +388,6 @@ QString Theme::oauthClientId() const
 QString Theme::oauthClientSecret() const
 {
     return QStringLiteral("UBntmLjC2yYCeHwsyj73Uwo9TAaecAetRwMw0xYcvNL9yRdLSUi0hUAHfvCHFeFh");
-}
-
-QString Theme::oauthLocalhost() const
-{
-    return QStringLiteral("http://localhost");
-}
-
-QPair<QString, QString> Theme::oauthOverrideAuthUrl() const
-{
-    return {};
 }
 
 QVector<quint16> Theme::oauthPorts() const
@@ -502,11 +406,6 @@ QString Theme::openIdConnectPrompt() const
     return QStringLiteral("select_account consent");
 }
 
-bool Theme::oidcEnableDynamicRegistration() const
-{
-    return true;
-}
-
 QString Theme::versionSwitchOutput() const
 {
     return aboutVersions(Theme::VersionFormat::Url);
@@ -517,12 +416,12 @@ bool Theme::showVirtualFilesOption() const
     return true;
 }
 
-bool Theme::forceVirtualFilesOption() const
+QString Theme::wizardUrlPlaceholder() const
 {
-    return false;
+    return QString();
 }
 
-bool Theme::connectionValidatorClearCookies() const
+bool Theme::forceVirtualFilesOption() const
 {
     return false;
 }
@@ -532,29 +431,15 @@ bool Theme::enableSocketApiIconSupport() const
     return true;
 }
 
-bool Theme::warnOnMultipleDb() const
-{
-    return Resources::isVanillaTheme();
-}
-
 bool Theme::allowDuplicatedFolderSyncPair() const
 {
     return true;
 }
 
-bool Theme::wizardEnableWebfinger() const
-{
-    return false;
-}
 
 QVector<std::tuple<QString, QString, QUrl>> Theme::urlButtons() const
 {
     return {};
-}
-
-bool Theme::enableMoveToTrash() const
-{
-    return true;
 }
 
 bool Theme::moveToTrashDefaultValue() const

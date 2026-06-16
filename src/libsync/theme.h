@@ -48,7 +48,7 @@ public:
     QUrl url;
 };
 
-class QmlButtonColor
+/*class QmlButtonColor
 {
     Q_GADGET
     Q_PROPERTY(QColor color MEMBER color CONSTANT)
@@ -63,22 +63,18 @@ public:
     QColor textColorDisabled = {};
 
     bool valid() const;
-};
+};*/
 
 class OWNCLOUDSYNC_EXPORT Theme : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(bool multiAccount READ multiAccount FINAL CONSTANT)
     // todo: #20
-    Q_PROPERTY(bool singleSyncFolder READ singleSyncFolder FINAL CONSTANT)
     Q_PROPERTY(QList<QmlUrlButton> urlButtons READ qmlUrlButtons FINAL CONSTANT)
     Q_PROPERTY(bool syncNewlyDiscoveredSpaces READ syncNewlyDiscoveredSpaces FINAL CONSTANT)
     Q_PROPERTY(QColor avatarColor READ avatarColor NOTIFY themeChanged)
     Q_PROPERTY(QColor avatarColorChecked READ avatarColorChecked NOTIFY themeChanged)
     Q_PROPERTY(QColor brandedBackgoundColor READ wizardHeaderBackgroundColor CONSTANT)
     Q_PROPERTY(QColor brandedForegroundColor READ wizardHeaderTitleColor CONSTANT)
-    Q_PROPERTY(QmlButtonColor primaryButtonColor READ primaryButtonColor CONSTANT)
-    Q_PROPERTY(QmlButtonColor secondaryButtonColor READ secondaryButtonColor CONSTANT)
     Q_PROPERTY(bool spacesAreCalledFolders READ spacesAreCalledFolders FINAL CONSTANT)
     QML_SINGLETON
     QML_ELEMENT
@@ -151,15 +147,6 @@ public:
     virtual QString applicationIconName() const;
     virtual QIcon aboutIcon() const;
 
-    /**
-     * Characteristics: bool if more than one sync folder is allowed
-     */
-    [[deprecated("Support for single sync folder is removed as of client 7.0")]] virtual bool singleSyncFolder() const;
-
-    /**
-     * When true, client works with multiple accounts.
-     */
-    virtual bool multiAccount() const;
 
     /**
     * URL to documentation.
@@ -209,23 +196,12 @@ public:
      */
     virtual QString overrideServerPath() const;
 
-    /**
-     * The default folder name without path on the server at setup time.
-     */
-    [[deprecated("defaultServerFolder is unsupported and removed as of client 7.0")]]
-    virtual QString defaultServerFolder() const;
-
 
     /** @return color for the setup wizard. This is effectively the text color for the wizard pages*/
     virtual QColor wizardHeaderTitleColor() const;
 
     /** @return color for the setup wizard.  This is effectively the background color for each page*/
     virtual QColor wizardHeaderBackgroundColor() const;
-
-    [[deprecated("primaryButtonColor is unsupported and removed as of client 7.0")]]
-    virtual QmlButtonColor primaryButtonColor() const;
-    [[deprecated("secondaryButtonColor is unsupported and removed as of client 7.0")]]
-    virtual QmlButtonColor secondaryButtonColor() const;
 
     /** @return logo for the setup wizard. */
     virtual QIcon wizardHeaderLogo() const;
@@ -252,6 +228,7 @@ public:
      * About dialog contents
      */
     virtual QString about() const;
+
     virtual bool aboutShowCopyright() const;
 
     /**
@@ -265,28 +242,6 @@ public:
      */
     QUrl updateCheckUrl() const;
 
-    /**
-     * Skip the advanced page and create a sync with the default settings
-     */
-    [[deprecated("wizardSkipAdvancedPage is unsupported and removed as of client 7.0")]]
-    virtual bool wizardSkipAdvancedPage() const;
-
-    /**
-     * Alternative path on the server that provides access to the WebDAV capabilities
-     *
-     * Attention: Make sure that this string does NOT have a leading slash and that
-     * it has a trailing slash, for example "remote.php/webdav/".
-     */
-    [[deprecated("webDavPath is unsupported and removed as of client 7.0")]]
-    virtual QString webDavPath() const;
-
-    /**
-     * @brief Sharing options
-     *
-     * Allow link sharing and or user/group sharing
-     */
-    [[deprecated("themable link sharing has been removed as of client 7.0")]] virtual bool linkSharing() const;
-    [[deprecated("oc10 user group sharing has been removed as of client 7.0")]] virtual bool userGroupSharing() const;
 
     /**
      * If this returns true, the user cannot configure the proxy in the network settings.
@@ -296,71 +251,10 @@ public:
     virtual bool forceSystemNetworkProxy() const;
 
     /**
-     * @brief How to handle the userID
-     *
-     * @value UserIDUserName Wizard asks for username as ID
-     * @value UserIDEmail Wizard asks for an email as ID
-     * @value UserIDCustom Specify string in \ref customUserID
-     */
-    enum UserIDType {
-        UserIDUserName = 0,
-        UserIDEmail,
-        UserIDCustom
-    };
-    Q_ENUM(UserIDType)
-
-    /** @brief What to display as the userID (e.g. in the wizards)
-     *
-     *  @return UserIDType::UserIDUserName, unless reimplemented
-     */
-    [[deprecated("userIDType is unsupported and removed as of client 7.0")]]
-    virtual UserIDType userIDType() const;
-
-    /**
-     * @brief Allows to customize the type of user ID (e.g. username, email)
-     *
-     * @note This string cannot be translated, but is still useful for
-     *       referencing brand name IDs (e.g. "ACME ID", when using ACME.)
-     *
-     * @return An empty string, unless reimplemented
-     */
-    [[deprecated("customUserID is unsupported and removed as of client 7.0")]]
-    virtual QString customUserID() const;
-
-    /**
-     * @brief Demo string to be displayed when no text has been
-     *        entered for the user id (e.g. mylogin@company.com)
-     *
-     * @return An empty string, unless reimplemented
-     */
-    [[deprecated("userIDHint is unsupported and removed as of client 7.0")]]
-    virtual QString userIDHint() const;
-
-    /**
-     * @brief Postfix that will be enforced in a URL. e.g.
-     *        ".myhosting.com".
-     *
-     * @return An empty string, unless reimplemented
-     */
-    [[deprecated("wizardUrlPostfix is unsupported and removed as of client 7.0")]]
-    virtual QString wizardUrlPostfix() const;
-
-    /**
      * @brief wizardUrlPlaceholder provides placeholder text for the URL field in the new account wizard
      * @return empty string unless overridden
      */
     virtual QString wizardUrlPlaceholder() const;
-
-    /**
-     * @brief the server folder that should be queried for the quota information
-     *
-     * This can be configured to show the quota information for a different
-     * folder than the root. This is the folder on which the client will do
-     * PROPFIND calls to get "quota-available-bytes" and "quota-used-bytes"
-     *
-     * Defaults: "/"
-     */
-    [[deprecated("quota folder support has been removed as of client 7.0")]] virtual QString quotaBaseFolder() const;
 
     /**
      * The OAuth client_id, secret pair.
@@ -368,22 +262,6 @@ public:
      */
     virtual QString oauthClientId() const;
     virtual QString oauthClientSecret() const;
-
-    /**
-     * Defaults to http://localhost due to historic reasons,
-     * can be set to http://127.0.0.1 reasons.
-     * This option is only available with oauth2 not with OpenID Connect.
-     */
-    [[deprecated("oauthLocalhost is unsupported and removed as of client 7.0")]]
-    virtual QString oauthLocalhost() const;
-
-    /**
-     * By default, the client tries to get the OAuth access endpoint and the OAuth token endpoint from /.well-known/openid-configuration
-     * Setting this allow authentication without a well known url
-     *
-     * @return QPair<OAuth access endpoint, OAuth token endpoint>
-     */
-    [[deprecated("oauth url override support has been removed as of client 7.0")]] virtual QPair<QString, QString> oauthOverrideAuthUrl() const;
 
     /**
      * List of ports to use for the local redirect server
@@ -404,11 +282,11 @@ public:
     virtual QString openIdConnectPrompt() const;
 
     /**
-     * Defines whether the client attempts dynamic registration with the IdP or uses the
-     * oauthClientId() and oauthClientSecret()
-     * Default: True
+     * @brief Disables all vfs related options, if vfs is still wanted we recommend to set forceVirtualFilesOption
+     *
+     * default: true
      */
-    [[deprecated("oidc dynamic registration has been removed starting with client 7.0.")]] virtual bool oidcEnableDynamicRegistration() const;
+    virtual bool showVirtualFilesOption() const;
 
     /**
      * @brief What should be output for the --version command line switch.
@@ -419,21 +297,8 @@ public:
     [[deprecated("versionSwitchOutput is unsupported and removed as of client 7.0")]]
     virtual QString versionSwitchOutput() const;
 
-    /**
-     * @brief Disables all vfs related options, if vfs is still wanted we recommend to set forceVirtualFilesOption
-     *
-     * default: true
-     */
-    virtual bool showVirtualFilesOption() const;
 
     virtual bool forceVirtualFilesOption() const;
-
-    /**
-     * Whether to clear cookies before checking status.php
-     * This is used with F5 BIG-IP setups.
-     */
-    [[deprecated("connectionValidatorClearCookies is unsupported and removed as of client 7.0")]]
-    virtual bool connectionValidatorClearCookies() const;
 
     /**
      * Enables the response of V2/GET_CLIENT_ICON, default true.
@@ -442,38 +307,16 @@ public:
     virtual bool enableSocketApiIconSupport() const;
 
     /**
-     * Warn if we find multiple db files in the sync root.
-     * This can indicate that the sync dir is shared between multiple clients or accounts
-     */
-    [[deprecated("warnOnMultipleDb is unsupported and removed as of client 7.0")]]
-    virtual bool warnOnMultipleDb() const;
-
-
-    /**
      * Whether to or not to allow multiple sync folder pairs for the same remote folder.
      * Default: true
      */
     virtual bool allowDuplicatedFolderSyncPair() const;
 
     /**
-     * Enable Webfinger page in setup wizard.
-     */
-    [[deprecated("Legacy web finger support has been removed starting with client 7.0.")]] virtual bool wizardEnableWebfinger() const;
-
-    /**
      * Returns a list of IconName, Name, Url pairs that will be displayed as buttons on AccountSettings.
      * For each url there must be an icon provided in the form of #IconName.svg or multiple #IconName-#resolution.png like for the other theme icons.
      * */
     virtual QVector<std::tuple<QString, QString, QUrl>> urlButtons() const;
-
-
-    /**
-     * Defines if the move to trash feature is available or no. If available it is still disabled by default.
-     * User has ot explicit enable this feature. See Theme::moveToTrashDefaultValue() to theme the default behavior.
-     * Default: true
-     */
-    [[deprecated("enableMoveToTrash is unsupported and removed as of client 7.0")]]
-    virtual bool enableMoveToTrash() const;
 
     /**
      * Set the default value for move to trash option
@@ -515,11 +358,6 @@ public:
 protected:
     Theme();
 
-    // compat with legacy themes
-    [[deprecated("Use Resources::themeUniversalIcon")]] auto themeUniversalIcon(const QString &iconName) const
-    {
-        return Resources::themeUniversalIcon(iconName);
-    }
 
 Q_SIGNALS:
     void systrayUseMonoIconsChanged(bool);
