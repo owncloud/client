@@ -225,8 +225,6 @@ public:
      */
     virtual QString about() const;
 
-    virtual bool aboutShowCopyright() const;
-
     /**
      * Define if the systray icons should be using mono design
      */

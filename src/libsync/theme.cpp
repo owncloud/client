@@ -210,9 +210,6 @@ QUrl Theme::updateCheckUrl() const
 QString Theme::gitSHA1(VersionFormat format) const
 {
     const QString gitShahSort = Version::gitSha().left(6);
-    if (!aboutShowCopyright()) {
-        return gitShahSort;
-    }
     const auto gitUrl = QStringLiteral("https://github.com/owncloud/client/commit/%1").arg(Version::gitSha());
     switch (format) {
     case Theme::VersionFormat::OneLiner:
@@ -292,11 +289,6 @@ QString Theme::about() const
         .arg(Utility::escape(Version::displayString()), Utility::escape(QStringLiteral("https://" APPLICATION_DOMAIN)),
             Utility::escape(QStringLiteral(APPLICATION_DOMAIN)), Utility::escape(vendor), Utility::escape(appNameGUI()),
             aboutVersions(Theme::VersionFormat::RichText));
-}
-
-bool Theme::aboutShowCopyright() const
-{
-    return true;
 }
 
 QString Theme::syncStateIconName(const SyncResult &result) const

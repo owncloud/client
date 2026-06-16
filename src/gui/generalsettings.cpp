@@ -81,9 +81,8 @@ GeneralSettings::GeneralSettings(QWidget *parent)
 
     connect(_ui->about_pushButton, &QPushButton::clicked, this, &GeneralSettings::showAbout);
 
-    if (!Theme::instance()->aboutShowCopyright()) {
-        _ui->copyrightLabel->hide();
-    }
+    // todo: after DC-300 is merged, completely get rid of the copyright label in the settingsview.ui
+    _ui->copyrightLabel->hide();
 }
 
 GeneralSettings::~GeneralSettings()
