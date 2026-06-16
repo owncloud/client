@@ -406,11 +406,6 @@ QString Theme::openIdConnectPrompt() const
     return QStringLiteral("select_account consent");
 }
 
-QString Theme::versionSwitchOutput() const
-{
-    return aboutVersions(Theme::VersionFormat::Url);
-}
-
 bool Theme::showVirtualFilesOption() const
 {
     return true;

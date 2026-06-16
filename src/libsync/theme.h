@@ -288,15 +288,6 @@ public:
      */
     virtual bool showVirtualFilesOption() const;
 
-    /**
-     * @brief What should be output for the --version command line switch.
-     *
-     * By default, it's a combination of appName(), version(), the GIT SHA1 and some
-     * important dependency versions.
-     */
-    [[deprecated("versionSwitchOutput is unsupported and removed as of client 7.0")]]
-    virtual QString versionSwitchOutput() const;
-
 
     virtual bool forceVirtualFilesOption() const;
 
