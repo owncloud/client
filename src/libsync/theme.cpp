@@ -187,17 +187,6 @@ QString Theme::overrideServerUrl() const
     return QString();
 }
 
-QString Theme::overrideServerUrlV2() const
-{
-    static const auto serverOverride = qEnvironmentVariable("OWNCLOUD_OVERRIDE_SERVER_URL");
-    if (serverOverride.isEmpty()) {
-        OC_DISABLE_DEPRECATED_WARNING
-        return overrideServerUrl();
-        OC_ENABLE_DEPRECATED_WARNING
-    }
-    return serverOverride;
-}
-
 QString Theme::overrideServerPath() const
 {
     return {};
@@ -259,7 +248,8 @@ QString Theme::aboutVersions(Theme::VersionFormat format) const
             : QCoreApplication::translate("ownCloudTheme::qtVer", "%1 (Built against Qt %2)").arg(qtVersion, QStringLiteral(QT_VERSION_STR)));
     QString _version = Version::displayString();
     QString gitUrl;
-    if (!Version::gitSha().isEmpty()) {
+    // just use the version::gitSha if (!Version::gitSha().isEmpty())
+    {
         if (format != Theme::VersionFormat::Url) {
             _version = QCoreApplication::translate("ownCloudTheme::versionWithSha", "%1 %2").arg(_version, gitSHA1(format));
         } else {

@@ -175,15 +175,11 @@ public:
      * Setting a value here will pre-define the server url.
      *
      * The respective UI controls will be disabled
-     * Deprecated: Use overrideServerUrlV2 as it allows overrides
+     * NOT deprecated. overrideServerUrlV2 is gone as "overrides" (for what purpose? smells like a backdoor) should happen in theme only,
+     * or via the managed device config
      */
-    Q_DECL_DEPRECATED_X("Use overrideServerUrlV2")
-    virtual QString overrideServerUrl() const;
 
-    /** Same as overrideServerUrl allows override by
-     *  setting $OWNCLOUD_OVERRIDE_SERVER_URL
-     */
-    QString overrideServerUrlV2() const;
+    virtual QString overrideServerUrl() const;
 
     /**
      * If set to a non-empty string, the path part of the URL will be overwritten with this path.
