@@ -278,19 +278,11 @@ public:
     virtual QString openIdConnectPrompt() const;
 
 
+    /**
+     * On windows, force the user to use vfs, by disabling options to turn it off.
+     * Default: false
+     */
     virtual bool forceVirtualFilesOption() const;
-
-    /**
-     * Enables the response of V2/GET_CLIENT_ICON, default true.
-     * See #9167
-     */
-    virtual bool enableSocketApiIconSupport() const;
-
-    /**
-     * Whether to or not to allow multiple sync folder pairs for the same remote folder.
-     * Default: true
-     */
-    virtual bool allowDuplicatedFolderSyncPair() const;
 
     /**
      * Returns a list of IconName, Name, Url pairs that will be displayed as buttons on AccountSettings.

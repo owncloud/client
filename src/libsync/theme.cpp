@@ -406,17 +406,6 @@ bool Theme::forceVirtualFilesOption() const
     return false;
 }
 
-bool Theme::enableSocketApiIconSupport() const
-{
-    return true;
-}
-
-bool Theme::allowDuplicatedFolderSyncPair() const
-{
-    return true;
-}
-
-
 QVector<std::tuple<QString, QString, QUrl>> Theme::urlButtons() const
 {
     return {};
