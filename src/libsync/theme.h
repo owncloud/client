@@ -277,13 +277,6 @@ public:
      */
     virtual QString openIdConnectPrompt() const;
 
-    /**
-     * @brief Disables all vfs related options, if vfs is still wanted we recommend to set forceVirtualFilesOption
-     *
-     * default: true
-     */
-    virtual bool showVirtualFilesOption() const;
-
 
     virtual bool forceVirtualFilesOption() const;
 

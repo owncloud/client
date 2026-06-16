@@ -442,7 +442,7 @@ void FolderMan::onSpacesAdded(const QUuid &accountId, QList<GraphApi::Space *> s
             fwr.spaceId = newSpace->id();
             fwr.localPath = folderName;
             fwr.displayName = newSpace->displayName();
-            fwr.useVirtualFiles = Utility::isWindows() ? Theme::instance()->showVirtualFilesOption() : false;
+            fwr.useVirtualFiles = Utility::isWindows() ? VfsPluginManager::instance().isVfsPluginAvailable(Vfs::WindowsCfApi) : false;
             fwr.sortPriority = newSpace->sortPriority();
 
             addFolderFromGui(accountState, fwr);

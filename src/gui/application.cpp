@@ -65,8 +65,8 @@ Application::Application(Platform *platform, const QString &displayLanguage, boo
     qCInfo(lcApplication) << "Plugin search paths:" << qApp->libraryPaths();
 
     // Check vfs plugins
-    if (Theme::instance()->showVirtualFilesOption() && VfsPluginManager::instance().bestAvailableVfsMode() == Vfs::Off) {
-        qCWarning(lcApplication) << "Theme wants to show vfs mode, but no vfs plugins are available";
+    if (VfsPluginManager::instance().bestAvailableVfsMode() == Vfs::Off) {
+        qCWarning(lcApplication) << "No vfs plugins are available";
     }
     if (VfsPluginManager::instance().isVfsPluginAvailable(Vfs::WindowsCfApi))
         qCInfo(lcApplication) << "VFS windows plugin is available";

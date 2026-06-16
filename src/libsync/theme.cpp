@@ -396,11 +396,6 @@ QString Theme::openIdConnectPrompt() const
     return QStringLiteral("select_account consent");
 }
 
-bool Theme::showVirtualFilesOption() const
-{
-    return true;
-}
-
 QString Theme::wizardUrlPlaceholder() const
 {
     return QString();
