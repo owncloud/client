@@ -28,11 +28,14 @@ class RequestAuthenticationController : public QObject
 {
     Q_OBJECT
 public:
-    explicit RequestAuthenticationController(RequestAuthenticationWidget *widget, QObject *parent);
+    explicit RequestAuthenticationController(QObject *parent);
+
+    ~RequestAuthenticationController() override;
 
     void startAuthentication(Account *account);
 
 Q_SIGNALS:
+    void requestAccountModal(OCC::AccountModalWidget *widget);
     void requestLogout();
     void authenticationSucceeded(const QString &token, const QString &refreshToken);
     // this is only emitted if the controller is running without a widget.
@@ -47,9 +50,9 @@ private:
     AccountBasedOAuth *_oauth = nullptr;
     QPointer<Account> _account = nullptr;
 
-    // these will be cleaned up by the SettingsDialog automatically when the AccountModalWidget is "finished"
+    // these will be cleaned up by the account gui automatically when the AccountModalWidget is "finished"
     // that is handled internally when accept() or reject() is called
-    QPointer<RequestAuthenticationWidget> _widget;
-    QPointer<AccountModalWidget> _modalWidget;
+    QPointer<RequestAuthenticationWidget> _widget = nullptr;
+    QPointer<AccountModalWidget> _modalWidget = nullptr;
 };
 }

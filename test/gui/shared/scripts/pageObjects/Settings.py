@@ -1,27 +1,35 @@
 import names
 import squish
 
+from pageObjects.Toolbar import Toolbar
+
 
 class Settings:
-    CHECKBOX_OPTION_ITEM = {
-        "container": names.stack_scrollArea_QScrollArea,
+    GENERAL_CHECKBOX_OPTION_ITEM = {
+        "container": names.scrollArea_generalGroupBox_QGroupBox,
+        "type": "QCheckBox",
+        "visible": 1,
+    }
+    ADVANCED_CHECKBOX_OPTION_ITEM = {
+        "container": names.scrollArea_advancedGroupBox_QGroupBox,
         "type": "QCheckBox",
         "visible": 1,
     }
     NETWORK_OPTION_ITEM = {
-        "container": names.stack_scrollArea_QScrollArea,
+        "container": names.scrollArea_groupBox_QGroupBox,
         "type": "QGroupBox",
         "visible": 1,
     }
     ABOUT_BUTTON = {
-        "container": names.settings_stack_QStackedWidget,
-        "name": "about_pushButton",
-        "type": "QPushButton",
-        "visible": 1,
+        "container": names.mainWindow_QMenu,
+        "name": "aboutAction",
+        "type": "QAction",
+        "visible": True,
     }
     ABOUT_DIALOG = {
-        "name": "OCC__AboutDialog",
-        "type": "OCC::AboutDialog",
+        "container": names.mainWindow_qt_tabwidget_stackedwidget_QStackedWidget,
+        "name": "tab",
+        "type": "QWidget",
         "visible": 1,
     }
     ABOUT_DIALOG_OK_BUTTON = {
@@ -29,6 +37,12 @@ class Settings:
         "unnamed": 1,
         "visible": 1,
         "window": ABOUT_DIALOG,
+    }
+    CLOSE_BUTTON = {
+        "name": "closeButton",
+        "type": "QPushButton",
+        "visible": 1,
+        "window": names.mainWindow_OCC_MainWindow,
     }
 
     GENERAL_OPTIONS_MAP = {
@@ -52,12 +66,18 @@ class Settings:
     }
 
     @staticmethod
-    def get_checkbox_option_selector(name):
-        selector = Settings.CHECKBOX_OPTION_ITEM.copy()
+    def get_general_checkbox_option_selector(name):
+        selector = Settings.GENERAL_CHECKBOX_OPTION_ITEM.copy()
         selector.update({"name": name})
         if name == "languageDropdown":
             selector.update({"type": "QComboBox"})
-        elif name in ("ignoredFilesButton", "logSettingsButton"):
+        return selector
+
+    @staticmethod
+    def get_advanced_checkbox_option_selector(name):
+        selector = Settings.ADVANCED_CHECKBOX_OPTION_ITEM.copy()
+        selector.update({"name": name})
+        if name in ("ignoredFilesButton", "logSettingsButton"):
             selector.update({"type": "QPushButton"})
         return selector
 
@@ -70,12 +90,16 @@ class Settings:
     @staticmethod
     def check_general_option(option):
         selector = Settings.GENERAL_OPTIONS_MAP[option]
-        squish.waitForObjectExists(Settings.get_checkbox_option_selector(selector))
+        squish.waitForObjectExists(
+            Settings.get_general_checkbox_option_selector(selector)
+        )
 
     @staticmethod
     def check_advanced_option(option):
         selector = Settings.ADVANCED_OPTION_MAP[option]
-        squish.waitForObjectExists(Settings.get_checkbox_option_selector(selector))
+        squish.waitForObjectExists(
+            Settings.get_advanced_checkbox_option_selector(selector)
+        )
 
     @staticmethod
     def check_network_option(option):
@@ -84,7 +108,8 @@ class Settings:
 
     @staticmethod
     def open_about_button():
-        squish.clickButton(squish.waitForObject(Settings.ABOUT_BUTTON))
+        squish.mouseClick(squish.waitForObject(Toolbar.TOOLBAR_MORE_BUTTON))
+        squish.mouseClick(squish.waitForObject(Settings.ABOUT_BUTTON))
 
     @staticmethod
     def wait_for_about_dialog_to_be_visible():
@@ -93,3 +118,7 @@ class Settings:
     @staticmethod
     def close_about_dialog():
         squish.clickButton(squish.waitForObjectExists(Settings.ABOUT_DIALOG_OK_BUTTON))
+
+    @staticmethod
+    def close_settings_tab():
+        squish.clickButton(squish.waitForObjectExists(Settings.CLOSE_BUTTON))

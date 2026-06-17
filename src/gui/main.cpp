@@ -437,6 +437,9 @@ int main(int argc, char **argv)
             return -1;
         }
 
+        // I think this could/should just be a local instance that just naturally goes out of scope. this will take some time though,
+        // as it's a singleton :/
+        // good news is that it's mostly used to handle the main window "modal" impls which will likely change or even go away soon-ish
         auto ocApp = Application::createInstance(platform.get(), displayLanguage, options.debugMode);
         ocApp->updateAutoRun(firstRun);
 
@@ -485,10 +488,12 @@ int main(int argc, char **argv)
             // The user explicitly requested the settings dialog, so don't start the new-account wizard.
         }
 
+#ifndef USE_NEW_MAIN_WINDOW
         // Display the wizard if we don't have an account yet, and no other UI is showing.
         if (AccountManager::instance()->accounts().isEmpty()) {
             QTimer::singleShot(0, ocApp->gui(), &ownCloudGui::runAccountWizard);
         }
+#endif
 
         // Now that everything is up and running, start accepting connections/requests from the shell integration.
         folderManager->socketApi()->startShellIntegration();

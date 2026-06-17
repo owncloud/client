@@ -26,6 +26,7 @@
 #include "guiutility.h"
 #include "libsync/theme.h"
 #include "logbrowser.h"
+#include "mainwindow/mainwindow.h"
 #include "progressdispatcher.h"
 #include "settingsdialog.h"
 
@@ -65,11 +66,14 @@ SyncResult::Status trayOverallStatus()
 ownCloudGui::ownCloudGui(Application *parent)
     : QObject(parent)
     , _tray(new QSystemTrayIcon(this))
-    , _settingsDialog(new SettingsDialog(this))
+    //   , _settingsDialog(new SettingsDialog(this))
     , _app(parent)
 {
-    connect(_tray, &QSystemTrayIcon::activated,
-        this, &ownCloudGui::slotTrayClicked);
+#ifndef USE_NEW_MAIN_WINDOW
+    _settingsDialog = new SettingsDialog(this);
+#endif
+
+    connect(_tray, &QSystemTrayIcon::activated, this, &ownCloudGui::slotTrayClicked);
 
     setupTrayContextMenu();
 
@@ -103,8 +107,10 @@ void ownCloudGui::slotOpenSettingsDialog()
             _settingsDialog->close();
         }
     } else {
+#ifndef USE_NEW_MAIN_WINDOW
         qCInfo(lcApplication) << "No configured folders yet, starting setup wizard";
         runAccountWizard();
+#endif
     }
 }
 
@@ -263,11 +269,15 @@ void ownCloudGui::slotShowSettings()
 
 void ownCloudGui::slotShutdown()
 {
+    // with the new mainWindow the geometry is autosaved without this shutdown routine
+    // todo: dc-300 or soon after, get rid of this whole function
+
     // explicitly close windows. This is somewhat of a hack to ensure
     // that saving the geometries happens ASAP during an OS shutdown
 
     // those do delete on close
-    _settingsDialog->close();
+    if (_settingsDialog)
+        _settingsDialog->close();
 }
 
 void ownCloudGui::slotToggleLogBrowser()
@@ -285,7 +295,15 @@ void ownCloudGui::slotHelp()
 
 void ownCloudGui::raise()
 {
-    auto window = ocApp()->gui()->settingsDialog();
+    // auto window = ocApp()->gui()->settingsDialog();
+    QMainWindow *window;
+#ifdef USE_NEW_MAIN_WINDOW
+    window = ocApp()->mainWindow();
+#else
+    // no we can't just use the member because this function apparently "has" to be static?
+    // if this is the case it would make more sense to move it to Application since it should own the main window
+    window = ocApp()->gui()->settingsDialog();
+#endif
     window->show();
     window->raise();
     window->activateWindow();

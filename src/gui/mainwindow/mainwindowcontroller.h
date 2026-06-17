@@ -16,29 +16,31 @@
 
 #include <QObject>
 
-#include "folder.h"
-
 namespace OCC {
 
-class SyncJournalDb;
-class SyncEngine;
-class Vfs;
+class MainWindow;
+class AccountsGuiController;
 
-class FolderBuilder : public QObject
+class MainWindowController : public QObject
 {
     Q_OBJECT
-
 public:
-    FolderBuilder(const FolderDefinition &definition, QObject *parent = nullptr);
+    explicit MainWindowController(MainWindow *window, QObject *parent = nullptr);
 
-    Folder *buildFolder(AccountState *accountState, bool ignoreHiddenFiles, bool moveToTrash, QObject *parent);
-
+    // public for now
+    void setup();
 
 private:
-    SyncJournalDb *buildJournal();
-    Vfs *buildVfs();
-    SyncEngine *buildEngine(Account *account, SyncJournalDb *journal, bool ignoreHiddenFiles, bool moveToTrash);
+    void buildMenuActions();
+    void createSyncErrorsAction();
+    void createActivityAction();
 
-    FolderDefinition _definition;
+    void onAddAccount();
+    void onSettings();
+    void onAbout();
+    void onQuit();
+
+    MainWindow *_window = nullptr;
+    AccountsGuiController *_accountsController = nullptr;
 };
 }

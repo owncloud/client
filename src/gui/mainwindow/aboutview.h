@@ -1,5 +1,5 @@
 /*
- * Copyright (C) Lisa Reese <lisa.reese@kiteworks.com>
+ * Copyright (C) by Hannah von Reth <hannah.vonreth@owncloud.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -11,34 +11,31 @@
  * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  */
-
 #pragma once
 
-#include <QObject>
+#include <QDialog>
 
-#include "folder.h"
 
 namespace OCC {
 
-class SyncJournalDb;
-class SyncEngine;
-class Vfs;
+namespace Ui {
+    class AboutView;
+}
 
-class FolderBuilder : public QObject
+class AboutView : public QWidget
 {
     Q_OBJECT
 
 public:
-    FolderBuilder(const FolderDefinition &definition, QObject *parent = nullptr);
-
-    Folder *buildFolder(AccountState *accountState, bool ignoreHiddenFiles, bool moveToTrash, QObject *parent);
-
+    explicit AboutView(QWidget *parent = nullptr);
+    ~AboutView();
 
 private:
-    SyncJournalDb *buildJournal();
-    Vfs *buildVfs();
-    SyncEngine *buildEngine(Account *account, SyncJournalDb *journal, bool ignoreHiddenFiles, bool moveToTrash);
+    void openBrowser(const QString &s);
+    void openBrowserFromUrl(const QUrl &s);
 
-    FolderDefinition _definition;
+private:
+    Ui::AboutView *ui;
 };
+
 }

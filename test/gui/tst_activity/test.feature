@@ -8,11 +8,11 @@ Feature: filter activity for user
         Given user "Alice" has been created in the server with default attributes
         And user "Brian" has been created in the server with default attributes
         And user "Alice" has created folder "simple-folder" in the server
+        And user "Brian" has created folder "test-folder" in the server
         And the user has set up the following accounts with default settings:
             | Alice |
             | Brian |
         When the user clicks on the activity tab
-        And the user selects "Local Activity" tab in the activity
         And the user checks the activities of account "Alice Hansen@%local_server_hostname%"
         Then the following activities should be displayed in synced table
             | resource      | action     | account                              |
@@ -27,8 +27,7 @@ Feature: filter activity for user
             | files             |
             | /.htaccess        |
             | /Folder1/a\\a.txt |
-        And the user clicks on the activity tab
-        And the user selects "Not Synced" tab in the activity
+        And the user clicks on the errors tab
         Then the file "Folder1/a\\a.txt" should be blacklisted
         And the file ".htaccess" should be excluded
         When the user unchecks the "Excluded" filter
@@ -44,8 +43,7 @@ Feature: filter activity for user
         When user "Alice" creates the following files inside the sync folder:
             | files      |
             | /.htaccess |
-        And the user clicks on the activity tab
-        And the user selects "Not Synced" tab in the activity
+        And the user clicks on the errors tab
         Then the file ".htaccess" should be excluded
         When the user unchecks the "Excluded" filter
         Then the following activities should not be displayed in not synced table

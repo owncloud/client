@@ -12,13 +12,12 @@ set(client_UI_SRCS
     settingsdialog.ui
     tlserrordialog.ui
     logbrowser.ui
-    accountview.ui
+    accountsgui/accountview.ui
 )
 
 set(client_SRCS
     aboutdialog.cpp
     accountmanager.cpp
-    accountview.cpp
 
     accountmodalwidget.cpp
     accountmodalwidget.ui
@@ -118,6 +117,8 @@ add_subdirectory(newaccountwizard)
 add_subdirectory(socketapi)
 add_subdirectory(spaces)
 add_subdirectory(FoldersGui)
+add_subdirectory(mainwindow)
+add_subdirectory(accountsgui)
 add_subdirectory(foldermanagement)
 
 target_include_directories(owncloudGui PUBLIC

@@ -89,12 +89,7 @@ void AccountFoldersController::onAddFolder()
         return;
     }
 
-    FolderWizard *folderWizard = new FolderWizard(_accountState->account(), nullptr);
-    folderWizard->setAttribute(Qt::WA_DeleteOnClose);
-
-    connect(folderWizard, &FolderWizard::folderWizardAccepted, this, &AccountFoldersController::onFolderWizardAccepted);
-
-    emit requestShowModalWidget(folderWizard);
+    emit requestAddFolder();
 }
 
 void AccountFoldersController::onFolderWizardAccepted(OCC::FolderMan::SyncConnectionDescription result)
@@ -109,7 +104,7 @@ void AccountFoldersController::onFolderWizardAccepted(OCC::FolderMan::SyncConnec
         result.selectiveSyncBlackList.clear();
     }
 
-    // Refactoring todo: turn this into a signal/requestAddFolder
+    // Refactoring todo: turn this into a signal
     FolderMan::instance()->addFolderFromGui(_accountState, result);
 }
 

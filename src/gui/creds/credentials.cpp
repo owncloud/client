@@ -307,10 +307,8 @@ void Credentials::askFromUser()
         return;
     }
 
-    // the widget is parented to the AccountModalWidget when it's installed in the main window.
-    // it will be cleaned up there - this is not a leak
-    RequestAuthenticationWidget *widget = new RequestAuthenticationWidget();
-    _requestAuth = new RequestAuthenticationController(widget, this);
+    _requestAuth = new RequestAuthenticationController(this);
+    connect(_requestAuth, &RequestAuthenticationController::requestAccountModal, this, &AbstractCredentials::requestAccountModal);
     // we should not connect to the failed signal as we are forcing the user to make the decision using the gui.
     // if they log in successfully, we get the success signal.
     // if the auth fails the gui stays until the user gets it right or clicks the stay logged out button.

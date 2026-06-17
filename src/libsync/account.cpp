@@ -21,6 +21,7 @@
 #include "graphapi/spacesmanager.h"
 #include "networkjobs.h"
 #include "networkjobs/resources.h"
+#include "resources.h"
 
 #include <QAuthenticator>
 #include <QDir>
@@ -129,6 +130,13 @@ QString Account::davUser() const
 
 QIcon Account::avatar() const
 {
+    if (_avatarImg.isNull()) {
+        // for now
+        return Resources::getCoreIcon("check");
+        // near future with DC-304:
+        // setAvatar(Resources::buildAvatar(this);
+        // or so
+    }
     return _avatarImg;
 }
 

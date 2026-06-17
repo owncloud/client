@@ -23,6 +23,8 @@
 #include <QPointer>
 #include <QSystemTrayIcon>
 
+#define USE_NEW_MAIN_WINDOW
+
 namespace OCC {
 
 namespace Wizard {
@@ -93,7 +95,7 @@ private:
     QIcon getTrayStatusIcon(const SyncResult::Status &status) const;
 
     QSystemTrayIcon *_tray;
-    SettingsDialog *_settingsDialog;
+    SettingsDialog *_settingsDialog = nullptr;
     QPointer<ShareDialog> _shareDialog;
 
     Application *_app;

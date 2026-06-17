@@ -14,31 +14,14 @@
 
 #pragma once
 
-#include <QObject>
-
-#include "folder.h"
+#include <QWidget>
 
 namespace OCC {
-
-class SyncJournalDb;
-class SyncEngine;
-class Vfs;
-
-class FolderBuilder : public QObject
+class AccountPlaceholderWidget : public QWidget
 {
     Q_OBJECT
-
 public:
-    FolderBuilder(const FolderDefinition &definition, QObject *parent = nullptr);
+    explicit AccountPlaceholderWidget(QWidget *parent = nullptr);
 
-    Folder *buildFolder(AccountState *accountState, bool ignoreHiddenFiles, bool moveToTrash, QObject *parent);
-
-
-private:
-    SyncJournalDb *buildJournal();
-    Vfs *buildVfs();
-    SyncEngine *buildEngine(Account *account, SyncJournalDb *journal, bool ignoreHiddenFiles, bool moveToTrash);
-
-    FolderDefinition _definition;
 };
 }
