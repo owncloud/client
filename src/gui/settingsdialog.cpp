@@ -13,6 +13,7 @@
  */
 
 #include "settingsdialog.h"
+#include "accountsgui/accountviewcontroller.h"
 #include "ui_settingsdialog.h"
 
 #include "accountmanager.h"
@@ -167,7 +168,8 @@ void SettingsDialog::onAccountAdded(AccountState *state)
     // as currently everything is in the view which is absolutely not ok, especially given the multitude of "heavy lifting"
     // that goes on in there
 
-    auto accountView = new AccountView(state, this);
+    auto accountView = new AccountView(this);
+    auto accountViewController = new AccountViewController(accountView, state, this);
     _ui->stack->addWidget(accountView);
     _viewForAccount.insert(state->account()->uuid(), accountView);
 

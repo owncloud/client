@@ -21,6 +21,7 @@
 
 #include "accountmanager.h"
 #include "accountplaceholderwidget.h"
+#include "accountsgui/accountviewcontroller.h"
 #include "accountstate.h"
 #include "accountview.h"
 #include "creds/abstractcredentials.h"
@@ -63,22 +64,21 @@ void AccountsGuiController::onAccountAdded(AccountState *state)
 {
     if (!_window || !state || !state->account())
         return;
-    // asap we need to create some kind of accountView builder that will instantiate a controller and view + whatever else
-    // as currently everything is in the view which is absolutely not ok, especially given the multitude of "heavy lifting"
-    // that goes on in there
 
     Account *account = state->account();
     QUuid accountId = account->uuid();
     connect(account, &Account::avatarChanged, this, &AccountsGuiController::onAccountAvatarChanged);
 
-    auto accountView = new AccountView(state, nullptr);
+    auto accountView = new AccountView(nullptr);
     // for both the view and the action, we create a unique objectName using the account uuid
     // to support squish test object identification
     accountView->setObjectName(QString("accountView_%1").arg(accountId.toString()));
 
-    connect(account->credentials(), &AbstractCredentials::requestAccountModal, accountView, &AccountView::onRequestAccountModalWidget);
-    connect(accountView, &AccountView::accountBeginModal, this, &AccountsGuiController::startModal);
-    connect(accountView, &AccountView::accountEndModal, this, &AccountsGuiController::endModal);
+    AccountViewController *viewController = new AccountViewController(accountView, state, this);
+    connect(account->credentials(), &AbstractCredentials::requestAccountModal, viewController, &AccountViewController::addAccountModalWidget);
+
+    connect(viewController, &AccountViewController::accountBeginModal, this, &AccountsGuiController::startModal);
+    connect(viewController, &AccountViewController::accountEndModal, this, &AccountsGuiController::endModal);
 
     QAction *accountAction = new QAction(this);
     accountAction->setObjectName(QString("accountAction_%1").arg(accountId.toString()));
