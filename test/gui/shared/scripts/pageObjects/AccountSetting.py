@@ -4,25 +4,25 @@ import squish
 
 class AccountSetting:
     MANAGE_ACCOUNT_BUTTON = {
-        "container": names.settings_dialogStack_QStackedWidget,
+        "container": names.mainWindow_OCC_MainWindow,
         "name": "manageAccountButton",
         "type": "QPushButton",
         "visible": 1,
     }
     ACCOUNT_MENU = {
-        "type": "QMenu",
+        "container": names.mainWindow_QMenu,
+        "type": "QAction",
         "unnamed": 1,
-        "visible": 1,
-        "window": names.settings_OCC_SettingsDialog,
+        "visible": True,
     }
     CONFIRM_REMOVE_CONNECTION_BUTTON = {
-        "container": names.settings_stack_QStackedWidget,
+        "name": "removeAccountButton",
         "type": "QPushButton",
-        "text": "Remove connection",
         "visible": 1,
+        "window": names.confirmRemoveAccountDialog_QMessageBox,
     }
     ACCOUNT_CONNECTION_LABEL = {
-        "container": names.settings_dialogStack_QStackedWidget,
+        "container": names.mainWindow_OCC_MainWindow,
         "name": "connectionStatusLabel",
         "type": "QLabel",
         "visible": 1,
@@ -33,7 +33,7 @@ class AccountSetting:
         "visible": 1,
     }
     ACCOUNT_LOADING = {
-        "window": names.settings_OCC_SettingsDialog,
+        "window": names.mainWindow_OCC_MainWindow,
         "name": "loadingPage",
         "type": "QWidget",
         "visible": 0,
@@ -42,16 +42,16 @@ class AccountSetting:
         "name": "dialogStack",
         "type": "QStackedWidget",
         "visible": 1,
-        "window": names.settings_OCC_SettingsDialog,
+        "window": names.mainWindow_OCC_MainWindow,
     }
     CONFIRMATION_YES_BUTTON = {"type": "QPushButton", "visible": 1}
 
     @staticmethod
     def account_action(action):
         squish.clickButton(squish.waitForObject(AccountSetting.MANAGE_ACCOUNT_BUTTON))
-        squish.activateItem(
-            squish.waitForObjectItem(AccountSetting.ACCOUNT_MENU, action)
-        )
+        action_selector = AccountSetting.ACCOUNT_MENU.copy()
+        action_selector.update({"text": action})
+        squish.activateItem(squish.waitForObject(action_selector))
 
     @staticmethod
     def remove_account_connection():

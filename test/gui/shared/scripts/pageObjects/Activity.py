@@ -19,31 +19,31 @@ class Activity:
         "visible": 1,
     }
     NOT_SYNCED_TABLE = {
-        "container": names.qt_tabwidget_stackedwidget_OCC_SyncErrorWidget_OCC_SyncErrorWidget,
+        "container": names.mainWindow_OCC_MainWindow,
         "name": "_tableView",
         "type": "QTableView",
         "visible": 1,
     }
     LOCAL_ACTIVITY_FILTER_BUTTON = {
-        "container": names.qt_tabwidget_stackedwidget_OCC_LocalActivityWidget_OCC_LocalActivityWidget,
         "name": "_filterButton",
         "type": "QPushButton",
         "visible": 1,
+        "window": names.mainWindow_OCC_MainWindow,
     }
     SYNCED_ACTIVITY_FILTER_OPTION_SELECTOR = {
         "type": "QMenu",
         "unnamed": 1,
         "visible": 1,
-        "window": names.settings_OCC_SettingsDialog,
+        "window": names.mainWindow_OCC_MainWindow,
     }
     SYNCED_ACTIVITY_TABLE = {
-        "container": names.qt_tabwidget_stackedwidget_OCC_LocalActivityWidget_OCC_LocalActivityWidget,
+        "window": names.mainWindow_OCC_MainWindow,
         "name": "_tableView",
         "type": "QTableView",
         "visible": 1,
     }
     NOT_SYNCED_FILTER_BUTTON = {
-        "container": names.qt_tabwidget_stackedwidget_OCC_SyncErrorWidget_OCC_SyncErrorWidget,
+        "container": names.mainWindow_OCC_MainWindow,
         "name": "_filterButton",
         "type": "QPushButton",
         "visible": 1,
@@ -52,17 +52,17 @@ class Activity:
         "type": "QMenu",
         "unnamed": 1,
         "visible": 1,
-        "window": names.settings_OCC_SettingsDialog,
+        "window": names.mainWindow_OCC_MainWindow,
     }
     SYNCED_ACTIVITY_TABLE_HEADER_SELECTOR = {
-        "container": names.oCC_LocalActivityWidget_tableView_QTableView,
+        "container": names.mainWindow_tableView_QTableView,
         "name": "ActivityListHeaderV2",
         "orientation": 1,
         "type": "OCC::ExpandingHeaderView",
         "visible": 1,
     }
     NOT_SYNCED_ACTIVITY_TABLE_HEADER_SELECTOR = {
-        "container": names.oCC_SyncErrorWidget_tableView_QTableView,
+        "container": names.mainWindow_tableView_QTableView,
         "name": "ActivityErrorListHeaderV2",
         "orientation": 1,
         "type": "OCC::ExpandingHeaderView",

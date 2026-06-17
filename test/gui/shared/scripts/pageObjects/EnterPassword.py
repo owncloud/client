@@ -42,7 +42,7 @@ class EnterPassword:
         "visible": True,
     }
     COPY_URL_TO_CLIPBOARD_BUTTON = {
-        "container": names.stackedWidget_groupBox_QGroupBox,
+        "container": names.stackedWidget_groupBox_QGroupBox_2,
         "type": "QPushButton",
         "unnamed": 1,
         "visible": 1,

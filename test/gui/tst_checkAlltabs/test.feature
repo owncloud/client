@@ -9,10 +9,9 @@ Feature: Visually check all tabs
         Given user "Alice" has been created in the server with default attributes
         And user "Alice" has set up a client with default settings
         Then the toolbar should have the following tabs:
-            | Add Account |
-            | Activity    |
-            | Settings    |
-            | Quit        |
+            | Activity  |
+            | Errors: 0 |
+            | More      |
 
 
     Scenario: Verify various setting options in Settings tab
@@ -30,5 +29,6 @@ Feature: Visually check all tabs
             | Log settings                                                         |
         And the settings tab should have the following options in the network section:
             | Proxy Settings     |
-        When the user opens the about dialog
+        When the user closes the settings tab
+        And the user opens the about dialog
         Then the about dialog should be opened
