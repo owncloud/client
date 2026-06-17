@@ -30,7 +30,7 @@ jobs:
             include:
             - name: windows-cl-x86_64
               target: windows-cl-msvc2022-x86_64
-              os: windows-latest
+              os: windows-2022
               container:
               useSonarCloud: ${{ github.event_name != 'pull_request' }}
               testOptions: --options '[Compile]Jobs=1'
