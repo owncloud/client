@@ -103,9 +103,16 @@ public:
      */
     static QString configPath(const QOperatingSystemVersion::OSType& os, const Theme& theme);
 
+    /**
+     * Load the OpenID Connect configuration from a system QSettings instance.
+     * @param system the system configuration settings
+     * @return An OpenIdConfig object populated from the [OpenIDConnect] section.
+     * @internal kept public for testing purposes
+     */
+    static OpenIdConfig loadOpenIdConfigFromSystemConfig(const QSettings &system);
+
 private:
     static OpenIdConfig loadOpenIdConfigFromTheme();
-    static OpenIdConfig loadOpenIdConfigFromSystemConfig(const QSettings &system);
 
 private: // System settings keys
     // Setup related keys
