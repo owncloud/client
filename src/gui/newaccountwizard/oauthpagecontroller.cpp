@@ -221,13 +221,7 @@ bool OAuthPageController::validate()
 void OAuthPageController::authUrlReady()
 {
     _authEndpoint = _oauth->authorisationLink().toString(QUrl::FullyEncoded);
-
-    // I hit this when demo was down - browser showed "We're having trouble connecting to the login service. If the problem continues, please contact support."
-    //  Q_ASSERT(!_authEndpoint.isEmpty());
-    if (_authEndpoint.isEmpty()) {
-        handleError(tr("Unable to connect to the login service. If the problem continues, please contact support."));
-        return;
-    }
+    Q_ASSERT(!_authEndpoint.isEmpty());
 
     QFontMetrics metrics(_urlField->font());
     QString elidedText = metrics.elidedText(_authEndpoint, Qt::ElideRight, _urlField->width());
