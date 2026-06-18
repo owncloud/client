@@ -29,6 +29,7 @@ public:
 
     // public for now
     void setup();
+    void onAbout();
 
 private:
     void buildMenuActions();
@@ -37,7 +38,7 @@ private:
 
     void onAddAccount();
     void onSettings();
-    void onAbout();
+
     void onQuit();
 
     MainWindow *_window = nullptr;

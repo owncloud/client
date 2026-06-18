@@ -20,7 +20,7 @@
 
 #include "libsync/creds/abstractcredentials.h"
 
-#include "gui/settingsdialog.h"
+#include "gui/mainwindow/mainwindow.h"
 #include "gui/tlserrordialog.h"
 
 #include "socketapi/socketapi.h"
@@ -101,7 +101,7 @@ void AccountState::connectAccount()
     connect(_account.data(), &Account::unknownConnectionState, this, [this] { checkConnectivity(true); });
 
     connect(_account.data(), &Account::appProviderErrorOccured, this, [](const QString &error) {
-        QMessageBox *msgBox = new QMessageBox(QMessageBox::Information, Theme::instance()->appNameGUI(), error, {}, ocApp()->gui()->settingsDialog());
+        QMessageBox *msgBox = new QMessageBox(QMessageBox::Information, Theme::instance()->appNameGUI(), error, {}, ocApp()->mainWindow());
         msgBox->setAttribute(Qt::WA_DeleteOnClose);
         ownCloudGui::raise();
         msgBox->open();
@@ -353,7 +353,7 @@ void AccountState::handleSslConnectionErrors(const QList<QSslError> &errors, boo
         for (const auto &error : std::as_const(filteredErrors)) {
             certs << error.certificate();
         }
-        TlsErrorDialog tlsDlg(filteredErrors, _account->url().host(), ocApp()->gui()->settingsDialog());
+        TlsErrorDialog tlsDlg(filteredErrors, _account->url().host(), ocApp()->mainWindow());
         ownCloudGui::raise();
         int res = tlsDlg.exec();
         if (res == TlsErrorDialog::Accepted) {

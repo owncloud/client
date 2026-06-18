@@ -28,12 +28,12 @@
 #include "configfile.h"
 #include "filesystem.h"
 #include "folderman.h"
-#include "foldermanagement/foldermanagementutils.h"
 #include "folderwatcher.h"
 #include "libsync/graphapi/spacesmanager.h"
 #include "localdiscoverytracker.h"
+// it is used directly as parent for message box. ignore clangd here
+#include "mainwindow/mainwindow.h"
 #include "scheduling/syncscheduler.h"
-#include "settingsdialog.h"
 #include "socketapi/socketapi.h"
 #include "syncengine.h"
 #include "syncresult.h"
@@ -1044,7 +1044,7 @@ void Folder::slotWatcherUnreliable(const QString &message)
            "\n"
            "%1")
             .arg(message),
-        {}, ocApp()->gui()->settingsDialog());
+        {}, ocApp()->mainWindow());
 
     msgBox->setAttribute(Qt::WA_DeleteOnClose);
     ownCloudGui::raise();

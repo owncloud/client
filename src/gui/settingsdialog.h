@@ -70,7 +70,7 @@ public:
 
 public Q_SLOTS:
     // this is a direct call from QML
-    void createNewAccount();
+    //  void createNewAccount();
     void runFolderWizard(Account *account);
 
 

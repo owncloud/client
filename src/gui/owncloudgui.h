@@ -58,13 +58,10 @@ public:
      */
     static void raise();
 
-    SettingsDialog *settingsDialog() const;
-
-    void runAccountWizard();
-
 Q_SIGNALS:
     void requestSetUpSyncFoldersForAccount(AccountState *account, bool useVfs);
     void requestLoadSpacesOnly(AccountState *account);
+    void requestAboutDialog();
 
 public Q_SLOTS:
     void setupTrayContextMenu();
@@ -72,13 +69,11 @@ public Q_SLOTS:
     void slotShowTrayMessage(const QString &title, const QString &msg, const QIcon &icon = {});
     void slotShowOptionalTrayMessage(const QString &title, const QString &msg, const QIcon &icon = {});
     void slotShowSettings();
-    void slotShutdown();
     void slotSyncStateChange(Folder *);
     void slotTrayClicked(QSystemTrayIcon::ActivationReason reason);
     void slotToggleLogBrowser();
     void slotOpenSettingsDialog();
     void slotHelp();
-    void slotAbout();
     void slotTrayMessageIfServerUnsupported(Account *account);
 
     /**
@@ -89,15 +84,14 @@ public Q_SLOTS:
      * to the folder).
      */
     void slotShowShareInBrowser(const QString &sharePath, const QString &localPath);
-    void handleAccountSetupError(const QString &error);
 
 private:
     QIcon getTrayStatusIcon(const SyncResult::Status &status) const;
 
     QSystemTrayIcon *_tray;
-    SettingsDialog *_settingsDialog = nullptr;
     QPointer<ShareDialog> _shareDialog;
 
+    // dc-310 get rid of this member and just use ocApp()
     Application *_app;
 
     // keeping a pointer on those dialogs allows us to make sure they will be shown only once

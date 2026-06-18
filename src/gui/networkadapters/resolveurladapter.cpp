@@ -18,7 +18,6 @@
 #include "common/utility.h"
 #include "gui/application.h"
 #include "gui/owncloudgui.h"
-#include "gui/settingsdialog.h"
 #include "gui/tlserrordialog.h"
 
 #include <QNetworkAccessManager>

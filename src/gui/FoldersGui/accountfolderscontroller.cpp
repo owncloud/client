@@ -20,9 +20,8 @@
 #include "commonstrings.h"
 #include "configfile.h"
 #include "foldermodelcontroller.h"
-#include "folderwizard.h"
+#include "mainwindow/mainwindow.h"
 #include "selectivesyncwidget.h"
-#include "settingsdialog.h"
 
 #include "guiutility.h"
 #include "networkjobs.h"
@@ -196,7 +195,7 @@ void AccountFoldersController::onEnableVfs()
                "will become available again."
                "\n\n"
                "This action will abort any currently running synchronization."),
-            QMessageBox::Yes | QMessageBox::No, ocApp()->gui()->settingsDialog());
+            QMessageBox::Yes | QMessageBox::No, ocApp()->mainWindow());
         msgBox.setObjectName("confirmDisableVfsDialog");
         msgBox.button(QMessageBox::Yes)->setText(tr("Disable support"));
         msgBox.button(QMessageBox::Yes)->setObjectName("disableVfsButton");
@@ -278,7 +277,7 @@ void AccountFoldersController::onForceSync()
         QMessageBox messageBox(QMessageBox::Question, tr("Internet connection is metered"),
             tr("Synchronization is paused because the Internet connection is a metered connection"
                "<p>Do you really want to force a Synchronization now?"),
-            QMessageBox::Yes | QMessageBox::No, ocApp()->gui()->settingsDialog());
+            QMessageBox::Yes | QMessageBox::No, ocApp()->mainWindow());
         messageBox.setObjectName("confirmForceSyncWhenMeteredDialog");
         messageBox.button(QMessageBox::No)->setObjectName("cancelForceSyncWhenMeteredButton");
         messageBox.button(QMessageBox::Yes)->setObjectName("forceSyncWhenMeteredButton");
@@ -300,7 +299,7 @@ void AccountFoldersController::onTogglePauseSync()
     if (!currentlyPaused) {
         if (_currentFolder->isSyncRunning()) {
             QMessageBox msgbox(QMessageBox::Question, tr("Sync Running"), tr("The sync operation is running.<br/>Do you want to stop it?"),
-                QMessageBox::Yes | QMessageBox::No, ocApp()->gui()->settingsDialog());
+                QMessageBox::Yes | QMessageBox::No, ocApp()->mainWindow());
             msgbox.setDefaultButton(QMessageBox::No);
             msgbox.setObjectName("confirmPauseRunningSyncDialog");
             msgbox.button(QMessageBox::Yes)->setObjectName("pauseRunningSyncButton");
@@ -330,7 +329,7 @@ void AccountFoldersController::onRemoveSync()
         tr("<p>Do you really want to stop syncing the folder <i>%1</i>?</p>"
            "<p><b>Note:</b> This will <b>not</b> delete any files.</p>")
             .arg(shortGuiLocalPath),
-        QMessageBox::Yes | QMessageBox::No, ocApp()->gui()->settingsDialog());
+        QMessageBox::Yes | QMessageBox::No, ocApp()->mainWindow());
     msgBox.button(QMessageBox::Yes)->setText(tr("Remove Folder Sync Connection"));
     msgBox.button(QMessageBox::No)->setText(tr("Cancel"));
     msgBox.setObjectName("confirmRemoveFolderSyncDialog");

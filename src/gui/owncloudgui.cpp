@@ -28,7 +28,6 @@
 #include "logbrowser.h"
 #include "mainwindow/mainwindow.h"
 #include "progressdispatcher.h"
-#include "settingsdialog.h"
 
 #include "newaccountwizard/newaccountbuilder.h"
 #include "newaccountwizard/newaccountmodel.h"
@@ -66,12 +65,8 @@ SyncResult::Status trayOverallStatus()
 ownCloudGui::ownCloudGui(Application *parent)
     : QObject(parent)
     , _tray(new QSystemTrayIcon(this))
-    //   , _settingsDialog(new SettingsDialog(this))
     , _app(parent)
 {
-#ifndef USE_NEW_MAIN_WINDOW
-    _settingsDialog = new SettingsDialog(this);
-#endif
 
     connect(_tray, &QSystemTrayIcon::activated, this, &ownCloudGui::slotTrayClicked);
 
@@ -92,25 +87,19 @@ ownCloudGui::ownCloudGui(Application *parent)
 
 ownCloudGui::~ownCloudGui()
 {
-    delete _settingsDialog;
 }
 
-// This should rather be in application.... or rather in ConfigFile?
+// todo dc-310 - finally figure out what this is trying to accomplish
 void ownCloudGui::slotOpenSettingsDialog()
 {
     // if account is set up, start the configuration wizard.
     if (!AccountManager::instance()->accounts().isEmpty()) {
-        if (QApplication::activeWindow() != _settingsDialog) {
+        if (QApplication::activeWindow() != ocApp()->mainWindow()) {
             slotShowSettings();
         } else {
             // ????!!!!?????????
-            _settingsDialog->close();
+            ocApp()->mainWindow()->close();
         }
-    } else {
-#ifndef USE_NEW_MAIN_WINDOW
-        qCInfo(lcApplication) << "No configured folders yet, starting setup wizard";
-        runAccountWizard();
-#endif
     }
 }
 
@@ -122,7 +111,7 @@ void ownCloudGui::slotTrayClicked(QSystemTrayIcon::ActivationReason reason)
         // on macOS, a left click always opens menu.
         // However if the settings dialog is already visible but hidden
         // by other applications, this will bring it to the front.
-        if (_settingsDialog->isVisible()) {
+        if (ocApp()->mainWindow()->isVisible()) {
             raise();
         }
 #else
@@ -168,15 +157,10 @@ void ownCloudGui::slotComputeOverallSyncStatus()
     _tray->setIcon(statusIcon);
 }
 
-SettingsDialog *ownCloudGui::settingsDialog() const
-{
-    return _settingsDialog;
-}
-
 void ownCloudGui::setupTrayContextMenu()
 {
     // using the main windows (_settingsDialog) as parent for memory management
-    auto menu = new QMenu(_settingsDialog);
+    auto menu = new QMenu(ocApp()->mainWindow());
     menu->setTitle(Theme::instance()->appNameGUI());
 
     _tray->setContextMenu(menu);
@@ -211,7 +195,7 @@ void ownCloudGui::setupTrayContextMenu()
     }
 
     if (! Theme::instance()->about().isEmpty()) {
-        menu->addAction(tr("About %1").arg(Theme::instance()->appNameGUI()), this, &ownCloudGui::slotAbout);
+        menu->addAction(tr("About %1").arg(Theme::instance()->appNameGUI()), this, &ownCloudGui::requestAboutDialog);
     }
 
     menu->addAction(tr("Quit %1").arg(Theme::instance()->appNameGUI()), _app, &QApplication::quit);
@@ -230,59 +214,14 @@ void ownCloudGui::slotShowOptionalTrayMessage(const QString &title, const QStrin
     }
 }
 
-void ownCloudGui::runAccountWizard()
-{
-    NewAccountWizard wizard(settingsDialog());
-    NewAccountModel model(nullptr);
-    NewAccountWizardController wizardController(&model, &wizard, nullptr);
-    ownCloudGui::raise();
-    int result = wizard.exec();
-    if (result == QDialog::Accepted) {
-        // the builder needs to be a pointer as it has to wait for the connection state to go to connected
-        // it will delete itself once it has completed its mission.
-        // pass this as parent only as a safeguard.
-        if (!model.isComplete()) {
-            QMessageBox::warning(
-                _settingsDialog, tr("New account failure"), tr("The information required to create a new account is incomplete. Please run the wizard again."));
-        } else {
-            NewAccountBuilder *builder = new NewAccountBuilder(model, this);
-            connect(builder, &NewAccountBuilder::requestSetUpSyncFoldersForAccount, this, &ownCloudGui::requestSetUpSyncFoldersForAccount);
-            connect(builder, &NewAccountBuilder::requestLoadSpacesOnly, this, &ownCloudGui::requestLoadSpacesOnly);
-            connect(builder, &NewAccountBuilder::requestFolderWizard, _settingsDialog, &SettingsDialog::runFolderWizard);
-            connect(builder, &NewAccountBuilder::unableToCompleteAccountCreation, this, &ownCloudGui::handleAccountSetupError);
-            builder->buildAccount();
-        }
-    } else
-        qDebug() << "wizard rejected";
-}
-
-void ownCloudGui::handleAccountSetupError(const QString &error)
-{
-    QMessageBox::warning(_settingsDialog, tr("New account failure"),
-        tr("The account could not be created due to an error:\n%1\nPlease check the server's availability then run the wizard again.").arg(error));
-}
-
 void ownCloudGui::slotShowSettings()
 {
     raise();
 }
 
-void ownCloudGui::slotShutdown()
-{
-    // with the new mainWindow the geometry is autosaved without this shutdown routine
-    // todo: dc-300 or soon after, get rid of this whole function
-
-    // explicitly close windows. This is somewhat of a hack to ensure
-    // that saving the geometries happens ASAP during an OS shutdown
-
-    // those do delete on close
-    if (_settingsDialog)
-        _settingsDialog->close();
-}
-
 void ownCloudGui::slotToggleLogBrowser()
 {
-    auto logBrowser = new LogBrowser(settingsDialog());
+    auto logBrowser = new LogBrowser(ocApp()->mainWindow());
     logBrowser->setAttribute(Qt::WA_DeleteOnClose);
     ownCloudGui::raise();
     logBrowser->open();
@@ -293,17 +232,11 @@ void ownCloudGui::slotHelp()
     QDesktopServices::openUrl(QUrl(Theme::instance()->helpUrl()));
 }
 
+// todo: dc-310 move this to main window
 void ownCloudGui::raise()
 {
-    // auto window = ocApp()->gui()->settingsDialog();
     QMainWindow *window;
-#ifdef USE_NEW_MAIN_WINDOW
     window = ocApp()->mainWindow();
-#else
-    // no we can't just use the member because this function apparently "has" to be static?
-    // if this is the case it would make more sense to move it to Application since it should own the main window
-    window = ocApp()->gui()->settingsDialog();
-#endif
     window->show();
     window->raise();
     window->activateWindow();
@@ -341,15 +274,6 @@ void ownCloudGui::slotShowShareInBrowser(const QString &sharePath, const QString
             const auto queryUrl = Utility::concatUrlPath(url, QString(), {{QStringLiteral("details"), QStringLiteral("sharing")}});
             Utility::openBrowser(queryUrl, nullptr);
         });
-    }
-}
-
-void ownCloudGui::slotAbout()
-{
-    if(!_aboutDialog) {
-        _aboutDialog = new AboutDialog(_settingsDialog);
-        _aboutDialog->setAttribute(Qt::WA_DeleteOnClose);
-        ocApp()->gui()->settingsDialog()->addModalWidget(_aboutDialog);
     }
 }
 

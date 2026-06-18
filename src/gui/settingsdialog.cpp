@@ -121,7 +121,7 @@ SettingsDialog::SettingsDialog(ownCloudGui *gui, QWidget *parent)
 
     _generalSettings = new GeneralSettings;
     _ui->stack->addWidget(_generalSettings);
-    connect(_generalSettings, &GeneralSettings::showAbout, gui, &ownCloudGui::slotAbout);
+    //   connect(_generalSettings, &GeneralSettings::showAbout, gui, &ownCloudGui::slotAbout);
     connect(_generalSettings, &GeneralSettings::moveToTrashChanged, FolderMan::instance(), &FolderMan::updateMoveToTrash);
 
     ConfigFile().restoreGeometry(this);
@@ -294,11 +294,6 @@ void SettingsDialog::setCurrentAccount(Account *account)
 Account *SettingsDialog::currentAccount() const
 {
     return _currentAccount;
-}
-
-void SettingsDialog::createNewAccount()
-{
-    ocApp()->gui()->runAccountWizard();
 }
 
 void SettingsDialog::runFolderWizard(Account *account)

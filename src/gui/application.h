@@ -52,9 +52,13 @@ public:
 
     bool debugMode();
 
+    // important! we can't set up the gui's in the ctr - it needs to be a separate step because owncloudgui depends on ocApp to parent
+    // it's actios
+    void buildAppGuis();
+
     ownCloudGui *gui() const;
 
-    // try to get rid of this before the end. currently needed to raise the main window via owncloudgui
+    // this is needed primarily to parent message boxes
     MainWindow *mainWindow() { return _mainWin; }
 
     QString displayLanguage() const;
@@ -75,7 +79,6 @@ protected Q_SLOTS:
     void slotUseMonoIconsChanged(bool);
     void slotCleanup();
     void slotAccountStateAdded(AccountState *accountState) const;
-    void lastAccountStateRemoved() const;
 
 private:
     explicit Application(Platform *platform, const QString &displayLanguage, bool debugMode);

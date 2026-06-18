@@ -26,7 +26,6 @@
 #include "folderman.h"
 #include "mainwindow/mainwindow.h"
 #include "mainwindow/mainwindowcontroller.h"
-#include "settingsdialog.h"
 #include "socketapi/socketapi.h"
 #include "theme.h"
 
@@ -85,31 +84,9 @@ Application::Application(Platform *platform, const QString &displayLanguage, boo
 
     qApp->setQuitOnLastWindowClosed(false);
 
+    // todo: dc-307 - there should be no setters and hence no notifications from theme
     Theme::instance()->setSystrayUseMonoIcons(cfg.monoIcons());
     connect(Theme::instance(), &Theme::systrayUseMonoIconsChanged, this, &Application::slotUseMonoIconsChanged);
-
-    // Setting up the gui class will allow tray notifications for the
-    // setup that follows, like folder setup
-    _gui = new ownCloudGui(this);
-
-#ifdef USE_NEW_MAIN_WINDOW
-    _mainWin = new MainWindow();
-    _mainController = new MainWindowController(_mainWin, this);
-#endif
-
-    connect(AccountManager::instance(), &AccountManager::accountAdded, this, &Application::slotAccountStateAdded);
-    connect(AccountManager::instance(), &AccountManager::lastAccountRemoved, this, &Application::lastAccountStateRemoved);
-    for (const auto &ai : AccountManager::instance()->accounts()) {
-        slotAccountStateAdded(ai);
-    }
-
-    connect(FolderMan::instance()->socketApi(), &SocketApi::shareCommandReceived, _gui.data(), &ownCloudGui::slotShowShareInBrowser);
-
-    // Refactoring example: this is oversimplified and really belongs in a dedicated app builder impl but the idea is illustrated:
-    // don't handling everything "locally" -> request that the best entity for the job do it. Then make the proper connections between
-    // requestor and responsible handler in a clearly defined, central location (e.g. an app builder, but for now, this will do)
-    connect(_gui, &ownCloudGui::requestSetUpSyncFoldersForAccount, FolderMan::instance(), &FolderMan::setUpInitialSyncFolders);
-    connect(_gui, &ownCloudGui::requestLoadSpacesOnly, FolderMan::instance(), &FolderMan::setUpInitialSpaces);
 
 #ifdef WITH_AUTO_UPDATER
     // Update checks
@@ -135,16 +112,7 @@ Application::~Application()
     }
 }
 
-void Application::lastAccountStateRemoved() const
-{
-#ifndef USE_NEW_MAIN_WINDOW
-    // auto run the wizard if there are no existing accounts
-    if (_gui && AccountManager::instance()->accounts().isEmpty()) {
-        gui()->runAccountWizard();
-    }
-#endif
-}
-
+// move to owncloudgui or wherever we end up consolidating the tray meny/socketApi management
 void Application::slotAccountStateAdded(AccountState *accountState) const
 {
     if (!accountState || !accountState->account())
@@ -155,6 +123,8 @@ void Application::slotAccountStateAdded(AccountState *accountState) const
     connect(accountState, &AccountState::stateChanged, _gui.data(), &ownCloudGui::slotComputeOverallSyncStatus);
     connect(account, &Account::serverVersionChanged, _gui.data(), [account, this] { _gui->slotTrayMessageIfServerUnsupported(account); });
 
+    // todo dc-310 - this does not belong here! This can be done in the folder man when it's given a "new" account
+    // (eg in load from config or load from new account)
     // Hook up the folder manager slots to the account state's Q_SIGNALS:
     connect(accountState, &AccountState::isConnectedChanged, FolderMan::instance(), &FolderMan::slotIsConnectedChanged);
     connect(account, &Account::serverVersionChanged, FolderMan::instance(), [account] { FolderMan::instance()->slotServerVersionChanged(account); });
@@ -162,10 +132,6 @@ void Application::slotAccountStateAdded(AccountState *accountState) const
 
 void Application::slotCleanup()
 {
-    // unload the ui to make sure we no longer react to signals
-    _gui->slotShutdown();
-    delete _gui;
-
     // by now the credentials are supposed to be persisted
     // don't start async credentials jobs during shutdown
     AccountManager::instance()->save();
@@ -201,6 +167,19 @@ void Application::slotUseMonoIconsChanged(bool)
 bool Application::debugMode()
 {
     return _debugMode;
+}
+
+void Application::buildAppGuis()
+{
+    Q_ASSERT(!_mainWin && !_gui);
+    _mainWin = new MainWindow();
+    _mainController = new MainWindowController(_mainWin, this);
+
+    // Setting up the gui class will allow tray notifications for the
+    // setup that follows, like folder setup
+    _gui = new ownCloudGui(this);
+    connect(_gui, &ownCloudGui::requestAboutDialog, _mainController, &MainWindowController::onAbout);
+    connect(FolderMan::instance()->socketApi(), &SocketApi::shareCommandReceived, _gui.data(), &ownCloudGui::slotShowShareInBrowser);
 }
 
 std::unique_ptr<Application> Application::createInstance(Platform *platform, const QString &displayLanguage, bool debugMode)

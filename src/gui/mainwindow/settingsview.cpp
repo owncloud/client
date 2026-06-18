@@ -15,11 +15,9 @@
 #include "settingsview.h"
 #include "ui_settingsview.h"
 
-#include "common/restartmanager.h"
-#include "common/version.h"
 #include "gui/application.h"
 #include "gui/ignorelisteditor.h"
-#include "gui/settingsdialog.h"
+#include "gui/mainwindow/mainwindow.h"
 #include "gui/translations.h"
 #include "libsync/configfile.h"
 #include "libsync/theme.h"
@@ -141,7 +139,7 @@ void SettingsView::slotToggleOptionalDesktopNotifications(bool enable)
 void SettingsView::slotIgnoreFilesEditor()
 {
     if (_ignoreEditor.isNull()) {
-        _ignoreEditor = new IgnoreListEditor(ocApp()->gui()->settingsDialog());
+        _ignoreEditor = new IgnoreListEditor(ocApp()->mainWindow());
         _ignoreEditor->setAttribute(Qt::WA_DeleteOnClose, true);
         ownCloudGui::raise();
         _ignoreEditor->open();
