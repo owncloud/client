@@ -13,7 +13,6 @@
  */
 
 #include "owncloudgui.h"
-#include "aboutdialog.h"
 #include "account.h"
 #include "accountmanager.h"
 #include "accountstate.h"
@@ -28,11 +27,6 @@
 #include "logbrowser.h"
 #include "mainwindow/mainwindow.h"
 #include "progressdispatcher.h"
-
-#include "newaccountwizard/newaccountbuilder.h"
-#include "newaccountwizard/newaccountmodel.h"
-#include "newaccountwizard/newaccountwizard.h"
-#include "newaccountwizard/newaccountwizardcontroller.h"
 
 #include "resources/resources.h"
 

@@ -3,20 +3,16 @@ include(ECMAddAppIcon)
 find_package(KDSingleApplication-qt6 1.0.0 REQUIRED)
 
 set(client_UI_SRCS
-    aboutdialog.ui
-    generalsettings.ui
     ignorelisteditor.ui
     networksettings.ui
     localactivitywidget.ui
     syncerrorwidget.ui
-    settingsdialog.ui
     tlserrordialog.ui
     logbrowser.ui
     accountsgui/accountview.ui
 )
 
 set(client_SRCS
-    aboutdialog.cpp
     accountmanager.cpp
 
     accountmodalwidget.cpp
@@ -30,7 +26,6 @@ set(client_SRCS
     folder.cpp
     folderman.cpp
     folderwatcher.cpp
-    generalsettings.cpp
     ignorelisteditor.cpp
     lockwatcher.cpp
     logbrowser.cpp
@@ -43,7 +38,6 @@ set(client_SRCS
     syncerrorwidget.cpp
     activitysettings.cpp
     selectivesyncwidget.cpp
-    settingsdialog.cpp
     tlserrordialog.cpp
     syncrunfilelog.cpp
     accountstate.cpp
