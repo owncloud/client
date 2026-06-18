@@ -103,7 +103,7 @@ void AccountState::connectAccount()
     connect(_account.data(), &Account::appProviderErrorOccured, this, [](const QString &error) {
         QMessageBox *msgBox = new QMessageBox(QMessageBox::Information, Theme::instance()->appNameGUI(), error, {}, ocApp()->mainWindow());
         msgBox->setAttribute(Qt::WA_DeleteOnClose);
-        ownCloudGui::raise();
+        ocApp()->mainWindow()->ensureVisible();
         msgBox->open();
     });
 }
@@ -354,7 +354,7 @@ void AccountState::handleSslConnectionErrors(const QList<QSslError> &errors, boo
             certs << error.certificate();
         }
         TlsErrorDialog tlsDlg(filteredErrors, _account->url().host(), ocApp()->mainWindow());
-        ownCloudGui::raise();
+        ocApp()->mainWindow()->ensureVisible();
         int res = tlsDlg.exec();
         if (res == TlsErrorDialog::Accepted) {
             _account->addApprovedCerts(certs);

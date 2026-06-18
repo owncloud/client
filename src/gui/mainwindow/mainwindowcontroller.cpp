@@ -17,6 +17,7 @@
 #include "aboutview.h"
 #include "accountmanager.h"
 #include "accountsgui/accountsguicontroller.h"
+#include "application.h"
 #include "localactivitywidget.h"
 #include "mainwindow.h"
 #include "modalwrapperwidget.h"
@@ -104,6 +105,8 @@ void MainWindowController::createActivityAction()
 
 void MainWindowController::onAddAccount()
 {
+    // it's not always the case that the window is visible on start so be sure to raise
+    _window->ensureVisible();
     _accountsController->runAccountWizard();
 }
 
@@ -116,6 +119,7 @@ void MainWindowController::onSettings()
 
 void MainWindowController::onAbout()
 {
+    _window->ensureVisible();
     AboutView *aboutPanel = new AboutView(_window);
     ModalWrapperWidget *wrapper = new ModalWrapperWidget(aboutPanel, _window);
     _window->showModalWidget(wrapper);

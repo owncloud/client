@@ -196,7 +196,7 @@ void SettingsDialog::onAccountRemoved(AccountState *state)
 
 void SettingsDialog::addModalWidget(QWidget *w)
 {
-    ownCloudGui::raise();
+    //   ownCloudGui::raise();
     if (_ui->dialogStack->indexOf(w) == -1) {
         _ui->dialogStack->addWidget(w);
         _ui->dialogStack->setCurrentWidget(w);
@@ -213,7 +213,7 @@ void SettingsDialog::requestModality(Account *account)
         setCurrentAccount(account);
     }
     _modalStack.append(account);
-    ownCloudGui::raise();
+    //   ownCloudGui::raise();
 }
 
 void SettingsDialog::ceaseModality(Account *account)

@@ -1047,7 +1047,7 @@ void Folder::slotWatcherUnreliable(const QString &message)
         {}, ocApp()->mainWindow());
 
     msgBox->setAttribute(Qt::WA_DeleteOnClose);
-    ownCloudGui::raise();
+    ocApp()->mainWindow()->ensureVisible();
     msgBox->open();
 }
 

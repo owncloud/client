@@ -273,6 +273,30 @@ QSize MainWindow::minimumSizeHint() const
     return min;
 }
 
+void MainWindow::ensureVisible()
+{
+    show();
+    raise();
+    activateWindow();
+
+#if defined(Q_OS_WIN)
+    // Windows disallows raising a Window when you're not the active application.
+    // Use a common hack to attach to the active application
+    const auto activeProcessId = GetWindowThreadProcessId(GetForegroundWindow(), nullptr);
+    if (activeProcessId != qApp->applicationPid()) {
+        const auto threadId = GetCurrentThreadId();
+        // don't step here with a debugger...
+        if (AttachThreadInput(threadId, activeProcessId, true)) {
+            const auto hwnd = reinterpret_cast<HWND>(winId());
+            SetForegroundWindow(hwnd);
+            SetWindowPos(hwnd, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+            AttachThreadInput(threadId, activeProcessId, false);
+        }
+    }
+
+#endif
+}
+
 void MainWindow::setVisible(bool visible)
 {
     if (!visible) {

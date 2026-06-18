@@ -112,7 +112,7 @@ void ownCloudGui::slotTrayClicked(QSystemTrayIcon::ActivationReason reason)
         // However if the settings dialog is already visible but hidden
         // by other applications, this will bring it to the front.
         if (ocApp()->mainWindow()->isVisible()) {
-            raise();
+            ocApp()->mainWindow()->ensureVisible();
         }
 #else
         slotOpenSettingsDialog();
@@ -216,14 +216,14 @@ void ownCloudGui::slotShowOptionalTrayMessage(const QString &title, const QStrin
 
 void ownCloudGui::slotShowSettings()
 {
-    raise();
+    ocApp()->mainWindow()->ensureVisible();
 }
 
 void ownCloudGui::slotToggleLogBrowser()
 {
     auto logBrowser = new LogBrowser(ocApp()->mainWindow());
     logBrowser->setAttribute(Qt::WA_DeleteOnClose);
-    ownCloudGui::raise();
+    ocApp()->mainWindow()->ensureVisible();
     logBrowser->open();
 }
 
@@ -231,34 +231,6 @@ void ownCloudGui::slotHelp()
 {
     QDesktopServices::openUrl(QUrl(Theme::instance()->helpUrl()));
 }
-
-// todo: dc-310 move this to main window
-void ownCloudGui::raise()
-{
-    QMainWindow *window;
-    window = ocApp()->mainWindow();
-    window->show();
-    window->raise();
-    window->activateWindow();
-
-#if defined(Q_OS_WIN)
-    // Windows disallows raising a Window when you're not the active application.
-    // Use a common hack to attach to the active application
-    const auto activeProcessId = GetWindowThreadProcessId(GetForegroundWindow(), nullptr);
-    if (activeProcessId != qApp->applicationPid()) {
-        const auto threadId = GetCurrentThreadId();
-        // don't step here with a debugger...
-        if (AttachThreadInput(threadId, activeProcessId, true))
-        {
-            const auto hwnd = reinterpret_cast<HWND>(window->winId());
-            SetForegroundWindow(hwnd);
-            SetWindowPos(hwnd, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
-            AttachThreadInput(threadId, activeProcessId, false);
-        }
-    }
-#endif
-}
-
 
 void ownCloudGui::slotShowShareInBrowser(const QString &sharePath, const QString &localPath)
 {

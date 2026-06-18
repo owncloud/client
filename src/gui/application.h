@@ -17,6 +17,7 @@
 #include "gui/owncloudguilib.h"
 
 #include "folderman.h"
+#include "mainwindow/mainwindow.h"
 #include "owncloudgui.h"
 #include "platform.h"
 

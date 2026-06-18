@@ -141,7 +141,7 @@ void SettingsView::slotIgnoreFilesEditor()
     if (_ignoreEditor.isNull()) {
         _ignoreEditor = new IgnoreListEditor(ocApp()->mainWindow());
         _ignoreEditor->setAttribute(Qt::WA_DeleteOnClose, true);
-        ownCloudGui::raise();
+        ocApp()->mainWindow()->ensureVisible();
         _ignoreEditor->open();
     }
 }

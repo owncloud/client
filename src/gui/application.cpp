@@ -24,7 +24,6 @@
 #include "configfile.h"
 #include "folder.h"
 #include "folderman.h"
-#include "mainwindow/mainwindow.h"
 #include "mainwindow/mainwindowcontroller.h"
 #include "socketapi/socketapi.h"
 #include "theme.h"

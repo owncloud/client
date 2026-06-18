@@ -24,6 +24,7 @@
 #include "accountsgui/accountviewcontroller.h"
 #include "accountstate.h"
 #include "accountview.h"
+#include "application.h"
 #include "creds/abstractcredentials.h"
 #include "folderman.h"
 #include "mainwindow/mainwindow.h"
@@ -153,7 +154,7 @@ void AccountsGuiController::runAccountWizard()
     NewAccountWizard wizard(_window);
     NewAccountModel model(nullptr);
     NewAccountWizardController wizardController(&model, &wizard, nullptr);
-    ownCloudGui::raise();
+    ocApp()->mainWindow()->ensureVisible();
     int result = wizard.exec();
     if (result == QDialog::Accepted) {
         // the builder needs to be a pointer as it has to wait for the connection state to go to connected
@@ -251,7 +252,7 @@ void AccountsGuiController::startModal(QUuid accountId)
 
     action->setIcon(Resources::getCoreIcon("states/warning"));
     action->setChecked(true);
-    ownCloudGui::raise();
+    ocApp()->mainWindow()->ensureVisible();
 }
 
 void AccountsGuiController::endModal(QUuid accountId)

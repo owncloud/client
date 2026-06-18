@@ -16,13 +16,14 @@
 
 #include "accessmanager.h"
 #include "advancedsettingspagecontroller.h"
+#include "application.h"
 #include "authsuccesspagecontroller.h"
 #include "common/utility.h"
+#include "mainwindow/mainwindow.h"
 #include "newaccountmodel.h"
 #include "newaccountwizard.h"
 #include "oauthpagecontroller.h"
 #include "owncloudgui.h"
-#include "resources/template.h"
 #include "theme.h"
 #include "urlpagecontroller.h"
 
@@ -177,7 +178,7 @@ void NewAccountWizardController::onOAuthValidationCompleted(const OCC::OAuthPage
     _model->setWebfingerUserInfoUrl(results.webfingerUserUrl);
 
     _wizard->setCurrentId(_authSuccessPageIndex);
-    ownCloudGui::raise();
+    ocApp()->mainWindow()->ensureVisible();
     // on mac, for unknown reasons, the main window is active after raise
     _wizard->activateWindow();
 }
@@ -187,7 +188,7 @@ void NewAccountWizardController::onOauthValidationFailed(const OCC::OAuthPageRes
     if (!_wizard)
         return;
     Q_UNUSED(results);
-    ownCloudGui::raise();
+    ocApp()->mainWindow()->ensureVisible();
     _wizard->activateWindow();
 }
 

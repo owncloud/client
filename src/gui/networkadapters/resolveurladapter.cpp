@@ -17,7 +17,7 @@
 #include "abstractcorejob.h"
 #include "common/utility.h"
 #include "gui/application.h"
-#include "gui/owncloudgui.h"
+#include "gui/mainwindow/mainwindow.h"
 #include "gui/tlserrordialog.h"
 
 #include <QNetworkAccessManager>
@@ -94,7 +94,7 @@ void ResolveUrlAdapter::handleSslErrors(const QList<QSslError> &errors)
     } else {
         auto *tlsErrorDialog = new TlsErrorDialog(filtered, reply->url().host(), _tlsDialogParent);
 
-        ownCloudGui::raise();
+        ocApp()->mainWindow()->ensureVisible();
         // we have to exec here or the request finishes too fast
         int res = tlsErrorDialog->exec();
         if (res == QDialog::DialogCode::Accepted) {

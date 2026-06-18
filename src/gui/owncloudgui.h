@@ -51,13 +51,6 @@ public:
     explicit ownCloudGui(Application *parent = nullptr);
     ~ownCloudGui() override;
 
-    /**
-     * Raises our main Window to the front with the raiseWidget in focus.
-     * If raiseWidget is a dialog and not visible yet, ->open will be called.
-     * For normal widgets we call showNormal.
-     */
-    static void raise();
-
 Q_SIGNALS:
     void requestSetUpSyncFoldersForAccount(AccountState *account, bool useVfs);
     void requestLoadSpacesOnly(AccountState *account);
