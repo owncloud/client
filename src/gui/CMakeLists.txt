@@ -9,14 +9,10 @@ set(client_UI_SRCS
     syncerrorwidget.ui
     tlserrordialog.ui
     logbrowser.ui
-    accountsgui/accountview.ui
 )
 
 set(client_SRCS
     accountmanager.cpp
-
-    accountmodalwidget.cpp
-    accountmodalwidget.ui
 
     application.cpp
     fetchserversettings.cpp
