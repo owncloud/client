@@ -41,8 +41,10 @@ AccountViewController::AccountViewController(AccountView *view, AccountState *st
     if (!_view || !_accountState || !_accountState->account())
         return;
 
+    connect(_view, &AccountView::requestMenuActionUpdate, this, &AccountViewController::refreshAccountActions);
+
     AccountFoldersController *foldersController = new AccountFoldersController(_accountState, _view->foldersView(), this);
-    connect(foldersController, &AccountFoldersController::requestAddFolder, this, &AccountViewController::onAddFolder);
+    connect(foldersController, &AccountFoldersController::requestAddFolder, this, &AccountViewController::runFolderWizard);
     connect(foldersController, &AccountFoldersController::requestAccountModalWidget, this, &AccountViewController::addAccountModalWidget);
 
     connect(_accountState, &AccountState::stateChanged, this, &AccountViewController::onAccountStateChanged);
@@ -85,22 +87,46 @@ void AccountViewController::buildManageAccountMenu()
     if (!_view || !_accountState)
         return;
 
-    QMenu *menu = new QMenu(_view);
-    menu->setAccessibleName(tr("Account options menu"));
+    QList<QAction *> actions;
 
-    auto *logInOutAction = menu->addAction(tr("Log in"), this, &AccountViewController::onToggleSignInState);
+    _logInOut = new QAction(tr("Log in"), this);
+    _logInOut->setObjectName("logInOutAction");
+    connect(_logInOut, &QAction::triggered, this, &AccountViewController::onToggleSignInState);
+    actions.push_back(_logInOut);
 
-    auto *reconnectAction = menu->addAction(tr("Reconnect"), this, [this] { _accountState->checkConnectivity(true); });
-    reconnectAction->setEnabled(!_accountState->isConnected() && !_accountState->isSignedOut());
-    connect(_accountState, &AccountState::stateChanged, this, [logInOutAction, reconnectAction, this]() {
-        logInOutAction->setText(_accountState->isSignedOut() ? tr("Log in") : tr("Log out"));
-        reconnectAction->setEnabled(!_accountState->isConnected() && !_accountState->isSignedOut());
-    });
+    _reconnect = new QAction(tr("Reconnect"), this);
+    _reconnect->setObjectName("reconnectAction");
+    connect(_reconnect, &QAction::triggered, this, [this] { _accountState->checkConnectivity(true); });
+    actions.push_back(_reconnect);
 
-    menu->addAction(CommonStrings::showInWebBrowser(), this, &AccountViewController::onOpenAccountInBrowser);
-    menu->addAction(tr("Remove"), this, &AccountViewController::onDeleteAccount);
+    _showInBrowser = new QAction(CommonStrings::showInWebBrowser(), this);
+    _showInBrowser->setObjectName("showInBrowserAction");
+    connect(_showInBrowser, &QAction::triggered, this, &AccountViewController::onOpenAccountInBrowser);
+    actions.push_back(_showInBrowser);
 
-    _view->setAccountMenu(menu);
+    _remove = new QAction(tr("Remove"), this);
+    _remove->setObjectName("removeAction");
+    connect(_remove, &QAction::triggered, this, &AccountViewController::onDeleteAccount);
+    actions.push_back(_remove);
+
+    _view->setAccountMenuActions(actions);
+}
+
+void AccountViewController::refreshAccountActions()
+{
+    Q_ASSERT(_logInOut && _reconnect && _showInBrowser && _remove);
+
+    // no we don't need to set enabled to match account state existence, if account state is null it's NOT coming back.
+    if (!_accountState) {
+        _logInOut->setEnabled(false);
+        _reconnect->setEnabled(false);
+        _showInBrowser->setEnabled(false);
+        _remove->setEnabled(false);
+        return;
+    }
+
+    _logInOut->setText(_accountState->isSignedOut() ? tr("Log in") : tr("Log out"));
+    _reconnect->setEnabled(!_accountState->isConnected() && !_accountState->isSignedOut());
 }
 
 void AccountViewController::addAccountModalWidget(AccountModalWidget *widget)
@@ -160,7 +186,7 @@ void AccountViewController::onDeleteAccount()
     messageBox->open();
 }
 
-QIcon AccountViewController::lookupIcon(StatusIcon status)
+QIcon AccountViewController::lookupStatusIcon(StatusIcon status)
 {
     QIcon icon;
     switch (status) {
@@ -246,10 +272,10 @@ void AccountViewController::onAccountStateChanged(AccountState::State state)
         break;
     }
 
-    _view->setConnectionLabel(text, lookupIcon(icon), errors);
+    _view->setConnectionLabel(text, lookupStatusIcon(icon), errors);
 }
 
-void AccountViewController::onAddFolder()
+void AccountViewController::runFolderWizard()
 {
     if (!_accountState || !_accountState->account() || !_view)
         return;
@@ -258,7 +284,7 @@ void AccountViewController::onAddFolder()
     FolderWizard *folderWizard = new FolderWizard(_accountState->account(), _view);
 
     connect(folderWizard, &QDialog::accepted, this, &AccountViewController::onFolderWizardAccepted);
-    // connect(folderWizard, &QDialog::rejected, this, [] { qCInfo(lcAccountView) << "Folder wizard cancelled"; });
+    connect(folderWizard, &QDialog::rejected, this, [] { qCInfo(lcAccountViewController) << "Folder wizard cancelled"; });
 
     // ignore clang analyzer warning about potential memory leak, please.
     // the modal widget gets reparented to the stacked widget and is automatically deleted when the finished() signal is

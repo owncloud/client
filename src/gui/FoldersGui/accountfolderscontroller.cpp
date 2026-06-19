@@ -84,27 +84,7 @@ void AccountFoldersController::onFolderChanged(OCC::Folder *folder)
 
 void AccountFoldersController::onAddFolder()
 {
-    if (!_accountState || !_accountState->account()) {
-        return;
-    }
-
-    emit requestAddFolder();
-}
-
-void AccountFoldersController::onFolderWizardAccepted(OCC::FolderMan::SyncConnectionDescription result)
-{
-    if (!_accountState) {
-        return;
-    }
-
-    // The gui should not allow users to selectively choose any sync lists if vfs is enabled, but this kind of check was
-    // originally in play here so...keep it just in case.
-    if (result.useVirtualFiles && !result.selectiveSyncBlackList.empty()) {
-        result.selectiveSyncBlackList.clear();
-    }
-
-    // Refactoring todo: turn this into a signal
-    FolderMan::instance()->addFolderFromGui(_accountState, result);
+    emit requestAddFolder(_accountId);
 }
 
 void AccountFoldersController::buildMenuActions()

@@ -18,6 +18,8 @@
 #include <QObject>
 #include <QPointer>
 
+class QAction;
+
 namespace OCC {
 
 class AccountView;
@@ -32,6 +34,7 @@ public:
     explicit AccountViewController(AccountView *view, AccountState *state, QObject *parent);
 
     void addAccountModalWidget(AccountModalWidget *widget);
+    void runFolderWizard();
 
 signals:
     // these are sent when the account view starts and ends a "modal" operation
@@ -47,7 +50,6 @@ protected:
     void onOpenAccountInBrowser();
     void onToggleSignInState();
 
-    void onAddFolder();
     void onFolderWizardAccepted();
 
     void finishAccountModalWidget(AccountModalWidget *widget);
@@ -56,8 +58,14 @@ private:
     QPointer<AccountView> _view = nullptr;
     QPointer<AccountState> _accountState;
 
+    QAction *_logInOut = nullptr;
+    QAction *_reconnect = nullptr;
+    QAction *_showInBrowser = nullptr;
+    QAction *_remove = nullptr;
+
     void buildManageAccountMenu();
-    QIcon lookupIcon(StatusIcon status);
+    void refreshAccountActions();
+    QIcon lookupStatusIcon(StatusIcon status);
 };
 
 }

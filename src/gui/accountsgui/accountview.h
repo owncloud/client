@@ -54,7 +54,7 @@ public:
     explicit AccountView(QWidget *parent);
     ~AccountView() override;
 
-    void setAccountMenu(QMenu *menu);
+    void setAccountMenuActions(QList<QAction *> actions);
     void setConnectionLabel(const QString &message, const QIcon &icon, QStringList errors = QStringList());
 
     // this is primarily used to run an account "modal" widget
@@ -68,12 +68,9 @@ public:
     AccountFoldersView *foldersView();
     void accountSettingUpChanged(bool settingUp);
 
-    // this is called by SettingsDialog directly but should be corrected to either respond to signal, or just make
-    // it a normal function
-    void slotAddFolder();
 
 signals:
-    void addFolderClicked();
+    void requestMenuActionUpdate();
 
 protected:
     void showEvent(QShowEvent *ev) override;

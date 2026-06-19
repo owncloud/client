@@ -35,13 +35,20 @@ AccountView::~AccountView()
     delete _ui;
 }
 
-void AccountView::setAccountMenu(QMenu *menu)
+void AccountView::setAccountMenuActions(QList<QAction *> actions)
 {
-    if (QMenu *oldMenu = _ui->manageAccountButton->menu()) {
-        _ui->manageAccountButton->setMenu(nullptr);
-        delete oldMenu;
+    QMenu *menu = _ui->manageAccountButton->menu();
+    if (!menu) {
+        menu = new QMenu(this);
+        menu->setAccessibleName(tr("Account options menu"));
+        connect(menu, &QMenu::aboutToShow, this, &AccountView::requestMenuActionUpdate);
+    } else {
+        menu->clear();
     }
-    _ui->manageAccountButton->setMenu(menu);
+
+    menu->addActions(actions);
+    if (_ui->manageAccountButton->menu() == nullptr)
+        _ui->manageAccountButton->setMenu(menu);
 }
 
 void AccountView::setTopStackWidget(QWidget *widget)
@@ -72,12 +79,6 @@ void AccountView::accountSettingUpChanged(bool settingUp)
         _ui->spinner->stopAnimation();
         _ui->stackedWidget->setCurrentWidget(_ui->accountFoldersView);
     }
-}
-
-void AccountView::slotAddFolder()
-{
-    // temp until we get rid of the SettingsDialog
-    emit addFolderClicked();
 }
 
 void AccountView::showEvent(QShowEvent *ev)

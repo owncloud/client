@@ -76,6 +76,8 @@ void AccountsGuiController::onAccountAdded(AccountState *state)
     accountView->setObjectName(QString("accountView_%1").arg(accountId.toString()));
 
     AccountViewController *viewController = new AccountViewController(accountView, state, this);
+    _viewControllerForAccount.insert(accountId, viewController);
+
     connect(account->credentials(), &AbstractCredentials::requestAccountModal, viewController, &AccountViewController::addAccountModalWidget);
 
     connect(viewController, &AccountViewController::accountBeginModal, this, &AccountsGuiController::startModal);
@@ -229,19 +231,17 @@ void AccountsGuiController::handleAccountSetupError(const QString &error)
     setupAccountPlaceholder();
 }
 
-void AccountsGuiController::runFolderWizard(Account *account)
+void AccountsGuiController::runFolderWizard(QUuid accountId)
 {
-    if (!account)
-        return;
-
-    QAction *action = _actionForAccount.value(account->uuid(), nullptr);
+    QAction *action = _actionForAccount.value(accountId, nullptr);
     if (!action)
         return;
 
     action->setChecked(true);
-    AccountView *view = action->data().value<AccountView *>();
-    if (view)
-        view->slotAddFolder();
+
+    AccountViewController *controller = _viewControllerForAccount.value(accountId, nullptr);
+    if (controller)
+        controller->runFolderWizard();
 }
 
 void AccountsGuiController::startModal(QUuid accountId)
