@@ -27,6 +27,10 @@
 #include "modalwrapperwidget.h"
 #include "theme.h"
 
+#ifdef Q_OS_WIN
+#include <qt_windows.h>
+#endif
+
 #ifdef Q_OS_MAC
 #include "settingsdialog_mac.h"
 void setActivationPolicy(ActivationPolicy policy);
