@@ -33,8 +33,6 @@ public:
 
 private Q_SLOTS:
     void skipVersion();
-    //    void notNow();
-    //   void getUpdate();
 
 Q_SIGNALS:
     void versionSkipped();

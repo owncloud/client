@@ -21,7 +21,7 @@
 #include "appimageupdater.h"
 #include "common/version.h"
 #include "libsync/configfile.h"
-#include "settingsdialog.h"
+#include "mainwindow/modalwrapperwidget.h"
 #include "theme.h"
 #include "updater_private.h"
 
@@ -154,15 +154,12 @@ void AppImageUpdater::versionInfoArrived(const UpdateInfo &info)
         return;
     }
 
-    auto widget = new AppImageUpdateAvailableWidget(currentVersion, newVersion, ocApp()->gui()->settingsDialog());
+    auto widget = new AppImageUpdateAvailableWidget(currentVersion, newVersion, ocApp()->mainWindow());
 
-    connect(widget, &AppImageUpdateAvailableWidget::skipUpdateButtonClicked, this, [newVersion, widget]() {
+    connect(widget, &AppImageUpdateAvailableWidget::skipUpdateButtonClicked, this, [newVersion]() {
         qCInfo(lcUpdater) << "Update" << newVersion << "skipped by user";
         setPreviouslySkippedVersion(newVersion);
-        widget->deleteLater();
     });
-
-    connect(widget, &AppImageUpdateAvailableWidget::rejected, this, &QObject::deleteLater);
 
     connect(widget, &AppImageUpdateAvailableWidget::accepted, this, [this, widget, appImageUpdaterShim]() {
         // binding AppImageUpdaterShim shared pointer to finished callback makes sure the updater is cleaned up when it's done
@@ -178,11 +175,10 @@ void AppImageUpdater::versionInfoArrived(const UpdateInfo &info)
 
         setDownloadState(Downloading);
         appImageUpdaterShim->startUpdateInBackground();
-        widget->deleteLater();
     });
 
-    ownCloudGui::raise();
-    ocApp()->gui()->settingsDialog()->addModalWidget(widget);
+    ModalWrapperWidget *wrapper = new ModalWrapperWidget(widget, ocApp()->mainWindow());
+    ocApp()->mainWindow()->showModalWidget(wrapper);
 }
 
 void AppImageUpdater::backgroundCheckForUpdate()
