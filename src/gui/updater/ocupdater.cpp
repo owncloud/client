@@ -379,13 +379,14 @@ void WindowsUpdater::showNewVersionAvailableWidget(const UpdateInfo &info)
                      "<p><b>%2</b> is available for download. The installed version is %3.</p>")
                       .arg(Utility::escape(Theme::instance()->appNameGUI()),
                           Utility::escape(info.versionString()), Utility::escape(Version::versionWithBuildNumber().toString()));
-    auto *widget = new NewVersionAvailableWidget(ocApp()->gui()->settingsDialog(), txt);
+    auto *widget = new NewVersionAvailableWidget(ocApp()->mainWindow(), txt);
 
     connect(widget, &NewVersionAvailableWidget::versionSkipped, this, &WindowsUpdater::slotSetPreviouslySkippedVersion);
-    connect(widget, &NewVersionAvailableWidget::updateNow, this, &WindowsUpdater::slotOpenUpdateUrl);
-    connect(widget, &NewVersionAvailableWidget::finished, this, [widget]() { delete widget; });
+    connect(widget, &NewVersionAvailableWidget::accepted, this, &WindowsUpdater::slotOpenUpdateUrl);
+    // connect(widget, &NewVersionAvailableWidget::finished, this, [widget]() { delete widget; });
 
-    ocApp()->gui()->settingsDialog()->addModalWidget(widget);
+    ModalWrapperWidget *wrapper = new ModalWrapperWidget(widget, ocApp()->mainWindow());
+    ocApp()->mainWindow()->showModalWidget(wrapper);
 }
 
 void WindowsUpdater::showUpdateErrorDialog(const QString &targetVersion)
