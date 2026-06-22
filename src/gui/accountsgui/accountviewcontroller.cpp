@@ -270,6 +270,9 @@ void AccountViewController::onAccountStateChanged(AccountState::State state)
         text = tr("Disconnected");
         icon = StatusIcon::Disconnected;
         break;
+    default:
+        text = tr("Invalid connection status");
+        icon = StatusIcon::None;
     }
 
     _view->setConnectionLabel(text, lookupStatusIcon(icon), errors);

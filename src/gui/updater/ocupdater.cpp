@@ -18,9 +18,10 @@
 #include "common/version.h"
 #include "config/appconfig.h"
 #include "configfile.h"
+#include "mainwindow/modalwrapperwidget.h"
 #include "theme.h"
 
-#include "settingsdialog.h"
+
 #include "updatedownloadedwidget.h"
 #include "updater/newversionavailablewidget.h"
 #include "updater/ocupdater.h"
@@ -53,11 +54,13 @@ UpdaterScheduler::UpdaterScheduler(Application *app, QObject *parent)
         connect(updater, &OCUpdater::updateDownloaded, this, [app, updater, this]() {
             // prevent dialog from being displayed twice (rather unlikely, but it won't hurt)
             if (_updateDownloadedWidget == nullptr) {
-                _updateDownloadedWidget = new UpdateDownloadedWidget(app->gui()->settingsDialog(), updater->statusString());
-                ocApp()->gui()->settingsDialog()->addModalWidget(_updateDownloadedWidget);
+                _updateDownloadedWidget = new UpdateDownloadedWidget(app->mainWindow(), updater->statusString());
+                ModalWrapperWidget *wrapper = new ModalWrapperWidget(_updateDownloadedWidget, app->mainWindow());
+                ocApp()->mainWindow()->showModalWidget(wrapper);
 
                 connect(_updateDownloadedWidget, &UpdateDownloadedWidget::accepted, this, []() { Updater::instance()->applyUpdateAndRestart(); });
-                connect(_updateDownloadedWidget, &UpdateDownloadedWidget::finished, this, [this]() { delete _updateDownloadedWidget.data(); });
+                // the wrapper is deleted by the main window on finished - this is unnecessary
+                // connect(_updateDownloadedWidget, &UpdateDownloadedWidget::finished, this, [this]() { delete _updateDownloadedWidget.data(); });
             }
         });
 
