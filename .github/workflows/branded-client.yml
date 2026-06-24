@@ -7,8 +7,6 @@ on:
 
 env:
   NPM_GHERLINT: "@gherlint/gherlint@1.1.0"
-  S3_PUBLIC_CACHE_SERVER: "https://cache.owncloud.com"
-  S3_PUBLIC_CACHE_BUCKET: "public"
 
 jobs:
   gui-tests:
@@ -76,15 +74,9 @@ jobs:
 
       - name: Upload GUI test result
         if: ${{ failure() && steps.run_gui_test.outcome == 'failure' }}
-        run: |
-          curl -L https://dl.min.io/client/mc/release/linux-amd64/mc -o /tmp/mc
-          chmod +x /tmp/mc
-          /tmp/mc alias set cache ${{ env.S3_PUBLIC_CACHE_SERVER }} ${{ secrets.CACHE_PUBLIC_S3_ACCESS_KEY }} ${{ secrets.CACHE_PUBLIC_S3_SECRET_KEY }}
-          /tmp/mc cp --recursive test/gui/guiReportUpload cache/${{ env.S3_PUBLIC_CACHE_BUCKET }}/${{ github.repository }}/${{ github.run_number }}/ocis
-
-      - name: Log GUI reports
-        if: ${{ failure() && steps.run_gui_test.outcome == 'failure' }}
-        env:
-          REPORT_DIR: /__w/client/client/test/gui/guiReportUpload
-          SERVER_TYPE: ocis
-        run: bash test/gui/ci/log_reports.sh ${REPORT_DIR} ${GITHUB_REPO} ${GITHUB_RUN_NUMBER} ${SERVER_TYPE}
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: gui-report-branded-client-${{ github.run_number }}
+          path: test/gui/guiReportUpload
+          if-no-files-found: warn
+          retention-days: 7
