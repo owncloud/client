@@ -37,7 +37,7 @@ jobs:
             # TODO: align the target with the name
             - name: macos-clang-arm64
               target: macos-clang-arm64
-              os: macos-latest
+              os: macos-15
               container:
               useSonarCloud:
               testOptions:
