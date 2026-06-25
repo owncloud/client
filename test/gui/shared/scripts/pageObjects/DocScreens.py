@@ -9,13 +9,12 @@
 # dialogs). They intentionally avoid the keyboard-shortcut path for the log
 # window (that shortcut does not exist in the client).
 
-import names
 import squish
+
+from pageObjects.Toolbar import Toolbar
 
 
 class DocScreens:
-    SETTINGS_TAB_BUTTON = names.settings_settingsdialog_toolbutton_Settings_QToolButton
-
     # Buttons on the General settings pane (generalsettings.ui).
     IGNORED_FILES_BUTTON = {
         "container": names.stack_scrollArea_QScrollArea,
@@ -42,7 +41,9 @@ class DocScreens:
 
     @staticmethod
     def open_settings_tab():
-        squish.clickButton(squish.waitForObject(DocScreens.SETTINGS_TAB_BUTTON))
+        # The Settings tab is opened via the QML toolbar button (settingsButton),
+        # the same path the functional tests use.
+        Toolbar.open_settings_tab()
 
     @staticmethod
     def open_ignored_files_editor():
