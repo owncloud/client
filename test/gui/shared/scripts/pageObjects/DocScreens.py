@@ -9,6 +9,7 @@
 # dialogs). They intentionally avoid the keyboard-shortcut path for the log
 # window (that shortcut does not exist in the client).
 
+import names
 import squish
 
 from pageObjects.Toolbar import Toolbar
