@@ -102,14 +102,20 @@ def capture_doc_screenshot(screen_id):
     if window_ref is not None:
         try:
             window = squish.waitForObject(window_ref)
-            squish.grabWidget(window).save(
-                os.path.dirname(target), os.path.basename(target)
+            # object.grabScreenshot(path) is the current API (grabWidget is
+            # deprecated). Image.save() takes a single full path, not
+            # (dir, name) -- passing two args silently fails to write.
+            window.grabScreenshot(target)
+            if os.path.exists(target):
+                test.log(f"Doc screenshot (window) captured: {rel_name}")
+                return target
+            test.log(
+                f"grabScreenshot wrote no file for '{screen_id}'; "
+                f"falling back to desktop capture"
             )
-            test.log(f"Doc screenshot (window) captured: {rel_name}")
-            return target
         except (LookupError, RuntimeError) as err:
             test.log(
-                f"grabWidget failed for '{screen_id}' ({err}); "
+                f"grabScreenshot failed for '{screen_id}' ({err}); "
                 f"falling back to desktop capture"
             )
 
