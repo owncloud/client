@@ -47,7 +47,7 @@ jobs:
         GITHUB_RUN_NUMBER: ${{ github.run_number }}
     services:
       ocis:
-        image: owncloud/ocis-rolling:latest
+        image: owncloud/ocis-rolling:20260610
         ports:
           - 9200:9200
         env:
