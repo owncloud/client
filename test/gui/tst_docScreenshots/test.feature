@@ -6,7 +6,9 @@ Feature: capture documentation screenshots
     # This suite is run ON DEMAND only (not part of the regular GUI test run).
     # Each scenario navigates to a documented screen using the existing page
     # objects and then captures it with the screen id from
-    # DocScreenshotHelper.SCREENSHOT_REGISTRY.
+    # DocScreenshotHelper.SCREENSHOT_REGISTRY. Captures crop to the relevant
+    # top-level window (see SCREENSHOT_WINDOW) so the images exclude desktop
+    # chrome.
     #
     # Surfaces that the Squish page objects cannot reach (OS file manager,
     # Windows VFS / Storage Sense, the MSI installer, the external browser and
@@ -23,10 +25,11 @@ Feature: capture documentation screenshots
     Scenario: Capture the advanced configuration page
         Given the user has started the client
         And the user has entered the following account information:
-            | server   | %local_server% |
-            | user     | Alice          |
-            | password | 1234           |
-        When the user opens the advanced configuration
+            | server | %local_server% |
+        When the user adds the following user credentials:
+            | user     | Alice |
+            | password | 1234  |
+        And the user opens the advanced configuration
         Then the screenshot "wizard-all-set-advanced" is captured
 
     Scenario: Capture the account settings window

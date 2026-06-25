@@ -6,17 +6,17 @@
 # tst_docScreenshots suite (run on demand) to regenerate the screenshots that
 # ship in the owncloud/docs-client-desktop manual.
 #
-# It reuses the existing Squish capture path (saveDesktopScreenshot, the same
-# call ReportHelper.take_screenshot uses on failure) but writes to a dedicated
-# directory and resolves names through a single registry so the documentation
-# file naming convention (oc-*) lives in exactly one place.
+# It reuses the existing Squish capture path but, by default, crops to the
+# relevant top-level window (grabWidget) so the documentation images do not
+# include the surrounding desktop/window-manager chrome. If the window cannot
+# be grabbed it falls back to a full-desktop capture so a run never silently
+# produces nothing.
 
 import os
 
+import names
 import test
 import squish
-
-from helpers.ConfigHelper import get_config
 
 
 # Maps a logical screen id (used in the .feature files) to the file name used
@@ -41,14 +41,36 @@ SCREENSHOT_REGISTRY = {
     "wizard-all-set-advanced": "using/oc-wizard-all-set-advanced.png",
     # troubleshooting.adoc
     "log-output-window": "troubleshooting/oc-windows-log-output-window.png",
-    "log-files-to-keep": "troubleshooting/oc-windows-log-files-to-keep.png",
+}
+
+# Maps a screen id to the top-level window object it should be cropped to.
+# Screens not listed here are captured as a full desktop screenshot (use that
+# for transient/native surfaces such as context menus). The window references
+# come from test/gui/shared/scripts/names.py.
+SCREENSHOT_WINDOW = {
+    "account-settings": names.settings_OCC_SettingsDialog,
+    "activity-pane": names.settings_OCC_SettingsDialog,
+    "settings-general": names.settings_OCC_SettingsDialog,
+    "spaces-show": names.settings_OCC_SettingsDialog,
+    "spaces-add": names.add_Folder_Sync_Connection_OCC_FolderWizard,
+    "wizard-url": names.welcome_to_ownCloud_OCC_NewAccountWizard,
+    "wizard-open-in-browser": names.welcome_to_ownCloud_OCC_NewAccountWizard,
+    "wizard-all-set": names.welcome_to_ownCloud_OCC_NewAccountWizard,
+    "wizard-all-set-advanced": names.welcome_to_ownCloud_OCC_NewAccountWizard,
 }
 
 
 def get_doc_screenshots_path():
     # Sub-directory of the standard report dir so the CI artifact upload picks
     # it up without extra wiring.
-    return os.path.join(get_config("guiTestReportDir"), "doc-screenshots")
+    return os.path.join(get_config_report_dir(), "doc-screenshots")
+
+
+def get_config_report_dir():
+    # Imported lazily so this module can be imported outside a running test.
+    from helpers.ConfigHelper import get_config
+
+    return get_config("guiTestReportDir")
 
 
 def _resolve(screen_id):
@@ -60,33 +82,37 @@ def _resolve(screen_id):
     return SCREENSHOT_REGISTRY[screen_id]
 
 
-def capture_doc_screenshot(screen_id):
-    """Capture the current desktop and save it under the documentation name."""
-    rel_name = _resolve(screen_id)
-    directory = get_doc_screenshots_path()
-    target = os.path.join(directory, rel_name)
+def _target_path(rel_name):
+    target = os.path.join(get_doc_screenshots_path(), rel_name)
     os.makedirs(os.path.dirname(target), exist_ok=True)
-    squish.saveDesktopScreenshot(target)
-    test.log(f"Doc screenshot captured: {rel_name}")
     return target
 
 
-def capture_widget_screenshot(screen_id, object_ref):
-    """Capture a single widget/window (cropped) rather than the whole desktop.
+def capture_doc_screenshot(screen_id):
+    """Capture the documented screen.
 
-    Use this for surfaces where the surrounding desktop is noise (for example
-    the system tray menu or a small dialog). Falls back to a desktop capture if
-    the object cannot be grabbed.
+    Crops to the screen's registered top-level window when one is known,
+    otherwise captures the whole desktop. Always writes to the documentation
+    file name from SCREENSHOT_REGISTRY.
     """
     rel_name = _resolve(screen_id)
-    directory = get_doc_screenshots_path()
-    target = os.path.join(directory, rel_name)
-    os.makedirs(os.path.dirname(target), exist_ok=True)
-    try:
-        obj = squish.waitForObject(object_ref)
-        squish.grabWidget(obj).save(directory, os.path.basename(rel_name))
-        test.log(f"Doc screenshot (widget) captured: {rel_name}")
-    except (LookupError, RuntimeError) as err:
-        test.log(f"grabWidget failed for '{screen_id}' ({err}); using desktop capture")
-        squish.saveDesktopScreenshot(target)
+    target = _target_path(rel_name)
+    window_ref = SCREENSHOT_WINDOW.get(screen_id)
+
+    if window_ref is not None:
+        try:
+            window = squish.waitForObject(window_ref)
+            squish.grabWidget(window).save(
+                os.path.dirname(target), os.path.basename(target)
+            )
+            test.log(f"Doc screenshot (window) captured: {rel_name}")
+            return target
+        except (LookupError, RuntimeError) as err:
+            test.log(
+                f"grabWidget failed for '{screen_id}' ({err}); "
+                f"falling back to desktop capture"
+            )
+
+    squish.saveDesktopScreenshot(target)
+    test.log(f"Doc screenshot (desktop) captured: {rel_name}")
     return target
