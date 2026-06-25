@@ -44,3 +44,23 @@ Feature: capture documentation screenshots
         Given user "Alice" has set up a client with default settings
         When the user clicks on the activity tab
         Then the screenshot "activity-pane" is captured
+
+    Scenario: Capture the General settings pane
+        Given user "Alice" has set up a client with default settings
+        When the user opens the settings tab
+        Then the screenshot "settings-general" is captured
+
+    Scenario: Capture the Ignored Files editor
+        Given user "Alice" has set up a client with default settings
+        When the user opens the ignored files editor
+        Then the screenshot "ignored-files-editor" is captured
+
+    Scenario: Capture the Log Output window
+        Given user "Alice" has set up a client with default settings
+        When the user opens the log settings window
+        Then the screenshot "log-output-window" is captured
+
+    Scenario: Capture the folder sync options menu
+        Given user "Alice" has set up a client with default settings
+        When the user opens the folder sync options menu
+        Then the screenshot "folder-menu" is captured

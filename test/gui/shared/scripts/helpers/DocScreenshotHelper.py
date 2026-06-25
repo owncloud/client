@@ -57,6 +57,12 @@ SCREENSHOT_WINDOW = {
     "wizard-open-in-browser": names.welcome_to_ownCloud_OCC_NewAccountWizard,
     "wizard-all-set": names.welcome_to_ownCloud_OCC_NewAccountWizard,
     "wizard-all-set-advanced": names.welcome_to_ownCloud_OCC_NewAccountWizard,
+    # Modeless dialogs opened from the General settings pane.
+    "ignored-files-editor": {"type": "OCC::IgnoreListEditor", "visible": 1},
+    "log-output-window": {"type": "OCC::LogBrowser", "visible": 1},
+    # "folder-menu" is intentionally absent: it is a QMenu popup, captured as a
+    # full desktop screenshot so the menu (which is not a top-level window) is
+    # included.
 }
 
 

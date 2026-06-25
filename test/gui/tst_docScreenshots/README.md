@@ -49,9 +49,13 @@ squishrunner --testsuite test/gui --testcase tst_docScreenshots ...
 ## Scope and limits
 
 - **In scope (automated):** in-app Qt windows reachable by the page objects —
-  account settings, the connection wizard pages, the spaces/sync-connections
-  list, the Activity window, settings panes, and the ignored-files / log
-  dialogs.
+  the account connection wizard (server URL, advanced configuration), account
+  settings, the spaces/sync-connections list, the Activity window, the General
+  settings pane, the Ignored Files editor, the Log Output window, and the
+  folder sync options (three-dots) menu.
+- **Not yet automated:** the OAuth/OIDC wizard pages (`wizard-open-in-browser`,
+  `wizard-all-set`) require driving the external browser login against the test
+  IdP; add scenarios once that flow is wired through the WebUI helper.
 - **Out of scope (manual, per platform):** OS-native surfaces that no Qt UI
   automation can drive uniformly — the OS file manager (Explorer/Finder),
   Windows virtual files / Storage Sense, the MSI installer wizard, the external
