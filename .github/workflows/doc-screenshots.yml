@@ -12,6 +12,14 @@ name: Documentation Screenshots
 # download and drop into the docs repo.
 
 on:
+  # This workflow only ever lives on the long-lived tooling branch (never on
+  # the default branch), so workflow_dispatch is not usable. Instead it runs on
+  # every push to the tooling branch — re-pushing the branch IS the on-demand
+  # trigger. workflow_dispatch is also declared for the day this is ported to
+  # the default branch.
+  push:
+    branches:
+      - "tooling/doc-screenshots-*"
   workflow_dispatch:
   # Optional canary so breakage against an evolving UI surfaces early rather
   # than at release crunch time. Comment out if undesired.
