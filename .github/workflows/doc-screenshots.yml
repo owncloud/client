@@ -1,0 +1,146 @@
+name: Documentation Screenshots
+
+# On-demand regeneration of the screenshots that ship in the
+# owncloud/docs-client-desktop manual. NOT part of CI for normal changes.
+#
+# This workflow lives on the long-lived `tooling/doc-screenshots-*` branch and
+# is never merged to master. Rebase it onto the target release branch before
+# running so the screenshots match the documented client version.
+#
+# It drives the real client via the existing Squish GUI test harness
+# (test/gui) and uploads the captured PNGs as an artifact for a maintainer to
+# download and drop into the docs repo.
+
+on:
+  workflow_dispatch:
+  # Optional canary so breakage against an evolving UI surfaces early rather
+  # than at release crunch time. Comment out if undesired.
+  schedule:
+    - cron: "0 3 * * 1" # Mondays 03:00 UTC
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Linux — proven path. Mirrors .github/workflows/gui-tests.yml exactly, only
+  # swapping the test suite and the artifact upload.
+  # ---------------------------------------------------------------------------
+  screenshots-linux:
+    runs-on: ubuntu-latest
+    container:
+      image: owncloudci/squish:fedora-42-8.1.0-qt68x-linux64
+      env:
+        PLAYWRIGHT_BROWSERS_PATH: /__w/client/client/test/gui/.playwright
+        GITHUB_REPO: ${{ github.repository }}
+        GITHUB_RUN_NUMBER: ${{ github.run_number }}
+    services:
+      ocis:
+        image: owncloud/ocis-rolling:20260610
+        ports:
+          - 9200:9200
+        env:
+          OCIS_URL: https://ocis:9200
+          OCIS_LOG_LEVEL: "error"
+          OCIS_INSECURE: "true"
+          PROXY_ENABLE_BASIC_AUTH: "true"
+          OCIS_ADMIN_USER_ID: "some-admin-user-id-0000-000000000000"
+          IDM_ADMIN_PASSWORD: "admin"
+          OCIS_SYSTEM_USER_ID: "some-system-user-id-000-000000000000"
+          OCIS_SYSTEM_USER_API_KEY: "some-system-user-machine-auth-api-key"
+          OCIS_JWT_SECRET: "some-ocis-jwt-secret"
+          OCIS_MACHINE_AUTH_API_KEY: "some-ocis-machine-auth-api-key"
+          OCIS_TRANSFER_SECRET: "some-ocis-transfer-secret"
+          IDM_SVC_PASSWORD: "some-ldap-idm-password"
+          GRAPH_LDAP_BIND_PASSWORD: "some-ldap-idm-password"
+          IDM_REVASVC_PASSWORD: "some-ldap-reva-password"
+          GROUPS_LDAP_BIND_PASSWORD: "some-ldap-reva-password"
+          USERS_LDAP_BIND_PASSWORD: "some-ldap-reva-password"
+          AUTH_BASIC_LDAP_BIND_PASSWORD: "some-ldap-reva-password"
+          IDM_IDPSVC_PASSWORD: "some-ldap-idp-password"
+          IDP_LDAP_BIND_PASSWORD: "some-ldap-idp-password"
+          GATEWAY_STORAGE_USERS_MOUNT_ID: "storage-users-1"
+          STORAGE_USERS_MOUNT_ID: "storage-users-1"
+          GRAPH_APPLICATION_ID: "application-1"
+          OCIS_SERVICE_ACCOUNT_ID: "service-account-id"
+          OCIS_SERVICE_ACCOUNT_SECRET: "service-account-secret"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Build client
+        run: |
+          mkdir -p build
+          cd build
+          cmake -G"Ninja" -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=OFF -S ..
+          ninja
+
+      - name: Install Python Modules
+        run: |
+          export PATH=$PATH:/github/home/.local/bin
+          make -C test/gui install
+
+      - name: Create report directory
+        run: |
+          mkdir -p test/gui/guiReportUpload/doc-screenshots
+          chmod 777 test/gui -R
+
+      - name: Wait for ocis service
+        run: |
+          for i in {1..30}; do
+            if curl -kfsSL https://ocis:9200 > /dev/null; then
+              echo "ocis is up ✅"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "❌ ocis failed to start" && exit 1
+
+      - name: Capture documentation screenshots
+        env:
+          LICENSEKEY: ${{ secrets.SQUISH_LICENSEKEY }}
+          GUI_TEST_REPORT_DIR: /__w/client/client/test/gui/guiReportUpload
+          CLIENT_REPO: .
+          OCIS_URL: https://ocis:9200
+          BACKEND_HOST: https://ocis:9200
+          SECURE_BACKEND_HOST: https://ocis:9200
+          OCIS: true
+          SERVER_INI: test/gui/ci/server.ini
+          # Run only the doc-screenshot suite. Do not abort on the first
+          # failure so that as many screens as possible are captured in one run.
+          SQUISH_PARAMETERS: >
+            --testsuite test/gui
+            --testcase tst_docScreenshots
+            --reportgen html,test/gui/guiReportUpload
+            --envvar QT_LOGGING_RULES=gui.socketapi=false
+            --tags ~@skip --tags ~@skipOnLinux
+          STACKTRACE_FILE: test/gui/guiReportUpload/stacktrace.log
+          OWNCLOUD_CORE_DUMP: 1
+          RECORD_VIDEO_ON_FAILURE: false
+          COREPACK_ENABLE_STRICT: 0
+          HOME: /home/headless
+        run: bash /dockerstartup/entrypoint.sh
+
+      - name: Upload screenshots
+        if: ${{ always() }}
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: doc-screenshots-linux-${{ github.run_number }}
+          path: test/gui/guiReportUpload/doc-screenshots
+          if-no-files-found: warn
+          retention-days: 14
+
+  # ---------------------------------------------------------------------------
+  # Windows / macOS — stubs. Squish supports both; the same suite and page
+  # objects run unchanged. These require runners with Squish installed plus a
+  # reachable oCIS backend, so they are left disabled until those runners exist.
+  # Enable by removing `if: false`, providing the Squish toolchain, and
+  # pointing BACKEND_HOST at an oCIS instance.
+  #
+  # screenshots-windows:
+  #   if: false
+  #   runs-on: windows-latest
+  #   steps: ...   # build client (MSVC), install Squish, run --testcase tst_docScreenshots, upload doc-screenshots-windows-*
+  #
+  # screenshots-macos:
+  #   if: false
+  #   runs-on: macos-latest
+  #   steps: ...   # build client, install Squish, run --testcase tst_docScreenshots, upload doc-screenshots-macos-*
