@@ -99,26 +99,37 @@ def capture_doc_screenshot(screen_id):
     target = _target_path(rel_name)
     window_ref = SCREENSHOT_WINDOW.get(screen_id)
 
-    if window_ref is not None:
-        try:
-            window = squish.waitForObject(window_ref)
-            # object.grabScreenshot(path) is the current API (grabWidget is
-            # deprecated). Image.save() takes a single full path, not
-            # (dir, name) -- passing two args silently fails to write.
-            window.grabScreenshot(target)
-            if os.path.exists(target):
-                test.log(f"Doc screenshot (window) captured: {rel_name}")
-                return target
-            test.log(
-                f"grabScreenshot wrote no file for '{screen_id}'; "
-                f"falling back to desktop capture"
-            )
-        except (LookupError, RuntimeError) as err:
-            test.log(
-                f"grabScreenshot failed for '{screen_id}' ({err}); "
-                f"falling back to desktop capture"
-            )
+    if window_ref is not None and _grab_window(window_ref, target):
+        test.log(f"Doc screenshot (window) captured: {rel_name}")
+        return target
 
+    # Always-available fallback: full desktop capture (proven to write).
     squish.saveDesktopScreenshot(target)
     test.log(f"Doc screenshot (desktop) captured: {rel_name}")
     return target
+
+
+def _grab_window(window_ref, target):
+    """Try to grab just the given window to `target`. Return True on success.
+
+    Squish's screenshot API varies across versions: grabWidget(obj) is
+    deprecated but returns an Image whose .save(path) takes a SINGLE full path
+    (not dir, name); newer objects expose .grabScreenshot(path). Try each and
+    treat "a file actually appeared" as the only success criterion, so a save
+    that silently no-ops still falls back to a desktop capture. Catch broadly
+    on purpose -- any failure here must not abort the run.
+    """
+    window = squish.waitForObject(window_ref)
+    for attempt in (
+        lambda: window.grabScreenshot(target),
+        lambda: squish.grabWidget(window).save(target),
+    ):
+        try:
+            if os.path.exists(target):
+                os.remove(target)
+            attempt()
+            if os.path.exists(target):
+                return True
+        except Exception as err:  # noqa: BLE001 - must never abort the run
+            test.log(f"window grab attempt failed: {err}")
+    return False
