@@ -39,6 +39,7 @@ class Theme;
 class Folder;
 class MainWindow;
 class MainWindowController;
+class AccountsGuiController;
 
 /**
  * @brief The Application class
@@ -52,10 +53,6 @@ public:
     ~Application();
 
     bool debugMode();
-
-    // important! we can't set up the gui's in the ctr - it needs to be a separate step because owncloudgui depends on ocApp to parent
-    // it's actios
-    void buildAppGuis();
 
     ownCloudGui *gui() const;
 
@@ -82,12 +79,18 @@ protected Q_SLOTS:
     void slotAccountStateAdded(AccountState *accountState) const;
 
 private:
+    // important! we can't set up the gui's in the ctr - it needs to be a separate step because owncloudgui depends on ocApp to parent
+    // it's actions
+    void buildAppGuis();
+
+private:
     explicit Application(Platform *platform, const QString &displayLanguage, bool debugMode);
 
     QPointer<ownCloudGui> _gui = {};
 
     MainWindow *_mainWin = nullptr;
     MainWindowController *_mainController = nullptr;
+    AccountsGuiController *_accountsGuiController = nullptr;
 
     const bool _debugMode = false;
     QString _displayLanguage;

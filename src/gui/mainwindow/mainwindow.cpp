@@ -178,7 +178,7 @@ void MainWindow::endModalWidget()
     _actionGroup->checkedAction()->toggled(true);
 }
 
-void MainWindow::addGeneralAction(QAction *action)
+void MainWindow::addViewAction(QAction *action)
 {
     _toolbar->insertAction(_separatorAction, action);
     configureAction(action);

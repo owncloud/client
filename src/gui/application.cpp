@@ -19,6 +19,7 @@
 
 #include "account.h"
 #include "accountmanager.h"
+#include "accountsgui/accountsguicontroller.h"
 #include "accountstate.h"
 #include "common/vfs.h"
 #include "configfile.h"
@@ -174,6 +175,9 @@ void Application::buildAppGuis()
     _mainWin = new MainWindow();
     _mainController = new MainWindowController(_mainWin, this);
 
+    _accountsGuiController = new AccountsGuiController(AccountManager::instance(), _mainWin, _mainController);
+    connect(_mainController, &MainWindowController::requestAccountWizard, _accountsGuiController, &AccountsGuiController::runAccountWizard);
+
     // Setting up the gui class will allow tray notifications for the
     // setup that follows, like folder setup
     _gui = new ownCloudGui(this);
@@ -185,6 +189,7 @@ std::unique_ptr<Application> Application::createInstance(Platform *platform, con
 {
     Q_ASSERT(!_instance);
     _instance = new Application(platform, displayLanguage, debugMode);
+    _instance->buildAppGuis();
     return std::unique_ptr<Application>(_instance);
 }
 

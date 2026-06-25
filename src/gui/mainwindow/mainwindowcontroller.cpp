@@ -43,8 +43,6 @@ void MainWindowController::setup()
     createSyncErrorsAction();
     createActivityAction();
     buildMenuActions();
-
-    _accountsController = new AccountsGuiController(AccountManager::instance(), _window, this);
 }
 
 void MainWindowController::buildMenuActions()
@@ -53,7 +51,7 @@ void MainWindowController::buildMenuActions()
 
     QAction *addAccountAction = new QAction(tr("Add account..."), this);
     addAccountAction->setObjectName("addAcountAction");
-    connect(addAccountAction, &QAction::triggered, this, &MainWindowController::onAddAccount);
+    connect(addAccountAction, &QAction::triggered, this, &MainWindowController::requestAccountWizard);
     menuActions.push_back(addAccountAction);
 
     QAction *settingsAction = new QAction(tr("Settings..."), this);
@@ -89,7 +87,7 @@ void MainWindowController::createSyncErrorsAction()
         syncErrorWidget, &SyncErrorWidget::issueCountUpdated, this, [syncErrorsAction](int count) { syncErrorsAction->setText(tr("Errors: %1").arg(count)); });
 
     syncErrorsAction->setData(QVariant::fromValue(syncErrorWidget));
-    _window->addGeneralAction(syncErrorsAction);
+    _window->addViewAction(syncErrorsAction);
 }
 
 void MainWindowController::createActivityAction()
@@ -100,14 +98,7 @@ void MainWindowController::createActivityAction()
     activityAction->setCheckable(true);
     auto localActivityWidget = new LocalActivityWidget(_window);
     activityAction->setData(QVariant::fromValue(localActivityWidget));
-    _window->addGeneralAction(activityAction);
-}
-
-void MainWindowController::onAddAccount()
-{
-    // it's not always the case that the window is visible on start so be sure to raise
-    _window->ensureVisible();
-    _accountsController->runAccountWizard();
+    _window->addViewAction(activityAction);
 }
 
 void MainWindowController::onSettings()

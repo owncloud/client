@@ -156,7 +156,7 @@ void AccountsGuiController::runAccountWizard()
     NewAccountWizard wizard(_window);
     NewAccountModel model(nullptr);
     NewAccountWizardController wizardController(&model, &wizard, nullptr);
-    ocApp()->mainWindow()->ensureVisible();
+    _window->ensureVisible();
     int result = wizard.exec();
     if (result == QDialog::Accepted) {
         // the builder needs to be a pointer as it has to wait for the connection state to go to connected

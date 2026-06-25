@@ -23,8 +23,6 @@
 #include <QPointer>
 #include <QSystemTrayIcon>
 
-#define USE_NEW_MAIN_WINDOW
-
 namespace OCC {
 
 namespace Wizard {
@@ -52,8 +50,6 @@ public:
     ~ownCloudGui() override;
 
 Q_SIGNALS:
-    void requestSetUpSyncFoldersForAccount(AccountState *account, bool useVfs);
-    void requestLoadSpacesOnly(AccountState *account);
     void requestAboutDialog();
 
 public Q_SLOTS:
@@ -61,11 +57,9 @@ public Q_SLOTS:
     void slotComputeOverallSyncStatus();
     void slotShowTrayMessage(const QString &title, const QString &msg, const QIcon &icon = {});
     void slotShowOptionalTrayMessage(const QString &title, const QString &msg, const QIcon &icon = {});
-    void slotShowSettings();
     void slotSyncStateChange(Folder *);
     void slotTrayClicked(QSystemTrayIcon::ActivationReason reason);
     void slotToggleLogBrowser();
-    void slotOpenSettingsDialog();
     void slotHelp();
     void slotTrayMessageIfServerUnsupported(Account *account);
 

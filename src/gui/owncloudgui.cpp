@@ -83,34 +83,15 @@ ownCloudGui::~ownCloudGui()
 {
 }
 
-// todo dc-310 - finally figure out what this is trying to accomplish
-void ownCloudGui::slotOpenSettingsDialog()
-{
-    // if account is set up, start the configuration wizard.
-    if (!AccountManager::instance()->accounts().isEmpty()) {
-        if (QApplication::activeWindow() != ocApp()->mainWindow()) {
-            slotShowSettings();
-        } else {
-            // ????!!!!?????????
-            ocApp()->mainWindow()->close();
-        }
-    }
-}
-
 void ownCloudGui::slotTrayClicked(QSystemTrayIcon::ActivationReason reason)
 {
     // Left click
     if (reason == QSystemTrayIcon::Trigger) {
-#ifdef Q_OS_MAC
-        // on macOS, a left click always opens menu.
-        // However if the settings dialog is already visible but hidden
-        // by other applications, this will bring it to the front.
-        if (ocApp()->mainWindow()->isVisible()) {
+        // this covers left click - on mac it shows the menu so we don't want to do anything
+        // more. on windows (and linux, presumably, given the original code) we just show the
+        // main window on left click.
+        if (!Utility::isMac())
             ocApp()->mainWindow()->ensureVisible();
-        }
-#else
-        slotOpenSettingsDialog();
-#endif
     }
 }
 
@@ -153,14 +134,16 @@ void ownCloudGui::slotComputeOverallSyncStatus()
 
 void ownCloudGui::setupTrayContextMenu()
 {
-    // using the main windows (_settingsDialog) as parent for memory management
+    // using the main window as parent for memory management
+    // todo: review this as for some reason I remember there is some other way it's supposed to be done
     auto menu = new QMenu(ocApp()->mainWindow());
     menu->setTitle(Theme::instance()->appNameGUI());
 
     _tray->setContextMenu(menu);
 
     // Populate the context menu now.
-    menu->addAction(Theme::instance()->applicationIcon(), tr("Show %1").arg(Theme::instance()->appNameGUI()), this, &ownCloudGui::slotShowSettings);
+    menu->addAction(
+        Theme::instance()->applicationIcon(), tr("Show %1").arg(Theme::instance()->appNameGUI()), ocApp()->mainWindow(), &MainWindow::ensureVisible);
     menu->addSeparator();
 
     if (_app->debugMode()) {
@@ -206,11 +189,6 @@ void ownCloudGui::slotShowOptionalTrayMessage(const QString &title, const QStrin
     if (cfg.optionalDesktopNotifications()) {
         slotShowTrayMessage(title, msg, icon);
     }
-}
-
-void ownCloudGui::slotShowSettings()
-{
-    ocApp()->mainWindow()->ensureVisible();
 }
 
 void ownCloudGui::slotToggleLogBrowser()
