@@ -49,7 +49,7 @@ UpdaterScheduler::UpdaterScheduler(Application *app, QObject *parent)
     // Note: the sparkle-updater is not an OCUpdater
     if (auto *updater = qobject_cast<OCUpdater *>(Updater::instance())) {
         connect(updater, &OCUpdater::updateAvailableThroughSystem, app,
-            [app, updater]() { app->gui()->slotShowTrayMessage(tr("Update available"), updater->statusString()); });
+            [app, updater]() { app->tray()->slotShowTrayMessage(tr("Update available"), updater->statusString()); });
 
         connect(updater, &OCUpdater::updateDownloaded, this, [app, updater, this]() {
             // prevent dialog from being displayed twice (rather unlikely, but it won't hurt)

@@ -18,11 +18,6 @@
 
 #include <QWidget>
 
-// class QModelIndex;
-// class QNetworkReply;
-// class QLabel;
-// class QStandardItemModel;
-
 namespace OCC {
 class AccountModalWidget;
 

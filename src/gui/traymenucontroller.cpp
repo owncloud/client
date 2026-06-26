@@ -13,27 +13,16 @@
  */
 
 #include "traymenucontroller.h"
+
 #include "account.h"
-#include "accountmanager.h"
-#include "accountstate.h"
 #include "application.h"
 #include "common/restartmanager.h"
-#include "common/syncjournalfilerecord.h"
 #include "configfile.h"
-#include "folderman.h"
-#include "gui/networkinformation.h"
 #include "guiutility.h"
 #include "libsync/theme.h"
-#include "logbrowser.h"
-#include "mainwindow/mainwindow.h"
-#include "progressdispatcher.h"
-
-#include "resources/resources.h"
 
 #include <QApplication>
-#include <QDesktopServices>
-#include <QDialog>
-#include <QMessageBox>
+#include <QMenu>
 
 #ifdef Q_OS_WIN
 #include <qt_windows.h>
@@ -56,10 +45,9 @@ SyncResult::Status trayOverallStatus()
     return result.overallStatus().status();
 }
 
-TrayMenuController::TrayMenuController(Application *parent)
+TrayMenuController::TrayMenuController(QObject *parent)
     : QObject(parent)
     , _tray(new QSystemTrayIcon(this))
-    , _app(parent)
 {
 
     connect(_tray, &QSystemTrayIcon::activated, this, &TrayMenuController::slotTrayClicked);
@@ -141,22 +129,23 @@ void TrayMenuController::setupTrayContextMenu()
 
     _tray->setContextMenu(menu);
 
+    auto app = ocApp();
     // Populate the context menu now.
-    menu->addAction(Theme::instance()->applicationIcon(), tr("Show %1").arg(Theme::instance()->appNameGUI()), ocApp(), &Application::ensureVisible);
+    menu->addAction(Theme::instance()->applicationIcon(), tr("Show %1").arg(Theme::instance()->appNameGUI()), app, &Application::ensureVisible);
     menu->addSeparator();
 
-    if (_app->debugMode()) {
+    if (ocApp()->debugMode()) {
         auto *debugMenu = menu->addMenu(QStringLiteral("Debug actions"));
-        debugMenu->addAction(QStringLiteral("Crash if asserts enabled - OC_ENSURE"), _app, [] {
+        debugMenu->addAction(QStringLiteral("Crash if asserts enabled - OC_ENSURE"), this, [] {
             if (OC_ENSURE(false)) {
                 Q_UNREACHABLE();
             }
         });
-        debugMenu->addAction(QStringLiteral("Crash if asserts enabled - Q_ASSERT"), _app, [] { Q_ASSERT(false); });
-        debugMenu->addAction(QStringLiteral("Crash now - Utility::crash()"), _app, [] { Utility::crash(); });
-        debugMenu->addAction(QStringLiteral("Crash now - OC_ENFORCE()"), _app, [] { OC_ENFORCE(false); });
-        debugMenu->addAction(QStringLiteral("Crash now - qFatal"), _app, [] { qFatal("la Qt fatale"); });
-        debugMenu->addAction(QStringLiteral("Restart now"), _app, [] { RestartManager::requestRestart(); });
+        debugMenu->addAction(QStringLiteral("Crash if asserts enabled - Q_ASSERT"), this, [] { Q_ASSERT(false); });
+        debugMenu->addAction(QStringLiteral("Crash now - Utility::crash()"), this, [] { Utility::crash(); });
+        debugMenu->addAction(QStringLiteral("Crash now - OC_ENFORCE()"), this, [] { OC_ENFORCE(false); });
+        debugMenu->addAction(QStringLiteral("Crash now - qFatal"), this, [] { qFatal("la Qt fatale"); });
+        debugMenu->addAction(QStringLiteral("Restart now"), this, [] { RestartManager::requestRestart(); });
         debugMenu->addSeparator();
         auto captivePortalCheckbox = debugMenu->addAction(QStringLiteral("Behind Captive Portal"));
         captivePortalCheckbox->setCheckable(true);
@@ -174,7 +163,7 @@ void TrayMenuController::setupTrayContextMenu()
         menu->addAction(tr("About %1").arg(Theme::instance()->appNameGUI()), this, &TrayMenuController::requestShowAbout);
     }
 
-    menu->addAction(tr("Quit %1").arg(Theme::instance()->appNameGUI()), _app, &QApplication::quit);
+    menu->addAction(tr("Quit %1").arg(Theme::instance()->appNameGUI()), this, &QApplication::quit);
 }
 
 void TrayMenuController::slotShowTrayMessage(const QString &title, const QString &msg, const QIcon &icon)

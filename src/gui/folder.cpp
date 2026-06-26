@@ -422,7 +422,7 @@ void Folder::createGuiLog(const QString &filename, LogStatus status, int count,
         }
 
         if (!text.isEmpty()) {
-            ocApp()->gui()->slotShowOptionalTrayMessage(tr("Sync Activity"), text);
+            ocApp()->tray()->slotShowOptionalTrayMessage(tr("Sync Activity"), text);
         }
     }
 }
@@ -1028,7 +1028,7 @@ void Folder::warnOnNewExcludedItem(const SyncJournalFileRecord &record, QStringV
              "It will not be synchronized.")
               .arg(fi.filePath());
 
-    ocApp()->gui()->slotShowOptionalTrayMessage(Theme::instance()->appNameGUI(), message);
+    ocApp()->tray()->slotShowOptionalTrayMessage(Theme::instance()->appNameGUI(), message);
 }
 
 void Folder::slotWatcherUnreliable(const QString &message)

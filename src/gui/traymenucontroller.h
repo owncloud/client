@@ -15,28 +15,18 @@
 #pragma once
 
 #include "gui/owncloudguilib.h"
-#include "progressdispatcher.h"
 #include "syncresult.h"
 
-#include <QMenu>
 #include <QObject>
 #include <QPointer>
 #include <QSystemTrayIcon>
 
 namespace OCC {
 
-namespace Wizard {
-    class SetupWizardController;
-}
-class AccountState;
 class Account;
 class Folder;
 
-class AboutDialog;
-class SettingsDialog;
 class ShareDialog;
-class Application;
-class LogBrowser;
 
 /**
  * @brief The ownCloudGui class
@@ -46,7 +36,7 @@ class OWNCLOUDGUI_EXPORT TrayMenuController : public QObject
 {
     Q_OBJECT
 public:
-    explicit TrayMenuController(Application *parent = nullptr);
+    explicit TrayMenuController(QObject *parent);
     ~TrayMenuController() override;
 
 Q_SIGNALS:
@@ -76,13 +66,6 @@ private:
 
     QSystemTrayIcon *_tray;
     QPointer<ShareDialog> _shareDialog;
-
-    // dc-310 get rid of this member and just use ocApp()
-    Application *_app;
-
-    // keeping a pointer on those dialogs allows us to make sure they will be shown only once
-    QPointer<Wizard::SetupWizardController> _wizardController;
-    QPointer<AboutDialog> _aboutDialog;
 };
 
 } // namespace OCC

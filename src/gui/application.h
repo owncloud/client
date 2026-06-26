@@ -14,9 +14,8 @@
 
 #pragma once
 
-#include "gui/owncloudguilib.h"
-
 #include "folderman.h"
+#include "gui/owncloudguilib.h"
 #include "platform.h"
 #include "traymenucontroller.h"
 
@@ -42,6 +41,7 @@ class MainWindowController;
 class AccountsGuiController;
 class ModalWrapperWidget;
 
+
 /**
  * @brief The Application class
  * @ingroup gui
@@ -55,19 +55,19 @@ public:
 
     bool debugMode();
 
-    TrayMenuController *gui() const;
+    TrayMenuController *tray() const;
 
     // this is needed primarily to parent message boxes and other temporary views
     // we return QMainWindow to protect access to public functions of the MainWindow that should only be used by true dependents!
     // ie, if you need public functions of MainWindow, it should be injected as its concrete type
-    QMainWindow *mainWindow();
+    QMainWindow *mainWindow() const;
 
     // redirect to MainWindow::ensureVisible -> protect access to main window interface
-    void ensureVisible();
+    void ensureVisible() const;
 
     // hopefully temporary - this is only needed in the updater mess which has no reasonable structure I can currently use to pass the MainWindow
     // again, redirect to MainWindow::showModalWidget to protect access to the rest of the main window interface
-    void showModalWidget(ModalWrapperWidget *wrapper);
+    void showModalWidget(ModalWrapperWidget *wrapper) const;
 
     QString displayLanguage() const;
 
@@ -96,11 +96,10 @@ private:
 private:
     explicit Application(Platform *platform, const QString &displayLanguage, bool debugMode);
 
-    QPointer<TrayMenuController> _gui = {};
-
     MainWindow *_mainWin = nullptr;
     MainWindowController *_mainController = nullptr;
     AccountsGuiController *_accountsGuiController = nullptr;
+    TrayMenuController *_trayController = nullptr;
 
     const bool _debugMode = false;
     QString _displayLanguage;

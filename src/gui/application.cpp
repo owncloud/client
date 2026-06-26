@@ -29,6 +29,7 @@
 #include "mainwindow/mainwindowcontroller.h"
 #include "socketapi/socketapi.h"
 #include "theme.h"
+#include "traymenucontroller.h"
 
 #ifdef WITH_AUTO_UPDATER
 #include "updater/ocupdater.h"
@@ -51,9 +52,9 @@ QString Application::displayLanguage() const
     return _displayLanguage;
 }
 
-TrayMenuController *Application::gui() const
+TrayMenuController *Application::tray() const
 {
-    return _gui;
+    return _trayController;
 }
 
 Application *Application::_instance = nullptr;
@@ -103,28 +104,20 @@ Application::Application(Platform *platform, const QString &displayLanguage, boo
 
 Application::~Application()
 {
-    // Make sure all folders are gone, otherwise removing the
-    // accounts will remove the associated folders from the settings.
-    FolderMan::instance()->unloadAndDeleteAllFolders();
-
-    if (_mainWin) {
-        _mainWin->disconnect();
-        delete _mainWin;
-    }
 }
 
-QMainWindow *Application::mainWindow()
+QMainWindow *Application::mainWindow() const
 {
     return _mainWin;
 }
 
-void Application::ensureVisible()
+void Application::ensureVisible() const
 {
     if (_mainWin)
         _mainWin->ensureVisible();
 }
 
-void Application::showModalWidget(ModalWrapperWidget *wrapper)
+void Application::showModalWidget(ModalWrapperWidget *wrapper) const
 {
     if (_mainWin)
         _mainWin->showModalWidget(wrapper);
@@ -139,8 +132,8 @@ void Application::slotAccountStateAdded(AccountState *accountState) const
     // Hook up the GUI slots to the account state's Q_SIGNALS:
     Account *account = accountState->account();
 
-    connect(accountState, &AccountState::stateChanged, _gui.data(), &TrayMenuController::slotComputeOverallSyncStatus);
-    connect(account, &Account::serverVersionChanged, _gui.data(), [account, this] { _gui->slotTrayMessageIfServerUnsupported(account); });
+    connect(accountState, &AccountState::stateChanged, _trayController, &TrayMenuController::slotComputeOverallSyncStatus);
+    connect(account, &Account::serverVersionChanged, _trayController, &TrayMenuController::slotTrayMessageIfServerUnsupported);
 
     // todo dc-310 - this does not belong here! This can be done in the folder man when it's given a "new" account
     // (eg in load from config or load from new account)
@@ -180,7 +173,7 @@ void Application::updateAutoRun(bool firstRun)
 
 void Application::slotUseMonoIconsChanged(bool)
 {
-    _gui->slotComputeOverallSyncStatus();
+    _trayController->slotComputeOverallSyncStatus();
 }
 
 bool Application::debugMode()
@@ -190,7 +183,7 @@ bool Application::debugMode()
 
 void Application::buildAppGuis()
 {
-    Q_ASSERT(!_mainWin && !_gui);
+    Q_ASSERT(!_mainWin && !_trayController);
     _mainWin = new MainWindow();
     _mainController = new MainWindowController(_mainWin, this);
 
@@ -199,11 +192,11 @@ void Application::buildAppGuis()
 
     // Setting up the gui class will allow tray notifications for the
     // setup that follows, like folder setup
-    _gui = new TrayMenuController(this);
-    connect(_gui, &TrayMenuController::requestShowAbout, _mainController, &MainWindowController::onAbout);
-    connect(_gui, &TrayMenuController::requestShowHelp, _mainController, &MainWindowController::onHelp);
+    _trayController = new TrayMenuController(this);
+    connect(_trayController, &TrayMenuController::requestShowAbout, _mainController, &MainWindowController::onAbout);
+    connect(_trayController, &TrayMenuController::requestShowHelp, _mainController, &MainWindowController::onHelp);
 
-    connect(FolderMan::instance()->socketApi(), &SocketApi::shareCommandReceived, _gui.data(), &TrayMenuController::slotShowShareInBrowser);
+    connect(FolderMan::instance()->socketApi(), &SocketApi::shareCommandReceived, _trayController, &TrayMenuController::slotShowShareInBrowser);
 }
 
 std::unique_ptr<Application> Application::createInstance(Platform *platform, const QString &displayLanguage, bool debugMode)
