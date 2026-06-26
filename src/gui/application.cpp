@@ -199,11 +199,20 @@ void Application::buildAppGuis()
     connect(FolderMan::instance()->socketApi(), &SocketApi::shareCommandReceived, _trayController, &TrayMenuController::slotShowShareInBrowser);
 }
 
+void Application::setupManagers()
+{
+    connect(AccountManager::instance(), &AccountManager::accountAdded, this, &Application::slotAccountStateAdded);
+    for (const auto &ai : AccountManager::instance()->accounts()) {
+        slotAccountStateAdded(ai);
+    }
+}
+
 std::unique_ptr<Application> Application::createInstance(Platform *platform, const QString &displayLanguage, bool debugMode)
 {
     Q_ASSERT(!_instance);
     _instance = new Application(platform, displayLanguage, debugMode);
     _instance->buildAppGuis();
+    _instance->setupManagers();
     return std::unique_ptr<Application>(_instance);
 }
 

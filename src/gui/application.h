@@ -93,6 +93,9 @@ private:
     // it's actions
     void buildAppGuis();
 
+    // this is currently fairly empty, but will be moving other manager init stuff in here.
+    void setupManagers();
+
 private:
     explicit Application(Platform *platform, const QString &displayLanguage, bool debugMode);
 
