@@ -8,7 +8,6 @@ Feature: filter activity for user
         Given user "Alice" has been created in the server with default attributes
         And user "Brian" has been created in the server with default attributes
         And user "Alice" has created folder "simple-folder" in the server
-        And user "Brian" has created folder "test-folder" in the server
         And the user has set up the following accounts with default settings:
             | Alice |
             | Brian |
