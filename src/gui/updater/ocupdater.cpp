@@ -56,11 +56,9 @@ UpdaterScheduler::UpdaterScheduler(Application *app, QObject *parent)
             if (_updateDownloadedWidget == nullptr) {
                 _updateDownloadedWidget = new UpdateDownloadedWidget(app->mainWindow(), updater->statusString());
                 ModalWrapperWidget *wrapper = new ModalWrapperWidget(_updateDownloadedWidget, app->mainWindow());
-                ocApp()->mainWindow()->showModalWidget(wrapper);
+                ocApp()->showModalWidget(wrapper);
 
                 connect(_updateDownloadedWidget, &UpdateDownloadedWidget::accepted, this, []() { Updater::instance()->applyUpdateAndRestart(); });
-                // the wrapper is deleted by the main window on finished - this is unnecessary
-                // connect(_updateDownloadedWidget, &UpdateDownloadedWidget::finished, this, [this]() { delete _updateDownloadedWidget.data(); });
             }
         });
 
@@ -383,10 +381,9 @@ void WindowsUpdater::showNewVersionAvailableWidget(const UpdateInfo &info)
 
     connect(widget, &NewVersionAvailableWidget::versionSkipped, this, &WindowsUpdater::slotSetPreviouslySkippedVersion);
     connect(widget, &NewVersionAvailableWidget::accepted, this, &WindowsUpdater::slotOpenUpdateUrl);
-    // connect(widget, &NewVersionAvailableWidget::finished, this, [widget]() { delete widget; });
 
     ModalWrapperWidget *wrapper = new ModalWrapperWidget(widget, ocApp()->mainWindow());
-    ocApp()->mainWindow()->showModalWidget(wrapper);
+    ocApp()->showModalWidget(wrapper);
 }
 
 void WindowsUpdater::showUpdateErrorDialog(const QString &targetVersion)

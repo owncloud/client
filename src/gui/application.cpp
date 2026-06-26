@@ -25,6 +25,7 @@
 #include "configfile.h"
 #include "folder.h"
 #include "folderman.h"
+#include "mainwindow/mainwindow.h"
 #include "mainwindow/mainwindowcontroller.h"
 #include "socketapi/socketapi.h"
 #include "theme.h"
@@ -111,6 +112,24 @@ Application::~Application()
         delete _mainWin;
     }
 }
+
+QMainWindow *Application::mainWindow()
+{
+    return _mainWin;
+}
+
+void Application::ensureVisible()
+{
+    if (_mainWin)
+        _mainWin->ensureVisible();
+}
+
+void Application::showModalWidget(ModalWrapperWidget *wrapper)
+{
+    if (_mainWin)
+        _mainWin->showModalWidget(wrapper);
+}
+
 
 // move to owncloudgui or wherever we end up consolidating the tray meny/socketApi management
 void Application::slotAccountStateAdded(AccountState *accountState) const

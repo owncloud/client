@@ -17,10 +17,10 @@
 #include "gui/owncloudguilib.h"
 
 #include "folderman.h"
-#include "mainwindow/mainwindow.h"
 #include "owncloudgui.h"
 #include "platform.h"
 
+#include <QMainWindow>
 #include <QPointer>
 
 class QMessageBox;
@@ -40,6 +40,7 @@ class Folder;
 class MainWindow;
 class MainWindowController;
 class AccountsGuiController;
+class ModalWrapperWidget;
 
 /**
  * @brief The Application class
@@ -56,8 +57,17 @@ public:
 
     ownCloudGui *gui() const;
 
-    // this is needed primarily to parent message boxes
-    MainWindow *mainWindow() { return _mainWin; }
+    // this is needed primarily to parent message boxes and other temporary views
+    // we return QMainWindow to protect access to public functions of the MainWindow that should only be used by true dependents!
+    // ie, if you need public functions of MainWindow, it should be injected as its concrete type
+    QMainWindow *mainWindow();
+
+    // redirect to MainWindow::ensureVisible -> protect access to main window interface
+    void ensureVisible();
+
+    // hopefully temporary - this is only needed in the updater mess which has no reasonable structure I can currently use to pass the MainWindow
+    // again, redirect to MainWindow::showModalWidget to protect access to the rest of the main window interface
+    void showModalWidget(ModalWrapperWidget *wrapper);
 
     QString displayLanguage() const;
 

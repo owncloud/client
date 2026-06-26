@@ -138,7 +138,7 @@ void SettingsView::slotIgnoreFilesEditor()
     if (_ignoreEditor.isNull()) {
         _ignoreEditor = new IgnoreListEditor(ocApp()->mainWindow());
         _ignoreEditor->setAttribute(Qt::WA_DeleteOnClose, true);
-        ocApp()->mainWindow()->ensureVisible();
+        ocApp()->ensureVisible();
         _ignoreEditor->open();
     }
 }
@@ -194,7 +194,7 @@ void SettingsView::slotShowLogSettings()
 {
     auto logBrowser = new LogBrowser(ocApp()->mainWindow());
     logBrowser->setAttribute(Qt::WA_DeleteOnClose);
-    ocApp()->mainWindow()->ensureVisible();
+    ocApp()->ensureVisible();
     logBrowser->open();
 }
 

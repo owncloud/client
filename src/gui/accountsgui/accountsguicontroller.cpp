@@ -252,7 +252,7 @@ void AccountsGuiController::startModal(QUuid accountId)
 
     action->setIcon(Resources::getCoreIcon("states/warning"));
     action->setChecked(true);
-    ocApp()->mainWindow()->ensureVisible();
+    ocApp()->ensureVisible();
 }
 
 void AccountsGuiController::endModal(QUuid accountId)

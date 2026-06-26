@@ -94,7 +94,7 @@ void ResolveUrlAdapter::handleSslErrors(const QList<QSslError> &errors)
     } else {
         auto *tlsErrorDialog = new TlsErrorDialog(filtered, reply->url().host(), _tlsDialogParent);
 
-        ocApp()->mainWindow()->ensureVisible();
+        ocApp()->ensureVisible();
         // we have to exec here or the request finishes too fast
         int res = tlsErrorDialog->exec();
         if (res == QDialog::DialogCode::Accepted) {

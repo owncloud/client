@@ -130,6 +130,6 @@ void RequestAuthenticationController::handleOAuthResult(OAuth::Result result, co
         Q_EMIT authenticationSucceeded(accessToken, refreshToken);
     }
 
-    ocApp()->mainWindow()->ensureVisible();
+    ocApp()->ensureVisible();
 }
 }

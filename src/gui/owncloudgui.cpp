@@ -91,7 +91,7 @@ void ownCloudGui::slotTrayClicked(QSystemTrayIcon::ActivationReason reason)
         // more. on windows (and linux, presumably, given the original code) we just show the
         // main window on left click.
         if (!Utility::isMac())
-            ocApp()->mainWindow()->ensureVisible();
+            ocApp()->ensureVisible();
     }
 }
 
@@ -142,8 +142,7 @@ void ownCloudGui::setupTrayContextMenu()
     _tray->setContextMenu(menu);
 
     // Populate the context menu now.
-    menu->addAction(
-        Theme::instance()->applicationIcon(), tr("Show %1").arg(Theme::instance()->appNameGUI()), ocApp()->mainWindow(), &MainWindow::ensureVisible);
+    menu->addAction(Theme::instance()->applicationIcon(), tr("Show %1").arg(Theme::instance()->appNameGUI()), ocApp(), &Application::ensureVisible);
     menu->addSeparator();
 
     if (_app->debugMode()) {

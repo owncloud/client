@@ -441,7 +441,7 @@ int main(int argc, char **argv)
 
         ocApp->updateAutoRun(firstRun);
 
-        QObject::connect(platform.get(), &Platform::requestAttention, ocApp->mainWindow(), &MainWindow::ensureVisible);
+        QObject::connect(platform.get(), &Platform::requestAttention, ocApp.get(), &Application::ensureVisible);
 
         // Refactoring todo: convert lambda to function
         QObject::connect(&singleApplication, &KDSingleApplication::messageReceived, ocApp.get(), [&](const QByteArray &message) {
@@ -451,7 +451,7 @@ int main(int argc, char **argv)
                 const QStringList optionsStrings = msg.mid(msgParseOptionsC().size()).split(QLatin1Char('|'));
                 CommandLineOptions options = parseOptions(optionsStrings);
                 if (options.show) {
-                    ocApp->mainWindow()->ensureVisible();
+                    ocApp->ensureVisible();
                 }
                 if (options.quitInstance) {
                     qApp->quit();
@@ -482,8 +482,7 @@ int main(int argc, char **argv)
         }
 
         if (options.show) {
-            ocApp->mainWindow()->ensureVisible();
-            // ocApp->gui()->slotShowSettings();
+            ocApp->ensureVisible();
         }
 
         // Now that everything is up and running, start accepting connections/requests from the shell integration.

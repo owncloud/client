@@ -178,7 +178,7 @@ void NewAccountWizardController::onOAuthValidationCompleted(const OCC::OAuthPage
     _model->setWebfingerUserInfoUrl(results.webfingerUserUrl);
 
     _wizard->setCurrentId(_authSuccessPageIndex);
-    ocApp()->mainWindow()->ensureVisible();
+    ocApp()->ensureVisible();
     // on mac, for unknown reasons, the main window is active after raise
     _wizard->activateWindow();
 }
@@ -188,7 +188,7 @@ void NewAccountWizardController::onOauthValidationFailed(const OCC::OAuthPageRes
     if (!_wizard)
         return;
     Q_UNUSED(results);
-    ocApp()->mainWindow()->ensureVisible();
+    ocApp()->ensureVisible();
     _wizard->activateWindow();
 }
 
