@@ -19,11 +19,9 @@
 #include "application.h"
 #include "authsuccesspagecontroller.h"
 #include "common/utility.h"
-#include "mainwindow/mainwindow.h"
 #include "newaccountmodel.h"
 #include "newaccountwizard.h"
 #include "oauthpagecontroller.h"
-#include "owncloudgui.h"
 #include "theme.h"
 #include "urlpagecontroller.h"
 

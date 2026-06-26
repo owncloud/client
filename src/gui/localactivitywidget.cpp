@@ -26,6 +26,7 @@
 
 #include <QActionGroup>
 #include <QClipboard>
+#include <QMenu>
 
 #include "ui_localactivitywidget.h"
 

@@ -16,18 +16,12 @@
 
 #include "gui/owncloudguilib.h"
 
-#include "folder.h"
-#include "gui/qmlutils.h"
-#include "owncloudgui.h"
-#include "progressdispatcher.h"
-
-#include <QSortFilterProxyModel>
 #include <QWidget>
 
-class QModelIndex;
-class QNetworkReply;
-class QLabel;
-class QStandardItemModel;
+// class QModelIndex;
+// class QNetworkReply;
+// class QLabel;
+// class QStandardItemModel;
 
 namespace OCC {
 class AccountModalWidget;

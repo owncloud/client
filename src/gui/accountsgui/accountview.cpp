@@ -16,6 +16,8 @@
 #include "accountview.h"
 #include "ui_accountview.h"
 
+#include <QMenu>
+
 namespace OCC {
 
 AccountView::AccountView(QWidget *parent)

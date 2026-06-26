@@ -42,12 +42,12 @@ class LogBrowser;
  * @brief The ownCloudGui class
  * @ingroup gui
  */
-class OWNCLOUDGUI_EXPORT ownCloudGui : public QObject
+class OWNCLOUDGUI_EXPORT TrayMenuController : public QObject
 {
     Q_OBJECT
 public:
-    explicit ownCloudGui(Application *parent = nullptr);
-    ~ownCloudGui() override;
+    explicit TrayMenuController(Application *parent = nullptr);
+    ~TrayMenuController() override;
 
 Q_SIGNALS:
     void requestShowAbout();

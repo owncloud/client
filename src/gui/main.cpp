@@ -443,7 +443,6 @@ int main(int argc, char **argv)
 
         QObject::connect(platform.get(), &Platform::requestAttention, ocApp.get(), &Application::ensureVisible);
 
-        // Refactoring todo: convert lambda to function
         QObject::connect(&singleApplication, &KDSingleApplication::messageReceived, ocApp.get(), [&](const QByteArray &message) {
             const QString msg = QString::fromUtf8(message);
             qCInfo(lcMain) << Q_FUNC_INFO << msg;

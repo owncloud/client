@@ -17,8 +17,8 @@
 #include "gui/owncloudguilib.h"
 
 #include "folderman.h"
-#include "owncloudgui.h"
 #include "platform.h"
+#include "traymenucontroller.h"
 
 #include <QMainWindow>
 #include <QPointer>
@@ -55,7 +55,7 @@ public:
 
     bool debugMode();
 
-    ownCloudGui *gui() const;
+    TrayMenuController *gui() const;
 
     // this is needed primarily to parent message boxes and other temporary views
     // we return QMainWindow to protect access to public functions of the MainWindow that should only be used by true dependents!
@@ -96,7 +96,7 @@ private:
 private:
     explicit Application(Platform *platform, const QString &displayLanguage, bool debugMode);
 
-    QPointer<ownCloudGui> _gui = {};
+    QPointer<TrayMenuController> _gui = {};
 
     MainWindow *_mainWin = nullptr;
     MainWindowController *_mainController = nullptr;

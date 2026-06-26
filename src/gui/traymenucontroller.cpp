@@ -12,7 +12,7 @@
  * for more details.
  */
 
-#include "owncloudgui.h"
+#include "traymenucontroller.h"
 #include "account.h"
 #include "accountmanager.h"
 #include "accountstate.h"
@@ -56,13 +56,13 @@ SyncResult::Status trayOverallStatus()
     return result.overallStatus().status();
 }
 
-ownCloudGui::ownCloudGui(Application *parent)
+TrayMenuController::TrayMenuController(Application *parent)
     : QObject(parent)
     , _tray(new QSystemTrayIcon(this))
     , _app(parent)
 {
 
-    connect(_tray, &QSystemTrayIcon::activated, this, &ownCloudGui::slotTrayClicked);
+    connect(_tray, &QSystemTrayIcon::activated, this, &TrayMenuController::slotTrayClicked);
 
     setupTrayContextMenu();
 
@@ -76,14 +76,14 @@ ownCloudGui::ownCloudGui(Application *parent)
     // in cases like this one, the external deps should be instantiated externally and connected externally. This is normally part
     // of an app building routine. The global singletons have to go and this is an important step to achieving that.
     FolderMan *folderMan = FolderMan::instance();
-    connect(folderMan, &FolderMan::folderSyncStateChange, this, &ownCloudGui::slotSyncStateChange);
+    connect(folderMan, &FolderMan::folderSyncStateChange, this, &TrayMenuController::slotSyncStateChange);
 }
 
-ownCloudGui::~ownCloudGui()
+TrayMenuController::~TrayMenuController()
 {
 }
 
-void ownCloudGui::slotTrayClicked(QSystemTrayIcon::ActivationReason reason)
+void TrayMenuController::slotTrayClicked(QSystemTrayIcon::ActivationReason reason)
 {
     // Left click
     if (reason == QSystemTrayIcon::Trigger) {
@@ -95,7 +95,7 @@ void ownCloudGui::slotTrayClicked(QSystemTrayIcon::ActivationReason reason)
     }
 }
 
-void ownCloudGui::slotSyncStateChange(Folder *folder)
+void TrayMenuController::slotSyncStateChange(Folder *folder)
 {
     slotComputeOverallSyncStatus();
 
@@ -108,7 +108,7 @@ void ownCloudGui::slotSyncStateChange(Folder *folder)
     qCInfo(lcApplication) << "Sync state changed for folder " << folder->remoteUrl().toString() << ": " << Utility::enumToDisplayName(result.status());
 }
 
-void ownCloudGui::slotTrayMessageIfServerUnsupported(Account *account)
+void TrayMenuController::slotTrayMessageIfServerUnsupported(Account *account)
 {
     if (account->serverSupportLevel() != Account::ServerSupportLevel::Supported) {
         slotShowTrayMessage(tr("Unsupported Server Version"),
@@ -119,20 +119,20 @@ void ownCloudGui::slotTrayMessageIfServerUnsupported(Account *account)
     }
 }
 
-QIcon ownCloudGui::getTrayStatusIcon(const SyncResult::Status &status) const
+QIcon TrayMenuController::getTrayStatusIcon(const SyncResult::Status &status) const
 {
     auto contextMenuVisible = _tray->contextMenu() && _tray->contextMenu()->isVisible();
     return Theme::instance()->themeTrayIcon(SyncResult{status}, contextMenuVisible);
 }
 
-void ownCloudGui::slotComputeOverallSyncStatus()
+void TrayMenuController::slotComputeOverallSyncStatus()
 {
     auto status = trayOverallStatus();
     const QIcon statusIcon = getTrayStatusIcon(status);
     _tray->setIcon(statusIcon);
 }
 
-void ownCloudGui::setupTrayContextMenu()
+void TrayMenuController::setupTrayContextMenu()
 {
     // using the main window as parent for memory management
     // todo: review this as for some reason I remember there is some other way it's supposed to be done
@@ -167,22 +167,22 @@ void ownCloudGui::setupTrayContextMenu()
     }
 
     if (!Theme::instance()->helpUrl().isEmpty()) {
-        menu->addAction(tr("Help"), this, &ownCloudGui::requestShowHelp);
+        menu->addAction(tr("Help"), this, &TrayMenuController::requestShowHelp);
     }
 
     if (! Theme::instance()->about().isEmpty()) {
-        menu->addAction(tr("About %1").arg(Theme::instance()->appNameGUI()), this, &ownCloudGui::requestShowAbout);
+        menu->addAction(tr("About %1").arg(Theme::instance()->appNameGUI()), this, &TrayMenuController::requestShowAbout);
     }
 
     menu->addAction(tr("Quit %1").arg(Theme::instance()->appNameGUI()), _app, &QApplication::quit);
 }
 
-void ownCloudGui::slotShowTrayMessage(const QString &title, const QString &msg, const QIcon &icon)
+void TrayMenuController::slotShowTrayMessage(const QString &title, const QString &msg, const QIcon &icon)
 {
     _tray->showMessage(title, msg, icon.isNull() ? Resources::getCoreIcon(QStringLiteral("states/information")) : icon);
 }
 
-void ownCloudGui::slotShowOptionalTrayMessage(const QString &title, const QString &msg, const QIcon &icon)
+void TrayMenuController::slotShowOptionalTrayMessage(const QString &title, const QString &msg, const QIcon &icon)
 {
     ConfigFile cfg;
     if (cfg.optionalDesktopNotifications()) {
@@ -190,7 +190,7 @@ void ownCloudGui::slotShowOptionalTrayMessage(const QString &title, const QStrin
     }
 }
 
-void ownCloudGui::slotShowShareInBrowser(const QString &sharePath, const QString &localPath)
+void TrayMenuController::slotShowShareInBrowser(const QString &sharePath, const QString &localPath)
 {
     QString file;
     const auto folder = FolderMan::instance()->folderForPath(localPath, &file);

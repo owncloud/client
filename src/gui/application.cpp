@@ -51,7 +51,7 @@ QString Application::displayLanguage() const
     return _displayLanguage;
 }
 
-ownCloudGui *Application::gui() const
+TrayMenuController *Application::gui() const
 {
     return _gui;
 }
@@ -139,7 +139,7 @@ void Application::slotAccountStateAdded(AccountState *accountState) const
     // Hook up the GUI slots to the account state's Q_SIGNALS:
     Account *account = accountState->account();
 
-    connect(accountState, &AccountState::stateChanged, _gui.data(), &ownCloudGui::slotComputeOverallSyncStatus);
+    connect(accountState, &AccountState::stateChanged, _gui.data(), &TrayMenuController::slotComputeOverallSyncStatus);
     connect(account, &Account::serverVersionChanged, _gui.data(), [account, this] { _gui->slotTrayMessageIfServerUnsupported(account); });
 
     // todo dc-310 - this does not belong here! This can be done in the folder man when it's given a "new" account
@@ -199,11 +199,11 @@ void Application::buildAppGuis()
 
     // Setting up the gui class will allow tray notifications for the
     // setup that follows, like folder setup
-    _gui = new ownCloudGui(this);
-    connect(_gui, &ownCloudGui::requestShowAbout, _mainController, &MainWindowController::onAbout);
-    connect(_gui, &ownCloudGui::requestShowHelp, _mainController, &MainWindowController::onHelp);
+    _gui = new TrayMenuController(this);
+    connect(_gui, &TrayMenuController::requestShowAbout, _mainController, &MainWindowController::onAbout);
+    connect(_gui, &TrayMenuController::requestShowHelp, _mainController, &MainWindowController::onHelp);
 
-    connect(FolderMan::instance()->socketApi(), &SocketApi::shareCommandReceived, _gui.data(), &ownCloudGui::slotShowShareInBrowser);
+    connect(FolderMan::instance()->socketApi(), &SocketApi::shareCommandReceived, _gui.data(), &TrayMenuController::slotShowShareInBrowser);
 }
 
 std::unique_ptr<Application> Application::createInstance(Platform *platform, const QString &displayLanguage, bool debugMode)

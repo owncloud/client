@@ -28,7 +28,7 @@ set(client_SRCS
     networkinformation.cpp
     networksettings.cpp
     openfilemanager.cpp
-    owncloudgui.cpp
+    traymenucontroller.cpp
     localactivitywidget.cpp
     protocolitem.cpp
     syncerrorwidget.cpp
