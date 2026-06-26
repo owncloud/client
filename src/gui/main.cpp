@@ -438,9 +438,7 @@ int main(int argc, char **argv)
         }
 
         std::unique_ptr<Application> ocApp = Application::createInstance(platform.get(), displayLanguage, options.debugMode);
-
         ocApp->updateAutoRun(firstRun);
-
         QObject::connect(platform.get(), &Platform::requestAttention, ocApp.get(), &Application::ensureVisible);
 
         QObject::connect(&singleApplication, &KDSingleApplication::messageReceived, ocApp.get(), [&](const QByteArray &message) {

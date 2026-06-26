@@ -135,8 +135,8 @@ void Application::slotAccountStateAdded(AccountState *accountState) const
     connect(accountState, &AccountState::stateChanged, _trayController, &TrayMenuController::slotComputeOverallSyncStatus);
     connect(account, &Account::serverVersionChanged, _trayController, &TrayMenuController::slotTrayMessageIfServerUnsupported);
 
-    // todo dc-310 - this does not belong here! This can be done in the folder man when it's given a "new" account
-    // (eg in load from config or load from new account)
+    // todo: this does not belong here! This can be done in the folder man when it's given a "new" account
+    // (eg in load from config or load from new account). note that FolderMan does not receive accountAdded signals, but maybe it should?
     // Hook up the folder manager slots to the account state's Q_SIGNALS:
     connect(accountState, &AccountState::isConnectedChanged, FolderMan::instance(), &FolderMan::slotIsConnectedChanged);
     connect(account, &Account::serverVersionChanged, FolderMan::instance(), [account] { FolderMan::instance()->slotServerVersionChanged(account); });
