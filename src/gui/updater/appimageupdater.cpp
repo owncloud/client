@@ -178,7 +178,7 @@ void AppImageUpdater::versionInfoArrived(const UpdateInfo &info)
     });
 
     ModalWrapperWidget *wrapper = new ModalWrapperWidget(widget, ocApp()->mainWindow());
-    ocApp()->mainWindow()->showModalWidget(wrapper);
+    ocApp()->showModalWidget(wrapper);
 }
 
 void AppImageUpdater::backgroundCheckForUpdate()
