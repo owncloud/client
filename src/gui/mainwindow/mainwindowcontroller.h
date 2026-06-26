@@ -31,6 +31,7 @@ public:
     void setup();
     // called from tray menu, too. make this a signal/slot connection between the tray menu controller and main window controller
     void onAbout();
+    void onHelp();
 
 signals:
     void requestAccountWizard();
@@ -41,7 +42,6 @@ private:
     void createActivityAction();
 
     void onSettings();
-
     void onQuit();
 
     MainWindow *_window = nullptr;

@@ -50,7 +50,8 @@ public:
     ~ownCloudGui() override;
 
 Q_SIGNALS:
-    void requestAboutDialog();
+    void requestShowAbout();
+    void requestShowHelp();
 
 public Q_SLOTS:
     void setupTrayContextMenu();
@@ -59,8 +60,6 @@ public Q_SLOTS:
     void slotShowOptionalTrayMessage(const QString &title, const QString &msg, const QIcon &icon = {});
     void slotSyncStateChange(Folder *);
     void slotTrayClicked(QSystemTrayIcon::ActivationReason reason);
-    void slotToggleLogBrowser();
-    void slotHelp();
     void slotTrayMessageIfServerUnsupported(Account *account);
 
     /**

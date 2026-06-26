@@ -168,11 +168,11 @@ void ownCloudGui::setupTrayContextMenu()
     }
 
     if (!Theme::instance()->helpUrl().isEmpty()) {
-        menu->addAction(tr("Help"), this, &ownCloudGui::slotHelp);
+        menu->addAction(tr("Help"), this, &ownCloudGui::requestShowHelp);
     }
 
     if (! Theme::instance()->about().isEmpty()) {
-        menu->addAction(tr("About %1").arg(Theme::instance()->appNameGUI()), this, &ownCloudGui::requestAboutDialog);
+        menu->addAction(tr("About %1").arg(Theme::instance()->appNameGUI()), this, &ownCloudGui::requestShowAbout);
     }
 
     menu->addAction(tr("Quit %1").arg(Theme::instance()->appNameGUI()), _app, &QApplication::quit);
@@ -189,19 +189,6 @@ void ownCloudGui::slotShowOptionalTrayMessage(const QString &title, const QStrin
     if (cfg.optionalDesktopNotifications()) {
         slotShowTrayMessage(title, msg, icon);
     }
-}
-
-void ownCloudGui::slotToggleLogBrowser()
-{
-    auto logBrowser = new LogBrowser(ocApp()->mainWindow());
-    logBrowser->setAttribute(Qt::WA_DeleteOnClose);
-    ocApp()->mainWindow()->ensureVisible();
-    logBrowser->open();
-}
-
-void ownCloudGui::slotHelp()
-{
-    QDesktopServices::openUrl(QUrl(Theme::instance()->helpUrl()));
 }
 
 void ownCloudGui::slotShowShareInBrowser(const QString &sharePath, const QString &localPath)

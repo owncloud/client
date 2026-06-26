@@ -181,7 +181,9 @@ void Application::buildAppGuis()
     // Setting up the gui class will allow tray notifications for the
     // setup that follows, like folder setup
     _gui = new ownCloudGui(this);
-    connect(_gui, &ownCloudGui::requestAboutDialog, _mainController, &MainWindowController::onAbout);
+    connect(_gui, &ownCloudGui::requestShowAbout, _mainController, &MainWindowController::onAbout);
+    connect(_gui, &ownCloudGui::requestShowHelp, _mainController, &MainWindowController::onHelp);
+
     connect(FolderMan::instance()->socketApi(), &SocketApi::shareCommandReceived, _gui.data(), &ownCloudGui::slotShowShareInBrowser);
 }
 

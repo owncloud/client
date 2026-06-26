@@ -15,12 +15,12 @@
 #include "settingsview.h"
 #include "ui_settingsview.h"
 
-#include "gui/application.h"
-#include "gui/ignorelisteditor.h"
-#include "gui/mainwindow/mainwindow.h"
-#include "gui/translations.h"
+#include "application.h"
+#include "ignorelisteditor.h"
 #include "libsync/configfile.h"
 #include "libsync/theme.h"
+#include "logbrowser.h"
+#include "translations.h"
 
 #include <QMessageBox>
 #include <QOperatingSystemVersion>
@@ -72,10 +72,7 @@ SettingsView::SettingsView(QWidget *parent)
     _ui->monoIconsCheckBox->setVisible(Resources::hasMonoTheme());
 
     connect(_ui->ignoredFilesButton, &QAbstractButton::clicked, this, &SettingsView::slotIgnoreFilesEditor);
-    connect(_ui->logSettingsButton, &QPushButton::clicked, this, [] {
-        // only access occApp after things are set up
-        ocApp()->gui()->slotToggleLogBrowser();
-    });
+    connect(_ui->logSettingsButton, &QPushButton::clicked, this, &SettingsView::slotShowLogSettings);
 
     if (!Theme::instance()->aboutShowCopyright()) {
         _ui->copyrightLabel->hide();
@@ -191,6 +188,14 @@ void SettingsView::loadLanguageNamesIntoDropdown()
         QString entryText = QStringLiteral("%1 (%2)").arg(nativeLanguageName, availableLocale);
         _ui->languageDropdown->addItem(entryText, availableLocale);
     }
+}
+
+void SettingsView::slotShowLogSettings()
+{
+    auto logBrowser = new LogBrowser(ocApp()->mainWindow());
+    logBrowser->setAttribute(Qt::WA_DeleteOnClose);
+    ocApp()->mainWindow()->ensureVisible();
+    logBrowser->open();
 }
 
 } // namespace OCC

@@ -15,8 +15,6 @@
 #include "mainwindowcontroller.h"
 
 #include "aboutview.h"
-#include "accountmanager.h"
-#include "accountsgui/accountsguicontroller.h"
 #include "application.h"
 #include "localactivitywidget.h"
 #include "mainwindow.h"
@@ -26,8 +24,8 @@
 #include "theme.h"
 
 #include <QAction>
+#include <QDesktopServices>
 #include <QMessageBox>
-#include <QTimer>
 
 namespace OCC {
 
@@ -114,6 +112,11 @@ void MainWindowController::onAbout()
     AboutView *aboutPanel = new AboutView(_window);
     ModalWrapperWidget *wrapper = new ModalWrapperWidget(aboutPanel, _window);
     _window->showModalWidget(wrapper);
+}
+
+void MainWindowController::onHelp()
+{
+    QDesktopServices::openUrl(QUrl(Theme::instance()->helpUrl()));
 }
 
 void MainWindowController::onQuit()
