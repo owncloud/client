@@ -31,8 +31,6 @@
 #include "folderwatcher.h"
 #include "libsync/graphapi/spacesmanager.h"
 #include "localdiscoverytracker.h"
-// it is used directly as parent for message box. ignore clangd here
-#include "mainwindow/mainwindow.h"
 #include "scheduling/syncscheduler.h"
 #include "socketapi/socketapi.h"
 #include "syncengine.h"

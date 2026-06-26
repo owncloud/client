@@ -42,6 +42,7 @@ void AccountView::setAccountMenuActions(QList<QAction *> actions)
     QMenu *menu = _ui->manageAccountButton->menu();
     if (!menu) {
         menu = new QMenu(this);
+        menu->setObjectName("manageAccountMenu");
         menu->setAccessibleName(tr("Account options menu"));
         connect(menu, &QMenu::aboutToShow, this, &AccountView::requestMenuActionUpdate);
     } else {

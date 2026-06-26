@@ -24,7 +24,6 @@
 #include "common/asserts.h"
 #include "common/vfs.h"
 #include "gui/application.h"
-#include "gui/mainwindow/mainwindow.h"
 #include "theme.h"
 
 #include "gui/folderman.h"

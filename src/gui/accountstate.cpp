@@ -20,7 +20,6 @@
 
 #include "libsync/creds/abstractcredentials.h"
 
-#include "gui/mainwindow/mainwindow.h"
 #include "gui/tlserrordialog.h"
 
 #include "socketapi/socketapi.h"

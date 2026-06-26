@@ -17,7 +17,6 @@
 #include "abstractcorejob.h"
 #include "common/utility.h"
 #include "gui/application.h"
-#include "gui/mainwindow/mainwindow.h"
 #include "gui/tlserrordialog.h"
 
 #include <QNetworkAccessManager>
