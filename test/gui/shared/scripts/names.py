@@ -84,3 +84,4 @@ scrollArea_advancedGroupBox_QGroupBox = {"container": mainWindow_scrollArea_QScr
 scrollArea_groupBox_QGroupBox = {"container": mainWindow_scrollArea_QScrollArea, "name": "groupBox", "type": "QGroupBox", "visible": 1}
 mainWindow_qt_tabwidget_stackedwidget_QStackedWidget = {"name": "qt_tabwidget_stackedwidget", "type": "QStackedWidget", "visible": 1, "window": mainWindow_OCC_MainWindow}
 confirmRemoveAccountDialog_QMessageBox = {"name": "confirmRemoveAccountDialog", "type": "QMessageBox", "visible": 1}
+mainWindow_manageAccountMenu_QMenu = {"name": "manageAccountMenu", "type": "QMenu", "visible": 1, "window": mainWindow_OCC_MainWindow}
