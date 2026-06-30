@@ -67,6 +67,16 @@ class OWNCLOUDSYNC_EXPORT AppConfig
 {
 public:
     explicit AppConfig();
+
+    /**
+     * Construct an AppConfig from an explicitly provided system configuration.
+     * The theme defaults are loaded first and then overridden with the values from @p system,
+     * mirroring the behavior of the default constructor without reading the on-disk/registry path.
+     * @param system the system configuration settings to apply on top of the theme defaults
+     * @internal kept public for testing purposes
+     */
+    explicit AppConfig(const QSettings &system);
+
     /**
      * Determine if changing the server URL is allowed based on system configuration.
      * This value is only relevant if SystemConfig::serverUrl() returns a non-empty string.
@@ -103,16 +113,19 @@ public:
      */
     static QString configPath(const QOperatingSystemVersion::OSType& os, const Theme& theme);
 
-    /**
-     * Load the OpenID Connect configuration from a system QSettings instance.
-     * @param system the system configuration settings
-     * @return An OpenIdConfig object populated from the [OpenIDConnect] section.
-     * @internal kept public for testing purposes
-     */
-    static OpenIdConfig loadOpenIdConfigFromSystemConfig(const QSettings &system);
-
 private:
+    /**
+     * Initialize all settings with the defaults provided by the current theme.
+     */
+    void loadThemeDefaults();
+
+    /**
+     * Apply the overrides from the given system configuration on top of the already loaded theme defaults.
+     */
+    void applySystemConfig(const QSettings &system);
+
     static OpenIdConfig loadOpenIdConfigFromTheme();
+    static OpenIdConfig loadOpenIdConfigFromSystemConfig(const QSettings &system);
 
 private: // System settings keys
     // Setup related keys

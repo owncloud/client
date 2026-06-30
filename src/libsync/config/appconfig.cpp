@@ -19,20 +19,34 @@ namespace chrono = std::chrono;
 
 AppConfig::AppConfig()
 {
+    loadThemeDefaults();
+
+    if (!Theme::instance()->allowSystemConfigOverrides())
+        return;
+
+    // Load all overrides from the system config path
+    auto format = Utility::isWindows() ? QSettings::NativeFormat : QSettings::IniFormat;
+    const QSettings system(configPath(QOperatingSystemVersion::currentType(), *Theme::instance()), format);
+    applySystemConfig(system);
+}
+
+AppConfig::AppConfig(const QSettings &system)
+{
+    loadThemeDefaults();
+    applySystemConfig(system);
+}
+
+void AppConfig::loadThemeDefaults()
+{
     _serverUrl = Theme::instance()->overrideServerUrlV2();
     // If a theme provides a hardcoded URL, do not allow for URL change.
     _allowServerURLChange = Theme::instance()->overrideServerUrlV2().isEmpty();
     _skipUpdateCheck = false;
     _openIdConfig = loadOpenIdConfigFromTheme();
+}
 
-    if (!Theme::instance()->allowSystemConfigOverrides())
-        return;
-
-    // Load all overrides
-
-    auto format = Utility::isWindows() ? QSettings::NativeFormat : QSettings::IniFormat;
-    const QSettings system(configPath(QOperatingSystemVersion::currentType(), *Theme::instance()), format);
-
+void AppConfig::applySystemConfig(const QSettings &system)
+{
     _serverUrl = system.value(SetupServerUrlKey, QString()).toString();
     if (system.contains(SetupAllowServerUrlChangeKey)) {
         _allowServerURLChange = system.value(SetupAllowServerUrlChangeKey).toBool();
