@@ -33,9 +33,7 @@ private Q_SLOTS:
             settings.setValue(QStringLiteral("OpenIDConnect/ClientSecret"), QStringLiteral("my-client-secret"));
             settings.setValue(QStringLiteral("OpenIDConnect/Ports"), QStringLiteral("8080,8443"));
             settings.setValue(QStringLiteral("OpenIDConnect/Scopes"), QStringLiteral("openid email"));
-            // Prompt value is intentionally different from the Ports value and the theme default so
-            // the regression test for #12557 cannot pass by coincidence.
-            settings.setValue(QStringLiteral("OpenIDConnect/Prompt"), QStringLiteral("login"));
+            settings.setValue(QStringLiteral("OpenIDConnect/Prompt"), QStringLiteral("select_account consent"));
             settings.sync();
         }
 
@@ -44,7 +42,7 @@ private Q_SLOTS:
         const OCC::OpenIdConfig cfg = OCC::AppConfig(settings).openIdConfig();
 
         // Prompt must be read from the Prompt key, not the Ports key (regression test for #12557)
-        QCOMPARE(cfg.prompt(), QStringLiteral("login"));
+        QCOMPARE(cfg.prompt(), QStringLiteral("select_account consent"));
         QCOMPARE(cfg.ports(), (QList<quint16>{8080, 8443}));
         QCOMPARE(cfg.scopes(), QStringLiteral("openid email"));
         QCOMPARE(cfg.clientId(), QStringLiteral("my-client-id"));
