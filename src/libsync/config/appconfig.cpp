@@ -68,16 +68,23 @@ OpenIdConfig AppConfig::loadOpenIdConfigFromSystemConfig(const QSettings &system
     QString clientId = system.value(OidcClientIdKey, QString()).toString();
     QString clientSecret = system.value(OidcClientSecretKey, QString()).toString();
     QString scopes = system.value(OidcScopesKey, QString()).toString();
-    QString prompt = system.value(OidcPortsKey, QString()).toString();
+    QString prompt = system.value(OidcPromptKey, QString()).toString();
 
     QVector<quint16> ports;
-    QVariant portsVar = system.value(OidcPortsKey, QString()).toString();
-    const auto parts = portsVar.toString().split(QLatin1Char(','), Qt::SkipEmptyParts);
-    for (const QString &p : parts) {
+    QVariant portsVar = system.value(OidcPortsKey);
+    QStringList parts;
+    if (portsVar.typeId() == QMetaType::QString) {
+        // Windows registry: "8080,8888" is a QString
+        parts = portsVar.toString().split(QLatin1Char(','), Qt::SkipEmptyParts);
+    } else {
+        // .ini files (Linux, macOS): "8080,8888" is a QStringlist
+        parts = portsVar.toStringList();
+    }
+    for (const QString &p : std::as_const(parts)) {
         bool ok = false;
-        const quint16 val = static_cast<quint16>(p.trimmed().toUInt(&ok));
-        if (ok) {
-            ports.append(val);
+        const qint64 val = static_cast<quint16>(p.trimmed().toLongLong(&ok));
+        if (ok && val >= 0 && val <= std::numeric_limits<quint16>::max()) {
+            ports.append(static_cast<quint16>(val));
         }
     }
 
