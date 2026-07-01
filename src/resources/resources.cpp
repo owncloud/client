@@ -203,7 +203,14 @@ QIcon OCC::Resources::buildAvatar(const QString &initials, QUuid accountUid)
 {
     QIcon &cached = iconCache->_cache[accountUid.toString()]; // Take reference, this will also "set" the cache entry
     if (cached.isNull()) {
-        QColor badgeColor;
+        // for now we are going for a color scheme that mimics our other icons.
+        // the logic:
+        // it is extremely difficult to "pick" random colors that are going to look good and have
+        // sufficient contrast with dark and light mode on all platforms
+        // additionally, a random colorful icon looks a bit out of place given we have no other "custom" colors
+        // in the app outside of the account wizard - I think using the same gray we do for other icons is harmonious, at least
+        QColor badgeColor = isUsingDarkTheme() ? "#ADACAB" : "#435671";
+
         QPalette pal = qGuiApp->palette();
 
         // if (Theme::instance()->)
@@ -214,7 +221,7 @@ QIcon OCC::Resources::buildAvatar(const QString &initials, QUuid accountUid)
         QPainter painter;
         painter.begin(&pix);
         painter.setRenderHint(QPainter::Antialiasing, true);
-        painter.setBrush(Qt::red);
+        painter.setBrush(badgeColor);
         painter.setPen(Qt::NoPen);
         painter.drawEllipse(pix.rect());
 
@@ -222,7 +229,8 @@ QIcon OCC::Resources::buildAvatar(const QString &initials, QUuid accountUid)
         font.setPixelSize(32);
         font.setBold(true);
         painter.setFont(font);
-        painter.setPen(pal.color(QPalette::Text));
+        // use base color to simulate transparent text that reveals what is behind it, as we have in other icons...ie the base color
+        painter.setPen(pal.color(QPalette::Base));
         painter.drawText(pix.rect(), Qt::AlignCenter, initials);
         painter.end();
         cached = pix;

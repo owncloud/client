@@ -131,17 +131,22 @@ QString Account::davUser() const
 QIcon Account::avatar()
 {
     if (_avatarImg.isNull()) {
-        // for now
-        // return Resources::getCoreIcon("check");
-        // near future with DC-304:
-        setAvatar(Resources::buildAvatar(initials(), uuid()));
-        // or so
+        // note this caches the built avatar, so once it exists it just returns a cached version.
+        return Resources::buildAvatar(initials(), uuid());
     }
     return _avatarImg;
 }
 
 void Account::setAvatar(const QIcon &img)
 {
+    // this excludes the condition that we get a null image on every. single. run. of the fetchServerSettings, which
+    // is also responsible for fetching the avatar iff the caps show avatars are supported.
+    // however we are going to have the same problem with non-null avatars, and comparing them to see if the new one really
+    // is different is much more complicated and needs a deeper fix.
+    // the avatar retrieval is not currently working so plan to revisit this once it's back in action. Ideally we will
+    // have an etag or similar related to the avatar
+    if (img.isNull() && _avatarImg.isNull())
+        return;
     _avatarImg = img;
     Q_EMIT avatarChanged();
 }
