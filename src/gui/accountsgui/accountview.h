@@ -16,18 +16,7 @@
 
 #include "gui/owncloudguilib.h"
 
-#include "folder.h"
-#include "gui/qmlutils.h"
-#include "owncloudgui.h"
-#include "progressdispatcher.h"
-
-#include <QSortFilterProxyModel>
 #include <QWidget>
-
-class QModelIndex;
-class QNetworkReply;
-class QLabel;
-class QStandardItemModel;
 
 namespace OCC {
 class AccountModalWidget;
@@ -40,8 +29,7 @@ class FolderMan;
 
 class Account;
 class AccountState;
-// class FolderStatusModel;
-class FolderStatusDelegate;
+class AccountFoldersView;
 
 /**
  * @brief The AccountView class
@@ -52,57 +40,32 @@ class OWNCLOUDGUI_EXPORT AccountView : public QWidget
     Q_OBJECT
 
 public:
-    enum class ModalWidgetSizePolicy { Minimum = QSizePolicy::Minimum, Expanding = QSizePolicy::Expanding };
-    Q_ENUM(ModalWidgetSizePolicy)
-
-    explicit AccountView(AccountState *accountState, QWidget *parent = nullptr);
+    explicit AccountView(QWidget *parent);
     ~AccountView() override;
 
-    // this is called by SettingsDialog directly but should be corrected to either respond to signal, or just make
-    // it a normal function
-    void slotAddFolder();
+    void setAccountMenuActions(QList<QAction *> actions);
+    void setConnectionLabel(const QString &message, const QIcon &icon, QStringList errors = QStringList());
 
-    void onRequestAccountModalWidget(OCC::AccountModalWidget *widget);
-    // todo: this should be protected/private but still "needed" by old impl
-    void addModalAccountWidget(AccountModalWidget *widget);
+    // this is primarily used to run an account "modal" widget
+    void setTopStackWidget(QWidget *widget);
+    void removeStackWidget(QWidget *widget);
+
+    // holding my nose for now - this should not be public, nor should the type be "embedded" in the view's ui.
+    // todo: replace the concrete folders view with a placeholder location so the controller can SET the folders view in the
+    // account view.
+    // open question: would this mess up the squish tests? we'll soon learn the answer
+    AccountFoldersView *foldersView();
+    void accountSettingUpChanged(bool settingUp);
+
 
 signals:
-    // these are sent when the account view starts and ends a "modal" operation
-    // at the moment I'm not blocking access to main window toolbar actions as there is really no need, imo,
-    // just because the account is in the middle of something. At least we will try it this way and see
-    // if it's preferred. So long as the account modal widget blocks *account* related activity I think we're good
-    void accountEndModal(QUuid accountId);
-    void accountBeginModal(QUuid accountId);
-
-protected slots:
-    void slotAccountStateChanged(OCC::AccountState::State state);
-    void slotDeleteAccount();
-    void slotOpenAccountInBrowser();
-    void slotToggleSignInState();
-    void slotFolderWizardAccepted();
+    void requestMenuActionUpdate();
 
 protected:
-    void accountSettingUpChanged(bool settingUp);
     void showEvent(QShowEvent *ev) override;
-    void finishAccountModalWidget(AccountModalWidget *widget);
 
 private:
-    enum class StatusIcon { None, Connected, Disconnected, Info, Warning };
-    void showConnectionLabel(const QString &message, StatusIcon statusIcon, QStringList errors = QStringList());
-
-
-    void buildManageAccountMenu();
-
-    Ui::AccountView *ui;
-
-    QStandardItemModel *_model;
-    QSortFilterProxyModel *_sortModel;
-    bool _wasDisabledBefore;
-    QPointer<AccountState> _accountState;
-    // are we already in the destructor
-    bool _goingDown = false;
-    uint _syncedSpaces = 0;
-    uint _unsyncedSpaces = 0;
+    Ui::AccountView *_ui;
 };
 
 } // namespace OCC

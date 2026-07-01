@@ -28,12 +28,10 @@
 #include "configfile.h"
 #include "filesystem.h"
 #include "folderman.h"
-#include "foldermanagement/foldermanagementutils.h"
 #include "folderwatcher.h"
 #include "libsync/graphapi/spacesmanager.h"
 #include "localdiscoverytracker.h"
 #include "scheduling/syncscheduler.h"
-#include "settingsdialog.h"
 #include "socketapi/socketapi.h"
 #include "syncengine.h"
 #include "syncresult.h"
@@ -422,7 +420,7 @@ void Folder::createGuiLog(const QString &filename, LogStatus status, int count,
         }
 
         if (!text.isEmpty()) {
-            ocApp()->gui()->slotShowOptionalTrayMessage(tr("Sync Activity"), text);
+            ocApp()->tray()->slotShowOptionalTrayMessage(tr("Sync Activity"), text);
         }
     }
 }
@@ -1028,7 +1026,7 @@ void Folder::warnOnNewExcludedItem(const SyncJournalFileRecord &record, QStringV
              "It will not be synchronized.")
               .arg(fi.filePath());
 
-    ocApp()->gui()->slotShowOptionalTrayMessage(Theme::instance()->appNameGUI(), message);
+    ocApp()->tray()->slotShowOptionalTrayMessage(Theme::instance()->appNameGUI(), message);
 }
 
 void Folder::slotWatcherUnreliable(const QString &message)
@@ -1044,10 +1042,10 @@ void Folder::slotWatcherUnreliable(const QString &message)
            "\n"
            "%1")
             .arg(message),
-        {}, ocApp()->gui()->settingsDialog());
+        {}, ocApp()->mainWindow());
 
     msgBox->setAttribute(Qt::WA_DeleteOnClose);
-    ownCloudGui::raise();
+    ocApp()->ensureVisible();
     msgBox->open();
 }
 

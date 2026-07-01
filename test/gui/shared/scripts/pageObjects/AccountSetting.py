@@ -10,9 +10,8 @@ class AccountSetting:
         "visible": 1,
     }
     ACCOUNT_MENU = {
-        "container": names.mainWindow_QMenu,
+        "container": names.mainWindow_manageAccountMenu_QMenu,
         "type": "QAction",
-        "unnamed": 1,
         "visible": True,
     }
     CONFIRM_REMOVE_CONNECTION_BUTTON = {
@@ -47,26 +46,26 @@ class AccountSetting:
     CONFIRMATION_YES_BUTTON = {"type": "QPushButton", "visible": 1}
 
     @staticmethod
-    def account_action(action):
+    def account_action(action, name):
         squish.clickButton(squish.waitForObject(AccountSetting.MANAGE_ACCOUNT_BUTTON))
         action_selector = AccountSetting.ACCOUNT_MENU.copy()
-        action_selector.update({"text": action})
+        action_selector.update({"text": action, "name": name})
         squish.activateItem(squish.waitForObject(action_selector))
 
     @staticmethod
     def remove_account_connection():
-        AccountSetting.account_action("Remove")
+        AccountSetting.account_action("Remove", "removeAction")
         squish.clickButton(
             squish.waitForObject(AccountSetting.CONFIRM_REMOVE_CONNECTION_BUTTON)
         )
 
     @staticmethod
     def logout():
-        AccountSetting.account_action("Log out")
+        AccountSetting.account_action("Log out", "logInOutAction")
 
     @staticmethod
     def login():
-        AccountSetting.account_action("Log in")
+        AccountSetting.account_action("Log in", "logInOutAction")
 
     @staticmethod
     def get_account_connection_label():

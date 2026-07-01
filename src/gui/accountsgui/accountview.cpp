@@ -14,359 +14,103 @@
 
 
 #include "accountview.h"
-#include "FoldersGui/accountfoldersview.h"
-#include "FoldersGui/foldermodelcontroller.h"
 #include "ui_accountview.h"
 
-
-#include "FoldersGui/accountfolderscontroller.h"
-#include "account.h"
-#include "accountmanager.h"
-#include "accountstate.h"
-#include "application.h"
-#include "commonstrings.h"
-#include "configfile.h"
-#include "folderman.h"
-#include "folderwizard/folderwizard.h"
-#include "gui/accountmodalwidget.h"
-#include "gui/models/models.h"
-#include "gui/networkinformation.h"
-#include "gui/qmlutils.h"
-#include "gui/selectivesyncwidget.h"
-#include "libsync/graphapi/spacesmanager.h"
-#include "scheduling/syncscheduler.h"
-#include "settingsdialog.h"
-#include "theme.h"
-
-#include <QAction>
-#include <QMessageBox>
-#include <QSortFilterProxyModel>
-#include <QStandardItemModel>
-#include <QtQuickWidgets/QtQuickWidgets>
-
-namespace {
-constexpr auto modalWidgetStretchedMarginC = 50;
-}
+#include <QMenu>
 
 namespace OCC {
 
-Q_LOGGING_CATEGORY(lcAccountView, "gui.account.view", QtInfoMsg)
-
-// Refactoring todo: devise a correct handling of null account state in this ctr.
-// also move all this connect stuff to a "connect" method.
-// also ditch the lambdas which should actually be functions (private if necessary)
-// Also refactoring todo: split the controller behavior out into a controller. A widget should NOT contain
-// business or controller logic!
-AccountView::AccountView(AccountState *accountState, QWidget *parent)
+AccountView::AccountView(QWidget *parent)
     : QWidget(parent)
-    , ui(new Ui::AccountView)
-    , _wasDisabledBefore(false)
-    , _accountState(accountState)
+    , _ui(new Ui::AccountView)
 {
-    ui->setupUi(this);
+    _ui->setupUi(this);
+    _ui->connectionStatusLabel->clear();
 
-    // as usual we do too many things in the ctr and we need to eval all the code paths to make sure they handle
-    // the QPointer properly, but as a stopgap to catch null states asap before they trickle down into other areas:
-    if (!_accountState || !_accountState->account())
-        return;
-
-    AccountFoldersController *foldersController = new AccountFoldersController(_accountState, ui->accountFoldersView, this);
-    connect(foldersController, &AccountFoldersController::requestAddFolder, this, &AccountView::slotAddFolder);
-    connect(foldersController, &AccountFoldersController::requestAccountModalWidget, this, &AccountView::onRequestAccountModalWidget);
-
-    ui->connectionStatusLabel->clear();
-
-    connect(_accountState, &AccountState::stateChanged, this, &AccountView::slotAccountStateChanged);
-    slotAccountStateChanged(_accountState->state());
-
-    buildManageAccountMenu();
-
-    connect(_accountState, &AccountState::isSettingUpChanged, this, &AccountView::accountSettingUpChanged);
-
-    connect(ui->stackedWidget, &QStackedWidget::currentChanged, this,
-        [this] { ui->manageAccountButton->setEnabled(ui->stackedWidget->currentWidget() == ui->accountFoldersView); });
-    ui->stackedWidget->setCurrentWidget(ui->accountFoldersView);
+    connect(_ui->stackedWidget, &QStackedWidget::currentChanged, this,
+        [this] { _ui->manageAccountButton->setEnabled(_ui->stackedWidget->currentWidget() == _ui->accountFoldersView); });
+    _ui->stackedWidget->setCurrentWidget(_ui->accountFoldersView);
 }
 
 AccountView::~AccountView()
 {
-    // this is questionable.
-    _goingDown = true;
-    delete ui;
+    delete _ui;
+}
+
+void AccountView::setAccountMenuActions(QList<QAction *> actions)
+{
+    QMenu *menu = _ui->manageAccountButton->menu();
+    if (!menu) {
+        menu = new QMenu(this);
+        menu->setObjectName("manageAccountMenu");
+        menu->setAccessibleName(tr("Account options menu"));
+        connect(menu, &QMenu::aboutToShow, this, &AccountView::requestMenuActionUpdate);
+    } else {
+        menu->clear();
+    }
+
+    menu->addActions(actions);
+    if (_ui->manageAccountButton->menu() == nullptr)
+        _ui->manageAccountButton->setMenu(menu);
+}
+
+void AccountView::setTopStackWidget(QWidget *widget)
+{
+    // should not contain this widget already
+    Q_ASSERT(_ui->stackedWidget->indexOf(widget) < 0);
+
+    _ui->stackedWidget->addWidget(widget);
+    _ui->stackedWidget->setCurrentWidget(widget);
+}
+
+void AccountView::removeStackWidget(QWidget *widget)
+{
+    _ui->stackedWidget->removeWidget(widget);
+}
+
+AccountFoldersView *AccountView::foldersView()
+{
+    return _ui->accountFoldersView;
 }
 
 void AccountView::accountSettingUpChanged(bool settingUp)
 {
     if (settingUp) {
-        ui->spinner->startAnimation();
-        ui->stackedWidget->setCurrentWidget(ui->loadingPage);
+        _ui->spinner->startAnimation();
+        _ui->stackedWidget->setCurrentWidget(_ui->loadingPage);
     } else {
-        ui->spinner->stopAnimation();
-        ui->stackedWidget->setCurrentWidget(ui->accountFoldersView);
+        _ui->spinner->stopAnimation();
+        _ui->stackedWidget->setCurrentWidget(_ui->accountFoldersView);
     }
 }
-
-void AccountView::slotAddFolder()
-{
-    if (!_accountState || !_accountState->account()) {
-        return;
-    }
-
-    FolderWizard *folderWizard = new FolderWizard(_accountState->account(), this);
-
-    connect(folderWizard, &QDialog::accepted, this, &AccountView::slotFolderWizardAccepted);
-    connect(folderWizard, &QDialog::rejected, this, [] { qCInfo(lcAccountView) << "Folder wizard cancelled"; });
-
-    // ignore clang analyzer warning about potential memory leak, please.
-    // the modal widget gets reparented to the stacked widget and is automatically deleted when the finished() signal is
-    // received
-    AccountModalWidget *widget = new AccountModalWidget({}, folderWizard, this);
-    addModalAccountWidget(widget);
-}
-
-void AccountView::slotFolderWizardAccepted()
-{
-    if (!_accountState) {
-        return;
-    }
-
-    FolderWizard *folderWizard = qobject_cast<FolderWizard *>(sender());
-    if (!folderWizard)
-        return;
-
-    qCInfo(lcAccountView) << "Folder wizard completed";
-
-    auto config = folderWizard->result();
-
-    // The gui should not allow users to selectively choose any sync lists if vfs is enabled, but this kind of check was
-    // originally in play here so...keep it just in case.
-    if (config.useVirtualFiles && !config.selectiveSyncBlackList.empty()) {
-        config.selectiveSyncBlackList.clear();
-    }
-
-    // Refactoring todo: turn this into a signal/requestAddFolder
-    FolderMan::instance()->addFolderFromGui(_accountState, config);
-}
-
-void AccountView::slotOpenAccountInBrowser()
-{
-    if (!_accountState) {
-        return;
-    }
-
-    QUrl url = _accountState->account()->url();
-    if (!Theme::instance()->overrideServerPath().isEmpty()) {
-        // There is an override for the WebDAV endpoint. Remove it for normal web browsing.
-        url.setPath({});
-    }
-    QDesktopServices::openUrl(url);
-}
-
-void AccountView::slotToggleSignInState()
-{
-    if (!_accountState) {
-        return;
-    }
-
-    if (_accountState->isSignedOut()) {
-        _accountState->signIn();
-    } else {
-        _accountState->signOutByUi();
-    }
-}
-
-
-
-void AccountView::showConnectionLabel(const QString &message, StatusIcon statusIcon, QStringList errors)
-{
-    if (errors.isEmpty()) {
-        ui->connectionStatusLabel->setText(message);
-        ui->connectionStatusLabel->setToolTip(QString());
-    } else {
-        errors.prepend(message);
-        const QString msg = errors.join(QLatin1String("\n"));
-        qCDebug(lcAccountView) << msg;
-        ui->connectionStatusLabel->setText(msg);
-        ui->connectionStatusLabel->setToolTip(QString());
-    }
-    ui->accountStatus->setVisible(!message.isEmpty());
-
-    QIcon icon;
-    switch (statusIcon) {
-    case StatusIcon::None:
-        break;
-    case StatusIcon::Connected:
-        icon = Resources::getCoreIcon(QStringLiteral("states/ok"));
-        break;
-    case StatusIcon::Disconnected:
-        icon = Resources::getCoreIcon(QStringLiteral("states/offline"));
-        break;
-    case StatusIcon::Info:
-        icon = Resources::getCoreIcon(QStringLiteral("states/information"));
-        break;
-    case StatusIcon::Warning:
-        icon = Resources::getCoreIcon(QStringLiteral("states/warning"));
-        break;
-    }
-
-    if (!icon.isNull()) {
-        ui->warningLabel->setPixmap(icon.pixmap(ui->warningLabel->size()));
-    }
-    ui->warningLabel->setVisible(statusIcon != StatusIcon::None);
-}
-
-
-void AccountView::buildManageAccountMenu()
-{
-    QMenu *menu = new QMenu(this);
-    menu->setAccessibleName(tr("Account options menu"));
-
-    auto *logInOutAction = menu->addAction(tr("Log in"), this, &AccountView::slotToggleSignInState);
-    auto *reconnectAction = menu->addAction(tr("Reconnect"), this, [this] { _accountState->checkConnectivity(true); });
-    reconnectAction->setEnabled(!_accountState->isConnected() && !_accountState->isSignedOut());
-    connect(_accountState, &AccountState::stateChanged, this, [logInOutAction, reconnectAction, this]() {
-        logInOutAction->setText(_accountState->isSignedOut() ? tr("Log in") : tr("Log out"));
-        reconnectAction->setEnabled(!_accountState->isConnected() && !_accountState->isSignedOut());
-    });
-
-    menu->addAction(CommonStrings::showInWebBrowser(), this, &AccountView::slotOpenAccountInBrowser);
-    menu->addAction(tr("Remove"), this, &AccountView::slotDeleteAccount);
-
-    ui->manageAccountButton->setMenu(menu);
-}
-
-void AccountView::slotAccountStateChanged(AccountState::State state)
-{
-    if (!_accountState || !_accountState->account()) {
-        return;
-    }
-
-    Account *account = _accountState->account();
-    qCDebug(lcAccountView) << "Account state changed to" << state << "for account" << account;
-
-    switch (state) {
-    case AccountState::Connected: {
-        QStringList errors;
-        StatusIcon icon = StatusIcon::Connected;
-        if (account->serverSupportLevel() != Account::ServerSupportLevel::Supported) {
-            errors << tr("The server version %1 is unsupported! Proceed at your own risk.").arg(account->capabilities().status().versionString());
-            icon = StatusIcon::Warning;
-        }
-        showConnectionLabel(tr("Connected"), icon, errors);
-        break;
-    }
-    case AccountState::ServiceUnavailable:
-        showConnectionLabel(tr("Server is temporarily unavailable"), StatusIcon::Disconnected);
-        break;
-    case AccountState::MaintenanceMode:
-        showConnectionLabel(tr("Server is currently in maintenance mode"), StatusIcon::Disconnected);
-        break;
-    case AccountState::SignedOut:
-        showConnectionLabel(tr("Signed out"), StatusIcon::Disconnected);
-        break;
-    case AccountState::AskingCredentials: {
-        showConnectionLabel(tr("Updating credentials…"), StatusIcon::Info);
-        break;
-    }
-    case AccountState::Connecting:
-        if (NetworkInformation::instance()->isBehindCaptivePortal()) {
-            showConnectionLabel(tr("Captive portal prevents connections to the server."), StatusIcon::Disconnected);
-        } else if (NetworkInformation::instance()->isMetered() && ConfigFile().pauseSyncWhenMetered()) {
-            showConnectionLabel(tr("Sync is paused due to metered internet connection"), StatusIcon::Disconnected);
-        } else {
-            showConnectionLabel(tr("Connecting…"), StatusIcon::Info);
-        }
-        break;
-    case AccountState::ConfigurationError:
-        showConnectionLabel(tr("Server configuration error"), StatusIcon::Warning, _accountState->connectionErrors());
-        break;
-    case AccountState::NetworkError:
-        // don't display the error to the user, https://github.com/owncloud/client/issues/9790
-        [[fallthrough]];
-    case AccountState::Disconnected:
-        showConnectionLabel(tr("Disconnected"), StatusIcon::Disconnected);
-        break;
-    }
-} 
 
 void AccountView::showEvent(QShowEvent *ev)
 {
     Q_UNUSED(ev);
-    ui->manageAccountButton->setFocus();
+    _ui->manageAccountButton->setFocus();
 }
 
-void AccountView::onRequestAccountModalWidget(OCC::AccountModalWidget *widget)
+void AccountView::setConnectionLabel(const QString &message, const QIcon &icon, QStringList errors)
 {
-    addModalAccountWidget(widget);
-}
-
-// notes to self: the "modal" stuff is in this direction: the accountView sometimes wants to show something in a manner
-// that users should finish the activity. The accountview shows the gui the user should interact with, but it has to ask the
-// main window layer to block other user activity in the meantime. I think conceptually it's ok but the impl needs to be
-// simplified, especially to get rid of the legacy vs non legacy impls
-void AccountView::addModalAccountWidget(AccountModalWidget *widget)
-{
-    if (!_accountState || !_accountState->account()) {
-        return;
+    // I really see no point in these but they existed previously...eval usefulness later
+    // oh wait...the "warning label" is actually the name of the STATUS ICON?!?!
+    // if so this makes more sense. for goodness sake, let's rename that item asap :D
+    _ui->warningLabel->setVisible(!icon.isNull());
+    if (!icon.isNull()) {
+        _ui->warningLabel->setPixmap(icon.pixmap(_ui->warningLabel->size()));
     }
 
-    ui->stackedWidget->addWidget(widget);
-    ui->stackedWidget->setCurrentWidget(widget);
+    _ui->accountStatus->setVisible(!message.isEmpty());
 
-    connect(widget, &AccountModalWidget::finished, this, &AccountView::finishAccountModalWidget);
-#ifdef USE_NEW_MAIN_WINDOW
-    emit accountBeginModal(_accountState->account()->uuid());
-#else
-    ocApp()->gui()->settingsDialog()->requestModality(_accountState->account());
-#endif
-}
-
-void AccountView::finishAccountModalWidget(AccountModalWidget *widget)
-{
-    if (!widget)
-        return;
-
-    ui->stackedWidget->removeWidget(widget);
-    widget->deleteLater();
-
-    Q_ASSERT(_accountState && _accountState->account());
-
-#ifdef USE_NEW_MAIN_WINDOW
-    emit accountEndModal(_accountState->account()->uuid());
-#else
-    ocApp()->gui()->settingsDialog()->ceaseModality(_accountState->account());
-#endif
-}
-
-void AccountView::slotDeleteAccount()
-{
-    if (!_accountState) {
-        return;
+    if (errors.isEmpty()) {
+        _ui->connectionStatusLabel->setText(message);
+        _ui->connectionStatusLabel->setToolTip(QString());
+    } else {
+        errors.prepend(message);
+        const QString msg = errors.join(QLatin1String("\n"));
+        _ui->connectionStatusLabel->setText(msg);
+        _ui->connectionStatusLabel->setToolTip(QString());
     }
-
-    // Deleting the account potentially deletes 'this', so
-    // the QMessageBox should be destroyed before that happens.
-    // todo: this is an unnecessarily complicated def for the message box and should exec instead of open.
-    auto messageBox = new QMessageBox(QMessageBox::Question, tr("Confirm Account Removal"),
-        tr("<p>Do you really want to remove the connection to the account <i>%1</i>?</p>"
-           "<p><b>Note:</b> This will <b>not</b> delete any files.</p>")
-            .arg(_accountState->account()->displayNameWithHost()),
-        QMessageBox::NoButton, this);
-    messageBox->setObjectName("confirmRemoveAccountDialog");
-    auto yesButton = messageBox->addButton(tr("Remove connection"), QMessageBox::YesRole);
-    yesButton->setObjectName("removeAccountButton");
-    auto noButton = messageBox->addButton(tr("Cancel"), QMessageBox::NoRole);
-    noButton->setObjectName("cancelRemoveAccountButton");
-
-    messageBox->setAttribute(Qt::WA_DeleteOnClose);
-    connect(messageBox, &QMessageBox::finished, this, [this, messageBox, yesButton]{
-        if (messageBox->clickedButton() == yesButton) {
-            auto manager = AccountManager::instance();
-            manager->deleteAccount(_accountState);
-            manager->save();
-        }
-    });
-    messageBox->open();
 }
 
 } // namespace OCC

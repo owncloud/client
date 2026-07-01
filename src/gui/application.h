@@ -14,12 +14,12 @@
 
 #pragma once
 
-#include "gui/owncloudguilib.h"
-
 #include "folderman.h"
-#include "owncloudgui.h"
+#include "gui/owncloudguilib.h"
 #include "platform.h"
+#include "traymenucontroller.h"
 
+#include <QMainWindow>
 #include <QPointer>
 
 class QMessageBox;
@@ -38,6 +38,9 @@ class Theme;
 class Folder;
 class MainWindow;
 class MainWindowController;
+class AccountsGuiController;
+class ModalWrapperWidget;
+
 
 /**
  * @brief The Application class
@@ -52,10 +55,19 @@ public:
 
     bool debugMode();
 
-    ownCloudGui *gui() const;
+    TrayMenuController *tray() const;
 
-    // try to get rid of this before the end. currently needed to raise the main window via owncloudgui
-    MainWindow *mainWindow() { return _mainWin; }
+    // this is needed primarily to parent message boxes and other temporary views
+    // we return QMainWindow to protect access to public functions of the MainWindow that should only be used by true dependents!
+    // ie, if you need public functions of MainWindow, it should be injected as its concrete type
+    QMainWindow *mainWindow() const;
+
+    // redirect to MainWindow::ensureVisible -> protect access to main window interface
+    void ensureVisible() const;
+
+    // hopefully temporary - this is only needed in the updater mess which has no reasonable structure I can currently use to pass the MainWindow
+    // again, redirect to MainWindow::showModalWidget to protect access to the rest of the main window interface
+    void showModalWidget(ModalWrapperWidget *wrapper) const;
 
     QString displayLanguage() const;
 
@@ -75,15 +87,22 @@ protected Q_SLOTS:
     void slotUseMonoIconsChanged(bool);
     void slotCleanup();
     void slotAccountStateAdded(AccountState *accountState) const;
-    void lastAccountStateRemoved() const;
+
+private:
+    // important! we can't set up the gui's in the ctr - it needs to be a separate step because owncloudgui depends on ocApp to parent
+    // it's actions
+    void buildAppGuis();
+
+    // this is currently fairly empty, but will be moving other manager init stuff in here.
+    void setupManagers();
 
 private:
     explicit Application(Platform *platform, const QString &displayLanguage, bool debugMode);
 
-    QPointer<ownCloudGui> _gui = {};
-
     MainWindow *_mainWin = nullptr;
     MainWindowController *_mainController = nullptr;
+    AccountsGuiController *_accountsGuiController = nullptr;
+    TrayMenuController *_trayController = nullptr;
 
     const bool _debugMode = false;
     QString _displayLanguage;

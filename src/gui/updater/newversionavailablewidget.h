@@ -14,8 +14,8 @@
 
 #pragma once
 
+#include <QDialog>
 #include <QScopedPointer>
-#include <QWidget>
 
 namespace Ui {
 class Ui_NewVersionAvailableWidget;
@@ -23,7 +23,7 @@ class Ui_NewVersionAvailableWidget;
 
 namespace OCC {
 
-class NewVersionAvailableWidget : public QWidget
+class NewVersionAvailableWidget : public QDialog
 {
     Q_OBJECT
 
@@ -33,14 +33,9 @@ public:
 
 private Q_SLOTS:
     void skipVersion();
-    void notNow();
-    void getUpdate();
 
 Q_SIGNALS:
     void versionSkipped();
-    void noUpdateNow();
-    void updateNow();
-    void finished();
 
 private:
     ::Ui::Ui_NewVersionAvailableWidget *_ui;

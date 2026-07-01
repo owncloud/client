@@ -232,7 +232,7 @@ Q_SIGNALS:
     // todo: #15
     void wantsAccountSaved(Account *acc);
 
-    void serverVersionChanged();
+    void serverVersionChanged(Account *account);
 
     void avatarChanged();
     void displayNameChanged();

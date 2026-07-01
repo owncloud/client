@@ -30,6 +30,7 @@ class AccountState;
 class AccountManager;
 class Account;
 class MainWindow;
+class AccountViewController;
 
 class AccountsGuiController : public QObject
 {
@@ -44,6 +45,7 @@ private:
     QPointer<AccountManager> _accountMgr;
     QPointer<MainWindow> _window;
     QHash<QUuid, QAction *> _actionForAccount;
+    QHash<QUuid, AccountViewController *> _viewControllerForAccount;
 
     void onAccountAdded(AccountState *state);
     void onAccountRemoved(AccountState *state);
@@ -51,7 +53,7 @@ private:
 
     void onAccountAvatarChanged();
 
-    void runFolderWizard(Account *account);
+    void runFolderWizard(QUuid accountId);
     void handleAccountSetupError(const QString &error);
 
     void startModal(QUuid accountId);

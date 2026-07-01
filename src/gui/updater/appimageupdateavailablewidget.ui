@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>AppImageUpdateAvailableWidgetUi</class>
- <widget class="QWidget" name="AppImageUpdateAvailableWidgetUi">
+ <widget class="QDialog" name="AppImageUpdateAvailableWidgetUi">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -141,7 +141,40 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>AppImageUpdateAvailableWidgetUi</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>367</x>
+     <y>211</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>277</x>
+     <y>120</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>AppImageUpdateAvailableWidgetUi</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>367</x>
+     <y>211</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>277</x>
+     <y>120</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
  <slots>
   <slot>accept()</slot>
   <slot>reject()</slot>

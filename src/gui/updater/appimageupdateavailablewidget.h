@@ -28,7 +28,7 @@ namespace OCC {
  * @brief Dialog shown when updates for the running AppImage are available
  * @ingroup gui
  */
-class AppImageUpdateAvailableWidget : public QWidget
+class AppImageUpdateAvailableWidget : public QDialog
 {
     Q_OBJECT
 public:
@@ -42,11 +42,9 @@ Q_SIGNALS:
      */
     void skipUpdateButtonClicked();
 
-    /// Emitted when the cancel button is clicked.
-    void rejected();
+private slots:
 
-    /// Emitted when the ok button is clicked.
-    void accepted();
+    void slotSkipUpdate();
 
 private:
     ::Ui::AppImageUpdateAvailableWidgetUi *_ui;

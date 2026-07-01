@@ -19,6 +19,7 @@
 
 #include "account.h"
 #include "accountmanager.h"
+#include "accountsgui/accountsguicontroller.h"
 #include "accountstate.h"
 #include "common/vfs.h"
 #include "configfile.h"
@@ -26,9 +27,9 @@
 #include "folderman.h"
 #include "mainwindow/mainwindow.h"
 #include "mainwindow/mainwindowcontroller.h"
-#include "settingsdialog.h"
 #include "socketapi/socketapi.h"
 #include "theme.h"
+#include "traymenucontroller.h"
 
 #ifdef WITH_AUTO_UPDATER
 #include "updater/ocupdater.h"
@@ -51,9 +52,9 @@ QString Application::displayLanguage() const
     return _displayLanguage;
 }
 
-ownCloudGui *Application::gui() const
+TrayMenuController *Application::tray() const
 {
-    return _gui;
+    return _trayController;
 }
 
 Application *Application::_instance = nullptr;
@@ -85,31 +86,9 @@ Application::Application(Platform *platform, const QString &displayLanguage, boo
 
     qApp->setQuitOnLastWindowClosed(false);
 
+    // todo: dc-307 - there should be no setters and hence no notifications from theme
     Theme::instance()->setSystrayUseMonoIcons(cfg.monoIcons());
     connect(Theme::instance(), &Theme::systrayUseMonoIconsChanged, this, &Application::slotUseMonoIconsChanged);
-
-    // Setting up the gui class will allow tray notifications for the
-    // setup that follows, like folder setup
-    _gui = new ownCloudGui(this);
-
-#ifdef USE_NEW_MAIN_WINDOW
-    _mainWin = new MainWindow();
-    _mainController = new MainWindowController(_mainWin, this);
-#endif
-
-    connect(AccountManager::instance(), &AccountManager::accountAdded, this, &Application::slotAccountStateAdded);
-    connect(AccountManager::instance(), &AccountManager::lastAccountRemoved, this, &Application::lastAccountStateRemoved);
-    for (const auto &ai : AccountManager::instance()->accounts()) {
-        slotAccountStateAdded(ai);
-    }
-
-    connect(FolderMan::instance()->socketApi(), &SocketApi::shareCommandReceived, _gui.data(), &ownCloudGui::slotShowShareInBrowser);
-
-    // Refactoring example: this is oversimplified and really belongs in a dedicated app builder impl but the idea is illustrated:
-    // don't handling everything "locally" -> request that the best entity for the job do it. Then make the proper connections between
-    // requestor and responsible handler in a clearly defined, central location (e.g. an app builder, but for now, this will do)
-    connect(_gui, &ownCloudGui::requestSetUpSyncFoldersForAccount, FolderMan::instance(), &FolderMan::setUpInitialSyncFolders);
-    connect(_gui, &ownCloudGui::requestLoadSpacesOnly, FolderMan::instance(), &FolderMan::setUpInitialSpaces);
 
 #ifdef WITH_AUTO_UPDATER
     // Update checks
@@ -125,26 +104,27 @@ Application::Application(Platform *platform, const QString &displayLanguage, boo
 
 Application::~Application()
 {
-    // Make sure all folders are gone, otherwise removing the
-    // accounts will remove the associated folders from the settings.
-    FolderMan::instance()->unloadAndDeleteAllFolders();
-
-    if (_mainWin) {
-        _mainWin->disconnect();
-        delete _mainWin;
-    }
 }
 
-void Application::lastAccountStateRemoved() const
+QMainWindow *Application::mainWindow() const
 {
-#ifndef USE_NEW_MAIN_WINDOW
-    // auto run the wizard if there are no existing accounts
-    if (_gui && AccountManager::instance()->accounts().isEmpty()) {
-        gui()->runAccountWizard();
-    }
-#endif
+    return _mainWin;
 }
 
+void Application::ensureVisible() const
+{
+    if (_mainWin)
+        _mainWin->ensureVisible();
+}
+
+void Application::showModalWidget(ModalWrapperWidget *wrapper) const
+{
+    if (_mainWin)
+        _mainWin->showModalWidget(wrapper);
+}
+
+
+// move to owncloudgui or wherever we end up consolidating the tray meny/socketApi management
 void Application::slotAccountStateAdded(AccountState *accountState) const
 {
     if (!accountState || !accountState->account())
@@ -152,9 +132,11 @@ void Application::slotAccountStateAdded(AccountState *accountState) const
     // Hook up the GUI slots to the account state's Q_SIGNALS:
     Account *account = accountState->account();
 
-    connect(accountState, &AccountState::stateChanged, _gui.data(), &ownCloudGui::slotComputeOverallSyncStatus);
-    connect(account, &Account::serverVersionChanged, _gui.data(), [account, this] { _gui->slotTrayMessageIfServerUnsupported(account); });
+    connect(accountState, &AccountState::stateChanged, _trayController, &TrayMenuController::slotComputeOverallSyncStatus);
+    connect(account, &Account::serverVersionChanged, _trayController, &TrayMenuController::slotTrayMessageIfServerUnsupported);
 
+    // todo: this does not belong here! This can be done in the folder man when it's given a "new" account
+    // (eg in load from config or load from new account). note that FolderMan does not receive accountAdded signals, but maybe it should?
     // Hook up the folder manager slots to the account state's Q_SIGNALS:
     connect(accountState, &AccountState::isConnectedChanged, FolderMan::instance(), &FolderMan::slotIsConnectedChanged);
     connect(account, &Account::serverVersionChanged, FolderMan::instance(), [account] { FolderMan::instance()->slotServerVersionChanged(account); });
@@ -162,10 +144,6 @@ void Application::slotAccountStateAdded(AccountState *accountState) const
 
 void Application::slotCleanup()
 {
-    // unload the ui to make sure we no longer react to signals
-    _gui->slotShutdown();
-    delete _gui;
-
     // by now the credentials are supposed to be persisted
     // don't start async credentials jobs during shutdown
     AccountManager::instance()->save();
@@ -195,7 +173,7 @@ void Application::updateAutoRun(bool firstRun)
 
 void Application::slotUseMonoIconsChanged(bool)
 {
-    _gui->slotComputeOverallSyncStatus();
+    _trayController->slotComputeOverallSyncStatus();
 }
 
 bool Application::debugMode()
@@ -203,10 +181,38 @@ bool Application::debugMode()
     return _debugMode;
 }
 
+void Application::buildAppGuis()
+{
+    Q_ASSERT(!_mainWin && !_trayController);
+    _mainWin = new MainWindow();
+    _mainController = new MainWindowController(_mainWin, this);
+
+    _accountsGuiController = new AccountsGuiController(AccountManager::instance(), _mainWin, _mainController);
+    connect(_mainController, &MainWindowController::requestAccountWizard, _accountsGuiController, &AccountsGuiController::runAccountWizard);
+
+    // Setting up the gui class will allow tray notifications for the
+    // setup that follows, like folder setup
+    _trayController = new TrayMenuController(this);
+    connect(_trayController, &TrayMenuController::requestShowAbout, _mainController, &MainWindowController::onAbout);
+    connect(_trayController, &TrayMenuController::requestShowHelp, _mainController, &MainWindowController::onHelp);
+
+    connect(FolderMan::instance()->socketApi(), &SocketApi::shareCommandReceived, _trayController, &TrayMenuController::slotShowShareInBrowser);
+}
+
+void Application::setupManagers()
+{
+    connect(AccountManager::instance(), &AccountManager::accountAdded, this, &Application::slotAccountStateAdded);
+    for (const auto &ai : AccountManager::instance()->accounts()) {
+        slotAccountStateAdded(ai);
+    }
+}
+
 std::unique_ptr<Application> Application::createInstance(Platform *platform, const QString &displayLanguage, bool debugMode)
 {
     Q_ASSERT(!_instance);
     _instance = new Application(platform, displayLanguage, debugMode);
+    _instance->buildAppGuis();
+    _instance->setupManagers();
     return std::unique_ptr<Application>(_instance);
 }
 

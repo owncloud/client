@@ -29,18 +29,21 @@ public:
 
     // public for now
     void setup();
+    // called from tray menu, too. make this a signal/slot connection between the tray menu controller and main window controller
+    void onAbout();
+    void onHelp();
+
+signals:
+    void requestAccountWizard();
 
 private:
     void buildMenuActions();
     void createSyncErrorsAction();
     void createActivityAction();
 
-    void onAddAccount();
     void onSettings();
-    void onAbout();
     void onQuit();
 
     MainWindow *_window = nullptr;
-    AccountsGuiController *_accountsController = nullptr;
 };
 }

@@ -14,7 +14,6 @@
 
 #include "guiutility.h"
 #include "gui/application.h"
-#include "gui/settingsdialog.h"
 #include "libsync/filesystem.h"
 #include "libsync/theme.h"
 
