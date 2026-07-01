@@ -14,6 +14,7 @@
 
 #pragma once
 
+#include "gui/owncloudguilib.h"
 #include <QMainWindow>
 
 class QAction;
@@ -26,13 +27,15 @@ namespace OCC {
 
 class ModalWrapperWidget;
 
-class MainWindow : public QMainWindow
+class OWNCLOUDGUI_EXPORT MainWindow : public QMainWindow
 {
     Q_OBJECT
 public:
     explicit MainWindow();
 
     QSize minimumSizeHint() const override;
+
+    void ensureVisible();
 
     void setVisible(bool visible) override;
 
@@ -43,7 +46,7 @@ public:
     void addAccountAction(QAction *action);
     void removeAction(QAction *action);
 
-    void addGeneralAction(QAction *action);
+    void addViewAction(QAction *action);
 
 private slots:
     void endModalWidget();

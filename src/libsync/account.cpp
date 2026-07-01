@@ -340,7 +340,7 @@ void Account::setCapabilities(const Capabilities &caps)
         caps.status().legacyVersion != _capabilities.status().legacyVersion || caps.status().productversion != _capabilities.status().productversion;
     _capabilities = caps;
     if (versionChanged) {
-        Q_EMIT serverVersionChanged();
+        Q_EMIT serverVersionChanged(this);
     }
 }
 

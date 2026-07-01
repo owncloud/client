@@ -43,10 +43,11 @@ Q_SIGNALS:
 
 private Q_SLOTS:
     void saveMiscSettings();
+    void loadMiscSettings();
     void slotToggleLaunchOnStartup(bool);
     void slotToggleOptionalDesktopNotifications(bool);
     void slotIgnoreFilesEditor();
-    void loadMiscSettings();
+    void slotShowLogSettings();
 
 protected:
     void showEvent(QShowEvent *event) override;

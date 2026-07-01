@@ -18,7 +18,6 @@
 #include "requestauthenticationwidget.h"
 
 #include "accountmodalwidget.h"
-#include "settingsdialog.h"
 
 #include <config/appconfig.h>
 
@@ -77,14 +76,8 @@ void RequestAuthenticationController::startAuthentication(Account *account)
         connect(_widget, &RequestAuthenticationWidget::connectClicked, this, &RequestAuthenticationController::handleSignIn);
         connect(_widget, &RequestAuthenticationWidget::stayLoggedOutClicked, this, &RequestAuthenticationController::handleLogOut);
 
-#ifdef USE_NEW_MAIN_WINDOW
         _modalWidget = new AccountModalWidget(QString(), _widget, nullptr);
         emit requestAccountModal(_modalWidget);
-#else
-        AccountView *accountView = ocApp()->gui()->settingsDialog()->accountView(_account);
-        _modalWidget = new AccountModalWidget(QString(), _widget, accountView);
-        accountView->addModalAccountWidget(_modalWidget);
-#endif
     }
     Q_ASSERT(_widget && _modalWidget);
     _oauth->startAuthentication();
@@ -137,6 +130,6 @@ void RequestAuthenticationController::handleOAuthResult(OAuth::Result result, co
         Q_EMIT authenticationSucceeded(accessToken, refreshToken);
     }
 
-    ownCloudGui::raise();
+    ocApp()->ensureVisible();
 }
 }

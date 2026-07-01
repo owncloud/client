@@ -15,70 +15,41 @@
 #pragma once
 
 #include "gui/owncloudguilib.h"
-#include "progressdispatcher.h"
 #include "syncresult.h"
 
-#include <QMenu>
 #include <QObject>
 #include <QPointer>
 #include <QSystemTrayIcon>
 
-#define USE_NEW_MAIN_WINDOW
-
 namespace OCC {
 
-namespace Wizard {
-    class SetupWizardController;
-}
-class AccountState;
 class Account;
 class Folder;
 
-class AboutDialog;
-class SettingsDialog;
 class ShareDialog;
-class Application;
-class LogBrowser;
 
 /**
  * @brief The ownCloudGui class
  * @ingroup gui
  */
-class OWNCLOUDGUI_EXPORT ownCloudGui : public QObject
+class OWNCLOUDGUI_EXPORT TrayMenuController : public QObject
 {
     Q_OBJECT
 public:
-    explicit ownCloudGui(Application *parent = nullptr);
-    ~ownCloudGui() override;
-
-    /**
-     * Raises our main Window to the front with the raiseWidget in focus.
-     * If raiseWidget is a dialog and not visible yet, ->open will be called.
-     * For normal widgets we call showNormal.
-     */
-    static void raise();
-
-    SettingsDialog *settingsDialog() const;
-
-    void runAccountWizard();
+    explicit TrayMenuController(QObject *parent);
+    ~TrayMenuController() override;
 
 Q_SIGNALS:
-    void requestSetUpSyncFoldersForAccount(AccountState *account, bool useVfs);
-    void requestLoadSpacesOnly(AccountState *account);
+    void requestShowAbout();
+    void requestShowHelp();
 
 public Q_SLOTS:
     void setupTrayContextMenu();
     void slotComputeOverallSyncStatus();
     void slotShowTrayMessage(const QString &title, const QString &msg, const QIcon &icon = {});
     void slotShowOptionalTrayMessage(const QString &title, const QString &msg, const QIcon &icon = {});
-    void slotShowSettings();
-    void slotShutdown();
     void slotSyncStateChange(Folder *);
     void slotTrayClicked(QSystemTrayIcon::ActivationReason reason);
-    void slotToggleLogBrowser();
-    void slotOpenSettingsDialog();
-    void slotHelp();
-    void slotAbout();
     void slotTrayMessageIfServerUnsupported(Account *account);
 
     /**
@@ -89,20 +60,12 @@ public Q_SLOTS:
      * to the folder).
      */
     void slotShowShareInBrowser(const QString &sharePath, const QString &localPath);
-    void handleAccountSetupError(const QString &error);
 
 private:
     QIcon getTrayStatusIcon(const SyncResult::Status &status) const;
 
     QSystemTrayIcon *_tray;
-    SettingsDialog *_settingsDialog = nullptr;
     QPointer<ShareDialog> _shareDialog;
-
-    Application *_app;
-
-    // keeping a pointer on those dialogs allows us to make sure they will be shown only once
-    QPointer<Wizard::SetupWizardController> _wizardController;
-    QPointer<AboutDialog> _aboutDialog;
 };
 
 } // namespace OCC
