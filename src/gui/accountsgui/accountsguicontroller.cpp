@@ -68,6 +68,7 @@ void AccountsGuiController::onAccountAdded(AccountState *state)
 
     Account *account = state->account();
     QUuid accountId = account->uuid();
+
     connect(account, &Account::avatarChanged, this, &AccountsGuiController::onAccountAvatarChanged);
 
     auto accountView = new AccountView(nullptr);
