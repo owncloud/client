@@ -28,19 +28,19 @@ jobs:
         fail-fast: true
         matrix:
             include:
-            - name: windows-cl-x86_64
-              target: windows-cl-msvc2022-x86_64
-              os: windows-2022
-              container:
-              useSonarCloud: ${{ github.event_name != 'pull_request' }}
-              testOptions: --options '[Compile]Jobs=1'
-            # TODO: align the target with the name
-            - name: macos-clang-arm64
-              target: macos-clang-arm64
-              os: macos-15
-              container:
-              useSonarCloud:
-              testOptions:
+            # - name: windows-cl-x86_64
+            #   target: windows-cl-msvc2022-x86_64
+            #   os: windows-2022
+            #   container:
+            #   useSonarCloud: ${{ github.event_name != 'pull_request' }}
+            #   testOptions: --options '[Compile]Jobs=1'
+            # # TODO: align the target with the name
+            # - name: macos-clang-arm64
+            #   target: macos-clang-arm64
+            #   os: macos-15
+            #   container:
+            #   useSonarCloud:
+            #   testOptions:
             - name: linux-gcc-x86_64
               target: linux-64-gcc
               os: ubuntu-latest

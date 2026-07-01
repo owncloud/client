@@ -68,7 +68,7 @@ OpenIdConfig AppConfig::loadOpenIdConfigFromSystemConfig(const QSettings &system
     QString clientId = system.value(OidcClientIdKey, QString()).toString();
     QString clientSecret = system.value(OidcClientSecretKey, QString()).toString();
     QString scopes = system.value(OidcScopesKey, QString()).toString();
-    QString prompt = system.value(OidcPortsKey, QString()).toString();
+    QString prompt = system.value(OidcPromptKey, QString()).toString();
 
     QVector<quint16> ports;
     QVariant portsVar = system.value(OidcPortsKey, QString()).toString();
