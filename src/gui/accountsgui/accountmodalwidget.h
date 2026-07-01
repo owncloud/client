@@ -1,5 +1,5 @@
 /*
- * Copyright (C) by Hannah von Reth <hannah.vonreth@owncloud.com>
+ * Copyright (C) Lisa Reese <lisa.reese@kiteworks.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
