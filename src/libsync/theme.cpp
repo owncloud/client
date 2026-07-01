@@ -18,15 +18,12 @@
 #include "common/version.h"
 #include "common/vfs.h"
 #include "config.h"
-#include "configfile.h"
 
-#include "resources/qmlresources.h"
+// #include "resources/qmlresources.h"
 #include "resources/resources.h"
 
 #include <QSslSocket>
 #include <QStyle>
-#include <QtCore>
-#include <QtGui>
 
 #include "themewatcher.h"
 
@@ -66,11 +63,6 @@ QmlUrlButton::QmlUrlButton(const std::tuple<QString, QString, QUrl> &tuple)
     , name(std::get<1>(tuple))
     , url(std::get<2>(tuple))
 {
-}
-
-bool QmlButtonColor::valid() const
-{
-    return color.isValid() && textColor.isValid() && textColorDisabled.isValid();
 }
 
 Theme *Theme::instance()
@@ -175,23 +167,6 @@ QList<QmlUrlButton> Theme::qmlUrlButtons() const
     return out;
 }
 
-// If this option returns true, the client only supports one folder to sync.
-// The Add-Button is removed accordingly.
-bool Theme::singleSyncFolder() const
-{
-    return false;
-}
-
-bool Theme::multiAccount() const
-{
-    return true;
-}
-
-QString Theme::defaultServerFolder() const
-{
-    return QStringLiteral("/");
-}
-
 QString Theme::helpUrl() const
 {
     return QStringLiteral("https://doc.owncloud.com/desktop/latest/");
@@ -210,17 +185,6 @@ QString Theme::conflictHelpUrl() const
 QString Theme::overrideServerUrl() const
 {
     return QString();
-}
-
-QString Theme::overrideServerUrlV2() const
-{
-    static const auto serverOverride = qEnvironmentVariable("OWNCLOUD_OVERRIDE_SERVER_URL");
-    if (serverOverride.isEmpty()) {
-        OC_DISABLE_DEPRECATED_WARNING
-        return overrideServerUrl();
-        OC_ENABLE_DEPRECATED_WARNING
-    }
-    return serverOverride;
 }
 
 QString Theme::overrideServerPath() const
@@ -243,17 +207,9 @@ QUrl Theme::updateCheckUrl() const
 #endif
 }
 
-bool Theme::wizardSkipAdvancedPage() const
-{
-    return false;
-}
-
 QString Theme::gitSHA1(VersionFormat format) const
 {
     const QString gitShahSort = Version::gitSha().left(6);
-    if (!aboutShowCopyright()) {
-        return gitShahSort;
-    }
     const auto gitUrl = QStringLiteral("https://github.com/owncloud/client/commit/%1").arg(Version::gitSha());
     switch (format) {
     case Theme::VersionFormat::OneLiner:
@@ -289,7 +245,8 @@ QString Theme::aboutVersions(Theme::VersionFormat format) const
             : QCoreApplication::translate("ownCloudTheme::qtVer", "%1 (Built against Qt %2)").arg(qtVersion, QStringLiteral(QT_VERSION_STR)));
     QString _version = Version::displayString();
     QString gitUrl;
-    if (!Version::gitSha().isEmpty()) {
+    // just use the version::gitSha if (!Version::gitSha().isEmpty())
+    {
         if (format != Theme::VersionFormat::Url) {
             _version = QCoreApplication::translate("ownCloudTheme::versionWithSha", "%1 %2").arg(_version, gitSHA1(format));
         } else {
@@ -332,11 +289,6 @@ QString Theme::about() const
         .arg(Utility::escape(Version::displayString()), Utility::escape(QStringLiteral("https://" APPLICATION_DOMAIN)),
             Utility::escape(QStringLiteral(APPLICATION_DOMAIN)), Utility::escape(vendor), Utility::escape(appNameGUI()),
             aboutVersions(Theme::VersionFormat::RichText));
-}
-
-bool Theme::aboutShowCopyright() const
-{
-    return true;
 }
 
 QString Theme::syncStateIconName(const SyncResult &result) const
@@ -385,16 +337,6 @@ QColor Theme::wizardHeaderBackgroundColor() const
     return QColor();
 }
 
-QmlButtonColor Theme::primaryButtonColor() const
-{
-    return {};
-}
-
-QmlButtonColor Theme::secondaryButtonColor() const
-{
-    return {};
-}
-
 QIcon Theme::wizardHeaderLogo() const
 {
     return applicationIcon();
@@ -415,55 +357,9 @@ QColor Theme::avatarColorChecked() const
     return {};
 }
 
-QString Theme::webDavPath() const
-{
-    return QStringLiteral("remote.php/webdav/");
-}
-
-bool Theme::linkSharing() const
-{
-    return true;
-}
-
-bool Theme::userGroupSharing() const
-{
-    return true;
-}
-
 bool Theme::forceSystemNetworkProxy() const
 {
     return false;
-}
-
-Theme::UserIDType Theme::userIDType() const
-{
-    return UserIDType::UserIDUserName;
-}
-
-QString Theme::customUserID() const
-{
-    return QString();
-}
-
-QString Theme::userIDHint() const
-{
-    return QString();
-}
-
-
-QString Theme::wizardUrlPostfix() const
-{
-    return QString();
-}
-
-QString Theme::wizardUrlPlaceholder() const
-{
-    return QString();
-}
-
-QString Theme::quotaBaseFolder() const
-{
-    return QStringLiteral("/");
 }
 
 QString Theme::oauthClientId() const
@@ -474,16 +370,6 @@ QString Theme::oauthClientId() const
 QString Theme::oauthClientSecret() const
 {
     return QStringLiteral("UBntmLjC2yYCeHwsyj73Uwo9TAaecAetRwMw0xYcvNL9yRdLSUi0hUAHfvCHFeFh");
-}
-
-QString Theme::oauthLocalhost() const
-{
-    return QStringLiteral("http://localhost");
-}
-
-QPair<QString, QString> Theme::oauthOverrideAuthUrl() const
-{
-    return {};
 }
 
 QVector<quint16> Theme::oauthPorts() const
@@ -502,19 +388,9 @@ QString Theme::openIdConnectPrompt() const
     return QStringLiteral("select_account consent");
 }
 
-bool Theme::oidcEnableDynamicRegistration() const
+QString Theme::wizardUrlPlaceholder() const
 {
-    return true;
-}
-
-QString Theme::versionSwitchOutput() const
-{
-    return aboutVersions(Theme::VersionFormat::Url);
-}
-
-bool Theme::showVirtualFilesOption() const
-{
-    return true;
+    return QString();
 }
 
 bool Theme::forceVirtualFilesOption() const
@@ -522,39 +398,9 @@ bool Theme::forceVirtualFilesOption() const
     return false;
 }
 
-bool Theme::connectionValidatorClearCookies() const
-{
-    return false;
-}
-
-bool Theme::enableSocketApiIconSupport() const
-{
-    return true;
-}
-
-bool Theme::warnOnMultipleDb() const
-{
-    return Resources::isVanillaTheme();
-}
-
-bool Theme::allowDuplicatedFolderSyncPair() const
-{
-    return true;
-}
-
-bool Theme::wizardEnableWebfinger() const
-{
-    return false;
-}
-
 QVector<std::tuple<QString, QString, QUrl>> Theme::urlButtons() const
 {
     return {};
-}
-
-bool Theme::enableMoveToTrash() const
-{
-    return true;
 }
 
 bool Theme::moveToTrashDefaultValue() const
