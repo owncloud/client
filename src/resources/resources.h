@@ -50,7 +50,7 @@ QIcon OWNCLOUDRESOURCES_EXPORT getCoreIcon(const QString &icon_name);
 
 QIcon OWNCLOUDRESOURCES_EXPORT loadIcon(const QString &flavor, const QString &name, IconType iconType);
 QIcon OWNCLOUDRESOURCES_EXPORT themeIcon(const QString &name, IconType iconType = IconType::BrandedIconWithFallbackToVanillaIcon);
-
+QIcon OWNCLOUDRESOURCES_EXPORT buildAvatar(const QString &initials, QUuid accountUid);
 /**
  * Returns a universal (non color schema aware) icon.
  */

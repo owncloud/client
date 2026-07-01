@@ -128,13 +128,13 @@ QString Account::davUser() const
     return _davUser;
 }
 
-QIcon Account::avatar() const
+QIcon Account::avatar()
 {
     if (_avatarImg.isNull()) {
         // for now
-        return Resources::getCoreIcon("check");
+        // return Resources::getCoreIcon("check");
         // near future with DC-304:
-        // setAvatar(Resources::buildAvatar(this);
+        setAvatar(Resources::buildAvatar(initials(), uuid()));
         // or so
     }
     return _avatarImg;

@@ -16,6 +16,7 @@
 #include "resources/qmlresources.h"
 #include "resources/template.h"
 #include "resources/themewatcher.h"
+// #include "libsync/theme.h"
 
 #include "common/asserts.h"
 
@@ -25,6 +26,9 @@
 #include <QJsonDocument>
 #include <QLoggingCategory>
 #include <QPalette>
+#include <QtGui/qguiapplication.h>
+#include <QtGui/qpainter.h>
+#include <QtGui/qstylehints.h>
 
 using namespace OCC;
 using namespace Resources;
@@ -38,6 +42,12 @@ struct IconCache
     {
         auto *watcher = new ThemeWatcher(qApp);
         QObject::connect(watcher, &ThemeWatcher::themeChanged, [this]() { _cache.clear(); });
+
+        // this generally works to clear the old icons, but places where the icon is already set, eg
+        // the toolbar actions and connection status, need to be reset to what is in the new cache.
+        // this will not work here, as we need to be sure the cache has been cleared *before* anyone
+        // asks for the icon again. Conceptually though, it's correct to do it this way.
+        //    QObject::connect(qGuiApp->styleHints(), &QStyleHints::colorSchemeChanged, [this]() { _cache.clear(); });
     }
     QMap<QString, QIcon> _cache;
 };
@@ -104,7 +114,6 @@ bool Resources::isVanillaTheme()
 
 bool OCC::Resources::isUsingDarkTheme()
 {
-    // TODO: replace by a command line switch
     static bool forceDark = qEnvironmentVariableIntValue("OWNCLOUD_FORCE_DARK_MODE") != 0;
     return forceDark || QPalette().base().color().lightnessF() <= 0.5;
 }
@@ -190,6 +199,39 @@ QIcon OCC::Resources::themeUniversalIcon(const QString &name, IconType iconType)
     return loadIcon(QStringLiteral("universal"), name, iconType);
 }
 
+QIcon OCC::Resources::buildAvatar(const QString &initials, QUuid accountUid)
+{
+    QIcon &cached = iconCache->_cache[accountUid.toString()]; // Take reference, this will also "set" the cache entry
+    if (cached.isNull()) {
+        QColor badgeColor;
+        QPalette pal = qGuiApp->palette();
+
+        // if (Theme::instance()->)
+        // I really don't think this needs to be larger than 64x64 ever...let's see how it goes
+        QPixmap pix(64, 64);
+        pix.fill(Qt::transparent);
+
+        QPainter painter;
+        painter.begin(&pix);
+        painter.setRenderHint(QPainter::Antialiasing, true);
+        painter.setBrush(Qt::red);
+        painter.setPen(Qt::NoPen);
+        painter.drawEllipse(pix.rect());
+
+        QFont font = painter.font();
+        font.setPixelSize(32);
+        font.setBold(true);
+        painter.setFont(font);
+        painter.setPen(pal.color(QPalette::Text));
+        painter.drawText(pix.rect(), Qt::AlignCenter, initials);
+        painter.end();
+        cached = pix;
+    }
+    return cached;
+}
+
+
+// todo: all of this will die soon :)
 CoreImageProvider::CoreImageProvider()
     : QQuickImageProvider(QQuickImageProvider::Pixmap)
 {
