@@ -127,7 +127,7 @@ public:
     QString davDisplayName() const;
     void setDavDisplayName(const QString &newDisplayName);
 
-    QIcon avatar() const;
+    QIcon avatar();
     void setAvatar(const QIcon &img);
     bool hasAvatar() const;
 

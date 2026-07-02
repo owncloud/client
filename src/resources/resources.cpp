@@ -16,6 +16,7 @@
 #include "resources/qmlresources.h"
 #include "resources/template.h"
 #include "resources/themewatcher.h"
+// #include "libsync/theme.h"
 
 #include "common/asserts.h"
 
@@ -25,6 +26,9 @@
 #include <QJsonDocument>
 #include <QLoggingCategory>
 #include <QPalette>
+#include <QtGui/qguiapplication.h>
+#include <QtGui/qpainter.h>
+#include <QtGui/qstylehints.h>
 
 using namespace OCC;
 using namespace Resources;
@@ -38,6 +42,12 @@ struct IconCache
     {
         auto *watcher = new ThemeWatcher(qApp);
         QObject::connect(watcher, &ThemeWatcher::themeChanged, [this]() { _cache.clear(); });
+
+        // this generally works to clear the old icons, but places where the icon is already set, eg
+        // the toolbar actions and connection status, need to be reset to what is in the new cache.
+        // this will not work here, as we need to be sure the cache has been cleared *before* anyone
+        // asks for the icon again. Conceptually though, it's correct to do it this way.
+        //    QObject::connect(qGuiApp->styleHints(), &QStyleHints::colorSchemeChanged, [this]() { _cache.clear(); });
     }
     QMap<QString, QIcon> _cache;
 };
@@ -104,7 +114,6 @@ bool Resources::isVanillaTheme()
 
 bool OCC::Resources::isUsingDarkTheme()
 {
-    // TODO: replace by a command line switch
     static bool forceDark = qEnvironmentVariableIntValue("OWNCLOUD_FORCE_DARK_MODE") != 0;
     return forceDark || QPalette().base().color().lightnessF() <= 0.5;
 }
@@ -190,6 +199,46 @@ QIcon OCC::Resources::themeUniversalIcon(const QString &name, IconType iconType)
     return loadIcon(QStringLiteral("universal"), name, iconType);
 }
 
+QIcon OCC::Resources::buildAvatar(const QString &initials, QUuid accountUid)
+{
+    QIcon &cached = iconCache->_cache[accountUid.toString()]; // Take reference, this will also "set" the cache entry
+    if (cached.isNull()) {
+        // for now we are going for a color scheme that mimics our other icons.
+        // the logic:
+        // it is extremely difficult to "pick" random colors that are going to look good and have
+        // sufficient contrast with dark and light mode on all platforms
+        // additionally, a random colorful icon looks a bit out of place given we have no other "custom" colors
+        // in the app outside of the account wizard - I think using the same gray we do for other icons is harmonious, at least
+        QColor badgeColor = isUsingDarkTheme() ? "#ADACAB" : "#435671";
+
+        QPalette pal = qGuiApp->palette();
+
+        // I really don't think this needs to be larger than 64x64 ever...let's see how it goes
+        QPixmap pix(64, 64);
+        pix.fill(Qt::transparent);
+
+        QPainter painter;
+        painter.begin(&pix);
+        painter.setRenderHint(QPainter::Antialiasing, true);
+        painter.setBrush(badgeColor);
+        painter.setPen(Qt::NoPen);
+        painter.drawEllipse(pix.rect());
+
+        QFont font = painter.font();
+        font.setPixelSize(32);
+        font.setBold(true);
+        painter.setFont(font);
+        // use base color to simulate transparent text that reveals what is behind it, as we have in other icons...ie the base color
+        painter.setPen(pal.color(QPalette::Base));
+        painter.drawText(pix.rect(), Qt::AlignCenter, initials);
+        painter.end();
+        cached = pix;
+    }
+    return cached;
+}
+
+
+// todo: all of this will die soon :)
 CoreImageProvider::CoreImageProvider()
     : QQuickImageProvider(QQuickImageProvider::Pixmap)
 {

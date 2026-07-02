@@ -86,7 +86,10 @@ void RequestAuthenticationController::startAuthentication(Account *account)
 void RequestAuthenticationController::authUrlReady()
 {
     if (_widget) {
-        _widget->setAuthUrl(_oauth->authorisationLink().toString(QUrl::FullyEncoded));
+        QString authUrl = _oauth->authorisationLink().toString(QUrl::FullyEncoded);
+        if (authUrl.isEmpty())
+            _widget->setErrorMessage(tr("Unable to retrieve authorization link! Please contact your system administrator."));
+        _widget->setAuthUrl(authUrl);
     } else {
         // just run with it
         _oauth->openBrowser();

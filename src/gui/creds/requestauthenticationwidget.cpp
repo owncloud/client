@@ -157,8 +157,10 @@ QString RequestAuthenticationWidget::elidedUrl(int targetWidth)
 
 void RequestAuthenticationWidget::setAuthUrl(const QString &url)
 {
-    // who knows.
-    Q_ASSERT(!url.isEmpty());
+    if (url.isEmpty()) {
+        _cancelButton->setEnabled(true);
+        return;
+    }
     if (_authUrl != url) {
         _authUrl = url;
         QString elidedText = elidedUrl(_urlField->width());

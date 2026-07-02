@@ -198,6 +198,9 @@ void MainWindow::configureAction(QAction *action)
     if (widget) {
         QWidget *button = _toolbar->widgetForAction(action);
         Q_ASSERT(button);
+        // todo: this does not seem to be working on the account buttons?! It only sets focus on click
+        // when the button is already selected. for the error and activity buttons, it sets focus on first
+        // click along with selecting the button. I do not get it.
         button->setFocusPolicy(Qt::StrongFocus);
         if (Utility::isMac()) {
             // does not work for QToolButton:
