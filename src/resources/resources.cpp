@@ -213,7 +213,6 @@ QIcon OCC::Resources::buildAvatar(const QString &initials, QUuid accountUid)
 
         QPalette pal = qGuiApp->palette();
 
-        // if (Theme::instance()->)
         // I really don't think this needs to be larger than 64x64 ever...let's see how it goes
         QPixmap pix(64, 64);
         pix.fill(Qt::transparent);
