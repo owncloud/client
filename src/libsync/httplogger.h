@@ -30,5 +30,7 @@ namespace HttpLogger {
     {
         return requestVerb(reply.operation(), reply.request());
     }
+
+    bool OWNCLOUDSYNC_EXPORT isTextBody(const QString &s);
 }
 }

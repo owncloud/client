@@ -15,6 +15,7 @@
 #ifdef Q_OS_WIN
 #include "common/utility_win.h"
 #endif
+#include "libsync/httplogger.h"
 
 using namespace std::chrono_literals;
 
@@ -346,6 +347,12 @@ private Q_SLOTS:
         QCOMPARE(out.QuadPart, 137930652000000000);
     }
 #endif
+
+    void testHttpContentTypeIsText()
+    {
+        QVERIFY(OCC::HttpLogger::isTextBody(QStringLiteral("application/json; charset=utf-8")));
+        QVERIFY(OCC::HttpLogger::isTextBody(QStringLiteral("application/json")));
+    }
 };
 
 QTEST_GUILESS_MAIN(TestUtility)
