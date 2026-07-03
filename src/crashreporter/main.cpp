@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) by Dominik Schmidt <domme@tomahawk-player.org>
  *

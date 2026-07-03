@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) Lisa Reese (lisa.reese@kiteworks.com)
  *

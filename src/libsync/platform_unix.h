@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) by Fabian Müller <fmueller@owncloud.com>
  *

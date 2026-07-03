@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: LGPL-2.1-or-later
 /**
  * Copyright (c) 2022 Hannah von Reth <hannah.vonreth@owncloud.com>. All rights reserved.
  *

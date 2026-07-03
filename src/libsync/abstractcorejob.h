@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
 /*
  * Copyright (C) Hannah von Reth <hannah.vonreth@owncloud.com>
  * Copyright (C) Fabian Müller <fmueller@owncloud.com>

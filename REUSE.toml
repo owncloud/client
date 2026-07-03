@@ -1,0 +1,243 @@
+version = 1
+
+# REUSE configuration for the ownCloud Desktop Client.
+# https://reuse.software/spec/
+#
+# Per-file SPDX headers are the primary source of licensing information for
+# source code. This file covers assets and generated/config files that cannot
+# carry a comment header, and records the licensing of bundled third-party
+# material. More specific entries below override the general ones above them.
+
+# --- Project-owned assets and build/config files (GPL-2.0-or-later) ----------
+
+[[annotations]]
+path = [
+  "changelog/**",
+  "**/CMakeLists.txt",
+  "**.cmake",
+  "**.cmake.in",
+  "**.in",
+  "**.ui",
+  "**.qrc",
+  "**.qrc.in",
+  "**.qss",
+  "**.desktop.in",
+  "**.rc",
+  "**.manifest",
+  "**.plist",
+  "**.entitlements",
+  "**.def",
+  "**.json",
+  "**.json.in",
+  "**.html",
+  "**.lst",
+]
+SPDX-FileCopyrightText = "ownCloud GmbH"
+SPDX-License-Identifier = "GPL-2.0-or-later"
+
+# Icons and images shipped as part of the application UI.
+[[annotations]]
+path = [
+  "src/resources/**.svg",
+  "src/resources/**.png",
+  "src/resources/**.ico",
+  "src/resources/**.icns",
+  "admin/**.svg",
+  "admin/**.png",
+  "shell_integration/**.png",
+  "shell_integration/**.svg",
+  "shell_integration/**.ico",
+  "shell_integration/**.icns",
+]
+SPDX-FileCopyrightText = "ownCloud GmbH"
+SPDX-License-Identifier = "GPL-2.0-or-later"
+
+# Translations (generated/maintained from the source strings).
+[[annotations]]
+path = ["translations/**.ts"]
+SPDX-FileCopyrightText = "ownCloud GmbH"
+SPDX-License-Identifier = "GPL-2.0-or-later"
+
+# Test suite: python harness, BDD feature files, and test fixtures/data.
+[[annotations]]
+path = [
+  "test/**.py",
+  "test/**.feature",
+  "test/**.ini",
+  "test/**.conf",
+  "test/**.pro",
+  "test/**.sh",
+  "test/**.json",
+  "test/**.in",
+  "test/**.pylintrc",
+  "test/**.db",
+  "test/**.png",
+  "test/**.jpg",
+  "test/**.jpeg",
+  "test/**.pdf",
+  "test/**.mp3",
+  "test/**.mp4",
+]
+SPDX-FileCopyrightText = "ownCloud GmbH"
+SPDX-License-Identifier = "GPL-2.0-or-later"
+
+# Repository documentation and top-level project files.
+[[annotations]]
+path = [
+  "README.md",
+  "CONTRIBUTING.md",
+  "CHANGELOG.md",
+  "PACKAGING.md",
+  ".github/**.md",
+  "src/**.md",
+  "test/**.md",
+]
+SPDX-FileCopyrightText = "ownCloud GmbH"
+SPDX-License-Identifier = "GPL-2.0-or-later"
+
+# CI/workflow, packaging scripts and repository metadata.
+[[annotations]]
+path = [
+  ".github/**.yml",
+  ".github/**.ps1",
+  ".github/**.ini",
+  "admin/**.py",
+  "admin/**.ps1",
+  "admin/**.sh",
+  "admin/**.rss",
+  "shell_integration/**.m",
+  "shell_integration/**.sh",
+  "shell_integration/**.xcworkspacedata",
+  "shell_integration/**.xcscheme",
+  "shell_integration/**.xccheckout",
+  "shell_integration/**.pbxproj",
+]
+SPDX-FileCopyrightText = "ownCloud GmbH"
+SPDX-License-Identifier = "GPL-2.0-or-later"
+
+# Windows VFS plugin: relicensed from ownCloud Commercial to GPL-2.0-or-later
+# in 2025 (files carry the SPDX license tag and relicensing note but no
+# copyright line).
+[[annotations]]
+path = ["src/plugins/vfs/win/**", "test/testwinvfs.cpp"]
+SPDX-FileCopyrightText = "ownCloud GmbH"
+SPDX-License-Identifier = "GPL-2.0-or-later"
+
+# Source files that historically shipped without a license header. These are
+# original ownCloud project code; attribute to the project pending the Phase 0
+# provenance reconciliation.
+[[annotations]]
+path = [
+  "src/common/asserts.h",
+  "src/gui/creds/oauthhtmlpage.cpp",
+  "src/gui/updater/updateinfo.cpp",
+  "src/gui/updater/updateinfo.h",
+  "src/libsync/creds/credentialmanager.cpp",
+  "src/libsync/creds/credentialmanager.h",
+  "src/libsync/networkjobs/resources.cpp",
+  "src/libsync/networkjobs/resources.h",
+  "src/resources/loadresources.cpp",
+  "src/resources/loadresources.h",
+  "shell_integration/windows/OCContextMenu/RegDelnode.h",
+  "test/**.cpp",
+  "test/**.h",
+  "test/manual/windows close event/main.cpp",
+]
+SPDX-FileCopyrightText = "ownCloud GmbH"
+SPDX-License-Identifier = "GPL-2.0-or-later"
+
+# Repository metadata, dotfiles and misc config that cannot carry a header.
+[[annotations]]
+path = [
+  ".clang-format",
+  ".craft.ini",
+  ".craft.shelf",
+  ".git-blame-ignore-revs",
+  ".gitattributes",
+  ".gitignore",
+  ".tag",
+  ".tx/config",
+  ".github/CODEOWNERS",
+  "pyproject.toml",
+  "test/gui/.gitignore",
+  "test/gui/Makefile",
+  "test/gui/envs.txt",
+  "test/gui/requirements.txt",
+  "test/gui/shared/verificationPoints/**",
+  "test/testplan.txt",
+  "src/common/README",
+  "src/csync/AUTHORS",
+  "src/csync/ChangeLog",
+  "src/csync/INSTALL",
+  "src/csync/README",
+]
+SPDX-FileCopyrightText = "ownCloud GmbH"
+SPDX-License-Identifier = "GPL-2.0-or-later"
+
+# --- Bundled third-party material (keeps its upstream license) ---------------
+
+# QProgressIndicator — MIT, © 2011 Morgan Leborgne.
+[[annotations]]
+path = ["src/3rdparty/QProgressIndicator/**"]
+SPDX-FileCopyrightText = "2011 Morgan Leborgne"
+SPDX-License-Identifier = "MIT"
+
+# Qt LGPL linking exception text (Digia).
+[[annotations]]
+path = ["src/3rdparty/LGPL_EXCEPTION.txt"]
+SPDX-FileCopyrightText = "Digia Plc and/or its subsidiary(-ies)"
+SPDX-License-Identifier = "LicenseRef-Qt-LGPL-exception-1.1"
+
+# Font Awesome Free icons — CC-BY-4.0.
+[[annotations]]
+path = ["src/resources/font-awesome/**.svg"]
+SPDX-FileCopyrightText = "Fonticons, Inc."
+SPDX-License-Identifier = "CC-BY-4.0"
+
+# Remix Icon — Apache-2.0.
+[[annotations]]
+path = ["src/resources/remixicon/**"]
+SPDX-FileCopyrightText = "Remix Design"
+SPDX-License-Identifier = "Apache-2.0"
+
+# CMake upstream copyright/license notice bundled with the vendored modules.
+[[annotations]]
+path = ["cmake/modules/Copyright.txt"]
+SPDX-FileCopyrightText = "2000-2009 Kitware, Inc., Insight Software Consortium"
+SPDX-License-Identifier = "BSD-3-Clause"
+
+# Sparkle DSA public key (macOS auto-update signature verification).
+[[annotations]]
+path = ["admin/osx/sparkle/dsa_pub.pem"]
+SPDX-FileCopyrightText = "ownCloud GmbH"
+SPDX-License-Identifier = "GPL-2.0-or-later"
+
+# Manual favlink test helper (original ownCloud project code, no header).
+[[annotations]]
+path = ["test/manual/favlink/owncloudlib.h"]
+SPDX-FileCopyrightText = "ownCloud GmbH"
+SPDX-License-Identifier = "GPL-2.0-or-later"
+
+# Jenkins hash (public domain, Bob Jenkins) — no SPDX public-domain grant, mark
+# as such with the closest expression.
+[[annotations]]
+path = ["src/common/c_jhash.h"]
+SPDX-FileCopyrightText = "1997 Bob Jenkins <bob_jenkins@burtleburtle.net>"
+SPDX-License-Identifier = "LicenseRef-public-domain"
+
+# CMake helper modules vendored from upstream projects.
+[[annotations]]
+path = [
+  "cmake/modules/FindSQLite3.cmake",
+  "cmake/modules/FindSparkle.cmake",
+]
+SPDX-FileCopyrightText = "Kitware, Inc. and Contributors"
+SPDX-License-Identifier = "BSD-3-Clause"
+
+[[annotations]]
+path = [
+  "cmake/modules/GetGitRevisionDescription.cmake",
+  "cmake/modules/GetGitRevisionDescription.cmake.in",
+]
+SPDX-FileCopyrightText = "2009-2010 Iowa State University"
+SPDX-License-Identifier = "BSL-1.0"

@@ -180,3 +180,7 @@ test/gui/config.ini
 test/gui/reports
 */**/__pycache__/
 test/gui/users.json
+
+# Local tooling artifacts (not part of the project)
+.superpowers/
+owncloud-signing-key.asc
