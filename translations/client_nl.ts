@@ -758,7 +758,7 @@ Deze actie annuleert alle huidig lopende synchronisatie.</translation>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="569"/>
         <source>Captive portal prevents connections to the server.</source>
-        <translation type="unfinished"/>
+        <translation>Een captive portal voorkomt verbindingen met de server.</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="571"/>
