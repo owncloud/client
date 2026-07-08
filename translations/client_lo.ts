@@ -181,10 +181,10 @@ File synchronization desktop utility.</source>
 <context>
     <name>FileSystem</name>
     <message>
-        <location filename="../src/common/filesystembase.cpp" line="178"/>
-        <location filename="../src/common/filesystembase.cpp" line="180"/>
-        <location filename="../src/common/filesystembase.cpp" line="237"/>
-        <location filename="../src/common/filesystembase.cpp" line="242"/>
+        <location filename="../src/common/filesystembase.cpp" line="166"/>
+        <location filename="../src/common/filesystembase.cpp" line="168"/>
+        <location filename="../src/common/filesystembase.cpp" line="225"/>
+        <location filename="../src/common/filesystembase.cpp" line="230"/>
         <source>Can&apos;t rename %1, the file is currently in use</source>
         <translation>ບໍ່ສາມາດປ່ຽນຊື່ %1, ໄຟລ໌ກຳລັງຖືກນຳໃຊ້ຢູ່</translation>
     </message>
@@ -253,24 +253,52 @@ File synchronization desktop utility.</source>
     </message>
 </context>
 <context>
+    <name>FolderManagementUtils</name>
+    <message>
+        <location filename="../src/gui/foldermanagement/foldermanagementutils.cpp" line="94"/>
+        <source>The path &apos;%1&apos; is too long. Please enable long paths in the Windows settings or choose a different folder.</source>
+        <translation>ເສັ້ນທາງ &apos;%1&apos; ຍາວເກີນໄປ. ກະລຸນາເປີດໃຊ້ເສັ້ນທາງຍາວໃນການຕັ້ງຄ່າຂອງ Windows ຫຼື ເລືອກໂຟນເດີອື່ນ.</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/foldermanagement/foldermanagementutils.cpp" line="118"/>
+        <source>Local folder %1 does not exist.</source>
+        <translation>ໂຟນເດີໃນເຄື່ອງ %1 ບໍ່ມີຢູ່.</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/foldermanagement/foldermanagementutils.cpp" line="120"/>
+        <source>%1 is not a folder.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/foldermanagement/foldermanagementutils.cpp" line="122"/>
+        <source>%1 is not readable.</source>
+        <translation>ບໍ່ສາມາດອ່ານ %1 ໄດ້.</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/foldermanagement/foldermanagementutils.cpp" line="124"/>
+        <source>%1 is not writable.</source>
+        <translation>ບໍ່ສາມາດຂຽນໃສ່ %1 ໄດ້.</translation>
+    </message>
+</context>
+<context>
     <name>FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="49"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="48"/>
         <source>&lt;b&gt;Error:&lt;/b&gt; %1</source>
         <translation>&lt;b&gt;ຜິດພາດ:&lt;/b&gt; %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="49"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="48"/>
         <source>&lt;b&gt;Warning:&lt;/b&gt; %1</source>
         <translation>&lt;b&gt;ຄຳເຕືອນ:&lt;/b&gt; %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="55"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="54"/>
         <source>&lt;b&gt;Error:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</source>
         <translation>&lt;b&gt;ຜິດພາດ:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="56"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="55"/>
         <source>&lt;b&gt;Warning:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</source>
         <translation>&lt;b&gt;ຄຳເຕືອນ:&lt;/b&gt;&lt;ul&gt;%1&lt;/ul&gt;</translation>
     </message>
@@ -322,19 +350,14 @@ File synchronization desktop utility.</source>
     </message>
 </context>
 <context>
-    <name>OCC::AboutDialog</name>
+    <name>OCC::AboutView</name>
     <message>
-        <location filename="../src/gui/aboutdialog.ui" line="24"/>
+        <location filename="../src/gui/mainwindow/aboutview.ui" line="48"/>
         <source>About</source>
         <translation>ກ່ຽວກັບ</translation>
     </message>
     <message>
-        <location filename="../src/gui/aboutdialog.ui" line="111"/>
-        <source>&amp;Restart &amp;&amp; Update</source>
-        <translation>&amp;ເລີ່ມໃໝ່ ແລະ &amp;ອັບເດດ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/aboutdialog.ui" line="122"/>
+        <location filename="../src/gui/mainwindow/aboutview.ui" line="121"/>
         <source>Versions</source>
         <translation>ເວີຊັນ</translation>
     </message>
@@ -360,7 +383,7 @@ File synchronization desktop utility.</source>
 <context>
     <name>OCC::Account</name>
     <message>
-        <location filename="../src/libsync/account.cpp" line="154"/>
+        <location filename="../src/libsync/account.cpp" line="162"/>
         <source>%1@%2</source>
         <translation>%1@%2</translation>
     </message>
@@ -368,34 +391,34 @@ File synchronization desktop utility.</source>
 <context>
     <name>OCC::AccountFoldersController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="370"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="343"/>
         <source>Choose what to sync</source>
         <translation>ເລືອກສິ່ງທີ່ຈະຊິງ</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="139"/>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="236"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="112"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="209"/>
         <source>Sync now</source>
         <translation>ຊິງດຽວນີ້</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="149"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="122"/>
         <source>Manage subfolder sync</source>
         <translation>ຈັດການການຊິງໂຟນເດີຍ່ອຍ</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="174"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="147"/>
         <source>Remove %1 sync</source>
         <extracomment>This shows as 'Remove folder sync' or 'Remove Space sync'</extracomment>
         <translation>ລຶບການຊິງ %1 ອອກ</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="196"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="169"/>
         <source>Disable virtual file support?</source>
         <translation>ປິດການຮອງຮັບໄຟລ໌ສະເໝືອນບໍ່?</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="197"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="170"/>
         <source>This action will disable virtual file support. As a consequence contents of folders that are currently marked as 'available online only' will be downloaded.
 
 The only advantage of disabling virtual file support is that the selective sync feature will become available again.
@@ -408,78 +431,78 @@ This action will abort any currently running synchronization.</source>
 ການກະທຳນີ້ຈະຍົກເລີກການຊິງໂຄໄນທີ່ກຳລັງເຮັດວຽກຢູ່ທັງໝົດ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="206"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="179"/>
         <source>Disable support</source>
         <translation>ປິດການຮອງຮັບ</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="236"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="209"/>
         <source>Restart sync</source>
         <translation>ເລີ່ມການຊິງໃໝ່</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="238"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="211"/>
         <source>Resume sync</source>
         <translation>ສືບຕໍ່ການຊິງ</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="238"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="211"/>
         <source>Pause sync</source>
         <translation>ຢຸດການຊິງຊົ່ວຄາວ</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="247"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="220"/>
         <source>Deactivate virtual files</source>
         <translation>ປິດໃຊ້ງານໄຟລ໌ສະເໝືອນ</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="247"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="220"/>
         <source>Activate virtual files</source>
         <translation>ເປີດໃຊ້ງານໄຟລ໌ສະເໝືອນ</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="283"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="256"/>
         <source>Internet connection is metered</source>
         <translation>ການເຊື່ອມຕໍ່ອິນເຕີເນັດມີການຈຳກັດຂໍ້ມູນ</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="284"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="257"/>
         <source>Synchronization is paused because the Internet connection is a metered connection&lt;p&gt;Do you really want to force a Synchronization now?</source>
         <translation>ການຊິງໂຄໄນຖືກຢຸດຊົ່ວຄາວ ເພາະການເຊື່ອມຕໍ່ອິນເຕີເນັດມີການຈຳກັດຂໍ້ມູນ&lt;p&gt;ທ່ານຕ້ອງການບັງຄັບໃຫ້ຊິງໂຄໄນຕອນນີ້ແທ້ບໍ່?</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="307"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="280"/>
         <source>Sync Running</source>
         <translation>ກຳລັງຊິງ</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="307"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="280"/>
         <source>The sync operation is running.&lt;br/&gt;Do you want to stop it?</source>
         <translation>ການຊິງກຳລັງດຳເນີນການຢູ່.&lt;br/&gt;ທ່ານຕ້ອງການຢຸດມັນບໍ່?</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="316"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="289"/>
         <source>Sync paused by user</source>
         <translation>ການຊິງຖືກຢຸດຊົ່ວຄາວໂດຍຜູ້ໃຊ້</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="334"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="307"/>
         <source>Confirm Folder Sync Connection Removal</source>
         <translation>ຢືນຢັນການລຶບການເຊື່ອມຕໍ່ການຊິງໂຟນເດີ</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="335"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="308"/>
         <source>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
         <translation>&lt;p&gt;ທ່ານຕ້ອງການຢຸດການຊິງໂຟນເດີ &lt;i&gt;%1&lt;/i&gt; ແທ້ບໍ່?&lt;/p&gt;&lt;p&gt;&lt;b&gt;ໝາຍເຫດ:&lt;/b&gt; ການກະທຳນີ້ຈະ&lt;b&gt;ບໍ່&lt;/b&gt;ລຶບໄຟລ໌ໃດໆ.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="339"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="312"/>
         <source>Remove Folder Sync Connection</source>
         <translation>ລຶບການເຊື່ອມຕໍ່ການຊິງໂຟນເດີ</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="208"/>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="340"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="181"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="313"/>
         <source>Cancel</source>
         <translation>ຍົກເລີກ</translation>
     </message>
@@ -528,132 +551,189 @@ This action will abort any currently running synchronization.</source>
     <name>OCC::AccountModalWidget</name>
     <message>
         <location filename="../src/gui/accountmodalwidget.ui" line="14"/>
+        <location filename="../src/gui/accountsgui/accountmodalwidget.ui" line="14"/>
         <source>Form</source>
         <translation>ແບບຟອມ</translation>
     </message>
 </context>
 <context>
+    <name>OCC::AccountPlaceholderWidget</name>
+    <message>
+        <location filename="../src/gui/accountsgui/accountplaceholderwidget.cpp" line="34"/>
+        <source>%1 logo</source>
+        <translation>ໂລໂກ້ %1</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/accountsgui/accountplaceholderwidget.cpp" line="37"/>
+        <source>You don't have any connected accounts yet.
+
+Please create an account by selecting the &quot;Add account...&quot; option on the More button menu.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/accountsgui/accountplaceholderwidget.cpp" line="48"/>
+        <source>Additional logo defined by the organization</source>
+        <translation>ໂລໂກ້ເພີ່ມເຕີມທີ່ກຳນົດໂດຍອົງກອນ</translation>
+    </message>
+</context>
+<context>
     <name>OCC::AccountView</name>
     <message>
-        <location filename="../src/gui/accountview.ui" line="14"/>
+        <location filename="../src/gui/accountsgui/accountview.ui" line="14"/>
         <source>Form</source>
         <translation>ຟອມ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.ui" line="76"/>
+        <location filename="../src/gui/accountsgui/accountview.ui" line="88"/>
         <source>Manage Account</source>
         <translation>ຈັດການບັນຊີ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.ui" line="112"/>
+        <location filename="../src/gui/accountsgui/accountview.ui" line="124"/>
         <source>Preparing the account</source>
         <translation>ກຳລັງກະກຽມບັນຊີ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.ui" line="140"/>
+        <location filename="../src/gui/accountsgui/accountview.ui" line="152"/>
         <source>Sync connections</source>
         <translation>ການເຊື່ອມຕໍ່ການຊິງ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="386"/>
-        <source>Cancel</source>
-        <translation>ຍົກເລີກ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountview.cpp" line="219"/>
+        <location filename="../src/gui/accountsgui/accountview.cpp" line="46"/>
         <source>Account options menu</source>
         <translation>ເມນູຕົວເລືອກບັນຊີ</translation>
     </message>
+</context>
+<context>
+    <name>OCC::AccountViewController</name>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="221"/>
-        <location filename="../src/gui/accountview.cpp" line="225"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="92"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="128"/>
         <source>Log in</source>
         <translation>ເຂົ້າສູ່ລະບົບ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="222"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="97"/>
         <source>Reconnect</source>
         <translation>ເຊື່ອມຕໍ່ໃໝ່</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="225"/>
-        <source>Log out</source>
-        <translation>ອອກຈາກລະບົບ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountview.cpp" line="230"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="107"/>
         <source>Remove</source>
         <translation>ລຶບ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="249"/>
-        <source>The server version %1 is unsupported! Proceed at your own risk.</source>
-        <translation>ເວີຊັນເຊີບເວີ %1 ບໍ່ຮອງຮັບ! ກະລຸນາດຳເນີນການຕໍ່ດ້ວຍຄວາມສ່ຽງຂອງທ່ານເອງ.</translation>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="128"/>
+        <source>Log out</source>
+        <translation>ອອກຈາກລະບົບ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="252"/>
-        <source>Connected</source>
-        <translation>ເຊື່ອມຕໍ່ແລ້ວ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountview.cpp" line="256"/>
-        <source>Server is temporarily unavailable</source>
-        <translation>ເຊີບເວີບໍ່ສາມາດໃຊ້ງານໄດ້ຊົ່ວຄາວ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountview.cpp" line="259"/>
-        <source>Server is currently in maintenance mode</source>
-        <translation>ເຊີບເວີກຳລັງຢູ່ໃນໂໝດບຳລຸງຮັກສາ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountview.cpp" line="262"/>
-        <source>Signed out</source>
-        <translation>ອອກຈາກລະບົບແລ້ວ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountview.cpp" line="265"/>
-        <source>Updating credentials…</source>
-        <translation>ກຳລັງອັບເດດຂໍ້ມູນປະຈຳຕົວ…</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountview.cpp" line="274"/>
-        <source>Connecting…</source>
-        <translation>ກຳລັງເຊື່ອມຕໍ່…</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountview.cpp" line="270"/>
-        <source>Captive portal prevents connections to the server.</source>
-        <translation>Captive portal ກີດຂວາງການເຊື່ອມຕໍ່ກັບເຊີບເວີ.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountview.cpp" line="272"/>
-        <source>Sync is paused due to metered internet connection</source>
-        <translation>ການຊິງຖືກຢຸດຊົ່ວຄາວເນື່ອງຈາກການເຊື່ອມຕໍ່ອິນເຕີເນັດມີການຈຳກັດຂໍ້ມູນ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountview.cpp" line="278"/>
-        <source>Server configuration error</source>
-        <translation>ການຕັ້ງຄ່າເຊີບເວີຜິດພາດ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountview.cpp" line="284"/>
-        <source>Disconnected</source>
-        <translation>ຕັດການເຊື່ອມຕໍ່ແລ້ວ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/accountview.cpp" line="378"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="167"/>
         <source>Confirm Account Removal</source>
         <translation>ຢືນຢັນການລຶບບັນຊີ</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="379"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="168"/>
         <source>&lt;p&gt;Do you really want to remove the connection to the account &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
         <translation>&lt;p&gt;ທ່ານຕ້ອງການລຶບການເຊື່ອມຕໍ່ກັບບັນຊີ &lt;i&gt;%1&lt;/i&gt; ແທ້ບໍ່?&lt;/p&gt;&lt;p&gt;&lt;b&gt;ໝາຍເຫດ:&lt;/b&gt; ການກະທຳນີ້ຈະ&lt;b&gt;ບໍ່&lt;/b&gt;ລຶບໄຟລ໌ໃດໆ.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountview.cpp" line="384"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="173"/>
         <source>Remove connection</source>
         <translation>ລຶບການເຊື່ອມຕໍ່</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="175"/>
+        <source>Cancel</source>
+        <translation>ຍົກເລີກ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="227"/>
+        <source>The server version %1 is unsupported! Proceed at your own risk.</source>
+        <translation>ເວີຊັນເຊີບເວີ %1 ບໍ່ຮອງຮັບ! ກະລຸນາດຳເນີນການຕໍ່ດ້ວຍຄວາມສ່ຽງຂອງທ່ານເອງ.</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="230"/>
+        <source>Connected</source>
+        <translation>ເຊື່ອມຕໍ່ແລ້ວ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="234"/>
+        <source>Server is temporarily unavailable.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="238"/>
+        <source>Server is currently in maintenance mode.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="242"/>
+        <source>Signed out</source>
+        <translation>ອອກຈາກລະບົບແລ້ວ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="246"/>
+        <source>Updating credentials…</source>
+        <translation>ກຳລັງອັບເດດຂໍ້ມູນປະຈຳຕົວ…</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="251"/>
+        <source>Captive portal prevents connections to the server.</source>
+        <translation>Captive portal ກີດຂວາງການເຊື່ອມຕໍ່ກັບເຊີບເວີ.</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="254"/>
+        <source>Sync is paused due to metered internet connection.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="257"/>
+        <source>Connecting…</source>
+        <translation>ກຳລັງເຊື່ອມຕໍ່…</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="262"/>
+        <source>Server configuration error</source>
+        <translation>ການຕັ້ງຄ່າເຊີບເວີຜິດພາດ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="270"/>
+        <source>Disconnected</source>
+        <translation>ຕັດການເຊື່ອມຕໍ່ແລ້ວ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="274"/>
+        <source>Invalid connection status</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
+    <name>OCC::AccountsGuiController</name>
+    <message>
+        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="168"/>
+        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="225"/>
+        <source>New account failure</source>
+        <translation>ການເພີ່ມບັນຊີໃໝ່ລົ້ມເຫຼວ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="168"/>
+        <source>The information required to create a new account is incomplete. Please run the wizard again.</source>
+        <translation>ຂໍ້ມູນທີ່ຈຳເປັນໃນການສ້າງບັນຊີໃໝ່ບໍ່ຄົບຖ້ວນ. ກະລຸນາເລີ່ມຂັ້ນຕອນການຕັ້ງຄ່າໃໝ່ອີກຄັ້ງ.</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="194"/>
+        <source>Accounts</source>
+        <translation>ບັນຊີ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="226"/>
+        <source>The account could not be created due to an error:
+%1
+Please check the server&apos;s availability then run the wizard again.</source>
+        <translation>ບໍ່ສາມາດສ້າງບັນຊີໄດ້ເນື່ອງຈາກຂໍ້ຜິດພາດ:
+%1
+ກະລຸນາກວດສອບການເຊື່ອມຕໍ່ເຊີບເວີ ແລ້ວເລີ່ມຂັ້ນຕອນການຕັ້ງຄ່າໃໝ່ອີກຄັ້ງ.</translation>
     </message>
 </context>
 <context>
@@ -952,141 +1032,111 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::Folder</name>
     <message>
-        <location filename="../src/gui/folder.cpp" line="232"/>
-        <source>Local folder %1 does not exist.</source>
-        <translation>ໂຟນເດີໃນເຄື່ອງ %1 ບໍ່ມີຢູ່.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folder.cpp" line="234"/>
-        <source>%1 should be a folder but is not.</source>
-        <translation>%1 ຄວນເປັນໂຟນເດີ ແຕ່ບໍ່ແມ່ນ.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folder.cpp" line="236"/>
-        <source>%1 is not readable.</source>
-        <translation>ບໍ່ສາມາດອ່ານ %1 ໄດ້.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folder.cpp" line="465"/>
+        <location filename="../src/gui/folder.cpp" line="375"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 ຖືກລຶບອອກແລ້ວ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="479"/>
+        <location filename="../src/gui/folder.cpp" line="389"/>
         <source>%1 has been updated.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 ຖືກອັບເດດແລ້ວ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="486"/>
+        <location filename="../src/gui/folder.cpp" line="396"/>
         <source>%1 has been renamed to %2.</source>
         <comment>%1 and %2 name files.</comment>
         <translation>%1 ຖືກປ່ຽນຊື່ເປັນ %2.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="493"/>
+        <location filename="../src/gui/folder.cpp" line="403"/>
         <source>%1 has been moved to %2.</source>
         <translation>%1 ຖືກຍ້າຍໄປທີ່ %2.</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="463"/>
+        <location filename="../src/gui/folder.cpp" line="373"/>
         <source>%1 and %n other file(s) have been removed.</source>
         <translation><numerusform>%1 ແລະ ໄຟລ໌ອື່ນໆອີກ %n ໄຟລ໌ຖືກລຶບອອກແລ້ວ.</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="181"/>
-        <source>The path &apos;%1&apos; is too long. Please enable long paths in the Windows settings or choose a different folder.</source>
-        <translation>ເສັ້ນທາງ &apos;%1&apos; ຍາວເກີນໄປ. ກະລຸນາເປີດໃຊ້ເສັ້ນທາງຍາວໃນການຕັ້ງຄ່າຂອງ Windows ຫຼື ເລືອກໂຟນເດີອື່ນ.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folder.cpp" line="226"/>
-        <source>%1 failed to open the database.</source>
-        <translation>%1 ເປີດຖານຂໍ້ມູນບໍ່ສຳເລັດ.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folder.cpp" line="238"/>
-        <source>%1 is not writable.</source>
-        <translation>ບໍ່ສາມາດຂຽນໃສ່ %1 ໄດ້.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/folder.cpp" line="396"/>
+        <location filename="../src/gui/folder.cpp" line="306"/>
         <source>The folder has been disabled or removed from the server</source>
         <translation>ໂຟນເດີຖືກປິດໃຊ້ງານ ຫຼື ຖືກລຶບອອກຈາກເຊີບເວີແລ້ວ</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="470"/>
+        <location filename="../src/gui/folder.cpp" line="380"/>
         <source>%1 and %n other file(s) have been added.</source>
         <translation><numerusform>%1 ແລະ ໄຟລ໌ອື່ນໆອີກ %n ໄຟລ໌ຖືກເພີ່ມເຂົ້າມາແລ້ວ.</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="472"/>
+        <location filename="../src/gui/folder.cpp" line="382"/>
         <source>%1 has been added.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 ຖືກເພີ່ມເຂົ້າມາແລ້ວ.</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="477"/>
+        <location filename="../src/gui/folder.cpp" line="387"/>
         <source>%1 and %n other file(s) have been updated.</source>
         <translation><numerusform>%1 ແລະ ໄຟລ໌ອື່ນໆອີກ %n ໄຟລ໌ຖືກອັບເດດແລ້ວ.</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="484"/>
+        <location filename="../src/gui/folder.cpp" line="394"/>
         <source>%1 has been renamed to %2 and %n other file(s) have been renamed.</source>
         <translation><numerusform>%1 ຖືກປ່ຽນຊື່ເປັນ %2 ແລະ ໄຟລ໌ອື່ນໆອີກ %n ໄຟລ໌ຖືກປ່ຽນຊື່ແລ້ວ.</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="491"/>
+        <location filename="../src/gui/folder.cpp" line="401"/>
         <source>%1 has been moved to %2 and %n other file(s) have been moved.</source>
         <translation><numerusform>%1 ຖືກຍ້າຍໄປທີ່ %2 ແລະ ໄຟລ໌ອື່ນໆອີກ %n ໄຟລ໌ຖືກຍ້າຍແລ້ວ.</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="498"/>
+        <location filename="../src/gui/folder.cpp" line="408"/>
         <source>%1 and %n other file(s) have sync conflicts.</source>
         <translation><numerusform>%1 ແລະ ໄຟລ໌ອື່ນໆອີກ %n ໄຟລ໌ມີບັນຫາການຊິງຂັດກັນ.</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="500"/>
+        <location filename="../src/gui/folder.cpp" line="410"/>
         <source>%1 has a sync conflict. Please check the conflict file!</source>
         <translation>%1 ມີບັນຫາການຊິງຂັດກັນ. ກະລຸນາກວດສອບໄຟລ໌ທີ່ຂັດກັນ!</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="505"/>
+        <location filename="../src/gui/folder.cpp" line="415"/>
         <source>%1 and %n other file(s) could not be synced due to errors. See the log for details.</source>
         <translation><numerusform>%1 ແລະ ໄຟລ໌ອື່ນໆອີກ %n ໄຟລ໌ບໍ່ສາມາດຊິງໄດ້ເນື່ອງຈາກຄວາມຜິດພາດ. ເບິ່ງລາຍລະອຽດໃນລັອກ.</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="507"/>
+        <location filename="../src/gui/folder.cpp" line="417"/>
         <source>%1 could not be synced due to an error. See the log for details.</source>
         <translation>%1 ບໍ່ສາມາດຊິງໄດ້ເນື່ອງຈາກຄວາມຜິດພາດ. ເບິ່ງລາຍລະອຽດໃນລັອກ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="513"/>
+        <location filename="../src/gui/folder.cpp" line="423"/>
         <source>Sync Activity</source>
         <translation>ກິດຈະກຳການຊິງ</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="716"/>
+        <location filename="../src/gui/folder.cpp" line="625"/>
         <source>Switching VFS mode on folder &apos;%1&apos;</source>
         <translation>ກຳລັງປ່ຽນໂໝດ VFS ໃນໂຟນເດີ &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="905"/>
+        <location filename="../src/gui/folder.cpp" line="827"/>
         <source>Could not read system exclude file</source>
         <translation>ບໍ່ສາມາດອ່ານໄຟລ໌ຍົກເວັ້ນຂອງລະບົບ</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1100"/>
+        <location filename="../src/gui/folder.cpp" line="1022"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translation>ໂຟນເດີ %1 ຖືກສ້າງຂຶ້ນແລ້ວ ແຕ່ຖືກຍົກເວັ້ນຈາກການຊິງໂຄໄນກ່ອນໜ້ານີ້. ຂໍ້ມູນພາຍໃນຈະບໍ່ຖືກຊິງໂຄໄນ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1103"/>
+        <location filename="../src/gui/folder.cpp" line="1025"/>
         <source>The file %1 was created but was excluded from synchronization previously. It will not be synchronized.</source>
         <translation>ໄຟລ໌ %1 ຖືກສ້າງຂຶ້ນແລ້ວ ແຕ່ຖືກຍົກເວັ້ນຈາກການຊິງໂຄໄນກ່ອນໜ້ານີ້. ມັນຈະບໍ່ຖືກຊິງໂຄໄນ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1115"/>
+        <location filename="../src/gui/folder.cpp" line="1037"/>
         <source>Changes in synchronized folders could not be tracked reliably.
 
 This means that the synchronization client might not upload local changes immediately and will instead only scan for local changes and upload them occasionally (every two hours by default).
@@ -1115,97 +1165,97 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderMan</name>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="474"/>
+        <location filename="../src/gui/folderman.cpp" line="482"/>
         <source>Could not reset folder state</source>
         <translation>ບໍ່ສາມາດຣີເຊັດສະຖານະໂຟນເດີໄດ້</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="475"/>
+        <location filename="../src/gui/folderman.cpp" line="483"/>
         <source>An old sync journal &apos;%1&apos; was found, but could not be removed. Please make sure that no application is currently using it.</source>
         <translation>ພົບເຫັນບັນທຶກການຊິງເກົ່າ &apos;%1&apos;, ແຕ່ບໍ່ສາມາດລຶບອອກໄດ້. ກະລຸນາກວດສອບໃຫ້ແນ່ໃຈວ່າບໍ່ມີໂປຣແກຣມໃດກຳລັງນຳໃຊ້ມັນຢູ່.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="492"/>
+        <location filename="../src/gui/folderman.cpp" line="500"/>
         <source>Unsupported filesystem</source>
         <translation>ລະບົບໄຟລ໌ບໍ່ຮອງຮັບ</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="586"/>
+        <location filename="../src/gui/folderman.cpp" line="594"/>
         <source>Account disconnected or paused</source>
         <translation>ບັນຊີຖືກຕັດການເຊື່ອມຕໍ່ ຫຼື ຢຸດຊົ່ວຄາວ</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="860"/>
+        <location filename="../src/gui/folderman.cpp" line="879"/>
         <source>User triggered force sync</source>
         <translation>ຜູ້ໃຊ້ສັ່ງບັງຄັບຊິງ</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="891"/>
+        <location filename="../src/gui/folderman.cpp" line="910"/>
         <source>Folder is about to be removed</source>
         <translation>ໂຟນເດີກຳລັງຈະຖືກລຶບ</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="914"/>
+        <location filename="../src/gui/folderman.cpp" line="934"/>
         <source> (backup)</source>
         <translation> (ສຳຮອງ)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="919"/>
+        <location filename="../src/gui/folderman.cpp" line="939"/>
         <source> (backup %1)</source>
         <translation> (ສຳຮອງ %1)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="965"/>
+        <location filename="../src/gui/folderman.cpp" line="985"/>
         <source>The selected path is not a folder.</source>
         <translation>ເສັ້ນທາງທີ່ເລືອກບໍ່ແມ່ນໂຟນເດີ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="969"/>
+        <location filename="../src/gui/folderman.cpp" line="989"/>
         <source>The folder %1 is used in a folder sync connection.</source>
         <translation>ໂຟນເດີ %1 ຖືກໃຊ້ໃນການເຊື່ອມຕໍ່ການຊິງໂຟນເດີ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="977"/>
+        <location filename="../src/gui/folderman.cpp" line="997"/>
         <source>Folder &apos;%1&apos; is already in use by application %2.</source>
         <translation>ໂຟນເດີ &apos;%1&apos; ຖືກນຳໃຊ້ໂດຍແອັບພລິເຄຊັນ %2 ຢູ່ແລ້ວ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1024"/>
+        <location filename="../src/gui/folderman.cpp" line="1044"/>
         <source>There is already a sync from the server to this local folder.</source>
         <translation>ມີການຊິງຈາກເຊີບເວີມາຍັງໂຟນເດີໃນເຄື່ອງນີ້ຢູ່ແລ້ວ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1027"/>
+        <location filename="../src/gui/folderman.cpp" line="1047"/>
         <source>The local folder %1 already contains a folder used in a folder sync connection.</source>
         <translation>ໂຟນເດີໃນເຄື່ອງ %1 ມີໂຟນເດີທີ່ຖືກໃຊ້ໃນການເຊື່ອມຕໍ່ການຊິງໂຟນເດີຢູ່ແລ້ວ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1032"/>
+        <location filename="../src/gui/folderman.cpp" line="1052"/>
         <source>The local folder %1 is already contained in a folder used in a folder sync connection.</source>
         <translation>ໂຟນເດີໃນເຄື່ອງ %1 ຢູ່ໃນໂຟນເດີທີ່ຖືກໃຊ້ໃນການເຊື່ອມຕໍ່ການຊິງໂຟນເດີຢູ່ແລ້ວ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1044"/>
+        <location filename="../src/gui/folderman.cpp" line="1064"/>
         <source>No valid folder selected.</source>
         <translation>ບໍ່ມີໂຟນເດີທີ່ຖືກຕ້ອງຖືກເລືອກ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1063"/>
+        <location filename="../src/gui/folderman.cpp" line="1083"/>
         <source>The selected path does not exist.</source>
         <translation>ເສັ້ນທາງທີ່ເລືອກບໍ່ມີຢູ່.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1069"/>
+        <location filename="../src/gui/folderman.cpp" line="1089"/>
         <source>You have no permission to write to the selected folder.</source>
         <translation>ທ່ານບໍ່ມີສິດໃນການຂຽນລົງໃນໂຟນເດີທີ່ເລືອກ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="990"/>
+        <location filename="../src/gui/folderman.cpp" line="1010"/>
         <source>Folder &apos;%1&apos; is already in use by another account.</source>
         <translation>ໂຟນເດີ &apos;%1&apos; ຖືກນຳໃຊ້ໂດຍບັນຊີອື່ນຢູ່ແລ້ວ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="492"/>
+        <location filename="../src/gui/folderman.cpp" line="500"/>
         <source>On macOS, only the Apple File System is supported.</source>
         <translation>ໃນ macOS, ຮອງຮັບສະເພາະ Apple File System ເທົ່ານັ້ນ.</translation>
     </message>
@@ -1242,17 +1292,17 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="142"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="138"/>
         <source>Virtual files are not available for the selected folder</source>
         <translation>ໄຟລ໌ສະເໝືອນບໍ່ສາມາດໃຊ້ງານໄດ້ກັບໂຟນເດີທີ່ເລືອກ</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="156"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="152"/>
         <source>Add Folder Sync Connection</source>
         <translation>ເພີ່ມການເຊື່ອມຕໍ່ການຊິງໂຟນເດີ</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="159"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="155"/>
         <source>Add Sync Connection</source>
         <translation>ເພີ່ມການເຊື່ອມຕໍ່ການຊິງ</translation>
     </message>
@@ -1309,109 +1359,6 @@ This means that the synchronization client might not upload local changes immedi
         <location filename="../src/libsync/propagatedownload.cpp" line="292"/>
         <source>Server returned wrong content-range</source>
         <translation>ເຊີບເວີສົ່ງ content-range ທີ່ບໍ່ຖືກຕ້ອງກັບມາ</translation>
-    </message>
-</context>
-<context>
-    <name>OCC::GeneralSettings</name>
-    <message>
-        <location filename="../src/gui/generalsettings.ui" line="14"/>
-        <source>Form</source>
-        <translation>ແບບຟອມ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/generalsettings.ui" line="35"/>
-        <source>General Settings</source>
-        <translation>ການຕັ້ງຄ່າທົ່ວໄປ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/generalsettings.ui" line="41"/>
-        <source>Use Monochrome Icons in the system tray</source>
-        <translation>ໃຊ້ໄອຄອນສີດຽວໃນຖາດລະບົບ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/generalsettings.ui" line="48"/>
-        <source>Show Desktop Notifications</source>
-        <translation>ສະແດງການແຈ້ງເຕືອນເທິງເດັສທັອບ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/generalsettings.ui" line="55"/>
-        <source>Start on Login</source>
-        <translation>ເລີ່ມເມື່ອເຂົ້າສູ່ລະບົບ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/generalsettings.ui" line="73"/>
-        <source>Language</source>
-        <translation>ພາສາ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/generalsettings.ui" line="89"/>
-        <source>Language selector</source>
-        <translation>ໂຕເລືອກພາສາ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/generalsettings.ui" line="112"/>
-        <source>Sync hidden files</source>
-        <translation>ຊິງໄຟລ໌ທີ່ເຊື່ອງໄວ້</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/generalsettings.ui" line="125"/>
-        <source>Show crash reporter</source>
-        <translation>ສະແດງໂຕລາຍງານຂໍ້ຜິດພາດ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/generalsettings.ui" line="132"/>
-        <source>Move remotely deleted files to the local trash bin instead of deleting them</source>
-        <translation>ຍ້າຍໄຟລ໌ທີ່ຖືກລຶບຈາກທາງໄກໄປທີ່ຖັງຂີ້ເຫຍື້ອໃນເຄື່ອງ ແທນການລຶບຖິ້ມ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/generalsettings.ui" line="141"/>
-        <source>Edit Ignored Files</source>
-        <translation>ແກ້ໄຂໄຟລ໌ທີ່ບໍ່ສົນໃຈ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/generalsettings.ui" line="148"/>
-        <source>Log Settings</source>
-        <translation>ການຕັ້ງຄ່າລັອກ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/generalsettings.ui" line="175"/>
-        <source>Network</source>
-        <translation>ເຄືອຂ່າຍ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/generalsettings.ui" line="249"/>
-        <source>About</source>
-        <translation>ກ່ຽວກັບ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/generalsettings.ui" line="104"/>
-        <source>Advanced</source>
-        <translation>ຂັ້ນສູງ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/generalsettings.cpp" line="160"/>
-        <source>You cannot disable autostart because system-wide autostart is enabled.</source>
-        <translation>ທ່ານບໍ່ສາມາດປິດການເລີ່ມອັດຕະໂນມັດໄດ້ ເພາະການເລີ່ມອັດຕະໂນມັດທົ່ວລະບົບຖືກເປີດຢູ່.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/generalsettings.cpp" line="54"/>
-        <source>Warning</source>
-        <translation>ຄຳເຕືອນ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/generalsettings.cpp" line="54"/>
-        <source>Language changes require a restart of this application to take effect.</source>
-        <translation>ການປ່ຽນພາສາຕ້ອງການການເລີ່ມໃໝ່ຂອງໂປຣແກຣມນີ້ເພື່ອໃຫ້ມີຜົນ.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/generalsettings.cpp" line="192"/>
-        <source>unknown (%1)</source>
-        <translation>ບໍ່ຮູ້ຈັກ (%1)</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/generalsettings.cpp" line="176"/>
-        <source>(use default)</source>
-        <translation>(ໃຊ້ຄ່າເລີ່ມຕົ້ນ)</translation>
     </message>
 </context>
 <context>
@@ -1507,33 +1454,33 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>ຕາຕະລາງກິດຈະກຳໃນເຄື່ອງ</translation>
     </message>
     <message>
-        <location filename="../src/gui/localactivitywidget.cpp" line="62"/>
-        <location filename="../src/gui/localactivitywidget.cpp" line="68"/>
+        <location filename="../src/gui/localactivitywidget.cpp" line="63"/>
+        <location filename="../src/gui/localactivitywidget.cpp" line="69"/>
         <source>Account</source>
         <translation>ບັນຊີ</translation>
     </message>
     <message>
-        <location filename="../src/gui/localactivitywidget.cpp" line="105"/>
+        <location filename="../src/gui/localactivitywidget.cpp" line="106"/>
         <source>Filter menu</source>
         <translation>ເມນູໂຕກອງ</translation>
     </message>
     <message>
-        <location filename="../src/gui/localactivitywidget.cpp" line="120"/>
+        <location filename="../src/gui/localactivitywidget.cpp" line="121"/>
         <source>Actions menu</source>
         <translation>ເມນູການກະທຳ</translation>
     </message>
     <message>
-        <location filename="../src/gui/localactivitywidget.cpp" line="162"/>
+        <location filename="../src/gui/localactivitywidget.cpp" line="163"/>
         <source>Sort ascending by %1</source>
         <translation>ຮຽງລຳດັບຈາກໜ້ອຍຫາຫຼາຍຕາມ %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/localactivitywidget.cpp" line="166"/>
+        <location filename="../src/gui/localactivitywidget.cpp" line="167"/>
         <source>Sort descending by %1</source>
         <translation>ຮຽງລຳດັບຈາກຫຼາຍຫາໜ້ອຍຕາມ %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/localactivitywidget.cpp" line="188"/>
+        <location filename="../src/gui/localactivitywidget.cpp" line="189"/>
         <source>Retry sync</source>
         <translation>ລອງຊິ້ງໃໝ່</translation>
     </message>
@@ -1596,6 +1543,82 @@ Note that using any logging command line options will override the settings.</so
     </message>
 </context>
 <context>
+    <name>OCC::MainWindow</name>
+    <message>
+        <location filename="../src/gui/mainwindow/mainwindow.cpp" line="52"/>
+        <source>Hide</source>
+        <translation>ເຊື່ອງ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/mainwindow/mainwindow.cpp" line="90"/>
+        <source>Main toolbar for the application</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/mainwindow/mainwindow.cpp" line="91"/>
+        <source>Main toolbar</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/mainwindow/mainwindow.cpp" line="104"/>
+        <location filename="../src/gui/mainwindow/mainwindow.cpp" line="107"/>
+        <source>More</source>
+        <translation>ເພີ່ມເຕີມ</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::MainWindowController</name>
+    <message>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="50"/>
+        <source>Add account...</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="55"/>
+        <source>Settings...</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="60"/>
+        <source>About...</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="70"/>
+        <source>Quit</source>
+        <translation>ອອກ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="79"/>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="85"/>
+        <source>Errors: %1</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="93"/>
+        <source>Activity</source>
+        <translation>ກິດຈະກຳ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="126"/>
+        <source>Quit %1</source>
+        <translation>ອອກຈາກ %1</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="127"/>
+        <source>Are you sure you want to quit %1?</source>
+        <translation>ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການອອກຈາກ %1?</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::ModalWrapperWidget</name>
+    <message>
+        <location filename="../src/gui/mainwindow/modalwrapperwidget.cpp" line="44"/>
+        <source>Close</source>
+        <translation>ປິດ</translation>
+    </message>
+</context>
+<context>
     <name>OCC::Models</name>
     <message>
         <location filename="../src/gui/models/models.cpp" line="89"/>
@@ -1608,12 +1631,12 @@ Note that using any logging command line options will override the settings.</so
         <translation>ທັງໝົດ</translation>
     </message>
     <message>
-        <location filename="../src/gui/syncerrorwidget.cpp" line="305"/>
+        <location filename="../src/gui/syncerrorwidget.cpp" line="306"/>
         <source>Reset Filters</source>
         <translation>ຣີເຊັດໂຕກອງ</translation>
     </message>
     <message>
-        <location filename="../src/gui/syncerrorwidget.cpp" line="393"/>
+        <location filename="../src/gui/syncerrorwidget.cpp" line="396"/>
         <source>Status Filter:</source>
         <translation>ໂຕກອງສະຖານະ:</translation>
     </message>
@@ -1743,27 +1766,27 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::NewAccountWizardController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="55"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="54"/>
         <source>Add account…</source>
         <translation>ເພີ່ມບັນຊີ…</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="65"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="64"/>
         <source>Back</source>
         <translation>ກັບຄືນ</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="66"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="65"/>
         <source>Advanced</source>
         <translation>ຂັ້ນສູງ</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="210"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="209"/>
         <source>Sign in</source>
         <translation>ລອງໃໝ່</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="213"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="212"/>
         <source>Open sign in again</source>
         <translation>ເປີດການເຂົ້າສູ່ລະບົບອີກຄັ້ງ</translation>
     </message>
@@ -1890,47 +1913,52 @@ Note that using any logging command line options will override the settings.</so
         <translation>ສຳເນົາ URL</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="238"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="228"/>
+        <source>Unable to connect to the login service. If the problem continues, please contact support.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="244"/>
         <source>Please copy the authentication URL using the button above, and provide this information to support.</source>
         <translation>ກະລຸນາສຳເນົາ URL ການຢືນຢັນຕົວຕົນໂດຍໃຊ້ປຸ່ມຂ້າງເທິງ, ແລະ ສົ່ງຂໍ້ມູນນີ້ໃຫ້ກັບຝ່າຍຊ່ວຍເຫຼືອ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="252"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="258"/>
         <source>Failed to look up WebFinger instances: %1</source>
         <translation>ຄົ້ນຫາ WebFinger instances ບໍ່ສຳເລັດ: %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="269"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="275"/>
         <source>You are already connected to an account with these credentials.</source>
         <translation>ທ່ານໄດ້ເຊື່ອມຕໍ່ກັບບັນຊີທີ່ມີຂໍ້ມູນປະຈຳຕົວນີ້ແລ້ວ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="287"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="293"/>
         <source>Unable to retrieve capabilities from server.</source>
         <translation>ບໍ່ສາມາດດຶງຂໍ້ມູນ Capabilities ຈາກເຊີບເວີ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="291"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="297"/>
         <source>The server is not supported by this client.</source>
         <translation>ເຊີບເວີນີ້ບໍ່ຮອງຮັບໂດຍໂປຣແກຣມນີ້.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="301"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="307"/>
         <source>Error while trying to log in to OAuth2-enabled server. %1</source>
         <translation>ເກີດຂໍ້ຜິດພາດຂະນະພະຍາຍາມເຂົ້າສູ່ລະບົບເຊີບເວີທີ່ເປີດໃຊ້ OAuth2. %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="308"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="314"/>
         <source>Unable to open browser with provided URL. %1</source>
         <translation>ບໍ່ສາມາດເປີດເບຣົາເຊີດ້ວຍ URL ທີ່ໃຫ້ມາ. %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="312"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="318"/>
         <source>OAuth2 authentication requires a secured connection. %1</source>
         <translation>ການຢືນຢັນຕົວຕົນ OAuth2 ຕ້ອງການການເຊື່ອມຕໍ່ທີ່ປອດໄພ. %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="316"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="322"/>
         <source>Authorization server unreachable. %1</source>
         <translation>ບໍ່ສາມາດເຂົ້າເຖິງເຊີບເວີການອະນຸຍາດໄດ້. %1</translation>
     </message>
@@ -1938,52 +1966,52 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OCUpdater</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="149"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="150"/>
         <source>Could not download update. Please click &lt;a href=&apos;%1&apos;&gt;here&lt;/a&gt; to download the update manually.</source>
         <translation>ບໍ່ສາມາດດາວໂຫຼດອັບເດດໄດ້. ກະລຸນາຄລິກ &lt;a href=&apos;%1&apos;&gt;ທີ່ນີ້&lt;/a&gt; ເພື່ອດາວໂຫຼດອັບເດດດ້ວຍຕົນເອງ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="151"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="152"/>
         <source>Could not check for new updates.</source>
         <translation>ບໍ່ສາມາດກວດສອບການອັບເດດໃໝ່ໄດ້.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="141"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="142"/>
         <source>Downloading %1. Please wait…</source>
         <translation>ກຳລັງດາວໂຫຼດ %1. ກະລຸນາລໍຖ້າ…</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="144"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="145"/>
         <source>%1 installed successfully. Restart the application to finish installing the update.</source>
         <translation>ຕິດຕັ້ງ %1 ສຳເລັດແລ້ວ. ກະລຸນາເລີ່ມໂປຣແກຣມໃໝ່ເພື່ອສິ້ນສຸດການຕິດຕັ້ງອັບເດດ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="146"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="147"/>
         <source>%1 available. Restart application to start the update.</source>
         <translation>ມີ %1 ໃຫ້ອັບເດດ. ກະລຸນາເລີ່ມໂປຣແກຣມໃໝ່ເພື່ອເລີ່ມການອັບເດດ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="157"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="158"/>
         <source>New %1 available. Please click &lt;a href=&apos;%2&apos;&gt;here&lt;/a&gt; to download the new AppImage manually.</source>
         <translation>ມີ %1 ເວີຊັນໃໝ່. ກະລຸນາຄລິກ &lt;a href=&apos;%2&apos;&gt;ທີ່ນີ້&lt;/a&gt; ເພື່ອດາວໂຫຼດ AppImage ໃໝ່ດ້ວຍຕົນເອງ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="160"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="161"/>
         <source>New %1 available. Please use the system&apos;s update tool to install it.</source>
         <translation>ມີ %1 ເວີຊັນໃໝ່. ກະລຸນາໃຊ້ເຄື່ອງມືອັບເດດຂອງລະບົບເພື່ອຕິດຕັ້ງ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="162"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="163"/>
         <source>Checking update server…</source>
         <translation>ກຳລັງກວດສອບເຊີບເວີອັບເດດ…</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="164"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="165"/>
         <source>Update status is unknown: Did not check for new updates.</source>
         <translation>ສະຖານະການອັບເດດບໍ່ຊັດເຈນ: ບໍ່ໄດ້ກວດສອບການອັບເດດໃໝ່.</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="168"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="169"/>
         <source>No updates available. Your installation is at the latest version.</source>
         <translation>ບໍ່ມີການອັບເດດ. ໂປຣແກຣມຂອງທ່ານເປັນເວີຊັນຫຼ້າສຸດແລ້ວ.</translation>
     </message>
@@ -1991,9 +2019,14 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OwncloudPropagator</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="770"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="771"/>
         <source>File %1 is currently in use</source>
         <translation>ໄຟລ໌ %1 ກຳລັງຖືກນຳໃຊ້ຢູ່</translation>
+    </message>
+    <message>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="810"/>
+        <source>vfs instance is not available.</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -2064,64 +2097,76 @@ Note that using any logging command line options will override the settings.</so
         <translation>ຊື່ໄຟລ໌ນີ້ຖືກຫ້າມໃນເຊີບເວີ.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="372"/>
+        <location filename="../src/libsync/discovery.cpp" line="347"/>
+        <location filename="../src/libsync/discovery.cpp" line="669"/>
+        <location filename="../src/libsync/discovery.cpp" line="1379"/>
+        <location filename="../src/libsync/discovery.cpp" line="1436"/>
+        <source>the VFS instance is missing. Unable to continue.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/libsync/discovery.cpp" line="377"/>
         <source>server reported no %1</source>
         <translation>ເຊີບເວີລາຍງານວ່າບໍ່ມີ %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="554"/>
-        <location filename="../src/libsync/discovery.cpp" line="954"/>
-        <location filename="../src/libsync/discovery.cpp" line="1316"/>
+        <location filename="../src/libsync/discovery.cpp" line="556"/>
+        <location filename="../src/libsync/discovery.cpp" line="958"/>
         <source>account was deleted. Unable to continue</source>
         <translation>ບັນຊີຖືກລຶບແລ້ວ. ບໍ່ສາມາດດຳເນີນການຕໍ່ໄດ້</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1113"/>
+        <location filename="../src/libsync/discovery.cpp" line="1117"/>
         <source>SelectiveSync: Ignored because its path is deselected</source>
         <translation>ການຊິ້ງແບບເລືອກ: ບໍ່ສົນໃຈ ເນື່ອງຈາກເສັ້ນທາງຂອງມັນບໍ່ໄດ້ຖືກເລືອກ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1187"/>
+        <location filename="../src/libsync/discovery.cpp" line="1191"/>
         <source>Moved to invalid target, restoring</source>
         <translation>ຍ້າຍໄປທີ່ປາຍທາງທີ່ບໍ່ຖືກຕ້ອງ, ກຳລັງກູ້ຄືນ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1200"/>
+        <location filename="../src/libsync/discovery.cpp" line="1204"/>
         <source>Not allowed to remove, restoring</source>
         <translation>ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ລຶບ, ກຳລັງກູ້ຄືນ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1146"/>
+        <location filename="../src/libsync/discovery.cpp" line="1314"/>
+        <source>Error while reading the database.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/libsync/discovery.cpp" line="1320"/>
+        <source>account was deleted. Unable to continue.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/libsync/discovery.cpp" line="1150"/>
         <source>Not allowed because you don&apos;t have permission to add subfolders to that folder</source>
         <translation>ບໍ່ໄດ້ຮັບອະນຸຍາດ ເພາະທ່ານບໍ່ມີສິດເພີ່ມໂຟເດີຍ່ອຍໃນໂຟເດີນັ້ນ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="579"/>
+        <location filename="../src/libsync/discovery.cpp" line="581"/>
         <source>Error while doing a rename, unhandled status code: %1</source>
         <translation>ເກີດຂໍ້ຜິດພາດຂະນະປ່ຽນຊື່, ລະຫັດສະຖານະທີ່ບໍ່ຮອງຮັບ: %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1151"/>
+        <location filename="../src/libsync/discovery.cpp" line="1155"/>
         <source>Not allowed because you don&apos;t have permission to add files in that folder</source>
         <translation>ບໍ່ໄດ້ຮັບອະນຸຍາດ ເພາະທ່ານບໍ່ມີສິດເພີ່ມໄຟລ໌ໃນໂຟເດີນັ້ນ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1164"/>
+        <location filename="../src/libsync/discovery.cpp" line="1168"/>
         <source>Not allowed to upload this file because it is read-only on the server, restoring</source>
         <translation>ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ອັບໂຫຼດໄຟລ໌ນີ້ ເພາະມັນເປັນແບບອ່ານຢ່າງດຽວເທິງເຊີບເວີ, ກຳລັງກູ້ຄືນ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1310"/>
-        <source>Error while reading the database</source>
-        <translation>ເກີດຂໍ້ຜິດພາດຂະນະອ່ານຖານຂໍ້ມູນ</translation>
-    </message>
-    <message>
-        <location filename="../src/libsync/discovery.cpp" line="1342"/>
+        <location filename="../src/libsync/discovery.cpp" line="1346"/>
         <source>This Space is currently unavailable</source>
         <translation>ພື້ນທີ່ນີ້ບໍ່ສາມາດໃຊ້ງານໄດ້ໃນຂະນະນີ້</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1363"/>
+        <location filename="../src/libsync/discovery.cpp" line="1367"/>
         <source>Server replied with an error while reading directory &apos;%1&apos; : %2</source>
         <translation>ເຊີບເວີຕອບກັບດ້ວຍຂໍ້ຜິດພາດຂະນະອ່ານໄດເຣັກທໍຣີ &apos;%1&apos; : %2</translation>
     </message>
@@ -2129,12 +2174,12 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateDirectory</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="1114"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="1122"/>
         <source>Error updating metadata: %1</source>
         <translation>ເກີດຂໍ້ຜິດພາດໃນການອັບເດດຂໍ້ມູນ Metadata: %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="1117"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="1125"/>
         <source>%1 the folder is currently in use</source>
         <translation>%1 ໂຟເດີກຳລັງຖືກນຳໃຊ້ຢູ່</translation>
     </message>
@@ -2142,67 +2187,67 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateDownloadFile</name>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="376"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="375"/>
         <source>Failed to free up space, the file %1 is currently in use</source>
         <translation>ບໍ່ສາມາດສ້າງພື້ນທີ່ວ່າງໄດ້, ໄຟລ໌ %1 ກຳລັງຖືກນຳໃຊ້ຢູ່</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="401"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="482"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="400"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="481"/>
         <source>File %1 can not be downloaded because of a local file name clash with %2!</source>
         <translation>ບໍ່ສາມາດດາວໂຫຼດໄຟລ໌ %1 ໄດ້ ເນື່ອງຈາກຊື່ໄຟລ໌ຊ້ຳກັບ %2 ທີ່ມີຢູ່ໃນເຄື່ອງ!</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="540"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="539"/>
         <source>The download would reduce free local disk space below the limit</source>
         <translation>ການດາວໂຫຼດຈະເຮັດໃຫ້ພື້ນທີ່ວ່າງໃນດິສກ໌ເຫຼືອໜ້ອຍກວ່າທີ່ກຳນົດ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="544"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="543"/>
         <source>Free space on disk is less than %1</source>
         <translation>ພື້ນທີ່ວ່າງໃນດິສກ໌ເຫຼືອໜ້ອຍກວ່າ %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="665"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="664"/>
         <source>File was deleted from server</source>
         <translation>ໄຟລ໌ຖືກລຶບອອກຈາກເຊີບເວີແລ້ວ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="724"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="723"/>
         <source>Broken webserver returned empty content length for non-empty file on resume</source>
         <translation>ເວັບເຊີບເວີທີ່ຜິດພາດໄດ້ສົ່ງຄືນຄ່າຄວາມຍາວຂອງເນື້ອຫາເປັນສູນສຳລັບໄຟລ໌ທີ່ບໍ່ວ່າງໃນການດາວໂຫຼດຕໍ່</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="731"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="730"/>
         <source>The file could not be downloaded completely.</source>
         <translation>ບໍ່ສາມາດດາວໂຫຼດໄຟລ໌ໄດ້ຢ່າງສົມບູນ.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="738"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="737"/>
         <source>The downloaded file is empty despite the server announced it should have been %1.</source>
         <translation>ໄຟລ໌ທີ່ດາວໂຫຼດມາວ່າງເປົ່າ ທັງທີ່ເຊີບເວີແຈ້ງວ່າມັນຄວນມີຂະໜາດ %1.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="845"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="844"/>
         <source>File %1 cannot be saved because of a local file name clash with %2!</source>
         <translation>ບໍ່ສາມາດບັນທຶກໄຟລ໌ %1 ໄດ້ ເນື່ອງຈາກຊື່ໄຟລ໌ຊ້ຳກັບ %2 ທີ່ມີຢູ່ໃນເຄື່ອງ!</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="933"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="932"/>
         <source>Error updating metadata: %1</source>
         <translation>ເກີດຂໍ້ຜິດພາດໃນການອັບເດດຂໍ້ມູນ Metadata: %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="490"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="869"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="901"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="936"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="489"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="868"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="900"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="935"/>
         <source>The file %1 is currently in use</source>
         <translation>ໄຟລ໌ %1 ກຳລັງຖືກນຳໃຊ້ຢູ່</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="371"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="893"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="370"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="892"/>
         <source>File has changed since discovery</source>
         <translation>ໄຟລ໌ມີການປ່ຽນແປງຕັ້ງແຕ່ການກວດພົບຄັ້ງທຳອິດ</translation>
     </message>
@@ -2218,27 +2263,27 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateLocalMkdir</name>
     <message>
-        <location filename="../src/libsync/propagatorjobs.cpp" line="163"/>
+        <location filename="../src/libsync/propagatorjobs.cpp" line="161"/>
         <source>could not delete file %1, error: %2</source>
         <translation>ບໍ່ສາມາດລຶບໄຟລ໌ %1 ໄດ້, ຂໍ້ຜິດພາດ: %2</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatorjobs.cpp" line="178"/>
+        <location filename="../src/libsync/propagatorjobs.cpp" line="176"/>
         <source>Can not create local folder %1 because of a local file name clash with %2</source>
         <translation>ບໍ່ສາມາດສ້າງໂຟເດີ %1 ໃນເຄື່ອງໄດ້ ເນື່ອງຈາກຊື່ຊ້ຳກັບ %2</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatorjobs.cpp" line="196"/>
+        <location filename="../src/libsync/propagatorjobs.cpp" line="194"/>
         <source>Error updating metadata: %1</source>
         <translation>ເກີດຂໍ້ຜິດພາດໃນການອັບເດດຂໍ້ມູນ Metadata: %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatorjobs.cpp" line="199"/>
+        <location filename="../src/libsync/propagatorjobs.cpp" line="197"/>
         <source>The file %1 is currently in use</source>
         <translation>ໄຟລ໌ %1 ກຳລັງຖືກນຳໃຊ້ຢູ່</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatorjobs.cpp" line="183"/>
+        <location filename="../src/libsync/propagatorjobs.cpp" line="181"/>
         <source>could not create folder %1</source>
         <translation>ບໍ່ສາມາດສ້າງໂຟເດີ %1 ໄດ້</translation>
     </message>
@@ -2246,23 +2291,23 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateLocalRemove</name>
     <message>
-        <location filename="../src/libsync/propagatorjobs.cpp" line="77"/>
+        <location filename="../src/libsync/propagatorjobs.cpp" line="75"/>
         <source>%1 failed with: %2</source>
         <translation>%1 ລົ້ມເຫຼວດ້ວຍ: %2</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatorjobs.cpp" line="107"/>
+        <location filename="../src/libsync/propagatorjobs.cpp" line="105"/>
         <source>Could not remove %1 because of a local file name clash with %2!</source>
         <translation>ບໍ່ສາມາດລຶບ %1 ໄດ້ ເນື່ອງຈາກຊື່ໄຟລ໌ຊ້ຳກັບ %2 ທີ່ມີຢູ່ໃນເຄື່ອງ!</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatorjobs.cpp" line="123"/>
+        <location filename="../src/libsync/propagatorjobs.cpp" line="121"/>
         <source>Could not move &apos;%1&apos; to the trash bin</source>
         <translation>ບໍ່ສາມາດຍ້າຍ &apos;%1&apos; ໄປທີ່ຖັງຂີ້ເຫຍື້ອໄດ້</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatorjobs.cpp" line="87"/>
-        <location filename="../src/libsync/propagatorjobs.cpp" line="114"/>
+        <location filename="../src/libsync/propagatorjobs.cpp" line="85"/>
+        <location filename="../src/libsync/propagatorjobs.cpp" line="112"/>
         <source>%1 the file is currently in use</source>
         <translation>%1 ໄຟລ໌ກຳລັງຖືກນຳໃຊ້ຢູ່</translation>
     </message>
@@ -2270,32 +2315,32 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateLocalRename</name>
     <message>
-        <location filename="../src/libsync/propagatorjobs.cpp" line="235"/>
+        <location filename="../src/libsync/propagatorjobs.cpp" line="233"/>
         <source>File %1 can not be renamed to %2 because of a local file name clash</source>
         <translation>ບໍ່ສາມາດປ່ຽນຊື່ໄຟລ໌ %1 ເປັນ %2 ໄດ້ ເນື່ອງຈາກຊື່ຊ້ຳກັນໃນເຄື່ອງ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatorjobs.cpp" line="242"/>
+        <location filename="../src/libsync/propagatorjobs.cpp" line="240"/>
         <source>Could not rename %1 to %2, the file is currently in use</source>
         <translation>ບໍ່ສາມາດປ່ຽນຊື່ %1 ເປັນ %2 ໄດ້, ໄຟລ໌ກຳລັງຖືກນຳໃຊ້ຢູ່</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatorjobs.cpp" line="269"/>
+        <location filename="../src/libsync/propagatorjobs.cpp" line="267"/>
         <source>Error updating metadata: %1</source>
         <translation>ເກີດຂໍ້ຜິດພາດໃນການອັບເດດຂໍ້ມູນ Metadata: %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatorjobs.cpp" line="272"/>
+        <location filename="../src/libsync/propagatorjobs.cpp" line="270"/>
         <source>The file %1 is currently in use</source>
         <translation>ໄຟລ໌ %1 ກຳລັງຖືກນຳໃຊ້ຢູ່</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatorjobs.cpp" line="278"/>
+        <location filename="../src/libsync/propagatorjobs.cpp" line="276"/>
         <source>Failed to rename file</source>
         <translation>ການປ່ຽນຊື່ໄຟລ໌ລົ້ມເຫຼວ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatorjobs.cpp" line="284"/>
+        <location filename="../src/libsync/propagatorjobs.cpp" line="282"/>
         <source>Error setting pin state</source>
         <translation>ເກີດຂໍ້ຜິດພາດໃນການຕັ້ງຄ່າສະຖານະການປັກໝຸດ</translation>
     </message>
@@ -2334,22 +2379,22 @@ Note that using any logging command line options will override the settings.</so
         <translation>ລະຫັດ HTTP ທີ່ບໍ່ຖືກຕ້ອງຖືກສົ່ງຄືນຈາກເຊີບເວີ. ຄາດວ່າຈະເປັນ 201, ແຕ່ໄດ້ຮັບ &quot;%1 %2&quot;.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateremotemove.cpp" line="151"/>
+        <location filename="../src/libsync/propagateremotemove.cpp" line="155"/>
         <source>Error updating metadata: %1</source>
         <translation>ເກີດຂໍ້ຜິດພາດໃນການອັບເດດຂໍ້ມູນ Metadata: %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateremotemove.cpp" line="154"/>
+        <location filename="../src/libsync/propagateremotemove.cpp" line="158"/>
         <source>The file %1 is currently in use</source>
         <translation>ໄຟລ໌ %1 ກຳລັງຖືກນຳໃຊ້ຢູ່</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateremotemove.cpp" line="166"/>
+        <location filename="../src/libsync/propagateremotemove.cpp" line="170"/>
         <source>Error writing metadata to the database</source>
         <translation>ເກີດຂໍ້ຜິດພາດໃນການຂຽນຂໍ້ມູນ Metadata ລົງໃນຖານຂໍ້ມູນ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateremotemove.cpp" line="159"/>
+        <location filename="../src/libsync/propagateremotemove.cpp" line="163"/>
         <source>Error setting pin state</source>
         <translation>ເກີດຂໍ້ຜິດພາດໃນການຕັ້ງຄ່າສະຖານະການປັກໝຸດ</translation>
     </message>
@@ -2357,12 +2402,12 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateUpdateMetaDataJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="1298"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="1306"/>
         <source>Could not update file : %1</source>
         <translation>ບໍ່ສາມາດອັບເດດໄຟລ໌: %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="1301"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="1309"/>
         <source>The file %1 is currently in use</source>
         <translation>ໄຟລ໌ %1 ກຳລັງຖືກນຳໃຊ້ຢູ່</translation>
     </message>
@@ -2370,39 +2415,39 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateUploadCommon</name>
     <message>
-        <location filename="../src/libsync/propagateuploadcommon.cpp" line="64"/>
+        <location filename="../src/libsync/propagateuploadcommon.cpp" line="63"/>
         <source>Local file changed during sync. It will be resumed.</source>
         <translation>ໄຟລ໌ໃນເຄື່ອງມີການປ່ຽນແປງຂະນະຊິ້ງ. ຈະດຳເນີນການຕໍ່.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateuploadcommon.cpp" line="81"/>
+        <location filename="../src/libsync/propagateuploadcommon.cpp" line="80"/>
         <source>File %1 cannot be uploaded because another file with the same name, differing only in case, exists</source>
         <translation>ບໍ່ສາມາດອັບໂຫຼດໄຟລ໌ %1 ໄດ້ ເນື່ອງຈາກມີໄຟລ໌ອື່ນທີ່ມີຊື່ດຽວກັນແຕ່ຕົວພິມໃຫຍ່-ນ້ອຍຕ່າງກັນຢູ່ແລ້ວ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateuploadcommon.cpp" line="92"/>
-        <location filename="../src/libsync/propagateuploadcommon.cpp" line="280"/>
+        <location filename="../src/libsync/propagateuploadcommon.cpp" line="91"/>
+        <location filename="../src/libsync/propagateuploadcommon.cpp" line="278"/>
         <source>Upload of %1 exceeds the quota for the folder</source>
         <translation>ການອັບໂຫຼດ %1 ເກີນໂຄຕ້າຂອງໂຟເດີ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateuploadcommon.cpp" line="132"/>
-        <location filename="../src/libsync/propagateuploadcommon.cpp" line="163"/>
+        <location filename="../src/libsync/propagateuploadcommon.cpp" line="131"/>
+        <location filename="../src/libsync/propagateuploadcommon.cpp" line="162"/>
         <source>%1 the file is currently in use</source>
         <translation>%1 ໄຟລ໌ກຳລັງຖືກນຳໃຊ້ຢູ່</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateuploadcommon.cpp" line="198"/>
+        <location filename="../src/libsync/propagateuploadcommon.cpp" line="197"/>
         <source>File Removed</source>
         <translation>ໄຟລ໌ຖືກລຶບອອກແລ້ວ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateuploadcommon.cpp" line="385"/>
+        <location filename="../src/libsync/propagateuploadcommon.cpp" line="383"/>
         <source>The server did not provide the file permissions</source>
         <translation>ເຊີບເວີບໍ່ໄດ້ໃຫ້ສິດໃນການເຂົ້າເຖິງໄຟລ໌</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateuploadcommon.cpp" line="393"/>
+        <location filename="../src/libsync/propagateuploadcommon.cpp" line="391"/>
         <source>Error updating metadata: %1</source>
         <translation>ເກີດຂໍ້ຜິດພາດໃນການອັບເດດຂໍ້ມູນ Metadata: %1</translation>
     </message>
@@ -2494,12 +2539,12 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::RequestAuthenticationController</name>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="94"/>
+        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="102"/>
         <source>IdP is unreachable. Contact your system administrator or try again later.</source>
         <translation>ບໍ່ສາມາດເຂົ້າເຖິງ IdP ໄດ້. ຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ ຫຼື ລອງໃໝ່ພາຍຫຼັງ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="105"/>
+        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="113"/>
         <source>Authentication failed.</source>
         <translation>ການຢືນຢັນຕົວຕົນລົ້ມເຫຼວ.</translation>
     </message>
@@ -2565,22 +2610,22 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::ResolveUrlAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="59"/>
+        <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="57"/>
         <source>SSL failure when connecting to server at %1</source>
         <translation>ການເຊື່ອມຕໍ່ SSL ລົ້ມເຫຼວຂະນະເຊື່ອມຕໍ່ກັບເຊີບເວີທີ່ %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="63"/>
+        <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="61"/>
         <source>Could not detect compatible server at %1</source>
         <translation>ບໍ່ສາມາດກວດພົບເຊີບເວີທີ່ເຂົ້າກັນໄດ້ທີ່ %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="68"/>
+        <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="66"/>
         <source>Resolved url is invalid %1</source>
         <translation>URL ທີ່ກວດສອບແລ້ວບໍ່ຖືກຕ້ອງ %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="71"/>
+        <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="69"/>
         <source>Rejected redirect from %1 to %2</source>
         <translation>ປະຕິເສດການປ່ຽນເສັ້ນທາງ (redirect) ຈາກ %1 ໄປຫາ %2</translation>
     </message>
@@ -2620,31 +2665,101 @@ Note that using any logging command line options will override the settings.</so
     </message>
 </context>
 <context>
-    <name>OCC::SettingsDialog</name>
+    <name>OCC::SettingsView</name>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="98"/>
-        <source>Hide</source>
-        <translation>ເຊື່ອງ</translation>
+        <location filename="../src/gui/mainwindow/settingsview.ui" line="14"/>
+        <source>Form</source>
+        <translation>ຟອມ</translation>
     </message>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="107"/>
-        <source>Quit %1</source>
-        <translation>ອອກຈາກ %1</translation>
+        <location filename="../src/gui/mainwindow/settingsview.ui" line="47"/>
+        <source>General Settings</source>
+        <translation>ການຕັ້ງຄ່າທົ່ວໄປ</translation>
     </message>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="108"/>
-        <source>Are you sure you want to quit %1?</source>
-        <translation>ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການອອກຈາກ %1?</translation>
+        <location filename="../src/gui/mainwindow/settingsview.ui" line="56"/>
+        <source>Use Monochrome Icons in the system tray</source>
+        <translation>ໃຊ້ໄອຄອນສີດຽວໃນຖາດລະບົບ</translation>
     </message>
     <message>
-        <location filename="../src/gui/settingsdialog.cpp" line="134"/>
-        <source>%1 - %2</source>
-        <translation>%1 - %2</translation>
+        <location filename="../src/gui/mainwindow/settingsview.ui" line="63"/>
+        <source>Show Desktop Notifications</source>
+        <translation>ສະແດງການແຈ້ງເຕືອນເທິງເດັສທັອບ</translation>
     </message>
     <message>
-        <location filename="../src/gui/settingsdialog.ui" line="14"/>
-        <source>MainWindow</source>
-        <translation>ໜ້າຕ່າງຫຼັກ</translation>
+        <location filename="../src/gui/mainwindow/settingsview.ui" line="70"/>
+        <source>Start on Login</source>
+        <translation>ເລີ່ມເມື່ອເຂົ້າສູ່ລະບົບ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/mainwindow/settingsview.ui" line="88"/>
+        <source>Language</source>
+        <translation>ພາສາ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/mainwindow/settingsview.ui" line="104"/>
+        <source>Language selector</source>
+        <translation>ໂຕເລືອກພາສາ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/mainwindow/settingsview.ui" line="119"/>
+        <source>Advanced</source>
+        <translation>ຂັ້ນສູງ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/mainwindow/settingsview.ui" line="127"/>
+        <source>Sync hidden files</source>
+        <translation>ຊິງໄຟລ໌ທີ່ເຊື່ອງໄວ້</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/mainwindow/settingsview.ui" line="140"/>
+        <source>Show crash reporter</source>
+        <translation>ສະແດງໂຕລາຍງານຂໍ້ຜິດພາດ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/mainwindow/settingsview.ui" line="147"/>
+        <source>Move remotely deleted files to the local trash bin instead of deleting them</source>
+        <translation>ຍ້າຍໄຟລ໌ທີ່ຖືກລຶບຈາກທາງໄກໄປທີ່ຖັງຂີ້ເຫຍື້ອໃນເຄື່ອງ ແທນການລຶບຖິ້ມ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/mainwindow/settingsview.ui" line="156"/>
+        <source>Edit Ignored Files</source>
+        <translation>ແກ້ໄຂໄຟລ໌ທີ່ບໍ່ສົນໃຈ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/mainwindow/settingsview.ui" line="163"/>
+        <source>Log Settings</source>
+        <translation>ການຕັ້ງຄ່າລັອກ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/mainwindow/settingsview.ui" line="190"/>
+        <source>Network</source>
+        <translation>ເຄືອຂ່າຍ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/mainwindow/settingsview.cpp" line="52"/>
+        <source>Warning</source>
+        <translation>ຄຳເຕືອນ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/mainwindow/settingsview.cpp" line="52"/>
+        <source>Language changes require a restart of this application to take effect.</source>
+        <translation>ການປ່ຽນພາສາຕ້ອງການການເລີ່ມໃໝ່ຂອງໂປຣແກຣມນີ້ເພື່ອໃຫ້ມີຜົນ.</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/mainwindow/settingsview.cpp" line="153"/>
+        <source>You cannot disable autostart because system-wide autostart is enabled.</source>
+        <translation>ທ່ານບໍ່ສາມາດປິດການເລີ່ມອັດຕະໂນມັດໄດ້ ເພາະການເລີ່ມອັດຕະໂນມັດທົ່ວລະບົບຖືກເປີດຢູ່.</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/mainwindow/settingsview.cpp" line="169"/>
+        <source>(use default)</source>
+        <translation>(ໃຊ້ຄ່າເລີ່ມຕົ້ນ)</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/mainwindow/settingsview.cpp" line="185"/>
+        <source>unknown (%1)</source>
+        <translation>ບໍ່ຮູ້ຈັກ (%1)</translation>
     </message>
 </context>
 <context>
@@ -2779,56 +2894,64 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::SyncEngine</name>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="151"/>
+        <location filename="../src/libsync/syncengine.cpp" line="143"/>
         <source>%1 (skipped due to earlier error, trying again in %2)</source>
         <translation>%1 (ຂ້າມໄປເນື່ອງຈາກຂໍ້ຜິດພາດກ່ອນໜ້າ, ຈະລອງໃໝ່ໃນ %2)</translation>
     </message>
     <message>
         <location filename="../src/libsync/syncengine.cpp" line="324"/>
+        <source>Unable to sync: the local folder is missing.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/libsync/syncengine.cpp" line="336"/>
         <source>Only %1 are available, need at least %2 to start</source>
         <comment>Placeholders are postfixed with file sizes using Utility::octetsToString()</comment>
         <translation>ມີພື້ນທີ່ວ່າງພຽງ %1, ຕ້ອງການຢ່າງໜ້ອຍ %2 ເພື່ອເລີ່ມຕົ້ນ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="352"/>
+        <location filename="../src/libsync/syncengine.cpp" line="348"/>
         <source>Unable to open or create the local sync database. Make sure you have write access in the sync folder.</source>
         <translation>ບໍ່ສາມາດເປີດ ຫຼື ສ້າງຖານຂໍ້ມູນການຊິ້ງໃນເຄື່ອງໄດ້. ກະລຸນາກວດສອບໃຫ້ແນ່ໃຈວ່າທ່ານມີສິດໃນການຂຽນໃນໂຟເດີຊິ້ງ.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="775"/>
+        <location filename="../src/libsync/syncengine.cpp" line="359"/>
+        <location filename="../src/libsync/syncengine.cpp" line="441"/>
+        <location filename="../src/libsync/syncengine.cpp" line="472"/>
+        <location filename="../src/libsync/syncengine.cpp" line="537"/>
+        <source>Cannot open the sync journal.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/libsync/syncengine.cpp" line="621"/>
         <source>Aborted due to %1</source>
         <translation>ຍົກເລີກເນື່ອງຈາກ %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="793"/>
+        <location filename="../src/libsync/syncengine.cpp" line="807"/>
         <source>Disk space is low: Downloads that would reduce free space below %1 were skipped.</source>
         <translation>ພື້ນທີ່ດິສກ໌ເຫຼືອໜ້ອຍ: ການດາວໂຫຼດທີ່ຈະເຮັດໃຫ້ພື້ນທີ່ວ່າງເຫຼືອໜ້ອຍກວ່າ %1 ໄດ້ຖືກຂ້າມໄປ.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="800"/>
+        <location filename="../src/libsync/syncengine.cpp" line="814"/>
         <source>There is insufficient space available on the server for some uploads.</source>
         <translation>ມີພື້ນທີ່ບໍ່ພຽງພໍເທິງເຊີບເວີສຳລັບການອັບໂຫຼດບາງລາຍການ.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="79"/>
+        <location filename="../src/libsync/syncengine.cpp" line="72"/>
         <source>application exit</source>
         <comment>abort reason</comment>
         <translation>ການອອກຈາກໂປຣແກຣມ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="372"/>
+        <location filename="../src/libsync/syncengine.cpp" line="377"/>
         <source>Unable to read the blacklist from the local database</source>
         <translation>ບໍ່ສາມາດອ່ານລາຍການທີ່ຖືກຫ້າມຈາກຖານຂໍ້ມູນໃນເຄື່ອງໄດ້</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="398"/>
+        <location filename="../src/libsync/syncengine.cpp" line="384"/>
         <source>Unable to read from the sync journal.</source>
         <translation>ບໍ່ສາມາດອ່ານຈາກບັນທຶກການຊິ້ງໄດ້.</translation>
-    </message>
-    <message>
-        <location filename="../src/libsync/syncengine.cpp" line="472"/>
-        <source>Cannot open the sync journal</source>
-        <translation>ບໍ່ສາມາດເປີດບັນທຶກການຊິ້ງໄດ້</translation>
     </message>
 </context>
 <context>
@@ -2849,32 +2972,32 @@ Note that using any logging command line options will override the settings.</so
         <translation>ມີຂໍ້ຂັດແຍ່ງ. ກວດສອບເອກະສານກ່ຽວກັບວິທີແກ້ໄຂ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/syncerrorwidget.cpp" line="210"/>
+        <location filename="../src/gui/syncerrorwidget.cpp" line="211"/>
         <source>The file %1 was ignored as its name is reserved by %2</source>
         <translation>ໄຟລ໌ %1 ຖືກບໍ່ສົນໃຈ ເນື່ອງຈາກຊື່ຂອງມັນຖືກສະຫງວນໂດຍ %2</translation>
     </message>
     <message>
-        <location filename="../src/gui/syncerrorwidget.cpp" line="236"/>
+        <location filename="../src/gui/syncerrorwidget.cpp" line="237"/>
         <source>Reset column sizes</source>
         <translation>ຣີເຊັດຂະໜາດຖັນ</translation>
     </message>
     <message>
-        <location filename="../src/gui/syncerrorwidget.cpp" line="256"/>
+        <location filename="../src/gui/syncerrorwidget.cpp" line="257"/>
         <source>There were conflicts. &lt;a href=&quot;%1&quot;&gt;Check the documentation on how to resolve them.&lt;/a&gt;</source>
         <translation>ມີຂໍ້ຂັດແຍ່ງ. &lt;a href=&quot;%1&quot;&gt;ກວດສອບເອກະສານກ່ຽວກັບວິທີແກ້ໄຂ.&lt;/a&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/syncerrorwidget.cpp" line="285"/>
+        <location filename="../src/gui/syncerrorwidget.cpp" line="286"/>
         <source>Filter menu</source>
         <translation>ເມນູໂຕກອງ</translation>
     </message>
     <message>
-        <location filename="../src/gui/syncerrorwidget.cpp" line="287"/>
+        <location filename="../src/gui/syncerrorwidget.cpp" line="288"/>
         <source>Account</source>
         <translation>ບັນຊີ</translation>
     </message>
     <message>
-        <location filename="../src/gui/syncerrorwidget.cpp" line="377"/>
+        <location filename="../src/gui/syncerrorwidget.cpp" line="380"/>
         <source>Filter</source>
         <translation>ໂຕກອງ</translation>
     </message>
@@ -2924,14 +3047,47 @@ Note that using any logging command line options will override the settings.</so
     </message>
 </context>
 <context>
+    <name>OCC::TrayMenuController</name>
+    <message>
+        <location filename="../src/gui/traymenucontroller.cpp" line="102"/>
+        <source>Unsupported Server Version</source>
+        <translation>ເວີຊັນເຊີບເວີບໍ່ຮອງຮັບ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/traymenucontroller.cpp" line="103"/>
+        <source>The server on account %1 runs an unsupported version %2. Using this client with unsupported server versions is untested and potentially dangerous. Proceed at your own risk.</source>
+        <translation>ເຊີບເວີໃນບັນຊີ %1 ໃຊ້ເວີຊັນ %2 ທີ່ບໍ່ຮອງຮັບ. ການໃຊ້ໂປຣແກຣມນີ້ກັບເວີຊັນເຊີບເວີທີ່ບໍ່ຮອງຮັບນັ້ນຍັງບໍ່ໄດ້ຜ່ານການທົດສອບ ແລະ ອາດເປັນອັນຕະລາຍ. ກະລຸນາດຳເນີນການຕໍ່ດ້ວຍຄວາມສ່ຽງຂອງທ່ານເອງ.</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/traymenucontroller.cpp" line="134"/>
+        <source>Show %1</source>
+        <translation>ສະແດງ %1</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/traymenucontroller.cpp" line="159"/>
+        <source>Help</source>
+        <translation>ຊ່ວຍເຫຼືອ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/traymenucontroller.cpp" line="163"/>
+        <source>About %1</source>
+        <translation>ກ່ຽວກັບ %1</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/traymenucontroller.cpp" line="166"/>
+        <source>Quit %1</source>
+        <translation>ອອກຈາກ %1</translation>
+    </message>
+</context>
+<context>
     <name>OCC::UpdateDownloadedWidget</name>
     <message>
-        <location filename="../src/gui/updater/updatedownloadedwidget.cpp" line="41"/>
+        <location filename="../src/gui/updater/updatedownloadedwidget.cpp" line="38"/>
         <source>Restart later</source>
         <translation>ເລີ່ມໃໝ່ພາຍຫຼັງ</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/updatedownloadedwidget.cpp" line="43"/>
+        <location filename="../src/gui/updater/updatedownloadedwidget.cpp" line="40"/>
         <source>Restart now</source>
         <translation>ເລີ່ມໃໝ່ດຽວນີ້</translation>
     </message>
@@ -2939,7 +3095,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::UpdaterScheduler</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="51"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="52"/>
         <source>Update available</source>
         <translation>ມີອັບເດດ</translation>
     </message>
@@ -3111,92 +3267,39 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::WindowsUpdater</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="375"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="376"/>
         <source>&lt;p&gt;A new version of the %1 Client is available.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; is available for download. The installed version is %3.&lt;/p&gt;</source>
         <translation>&lt;p&gt;ມີໂປຣແກຣມ %1 Client ເວີຊັນໃໝ່ໃຫ້ອັບເດດ.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; ສາມາດດາວໂຫຼດໄດ້ແລ້ວ. ເວີຊັນທີ່ຕິດຕັ້ງຢູ່ແມ່ນ %3.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="421"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="422"/>
         <source>Skip this version</source>
         <translation>ຂ້າມເວີຊັນນີ້</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="402"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="403"/>
         <source>Update Failed</source>
         <translation>ການອັບເດດລົ້ມເຫຼວ</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="408"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="409"/>
         <source>&lt;p&gt;A new version of the %1 Client is available but the updating process failed.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; has been downloaded. The installed version is %3.&lt;/p&gt;</source>
         <translation>&lt;p&gt;ມີໂປຣແກຣມ %1 Client ເວີຊັນໃໝ່ ແຕ່ຂະບວນການອັບເດດລົ້ມເຫຼວ.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; ໄດ້ຖືກດາວໂຫຼດແລ້ວ. ເວີຊັນທີ່ຕິດຕັ້ງຢູ່ແມ່ນ %3.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="422"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="423"/>
         <source>Ask again later</source>
         <translation>ຖາມໃໝ່ພາຍຫຼັງ</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="423"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="424"/>
         <source>Restart and update</source>
         <translation>ເລີ່ມໃໝ່ ແລະ ອັບເດດ</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="424"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="425"/>
         <source>Update manually</source>
         <translation>ອັບເດດດ້ວຍຕົນເອງ</translation>
-    </message>
-</context>
-<context>
-    <name>OCC::ownCloudGui</name>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="145"/>
-        <source>The server on account %1 runs an unsupported version %2. Using this client with unsupported server versions is untested and potentially dangerous. Proceed at your own risk.</source>
-        <translation>ເຊີບເວີໃນບັນຊີ %1 ໃຊ້ເວີຊັນ %2 ທີ່ບໍ່ຮອງຮັບ. ການໃຊ້ໂປຣແກຣມນີ້ກັບເວີຊັນເຊີບເວີທີ່ບໍ່ຮອງຮັບນັ້ນຍັງບໍ່ໄດ້ຜ່ານການທົດສອບ ແລະ ອາດເປັນອັນຕະລາຍ. ກະລຸນາດຳເນີນການຕໍ່ດ້ວຍຄວາມສ່ຽງຂອງທ່ານເອງ.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="204"/>
-        <source>Help</source>
-        <translation>ຊ່ວຍເຫຼືອ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="211"/>
-        <source>Quit %1</source>
-        <translation>ອອກຈາກ %1</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="144"/>
-        <source>Unsupported Server Version</source>
-        <translation>ເວີຊັນເຊີບເວີບໍ່ຮອງຮັບ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="179"/>
-        <source>Show %1</source>
-        <translation>ສະແດງ %1</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="208"/>
-        <source>About %1</source>
-        <translation>ກ່ຽວກັບ %1</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="240"/>
-        <location filename="../src/gui/owncloudgui.cpp" line="255"/>
-        <source>New account failure</source>
-        <translation>ການເພີ່ມບັນຊີໃໝ່ລົ້ມເຫຼວ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="240"/>
-        <source>The information required to create a new account is incomplete. Please run the wizard again.</source>
-        <translation>ຂໍ້ມູນທີ່ຈຳເປັນໃນການສ້າງບັນຊີໃໝ່ບໍ່ຄົບຖ້ວນ. ກະລຸນາເລີ່ມຂັ້ນຕອນການຕັ້ງຄ່າໃໝ່ອີກຄັ້ງ.</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/owncloudgui.cpp" line="256"/>
-        <source>The account could not be created due to an error:
-%1
-Please check the server&apos;s availability then run the wizard again.</source>
-        <translation>ບໍ່ສາມາດສ້າງບັນຊີໄດ້ເນື່ອງຈາກຂໍ້ຜິດພາດ:
-%1
-ກະລຸນາກວດສອບການເຊື່ອມຕໍ່ເຊີບເວີ ແລ້ວເລີ່ມຂັ້ນຕອນການຕັ້ງຄ່າໃໝ່ອີກຄັ້ງ.</translation>
     </message>
 </context>
 <context>
@@ -3539,32 +3642,32 @@ Please check the server&apos;s availability then run the wizard again.</source>
 <context>
     <name>utility</name>
     <message>
-        <location filename="../src/gui/guiutility.cpp" line="52"/>
+        <location filename="../src/gui/guiutility.cpp" line="51"/>
         <source>Could not open browser</source>
         <translation>ບໍ່ສາມາດເປີດເບຣົາເຊີໄດ້</translation>
     </message>
     <message>
-        <location filename="../src/gui/guiutility.cpp" line="53"/>
+        <location filename="../src/gui/guiutility.cpp" line="52"/>
         <source>There was an error when launching the browser to go to URL %1. Maybe no default browser is configured?</source>
         <translation>ເກີດຂໍ້ຜິດພາດຂະນະເປີດເບຣົາເຊີເພື່ອໄປທີ່ URL %1. ອາດຈະບໍ່ມີການຕັ້ງຄ່າເບຣົາເຊີເລີ່ມຕົ້ນ?</translation>
     </message>
     <message>
-        <location filename="../src/gui/guiutility.cpp" line="76"/>
+        <location filename="../src/gui/guiutility.cpp" line="75"/>
         <source>Could not open email client</source>
         <translation>ບໍ່ສາມາດເປີດໂປຣແກຣມອີເມວໄດ້</translation>
     </message>
     <message>
-        <location filename="../src/gui/guiutility.cpp" line="77"/>
+        <location filename="../src/gui/guiutility.cpp" line="76"/>
         <source>There was an error when launching the email client to create a new message. Maybe no default email client is configured?</source>
         <translation>ເກີດຂໍ້ຜິດພາດຂະນະເປີດໂປຣແກຣມອີເມວເພື່ອສ້າງຂໍ້ຄວາມໃໝ່. ອາດຈະບໍ່ມີການຕັ້ງຄ່າໂປຣແກຣມອີເມວເລີ່ມຕົ້ນ?</translation>
     </message>
     <message>
-        <location filename="../src/gui/guiutility.cpp" line="90"/>
+        <location filename="../src/gui/guiutility.cpp" line="89"/>
         <source>Make always available locally</source>
         <translation>ເຮັດໃຫ້ມີໃຫ້ໃຊ້ງານໃນເຄື່ອງສະເໝີ</translation>
     </message>
     <message>
-        <location filename="../src/gui/guiutility.cpp" line="95"/>
+        <location filename="../src/gui/guiutility.cpp" line="94"/>
         <source>Free up local space</source>
         <translation>ສ້າງພື້ນທີ່ວ່າງໃນເຄື່ອງ</translation>
     </message>
