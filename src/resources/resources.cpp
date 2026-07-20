@@ -16,19 +16,16 @@
 #include "resources/qmlresources.h"
 #include "resources/template.h"
 #include "resources/themewatcher.h"
-// #include "libsync/theme.h"
-
-#include "common/asserts.h"
 
 #include <QDebug>
 #include <QFileInfo>
+#include <QGuiApplication>
 #include <QImageReader>
 #include <QJsonDocument>
 #include <QLoggingCategory>
+#include <QPainter>
 #include <QPalette>
-#include <QtGui/qguiapplication.h>
-#include <QtGui/qpainter.h>
-#include <QtGui/qstylehints.h>
+#include <QStyleHints>
 
 using namespace OCC;
 using namespace Resources;
@@ -43,11 +40,13 @@ struct IconCache
         auto *watcher = new ThemeWatcher(qApp);
         QObject::connect(watcher, &ThemeWatcher::themeChanged, [this]() { _cache.clear(); });
 
+        // this is the currently "correct" way to listen for system color changes - I'm leaving it out
+        // for the time being
         // this generally works to clear the old icons, but places where the icon is already set, eg
         // the toolbar actions and connection status, need to be reset to what is in the new cache.
         // this will not work here, as we need to be sure the cache has been cleared *before* anyone
         // asks for the icon again. Conceptually though, it's correct to do it this way.
-        //    QObject::connect(qGuiApp->styleHints(), &QStyleHints::colorSchemeChanged, [this]() { _cache.clear(); });
+        // QObject::connect(qGuiApp->styleHints(), &QStyleHints::colorSchemeChanged, [this]() { _cache.clear(); });
     }
     QMap<QString, QIcon> _cache;
 };
