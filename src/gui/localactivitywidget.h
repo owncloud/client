@@ -17,7 +17,7 @@
 #include <QDialog>
 #include <QLocale>
 
-#include "owncloudgui.h"
+// #include "owncloudgui.h"
 #include "models/protocolitemmodel.h"
 
 #include "models/models.h"

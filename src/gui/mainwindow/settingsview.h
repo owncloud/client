@@ -12,8 +12,7 @@
  * for more details.
  */
 
-#ifndef MIRALL_GENERALSETTINGS_H
-#define MIRALL_GENERALSETTINGS_H
+#pragma once
 
 #include <QMap>
 #include <QWidget>
@@ -24,31 +23,31 @@ class IgnoreListEditor;
 class SyncLogDialog;
 
 namespace Ui {
-    class GeneralSettings;
+    class SettingsView;
 }
 
 /**
  * @brief The GeneralSettings class
  * @ingroup gui
  */
-class GeneralSettings : public QWidget
+class SettingsView : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit GeneralSettings(QWidget *parent = nullptr);
-    ~GeneralSettings() override;
+    explicit SettingsView(QWidget *parent = nullptr);
+    ~SettingsView() override;
 
 Q_SIGNALS:
-    void showAbout();
     void moveToTrashChanged(bool trashIt);
 
 private Q_SLOTS:
     void saveMiscSettings();
+    void loadMiscSettings();
     void slotToggleLaunchOnStartup(bool);
     void slotToggleOptionalDesktopNotifications(bool);
     void slotIgnoreFilesEditor();
-    void loadMiscSettings();
+    void slotShowLogSettings();
 
 protected:
     void showEvent(QShowEvent *event) override;
@@ -57,11 +56,10 @@ private:
     void reloadConfig();
     void loadLanguageNamesIntoDropdown();
 
-    Ui::GeneralSettings *_ui;
+    Ui::SettingsView *_ui;
     QPointer<IgnoreListEditor> _ignoreEditor;
     bool _currentlyLoading;
 };
 
 
 } // namespace OCC
-#endif // MIRALL_GENERALSETTINGS_H

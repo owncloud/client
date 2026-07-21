@@ -18,9 +18,10 @@
 #include "common/version.h"
 #include "config/appconfig.h"
 #include "configfile.h"
+#include "mainwindow/modalwrapperwidget.h"
 #include "theme.h"
 
-#include "settingsdialog.h"
+
 #include "updatedownloadedwidget.h"
 #include "updater/newversionavailablewidget.h"
 #include "updater/ocupdater.h"
@@ -48,16 +49,16 @@ UpdaterScheduler::UpdaterScheduler(Application *app, QObject *parent)
     // Note: the sparkle-updater is not an OCUpdater
     if (auto *updater = qobject_cast<OCUpdater *>(Updater::instance())) {
         connect(updater, &OCUpdater::updateAvailableThroughSystem, app,
-            [app, updater]() { app->gui()->slotShowTrayMessage(tr("Update available"), updater->statusString()); });
+            [app, updater]() { app->tray()->slotShowTrayMessage(tr("Update available"), updater->statusString()); });
 
         connect(updater, &OCUpdater::updateDownloaded, this, [app, updater, this]() {
             // prevent dialog from being displayed twice (rather unlikely, but it won't hurt)
             if (_updateDownloadedWidget == nullptr) {
-                _updateDownloadedWidget = new UpdateDownloadedWidget(app->gui()->settingsDialog(), updater->statusString());
-                ocApp()->gui()->settingsDialog()->addModalWidget(_updateDownloadedWidget);
+                _updateDownloadedWidget = new UpdateDownloadedWidget(app->mainWindow(), updater->statusString());
+                ModalWrapperWidget *wrapper = new ModalWrapperWidget(_updateDownloadedWidget, app->mainWindow());
+                ocApp()->showModalWidget(wrapper);
 
                 connect(_updateDownloadedWidget, &UpdateDownloadedWidget::accepted, this, []() { Updater::instance()->applyUpdateAndRestart(); });
-                connect(_updateDownloadedWidget, &UpdateDownloadedWidget::finished, this, [this]() { delete _updateDownloadedWidget.data(); });
             }
         });
 
@@ -376,13 +377,13 @@ void WindowsUpdater::showNewVersionAvailableWidget(const UpdateInfo &info)
                      "<p><b>%2</b> is available for download. The installed version is %3.</p>")
                       .arg(Utility::escape(Theme::instance()->appNameGUI()),
                           Utility::escape(info.versionString()), Utility::escape(Version::versionWithBuildNumber().toString()));
-    auto *widget = new NewVersionAvailableWidget(ocApp()->gui()->settingsDialog(), txt);
+    auto *widget = new NewVersionAvailableWidget(ocApp()->mainWindow(), txt);
 
     connect(widget, &NewVersionAvailableWidget::versionSkipped, this, &WindowsUpdater::slotSetPreviouslySkippedVersion);
-    connect(widget, &NewVersionAvailableWidget::updateNow, this, &WindowsUpdater::slotOpenUpdateUrl);
-    connect(widget, &NewVersionAvailableWidget::finished, this, [widget]() { delete widget; });
+    connect(widget, &NewVersionAvailableWidget::accepted, this, &WindowsUpdater::slotOpenUpdateUrl);
 
-    ocApp()->gui()->settingsDialog()->addModalWidget(widget);
+    ModalWrapperWidget *wrapper = new ModalWrapperWidget(widget, ocApp()->mainWindow());
+    ocApp()->showModalWidget(wrapper);
 }
 
 void WindowsUpdater::showUpdateErrorDialog(const QString &targetVersion)

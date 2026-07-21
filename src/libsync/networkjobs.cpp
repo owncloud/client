@@ -336,6 +336,9 @@ void AvatarJob::start()
 
 QPixmap AvatarJob::makeCircularAvatar(const QPixmap &baseAvatar)
 {
+    if (baseAvatar.isNull())
+        return {};
+
     int dim = baseAvatar.width();
 
     QPixmap avatar(dim, dim);

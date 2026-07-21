@@ -19,24 +19,23 @@
 namespace OCC {
 
 namespace Ui {
-    class AboutDialog;
+    class AboutView;
 }
 
-class AboutDialog : public QDialog
+class AboutView : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit AboutDialog(QWidget *parent = nullptr);
-    ~AboutDialog();
+    explicit AboutView(QWidget *parent = nullptr);
+    ~AboutView();
 
 private:
     void openBrowser(const QString &s);
     void openBrowserFromUrl(const QUrl &s);
-    void setupUpdaterWidget();
 
 private:
-    Ui::AboutDialog *ui;
+    Ui::AboutView *ui;
 };
 
 }

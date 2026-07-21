@@ -95,6 +95,9 @@ public:
      * The user associated with the account.
      * This value is immutable after construction.
      *
+     * note that this isn't always a human readable "user name" - with some servers it will be an account id
+     * and not a normal "name"
+     *
      */
     QString davUser() const;
 
@@ -124,7 +127,7 @@ public:
     QString davDisplayName() const;
     void setDavDisplayName(const QString &newDisplayName);
 
-    QIcon avatar() const;
+    QIcon avatar();
     void setAvatar(const QIcon &img);
     bool hasAvatar() const;
 
@@ -229,7 +232,7 @@ Q_SIGNALS:
     // todo: #15
     void wantsAccountSaved(Account *acc);
 
-    void serverVersionChanged();
+    void serverVersionChanged(Account *account);
 
     void avatarChanged();
     void displayNameChanged();

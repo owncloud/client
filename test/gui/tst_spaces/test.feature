@@ -38,8 +38,7 @@ Feature: Project spaces
         When using sync connection folder "Project101"
         And the user waits for file "testfile.txt" to be synced
         And the user overwrites the file "testfile.txt" with content "overwrite some content"
-        And the user clicks on the activity tab
-        And the user selects "Not Synced" tab in the activity
+        And the user clicks on the errors tab
         Then the file "testfile.txt" should be blacklisted
         And as "Alice" the file "testfile.txt" in the space "Project101" should have content "some content" in the server
 

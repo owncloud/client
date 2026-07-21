@@ -24,7 +24,7 @@
 namespace OCC {
 
 AppImageUpdateAvailableWidget::AppImageUpdateAvailableWidget(const QVersionNumber &currentVersion, const QVersionNumber &newVersion, QWidget *parent)
-    : QWidget(parent)
+    : QDialog(parent)
     , _ui(new Ui::AppImageUpdateAvailableWidgetUi)
 {
     _ui->setupUi(this);
@@ -47,13 +47,17 @@ AppImageUpdateAvailableWidget::AppImageUpdateAvailableWidget(const QVersionNumbe
 
     // the minimum size of the info label (and a few other labels) depends on their contents
     // we can't persuade the dialog to resize automatically to the recommended size in Qt Designer, so we do it manually
-    resize(sizeHint());
+    // resize(sizeHint());
     // also, we want to prevent users from reducing the widget size too much, i.e., widgets would be hidden partially
-    setMinimumSize(sizeHint());
+    // setMinimumSize(sizeHint());
 
-    connect(_ui->buttonBox->button(QDialogButtonBox::Ok), &QPushButton::clicked, this, &AppImageUpdateAvailableWidget::accepted);
-    connect(_ui->buttonBox->button(QDialogButtonBox::Cancel), &QPushButton::clicked, this, &AppImageUpdateAvailableWidget::rejected);
-    connect(_ui->skipButton, &QPushButton::clicked, this, &AppImageUpdateAvailableWidget::skipUpdateButtonClicked);
+    connect(_ui->skipButton, &QPushButton::clicked, this, &AppImageUpdateAvailableWidget::slotSkipUpdate);
+}
+
+void AppImageUpdateAvailableWidget::slotSkipUpdate()
+{
+    emit skipUpdateButtonClicked();
+    emit finished(QDialog::Rejected);
 }
 
 AppImageUpdateAvailableWidget::~AppImageUpdateAvailableWidget()

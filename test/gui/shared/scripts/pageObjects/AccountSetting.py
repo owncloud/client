@@ -4,25 +4,24 @@ import squish
 
 class AccountSetting:
     MANAGE_ACCOUNT_BUTTON = {
-        "container": names.settings_dialogStack_QStackedWidget,
+        "container": names.mainWindow_OCC_MainWindow,
         "name": "manageAccountButton",
         "type": "QPushButton",
         "visible": 1,
     }
     ACCOUNT_MENU = {
-        "type": "QMenu",
-        "unnamed": 1,
-        "visible": 1,
-        "window": names.settings_OCC_SettingsDialog,
+        "container": names.mainWindow_manageAccountMenu_QMenu,
+        "type": "QAction",
+        "visible": True,
     }
     CONFIRM_REMOVE_CONNECTION_BUTTON = {
-        "container": names.settings_stack_QStackedWidget,
+        "name": "removeAccountButton",
         "type": "QPushButton",
-        "text": "Remove connection",
         "visible": 1,
+        "window": names.confirmRemoveAccountDialog_QMessageBox,
     }
     ACCOUNT_CONNECTION_LABEL = {
-        "container": names.settings_dialogStack_QStackedWidget,
+        "container": names.mainWindow_OCC_MainWindow,
         "name": "connectionStatusLabel",
         "type": "QLabel",
         "visible": 1,
@@ -33,7 +32,7 @@ class AccountSetting:
         "visible": 1,
     }
     ACCOUNT_LOADING = {
-        "window": names.settings_OCC_SettingsDialog,
+        "window": names.mainWindow_OCC_MainWindow,
         "name": "loadingPage",
         "type": "QWidget",
         "visible": 0,
@@ -42,31 +41,31 @@ class AccountSetting:
         "name": "dialogStack",
         "type": "QStackedWidget",
         "visible": 1,
-        "window": names.settings_OCC_SettingsDialog,
+        "window": names.mainWindow_OCC_MainWindow,
     }
     CONFIRMATION_YES_BUTTON = {"type": "QPushButton", "visible": 1}
 
     @staticmethod
-    def account_action(action):
+    def account_action(action, name):
         squish.clickButton(squish.waitForObject(AccountSetting.MANAGE_ACCOUNT_BUTTON))
-        squish.activateItem(
-            squish.waitForObjectItem(AccountSetting.ACCOUNT_MENU, action)
-        )
+        action_selector = AccountSetting.ACCOUNT_MENU.copy()
+        action_selector.update({"text": action, "name": name})
+        squish.activateItem(squish.waitForObject(action_selector))
 
     @staticmethod
     def remove_account_connection():
-        AccountSetting.account_action("Remove")
+        AccountSetting.account_action("Remove", "removeAction")
         squish.clickButton(
             squish.waitForObject(AccountSetting.CONFIRM_REMOVE_CONNECTION_BUTTON)
         )
 
     @staticmethod
     def logout():
-        AccountSetting.account_action("Log out")
+        AccountSetting.account_action("Log out", "logInOutAction")
 
     @staticmethod
     def login():
-        AccountSetting.account_action("Log in")
+        AccountSetting.account_action("Log in", "logInOutAction")
 
     @staticmethod
     def get_account_connection_label():

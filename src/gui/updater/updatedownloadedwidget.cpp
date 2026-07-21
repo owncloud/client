@@ -22,7 +22,7 @@
 namespace OCC {
 
 UpdateDownloadedWidget::UpdateDownloadedWidget(QWidget *parent, const QString &statusMessage)
-    : QWidget(parent)
+    : QDialog(parent)
     , _ui(new ::Ui::UpdateDownloadedWidget)
 {
     _ui->setupUi(this);
@@ -31,9 +31,6 @@ UpdateDownloadedWidget::UpdateDownloadedWidget(QWidget *parent, const QString &s
     _ui->iconLabel->setText(QString());
 
     _ui->descriptionLabel->setText(statusMessage);
-
-    connect(_ui->buttonBox, &QDialogButtonBox::rejected, this, &UpdateDownloadedWidget::reject);
-    connect(_ui->buttonBox, &QDialogButtonBox::accepted, this, &UpdateDownloadedWidget::accept);
 
     const auto noButton = _ui->buttonBox->button(QDialogButtonBox::No);
     const auto yesButton = _ui->buttonBox->button(QDialogButtonBox::Yes);
@@ -49,6 +46,7 @@ UpdateDownloadedWidget::~UpdateDownloadedWidget()
     delete _ui;
 }
 
+/*
 void UpdateDownloadedWidget::accept()
 {
     Q_EMIT accepted();
@@ -59,4 +57,5 @@ void UpdateDownloadedWidget::reject()
 {
     Q_EMIT finished();
 }
+*/
 } // OCC namespace

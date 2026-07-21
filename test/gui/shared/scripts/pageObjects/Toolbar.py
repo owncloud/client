@@ -1,6 +1,7 @@
 import names
 import squish
 import object  # pylint: disable=redefined-builtin
+from objectmaphelper import RegularExpression
 
 from helpers.SetupClientHelper import wait_until_app_killed
 from helpers.ConfigHelper import get_config
@@ -8,38 +9,47 @@ from helpers.ConfigHelper import get_config
 
 class Toolbar:
     TOOLBAR_ROW = {
-        "container": names.dialogStack_quickWidget_OCC_QmlUtils_OCQuickWidget,
-        "type": "RowLayout",
-        "visible": True,
+        "name": "mainWindowToolbar",
+        "type": "QToolBar",
+        "visible": 1,
+        "window": names.mainWindow_OCC_MainWindow,
     }
     ACCOUNT_BUTTON = {
-        "checkable": False,
-        "container": names.dialogStack_quickWidget_OCC_QmlUtils_OCQuickWidget,
-        "type": "AccountButton",
-        "visible": True,
+        "type": "QToolButton",
+        "unnamed": 1,
+        "visible": 1,
+        "window": names.mainWindow_OCC_MainWindow,
     }
     ADD_ACCOUNT_BUTTON = {
-        "container": names.dialogStack_quickWidget_QQuickWidget,
-        "id": "addAccountButton",
-        "type": "AccountButton",
+        "container": names.mainWindow_QMenu,
+        "name": "addAcountAction",
+        "type": "QAction",
         "visible": True,
     }
     ACTIVITY_BUTTON = {
-        "container": names.dialogStack_quickWidget_QQuickWidget,
-        "id": "logButton",
-        "type": "AccountButton",
-        "visible": True,
+        "text": "Activity",
+        "type": "QToolButton",
+        "unnamed": 1,
+        "visible": 1,
+        "window": names.mainWindow_OCC_MainWindow,
+    }
+    ERRORS_BUTTON = {
+        "text": RegularExpression(r"^Errors: [0-9]+$"),
+        "type": "QToolButton",
+        "unnamed": 1,
+        "visible": 1,
+        "window": names.mainWindow_OCC_MainWindow,
     }
     SETTINGS_BUTTON = {
-        "container": names.dialogStack_quickWidget_QQuickWidget,
-        "id": "settingsButton",
-        "type": "AccountButton",
+        "container": names.mainWindow_QMenu,
+        "name": "settingsAction",
+        "type": "QAction",
         "visible": True,
     }
     QUIT_BUTTON = {
-        "container": names.dialogStack_quickWidget_QQuickWidget,
-        "id": "quitButton",
-        "type": "AccountButton",
+        "container": names.mainWindow_QMenu,
+        "name": "quitAction",
+        "type": "QAction",
         "visible": True,
     }
     QUIT_CONFIRMATION_DIALOG = {
@@ -53,15 +63,21 @@ class Toolbar:
         "visible": 1,
         "window": QUIT_CONFIRMATION_DIALOG,
     }
+    TOOLBAR_MORE_BUTTON = {
+        "text": "More",
+        "type": "QToolButton",
+        "visible": 1,
+        "window": names.mainWindow_OCC_MainWindow,
+    }
 
     TOOLBAR_ITEMS = ["Add Account", "Activity", "Settings", "Quit"]
 
     @staticmethod
     def get_item_selector(item_name):
         return {
-            "container": names.dialogStack_quickWidget_QQuickWidget,
+            "window": names.mainWindow_OCC_MainWindow,
             "text": item_name,
-            "type": "Label",
+            "type": "QToolButton",
             "visible": True,
         }
 
@@ -78,7 +94,12 @@ class Toolbar:
         squish.mouseClick(squish.waitForObject(Toolbar.ACTIVITY_BUTTON))
 
     @staticmethod
+    def open_errors():
+        squish.mouseClick(squish.waitForObject(Toolbar.ERRORS_BUTTON))
+
+    @staticmethod
     def open_new_account_setup():
+        squish.mouseClick(squish.waitForObject(Toolbar.TOOLBAR_MORE_BUTTON))
         squish.mouseClick(squish.waitForObject(Toolbar.ADD_ACCOUNT_BUTTON))
 
     @staticmethod
@@ -96,10 +117,12 @@ class Toolbar:
 
     @staticmethod
     def open_settings_tab():
+        squish.mouseClick(squish.waitForObject(Toolbar.TOOLBAR_MORE_BUTTON))
         squish.mouseClick(squish.waitForObject(Toolbar.SETTINGS_BUTTON))
 
     @staticmethod
     def quit_owncloud():
+        squish.mouseClick(squish.waitForObject(Toolbar.TOOLBAR_MORE_BUTTON))
         squish.mouseClick(squish.waitForObject(Toolbar.QUIT_BUTTON))
         squish.clickButton(squish.waitForObject(Toolbar.CONFIRM_QUIT_BUTTON))
         for ctx in squish.applicationContextList():
@@ -114,21 +137,31 @@ class Toolbar:
         children_obj = object.children(squish.waitForObjectExists(Toolbar.TOOLBAR_ROW))
         account_idx = 1
         for obj in children_obj:
-            if hasattr(obj, "accountState"):
+
+            if hasattr(obj, "defaultAction") and hasattr(
+                obj.defaultAction, "objectName"
+            ):
+                object_name = str(getattr(obj.defaultAction, "objectName", ""))
+                if not object_name.startswith("accountAction_"):
+                    continue
+                hostname = str(obj.text).strip()
+                tooltip = str(obj.toolTip).strip()
+                lines = [line.strip() for line in tooltip.splitlines() if line.strip()]
+                username = lines[0] if lines else ""
                 account_info = {
-                    "displayname": str(obj.accountState.account.davDisplayName),
-                    "username": str(obj.accountState.account.davUser),
-                    "hostname": str(obj.accountState.account.hostName),
-                    "initials": str(obj.accountState.account.initials),
-                    "current": obj.checked,
+                    "displayname": username,
+                    "username": username,
+                    "hostname": hostname,
+                    "initials": "",
+                    "current": getattr(obj, "checked", False),
                 }
                 account_locator = Toolbar.ACCOUNT_BUTTON.copy()
                 if account_idx > 1:
                     account_locator.update({"occurrence": account_idx})
-                account_locator.update({"text": account_info["hostname"]})
+                account_locator.update({"text": hostname})
 
-                accounts[account_info["displayname"]] = account_info
-                selectors[account_info["displayname"]] = obj
+                accounts[username] = account_info
+                selectors[username] = obj
                 account_idx += 1
         return accounts, selectors
 

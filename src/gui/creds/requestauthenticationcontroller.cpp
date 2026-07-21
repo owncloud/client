@@ -13,12 +13,11 @@
  */
 #include "requestauthenticationcontroller.h"
 
-#include "accountview.h"
+#include "accountsgui/accountview.h"
 #include "application.h"
 #include "requestauthenticationwidget.h"
 
 #include "accountmodalwidget.h"
-#include "settingsdialog.h"
 
 #include <config/appconfig.h>
 
@@ -29,10 +28,17 @@ namespace OCC {
  * @param widget - may be null, for example when using the "log in" function after user explicitly logged out
  * @param parent - the usual qt parenting scheme
  */
-RequestAuthenticationController::RequestAuthenticationController(RequestAuthenticationWidget *widget, QObject *parent)
+RequestAuthenticationController::RequestAuthenticationController(QObject *parent)
     : QObject{parent}
-    , _widget(widget)
 {
+}
+
+RequestAuthenticationController::~RequestAuthenticationController()
+{
+    // this should be enough to ensure the widgets get cleaned up, provided the account gui exists.
+    // if it does not, the widgets should have been deleted already since they are children of that gui
+    if (_modalWidget)
+        _modalWidget->reject();
 }
 
 void RequestAuthenticationController::handleSignIn()
@@ -43,9 +49,6 @@ void RequestAuthenticationController::handleSignIn()
 void RequestAuthenticationController::handleLogOut()
 {
     if (_modalWidget) {
-        // this calls finished which deletes the modal widget.
-        // our widget should also be deleted as it has been added to the layout of the modal
-        // widget, which effectively reparents it to the modal widget.
         _modalWidget->reject();
     }
     // this ultimately needs to be chained to creds::requestLogout signal
@@ -64,21 +67,29 @@ void RequestAuthenticationController::startAuthentication(Account *account)
     _oauth = new AccountBasedOAuth(_account, systemConfig.openIdConfig(), this);
     connect(_oauth, &OAuth::authorisationLinkChanged, this, &RequestAuthenticationController::authUrlReady);
     connect(_oauth, &OAuth::result, this, &RequestAuthenticationController::handleOAuthResult);
-    if (_widget && _modalWidget == nullptr) { // first show of the gui
+
+    // if there is an auth error, the widget already exists and is visible so just let it ride.
+    if (!_widget) {
+        // the widget is reparented to the AccountModalWidget then installed in the accounts gui.
+        // it will be cleaned up there - this is not a leak
+        _widget = new RequestAuthenticationWidget(nullptr);
         connect(_widget, &RequestAuthenticationWidget::connectClicked, this, &RequestAuthenticationController::handleSignIn);
         connect(_widget, &RequestAuthenticationWidget::stayLoggedOutClicked, this, &RequestAuthenticationController::handleLogOut);
 
-        AccountView *accountView = ocApp()->gui()->settingsDialog()->accountView(_account);
-        _modalWidget = new AccountModalWidget(QString(), _widget, accountView);
-        accountView->addModalAccountWidget(_modalWidget);
+        _modalWidget = new AccountModalWidget(QString(), _widget, nullptr);
+        emit requestAccountModal(_modalWidget);
     }
+    Q_ASSERT(_widget && _modalWidget);
     _oauth->startAuthentication();
 }
 
 void RequestAuthenticationController::authUrlReady()
 {
     if (_widget) {
-        _widget->setAuthUrl(_oauth->authorisationLink().toString(QUrl::FullyEncoded));
+        QString authUrl = _oauth->authorisationLink().toString(QUrl::FullyEncoded);
+        if (authUrl.isEmpty())
+            _widget->setErrorMessage(tr("Unable to retrieve authorization link! Please contact your system administrator."));
+        _widget->setAuthUrl(authUrl);
     } else {
         // just run with it
         _oauth->openBrowser();
@@ -122,6 +133,6 @@ void RequestAuthenticationController::handleOAuthResult(OAuth::Result result, co
         Q_EMIT authenticationSucceeded(accessToken, refreshToken);
     }
 
-    ownCloudGui::raise();
+    ocApp()->ensureVisible();
 }
 }

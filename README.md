@@ -4,7 +4,7 @@
 
 ## Introduction
 
-The ownCloud Desktop Client is a tool to synchronize files from ownCloud Server
+The ownCloud Desktop Client is a tool to synchronize files from ownCloud Infinite Scale
 with your computer.
 
 ## Download

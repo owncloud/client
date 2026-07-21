@@ -28,6 +28,7 @@
 #include "theme.h"
 
 #include <QActionGroup>
+#include <QMenu>
 #include <QTimer>
 
 #include "ui_syncerrorwidget.h"

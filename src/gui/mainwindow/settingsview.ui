@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>OCC::GeneralSettings</class>
- <widget class="QWidget" name="OCC::GeneralSettings">
+ <class>OCC::SettingsView</class>
+ <widget class="QWidget" name="OCC::SettingsView">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -14,6 +14,18 @@
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
    <item>
     <widget class="QScrollArea" name="scrollArea">
      <property name="widgetResizable">
@@ -24,8 +36,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>765</width>
-        <height>618</height>
+        <width>789</width>
+        <height>654</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -35,6 +47,9 @@
           <string>General Settings</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_2">
+          <property name="topMargin">
+           <number>13</number>
+          </property>
           <item row="1" column="0">
            <widget class="QCheckBox" name="monoIconsCheckBox">
             <property name="text">
@@ -152,7 +167,7 @@
               <item>
                <spacer name="spacer_3">
                 <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
+                 <enum>Qt::Orientation::Horizontal</enum>
                 </property>
                 <property name="sizeHint" stdset="0">
                  <size>
@@ -178,7 +193,7 @@
           <item>
            <widget class="NetworkSettings" name="widget" native="true">
             <property name="focusPolicy">
-             <enum>Qt::StrongFocus</enum>
+             <enum>Qt::FocusPolicy::StrongFocus</enum>
             </property>
            </widget>
           </item>
@@ -188,7 +203,7 @@
        <item>
         <spacer name="verticalSpacer">
          <property name="orientation">
-          <enum>Qt::Vertical</enum>
+          <enum>Qt::Orientation::Vertical</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
@@ -220,7 +235,7 @@
       <item>
        <spacer name="spacer">
         <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+         <enum>Qt::Orientation::Horizontal</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -239,14 +254,7 @@
          <string notr="true">Copyright ownCloud GmbH (A Kiteworks Company)</string>
         </property>
         <property name="textInteractionFlags">
-         <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="about_pushButton">
-        <property name="text">
-         <string>About</string>
+         <set>Qt::TextInteractionFlag::LinksAccessibleByMouse|Qt::TextInteractionFlag::TextSelectableByMouse</set>
         </property>
        </widget>
       </item>
@@ -275,7 +283,6 @@
   <tabstop>logSettingsButton</tabstop>
   <tabstop>widget</tabstop>
   <tabstop>scrollArea</tabstop>
-  <tabstop>about_pushButton</tabstop>
  </tabstops>
  <resources/>
  <connections/>

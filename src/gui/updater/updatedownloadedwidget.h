@@ -14,8 +14,7 @@
 
 #pragma once
 
-#include <QScopedPointer>
-#include <QWidget>
+#include <QDialog>
 
 namespace Ui {
 class UpdateDownloadedWidget;
@@ -23,21 +22,13 @@ class UpdateDownloadedWidget;
 
 namespace OCC {
 
-class UpdateDownloadedWidget : public QWidget
+class UpdateDownloadedWidget : public QDialog
 {
     Q_OBJECT
 
 public:
     explicit UpdateDownloadedWidget(QWidget *parent, const QString &statusMessage);
     ~UpdateDownloadedWidget();
-
-public Q_SLOTS:
-    void accept();
-    void reject();
-
-Q_SIGNALS:
-    void accepted();
-    void finished();
 
 private:
     ::Ui::UpdateDownloadedWidget *_ui;

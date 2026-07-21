@@ -12,17 +12,15 @@
  * for more details.
  */
 
-#include "generalsettings.h"
-#include "ui_generalsettings.h"
+#include "settingsview.h"
+#include "ui_settingsview.h"
 
-#include "common/restartmanager.h"
-#include "common/version.h"
-#include "gui/application.h"
-#include "gui/ignorelisteditor.h"
-#include "gui/settingsdialog.h"
-#include "gui/translations.h"
+#include "application.h"
+#include "ignorelisteditor.h"
 #include "libsync/configfile.h"
 #include "libsync/theme.h"
+#include "logbrowser.h"
+#include "translations.h"
 
 #include <QMessageBox>
 #include <QOperatingSystemVersion>
@@ -30,21 +28,21 @@
 
 namespace OCC {
 
-GeneralSettings::GeneralSettings(QWidget *parent)
+SettingsView::SettingsView(QWidget *parent)
     : QWidget(parent)
-    , _ui(new Ui::GeneralSettings)
+    , _ui(new Ui::SettingsView)
     , _currentlyLoading(false)
 {
     _ui->setupUi(this);
 
-    connect(_ui->desktopNotificationsCheckBox, &QAbstractButton::toggled, this, &GeneralSettings::slotToggleOptionalDesktopNotifications);
+    connect(_ui->desktopNotificationsCheckBox, &QAbstractButton::toggled, this, &SettingsView::slotToggleOptionalDesktopNotifications);
 
     reloadConfig();
     loadMiscSettings();
 
     // misc
-    connect(_ui->monoIconsCheckBox, &QAbstractButton::toggled, this, &GeneralSettings::saveMiscSettings);
-    connect(_ui->crashreporterCheckBox, &QAbstractButton::toggled, this, &GeneralSettings::saveMiscSettings);
+    connect(_ui->monoIconsCheckBox, &QAbstractButton::toggled, this, &SettingsView::saveMiscSettings);
+    connect(_ui->crashreporterCheckBox, &QAbstractButton::toggled, this, &SettingsView::saveMiscSettings);
 
     connect(_ui->languageDropdown, QOverload<int>::of(&QComboBox::activated), this, [this]() {
         // first, store selected language in config file
@@ -64,7 +62,7 @@ GeneralSettings::GeneralSettings(QWidget *parent)
     _ui->crashreporterCheckBox->setVisible(Theme::instance()->withCrashReporter());
 
     _ui->moveToTrashCheckBox->setVisible(true);
-    connect(_ui->moveToTrashCheckBox, &QCheckBox::toggled, this, &GeneralSettings::moveToTrashChanged); /*[this](bool checked) {
+    connect(_ui->moveToTrashCheckBox, &QCheckBox::toggled, this, &SettingsView::moveToTrashChanged); /*[this](bool checked) {
          ConfigFile().setMoveToTrash(checked);
          Q_EMIT moveToTrashChanged(checked);
      });*/
@@ -73,24 +71,19 @@ GeneralSettings::GeneralSettings(QWidget *parent)
     // is no point in offering an option
     _ui->monoIconsCheckBox->setVisible(Resources::hasMonoTheme());
 
-    connect(_ui->ignoredFilesButton, &QAbstractButton::clicked, this, &GeneralSettings::slotIgnoreFilesEditor);
-    connect(_ui->logSettingsButton, &QPushButton::clicked, this, [] {
-        // only access occApp after things are set up
-        ocApp()->gui()->slotToggleLogBrowser();
-    });
-
-    connect(_ui->about_pushButton, &QPushButton::clicked, this, &GeneralSettings::showAbout);
+    connect(_ui->ignoredFilesButton, &QAbstractButton::clicked, this, &SettingsView::slotIgnoreFilesEditor);
+    connect(_ui->logSettingsButton, &QPushButton::clicked, this, &SettingsView::slotShowLogSettings);
 
     // todo: after DC-300 is merged, completely get rid of the copyright label in the settingsview.ui
     _ui->copyrightLabel->hide();
 }
 
-GeneralSettings::~GeneralSettings()
+SettingsView::~SettingsView()
 {
     delete _ui;
 }
 
-void GeneralSettings::loadMiscSettings()
+void SettingsView::loadMiscSettings()
 {
     QScopedValueRollback<bool> scope(_currentlyLoading, true);
     ConfigFile cfgFile;
@@ -107,12 +100,12 @@ void GeneralSettings::loadMiscSettings()
     _ui->languageDropdown->setCurrentIndex(index < 0 ? 0 : index);
 }
 
-void GeneralSettings::showEvent(QShowEvent *)
+void SettingsView::showEvent(QShowEvent *)
 {
     reloadConfig();
 }
 
-void GeneralSettings::saveMiscSettings()
+void SettingsView::saveMiscSettings()
 {
     if (_currentlyLoading)
         return;
@@ -127,29 +120,29 @@ void GeneralSettings::saveMiscSettings()
     cfgFile.setUiLanguage(pickedLocale);
 }
 
-void GeneralSettings::slotToggleLaunchOnStartup(bool enable)
+void SettingsView::slotToggleLaunchOnStartup(bool enable)
 {
     Theme *theme = Theme::instance();
     Utility::setLaunchOnStartup(theme->appName(), theme->appNameGUI(), enable);
 }
 
-void GeneralSettings::slotToggleOptionalDesktopNotifications(bool enable)
+void SettingsView::slotToggleOptionalDesktopNotifications(bool enable)
 {
     ConfigFile cfgFile;
     cfgFile.setOptionalDesktopNotifications(enable);
 }
 
-void GeneralSettings::slotIgnoreFilesEditor()
+void SettingsView::slotIgnoreFilesEditor()
 {
     if (_ignoreEditor.isNull()) {
-        _ignoreEditor = new IgnoreListEditor(ocApp()->gui()->settingsDialog());
+        _ignoreEditor = new IgnoreListEditor(ocApp()->mainWindow());
         _ignoreEditor->setAttribute(Qt::WA_DeleteOnClose, true);
-        ownCloudGui::raise();
+        ocApp()->ensureVisible();
         _ignoreEditor->open();
     }
 }
 
-void GeneralSettings::reloadConfig()
+void SettingsView::reloadConfig()
 {
     _ui->syncHiddenFilesCheckBox->setChecked(!FolderMan::instance()->ignoreHiddenFiles());
     _ui->moveToTrashCheckBox->setChecked(FolderMan::instance()->moveToTrash());
@@ -162,11 +155,11 @@ void GeneralSettings::reloadConfig()
         // make sure the binary location is correctly set
         slotToggleLaunchOnStartup(hasAutoStart);
         _ui->autostartCheckBox->setChecked(hasAutoStart);
-        connect(_ui->autostartCheckBox, &QAbstractButton::toggled, this, &GeneralSettings::slotToggleLaunchOnStartup);
+        connect(_ui->autostartCheckBox, &QAbstractButton::toggled, this, &SettingsView::slotToggleLaunchOnStartup);
     }
 }
 
-void GeneralSettings::loadLanguageNamesIntoDropdown()
+void SettingsView::loadLanguageNamesIntoDropdown()
 {
     // allow method to be called more than once
     _ui->languageDropdown->clear();
@@ -194,6 +187,14 @@ void GeneralSettings::loadLanguageNamesIntoDropdown()
         QString entryText = QStringLiteral("%1 (%2)").arg(nativeLanguageName, availableLocale);
         _ui->languageDropdown->addItem(entryText, availableLocale);
     }
+}
+
+void SettingsView::slotShowLogSettings()
+{
+    auto logBrowser = new LogBrowser(ocApp()->mainWindow());
+    logBrowser->setAttribute(Qt::WA_DeleteOnClose);
+    ocApp()->ensureVisible();
+    logBrowser->open();
 }
 
 } // namespace OCC

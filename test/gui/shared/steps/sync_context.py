@@ -115,6 +115,11 @@ def step(context):
     Toolbar.open_activity()
 
 
+@When('the user clicks on the errors tab')
+def step(context):
+    Toolbar.open_errors()
+
+
 @Then('the table of conflict warnings should include file "|any|"')
 def step(context, filename):
     Activity.check_file_exist(filename)
@@ -137,15 +142,14 @@ def step(context, filename):
     test.compare(True, Activity.is_resource_excluded(filename), 'File is Excluded')
 
 
-@When('the user selects "|any|" tab in the activity')
-def step(context, tab_name):
-    Activity.click_tab(tab_name)
-
-
 @Then('the toolbar should have the following tabs:')
 def step(context):
     for tab_name in context.table:
-        Toolbar.has_item(tab_name[0])
+        test.compare(
+            Toolbar.has_item(tab_name[0]),
+            True,
+            f'Toolbar tab "{tab_name[0]}" exists.',
+        )
 
 
 @When('the user selects the following folders to sync:')
@@ -234,6 +238,11 @@ def step(context):
 def step(context):
     for item in context.table:
         Settings.check_network_option(item[0])
+
+
+@When('the user closes the settings tab')
+def step(context):
+    Settings.close_settings_tab()
 
 
 @When('the user opens the about dialog')

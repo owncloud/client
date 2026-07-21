@@ -17,6 +17,8 @@
 
 #include "gui/qmlutils.h"
 
+#include <QDialog>
+
 namespace OCC {
 
 AccountModalWidget::AccountModalWidget(const QString &title, QWidget *widget, QWidget *parent)
@@ -27,8 +29,18 @@ AccountModalWidget::AccountModalWidget(const QString &title, QWidget *widget, QW
     ui->groupBox->setTitle(title);
     ui->groupBox->layout()->addWidget(widget);
 
-    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &AccountModalWidget::accept);
-    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &AccountModalWidget::reject);
+    // the internal widget may be a dialog, in which case we want to block adding "standard buttons" and
+    // connect to the dialog accept/reject signals instead
+    QDialog *dialog = qobject_cast<QDialog *>(widget);
+    if (dialog) {
+        _widgetHasButtons = true;
+        connect(dialog, &QDialog::accepted, this, &AccountModalWidget::accept);
+        connect(dialog, &QDialog::rejected, this, &AccountModalWidget::reject);
+    } else {
+        _widgetHasButtons = false;
+        connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &AccountModalWidget::accept);
+        connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &AccountModalWidget::reject);
+    }
 }
 
 
@@ -45,24 +57,27 @@ AccountModalWidget::AccountModalWidget(const QString &title, const QUrl &qmlSour
 }
 void AccountModalWidget::setStandardButtons(QDialogButtonBox::StandardButtons buttons)
 {
-    ui->buttonBox->setStandardButtons(buttons);
+    if (!_widgetHasButtons)
+        ui->buttonBox->setStandardButtons(buttons);
 }
 
 QPushButton *AccountModalWidget::addButton(const QString &text, QDialogButtonBox::ButtonRole role)
 {
-    return ui->buttonBox->addButton(text, role);
+    if (!_widgetHasButtons)
+        return ui->buttonBox->addButton(text, role);
+    return nullptr;
 }
 
 void AccountModalWidget::accept()
 {
     Q_EMIT accepted();
-    Q_EMIT finished(Result::Accepted);
+    Q_EMIT finished(this);
 }
 
 void AccountModalWidget::reject()
 {
     Q_EMIT rejected();
-    Q_EMIT finished(Result::Rejected);
+    Q_EMIT finished(this);
 }
 
 } // OCC

@@ -22,7 +22,7 @@
 namespace OCC {
 
 NewVersionAvailableWidget::NewVersionAvailableWidget(QWidget *parent, const QString &statusMessage)
-    : QWidget(parent)
+    : QDialog(parent)
     , _ui(new ::Ui::Ui_NewVersionAvailableWidget)
 {
     _ui->setupUi(this);
@@ -32,11 +32,11 @@ NewVersionAvailableWidget::NewVersionAvailableWidget(QWidget *parent, const QStr
 
     QPushButton *skipButton = _ui->buttonBox->addButton(tr("Skip this version"), QDialogButtonBox::ResetRole);
     QPushButton *getUpdateButton = _ui->buttonBox->addButton(tr("Get update"), QDialogButtonBox::AcceptRole);
-    QPushButton *rejectButton = _ui->buttonBox->addButton(tr("Skip this time"), QDialogButtonBox::AcceptRole);
+    QPushButton *rejectButton = _ui->buttonBox->addButton(tr("Skip this time"), QDialogButtonBox::RejectRole);
 
     connect(skipButton, &QAbstractButton::clicked, this, &NewVersionAvailableWidget::skipVersion);
-    connect(rejectButton, &QAbstractButton::clicked, this, &NewVersionAvailableWidget::notNow);
-    connect(getUpdateButton, &QAbstractButton::clicked, this, &NewVersionAvailableWidget::getUpdate);
+    connect(rejectButton, &QAbstractButton::clicked, this, &QDialog::reject);
+    connect(getUpdateButton, &QAbstractButton::clicked, this, &QDialog::accept);
 }
 
 NewVersionAvailableWidget::~NewVersionAvailableWidget()
@@ -47,10 +47,10 @@ NewVersionAvailableWidget::~NewVersionAvailableWidget()
 void NewVersionAvailableWidget::skipVersion()
 {
     Q_EMIT versionSkipped();
-    Q_EMIT finished();
+    Q_EMIT finished(QDialog::Rejected);
 }
 
-void NewVersionAvailableWidget::notNow()
+/*void NewVersionAvailableWidget::notNow()
 {
     Q_EMIT noUpdateNow();
     Q_EMIT finished();
@@ -60,6 +60,6 @@ void NewVersionAvailableWidget::getUpdate()
 {
     Q_EMIT updateNow();
     Q_EMIT finished();
-}
+}*/
 
 } // OCC namespace

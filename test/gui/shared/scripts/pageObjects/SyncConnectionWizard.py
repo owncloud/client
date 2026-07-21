@@ -74,7 +74,7 @@ class SyncConnectionWizard:
         "visible": 1,
     }
     SPACE_NAME_SELECTOR = {
-        "container": names.quickWidget_scrollView_ScrollView,
+        "container": names.quickWidget_scrollView_ScrollView_2,
         "type": "Label",
         "visible": True,
     }
@@ -98,7 +98,7 @@ class SyncConnectionWizard:
     }
     ADD_FOLDER_SYNC_BUTTON = {
         "checkable": False,
-        "container": names.stackedWidget_quickWidget_OCC_QmlUtils_OCQuickWidget,
+        "container": names.mainWindow_stackedWidget_QStackedWidget,
         "name": "addFolderSyncButton",
         "type": "QPushButton",
         "visible": True,

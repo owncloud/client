@@ -27,6 +27,7 @@ class QNetworkReply;
 namespace OCC {
 
 class AbstractNetworkJob;
+class AccountModalWidget;
 
 class OWNCLOUDSYNC_EXPORT AbstractCredentials : public QObject
 {
@@ -108,6 +109,13 @@ Q_SIGNALS:
      * and no automatic tries to connect should be made.
      */
     void requestLogout();
+
+    // this is a passthrough to connect to the concrete Credentials RequestAuthenticationController requestAccountModal signal,
+    // which provides the login widget wrapped in an account modal widget.
+    // using a signal to run the auth widget removes hard dependency on mainwindow/accounts gui to somehow provide access to account view publicly.
+    // this is only invoked via the Credentials sublcass. Reminder that this abstraction only exists to support FakeCredentials impl in the tests
+    // which is questionable, but what we have at the moment.
+    void requestAccountModal(OCC::AccountModalWidget *widget);
 
 protected:
     // the account should be the parent of the creds, so it should not go out of scope while we are using this.

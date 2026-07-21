@@ -21,6 +21,7 @@
 #include "graphapi/spacesmanager.h"
 #include "networkjobs.h"
 #include "networkjobs/resources.h"
+#include "resources.h"
 
 #include <QAuthenticator>
 #include <QDir>
@@ -127,13 +128,24 @@ QString Account::davUser() const
     return _davUser;
 }
 
-QIcon Account::avatar() const
+QIcon Account::avatar()
 {
+    if (_avatarImg.isNull()) {
+        // note this caches the built avatar, so once it exists it just returns a cached version.
+        return Resources::buildAvatar(initials(), uuid());
+    }
     return _avatarImg;
 }
 
 void Account::setAvatar(const QIcon &img)
 {
+    // this excludes the condition that we get a null image on every. single. run. of the fetchServerSettings, which
+    // is also responsible for fetching the avatar iff the caps show avatars are supported.
+    // however we are going to have the same problem with non-null avatars, and comparing them to see if the new one really
+    // is different is much more complicated and needs a deeper fix.
+    // see dc-324 for final solution
+    if (img.isNull() && _avatarImg.isNull())
+        return;
     _avatarImg = img;
     Q_EMIT avatarChanged();
 }
@@ -332,7 +344,7 @@ void Account::setCapabilities(const Capabilities &caps)
         caps.status().legacyVersion != _capabilities.status().legacyVersion || caps.status().productversion != _capabilities.status().productversion;
     _capabilities = caps;
     if (versionChanged) {
-        Q_EMIT serverVersionChanged();
+        Q_EMIT serverVersionChanged(this);
     }
 }
 

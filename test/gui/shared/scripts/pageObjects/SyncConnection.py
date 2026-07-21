@@ -7,7 +7,7 @@ from helpers.ConfigHelper import get_config
 
 class SyncConnection:
     FOLDER_SYNC_CONNECTION_TREE = {
-        "container": names.stack_stackedWidget_QStackedWidget,
+        "container": names.mainWindow_stackedWidget_QStackedWidget,
         "name": "accountFoldersTreeView",
         "type": "QTreeView",
         "visible": True,
@@ -19,13 +19,13 @@ class SyncConnection:
         "visible": 1,
     }
     FOLDER_SYNC_CONNECTION_LABEL = {
-        "container": names.stackedWidget_accountFoldersTreeView_QTreeView,
+        "container": names.stackedWidget_accountFoldersTreeView_QTreeView_2,
         "type": "QModelIndex",
         "column": 0,
     }
     FOLDER_SYNC_CONNECTION_MENU_BUTTON = {
         "columnIndex": 1,
-        "container": names.stackedWidget_accountFoldersTreeView_QTreeView,
+        "container": names.stackedWidget_accountFoldersTreeView_QTreeView_2,
         "name": "buttonDelegateButton",
         "type": "QPushButton",
         "visible": 1,
@@ -54,13 +54,13 @@ class SyncConnection:
         "window": names.confirmRemoveFolderSyncDialog_QMessageBox,
     }
     FORCE_SYNC_ACTION_MENU_OPTION = {
-        "container": names.settings_folderOptionsMenu_QMenu,
+        "container": names.mainWindow_folderOptionsMenu_QMenu,
         "name": "forceSyncAction",
         "type": "QAction",
         "visible": True,
     }
     PAUSE_SYNC_ACTION_MENU_OPTION = {
-        "container": names.settings_folderOptionsMenu_QMenu,
+        "container": names.mainWindow_folderOptionsMenu_QMenu,
         "name": "pauseSyncAction",
         "type": "QAction",
         "visible": True,
@@ -72,7 +72,7 @@ class SyncConnection:
         "visible": True,
     }
     REMOVE_FOLDER_SYNC_ACTION_MENU_OPTION = {
-        "container": names.settings_folderOptionsMenu_QMenu,
+        "container": names.mainWindow_folderOptionsMenu_QMenu,
         "name": "removeFolderSyncAction",
         "type": "QAction",
         "visible": True,

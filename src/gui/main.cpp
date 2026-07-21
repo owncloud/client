@@ -437,12 +437,10 @@ int main(int argc, char **argv)
             return -1;
         }
 
-        auto ocApp = Application::createInstance(platform.get(), displayLanguage, options.debugMode);
+        std::unique_ptr<Application> ocApp = Application::createInstance(platform.get(), displayLanguage, options.debugMode);
         ocApp->updateAutoRun(firstRun);
+        QObject::connect(platform.get(), &Platform::requestAttention, ocApp.get(), &Application::ensureVisible);
 
-        QObject::connect(platform.get(), &Platform::requestAttention, ocApp->gui(), &ownCloudGui::slotShowSettings);
-
-        // Refactoring todo: convert lambda to function
         QObject::connect(&singleApplication, &KDSingleApplication::messageReceived, ocApp.get(), [&](const QByteArray &message) {
             const QString msg = QString::fromUtf8(message);
             qCInfo(lcMain) << Q_FUNC_INFO << msg;
@@ -450,7 +448,7 @@ int main(int argc, char **argv)
                 const QStringList optionsStrings = msg.mid(msgParseOptionsC().size()).split(QLatin1Char('|'));
                 CommandLineOptions options = parseOptions(optionsStrings);
                 if (options.show) {
-                    ocApp->gui()->slotShowSettings();
+                    ocApp->ensureVisible();
                 }
                 if (options.quitInstance) {
                     qApp->quit();
@@ -481,13 +479,7 @@ int main(int argc, char **argv)
         }
 
         if (options.show) {
-            ocApp->gui()->slotShowSettings();
-            // The user explicitly requested the settings dialog, so don't start the new-account wizard.
-        }
-
-        // Display the wizard if we don't have an account yet, and no other UI is showing.
-        if (AccountManager::instance()->accounts().isEmpty()) {
-            QTimer::singleShot(0, ocApp->gui(), &ownCloudGui::runAccountWizard);
+            ocApp->ensureVisible();
         }
 
         // Now that everything is up and running, start accepting connections/requests from the shell integration.
