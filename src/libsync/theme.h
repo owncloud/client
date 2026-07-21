@@ -34,14 +34,7 @@ class SyncResult;
 class OWNCLOUDSYNC_EXPORT Theme : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(bool syncNewlyDiscoveredSpaces READ syncNewlyDiscoveredSpaces FINAL CONSTANT)
-    Q_PROPERTY(QColor avatarColor READ avatarColor NOTIFY themeChanged)
-    Q_PROPERTY(QColor avatarColorChecked READ avatarColorChecked NOTIFY themeChanged)
-    Q_PROPERTY(QColor brandedBackgoundColor READ wizardHeaderBackgroundColor CONSTANT)
-    Q_PROPERTY(QColor brandedForegroundColor READ wizardHeaderTitleColor CONSTANT)
-    Q_PROPERTY(bool spacesAreCalledFolders READ spacesAreCalledFolders FINAL CONSTANT)
-    QML_SINGLETON
-    QML_ELEMENT
+
 public:
     enum class VersionFormat {
         Plain,
@@ -247,7 +240,7 @@ public:
     virtual bool forceVirtualFilesOption() const;
 
     /**
-     * Returns a list of IconName, Name, Url pairs that will be displayed as buttons on AccountSettings.
+     * Returns a list of IconName, Name, Url triplets that will be displayed as buttons or menu items in the main view
      * For each url there must be an icon provided in the form of #IconName.svg or multiple #IconName-#resolution.png like for the other theme icons.
      * */
     virtual QVector<std::tuple<QString, QString, QUrl>> urlButtons() const;
