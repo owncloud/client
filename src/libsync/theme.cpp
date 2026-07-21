@@ -418,11 +418,6 @@ bool Theme::syncNewlyDiscoveredSpaces() const
     return false;
 }
 
-bool Theme::enableCernBranding() const
-{
-    return false;
-}
-
 bool Theme::spacesAreCalledFolders() const
 {
     return false;

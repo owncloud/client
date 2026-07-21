@@ -309,14 +309,6 @@ public:
     virtual bool syncNewlyDiscoveredSpaces() const;
 
     /**
-     * Whether to enable the special code for cernbox
-     * This includes:
-     * - spaces migration
-     * - support for .sys.admin#recall#
-     */
-    bool enableCernBranding() const;
-
-    /**
      * Whether to call spaces "Spaces" in the UI, or call them "Folders"
      *
      * Default: false
