@@ -31,45 +31,9 @@ class SyncResult;
  * @ingroup libsync
  */
 
-class QmlUrlButton
-{
-    Q_GADGET
-    Q_PROPERTY(QString icon MEMBER icon CONSTANT)
-    Q_PROPERTY(QString name MEMBER name CONSTANT)
-    Q_PROPERTY(QUrl url MEMBER url CONSTANT)
-    QML_VALUE_TYPE(urlbuttondata)
-
-public:
-    QmlUrlButton();
-    QmlUrlButton(const std::tuple<QString, QString, QUrl> &tuple);
-
-    QString icon;
-    QString name;
-    QUrl url;
-};
-
-/*class QmlButtonColor
-{
-    Q_GADGET
-    Q_PROPERTY(QColor color MEMBER color CONSTANT)
-    Q_PROPERTY(QColor textColor MEMBER textColor CONSTANT)
-    Q_PROPERTY(QColor textColorDisabled MEMBER textColorDisabled CONSTANT)
-    Q_PROPERTY(bool valid READ valid CONSTANT)
-    QML_VALUE_TYPE(buttonColor)
-
-public:
-    QColor color = {};
-    QColor textColor = {};
-    QColor textColorDisabled = {};
-
-    bool valid() const;
-};*/
-
 class OWNCLOUDSYNC_EXPORT Theme : public QObject
 {
     Q_OBJECT
-    // todo: #20
-    Q_PROPERTY(QList<QmlUrlButton> urlButtons READ qmlUrlButtons FINAL CONSTANT)
     Q_PROPERTY(bool syncNewlyDiscoveredSpaces READ syncNewlyDiscoveredSpaces FINAL CONSTANT)
     Q_PROPERTY(QColor avatarColor READ avatarColor NOTIFY themeChanged)
     Q_PROPERTY(QColor avatarColorChecked READ avatarColorChecked NOTIFY themeChanged)
@@ -327,7 +291,6 @@ Q_SIGNALS:
     void themeChanged();
 
 private:
-    QList<QmlUrlButton> qmlUrlButtons() const;
     Theme(Theme const &);
     Theme &operator=(Theme const &);
 

@@ -13,13 +13,11 @@
  */
 
 #include "theme.h"
-#include "common/depreaction.h"
 #include "common/utility.h"
 #include "common/version.h"
 #include "common/vfs.h"
 #include "config.h"
 
-// #include "resources/qmlresources.h"
 #include "resources/resources.h"
 
 #include <QSslSocket>
@@ -55,15 +53,6 @@ QString coloredTheme()
 namespace OCC {
 
 Theme *Theme::_instance = nullptr;
-
-QmlUrlButton::QmlUrlButton() { }
-
-QmlUrlButton::QmlUrlButton(const std::tuple<QString, QString, QUrl> &tuple)
-    : icon(QStringLiteral("urlIcons/%1").arg(std::get<0>(tuple)))
-    , name(std::get<1>(tuple))
-    , url(std::get<2>(tuple))
-{
-}
 
 Theme *Theme::instance()
 {
@@ -154,17 +143,6 @@ QIcon Theme::themeTrayIcon(const SyncResult &result, [[maybe_unused]] bool sysTr
 Theme::Theme()
     : QObject(nullptr)
 {
-}
-
-QList<QmlUrlButton> Theme::qmlUrlButtons() const
-{
-    const auto urls = urlButtons();
-    QList<QmlUrlButton> out;
-    out.reserve(urls.size());
-    for (const auto &u : urls) {
-        out.append(QmlUrlButton(u));
-    }
-    return out;
 }
 
 QString Theme::helpUrl() const
