@@ -376,7 +376,7 @@ bool Theme::forceVirtualFilesOption() const
     return false;
 }
 
-QVector<std::tuple<QString, QString, QUrl>> Theme::urlButtons() const
+QVector<std::tuple<QString, QString, QUrl>> Theme::urlActions() const
 {
     return {};
 }

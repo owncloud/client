@@ -167,12 +167,6 @@ public:
     virtual QColor avatarColorChecked() const;
 
     /**
-     * The SHA sum of the released git commit
-     */
-    [[deprecated("gitSHA1 is only used in aboutVersions - can be removed from public interface and removed as of client 7.0")]]
-    QString gitSHA1(VersionFormat format = VersionFormat::Plain) const;
-
-    /**
      * The used library versions
      */
     QString aboutVersions(VersionFormat format = VersionFormat::Plain) const;
@@ -241,9 +235,10 @@ public:
 
     /**
      * Returns a list of IconName, Name, Url triplets that will be displayed as buttons or menu items in the main view
-     * For each url there must be an icon provided in the form of #IconName.svg or multiple #IconName-#resolution.png like for the other theme icons.
+     * For each url an optional icon can be provided in the form of #IconName.svg or multiple #IconName-#resolution.png like for the other theme icons.
+     * if the icon name is empty or "wrong" there will be no icon on the action, just text
      * */
-    virtual QVector<std::tuple<QString, QString, QUrl>> urlButtons() const;
+    virtual QVector<std::tuple<QString, QString, QUrl>> urlActions() const;
 
     /**
      * Set the default value for move to trash option
@@ -276,6 +271,11 @@ public:
 
 protected:
     Theme();
+
+    /**
+     * The SHA sum of the released git commit
+     */
+    QString gitSHA1(VersionFormat format = VersionFormat::Plain) const;
 
 
 Q_SIGNALS:
