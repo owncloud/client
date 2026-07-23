@@ -325,16 +325,6 @@ QIcon Theme::wizardFooterLogo() const
     return QIcon();
 }
 
-QColor Theme::avatarColor() const
-{
-    return {};
-}
-
-QColor Theme::avatarColorChecked() const
-{
-    return {};
-}
-
 bool Theme::forceSystemNetworkProxy() const
 {
     return false;
