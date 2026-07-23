@@ -1,0 +1,18 @@
+# SPDX-FileCopyrightText: ownCloud GmbH
+# SPDX-License-Identifier: GPL-2.0-or-later
+name: REUSE Compliance
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+permissions: {}
+
+jobs:
+  reuse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: fsfe/reuse-action@bb774aa972c2a89ff34781233d275075cbddf542 # v5.0.0
