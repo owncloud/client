@@ -77,8 +77,8 @@ Theme *Theme::instance()
 {
     if (!_instance) {
         _instance = new THEME_CLASS;
-        auto *watcher = new Resources::ThemeWatcher(_instance);
-        connect(watcher, &Resources::ThemeWatcher::themeChanged, _instance, &Theme::themeChanged);
+        //      auto *watcher = new Resources::ThemeWatcher(_instance);
+        //      connect(watcher, &Resources::ThemeWatcher::themeChanged, _instance, &Theme::themeChanged);
     }
     return _instance;
 }
