@@ -89,9 +89,6 @@ ecm_add_qml_module(owncloudGui
         NAMESPACE OCC
         GENERATE_PLUGIN_SOURCE
         QML_FILES
-            qml/AccountBar.qml
-            qml/AccountButton.qml
-
             spaces/qml/SpaceDelegate.qml
             spaces/qml/SpacesView.qml
 )

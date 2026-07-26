@@ -74,9 +74,8 @@ SettingsView::SettingsView(QWidget *parent)
     connect(_ui->ignoredFilesButton, &QAbstractButton::clicked, this, &SettingsView::slotIgnoreFilesEditor);
     connect(_ui->logSettingsButton, &QPushButton::clicked, this, &SettingsView::slotShowLogSettings);
 
-    if (!Theme::instance()->aboutShowCopyright()) {
-        _ui->copyrightLabel->hide();
-    }
+    // todo: after DC-300 is merged, completely get rid of the copyright label in the settingsview.ui
+    _ui->copyrightLabel->hide();
 }
 
 SettingsView::~SettingsView()
