@@ -277,9 +277,6 @@ protected:
 Q_SIGNALS:
     void systrayUseMonoIconsChanged(bool);
 
-    // I don't see this in use anywhere, I think it only applied in old qml. get rid of it once the theme changes are merged as
-    // the AvatarColor related props are removed and this can fully die
-    void themeChanged();
 
 private:
     Theme(Theme const &);

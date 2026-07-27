@@ -23,8 +23,6 @@
 #include <QSslSocket>
 #include <QStyle>
 
-#include "themewatcher.h"
-
 #ifdef THEME_INCLUDE
 #include THEME_INCLUDE
 #endif
