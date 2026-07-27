@@ -41,7 +41,7 @@ FolderWizardSelectiveSync::FolderWizardSelectiveSync(Account *account, FolderWiz
     _selectiveSync = new SelectiveSyncWidget(account, this);
     layout->addWidget(_selectiveSync);
 
-    if (Theme::instance()->showVirtualFilesOption() && VfsPluginManager::instance().bestAvailableVfsMode() == Vfs::WindowsCfApi) {
+    if (VfsPluginManager::instance().isVfsPluginAvailable(Vfs::WindowsCfApi)) {
         _virtualFilesCheckBox = new QCheckBox(tr("Use virtual files instead of downloading content immediately"));
         connect(_virtualFilesCheckBox, &QCheckBox::checkStateChanged, this, &FolderWizardSelectiveSync::slotVfsStateChanged);
         _virtualFilesCheckBox->setChecked(true);

@@ -19,9 +19,9 @@ namespace chrono = std::chrono;
 
 AppConfig::AppConfig()
 {
-    _serverUrl = Theme::instance()->overrideServerUrlV2();
+    _serverUrl = Theme::instance()->overrideServerUrl();
     // If a theme provides a hardcoded URL, do not allow for URL change.
-    _allowServerURLChange = Theme::instance()->overrideServerUrlV2().isEmpty();
+    _allowServerURLChange = Theme::instance()->overrideServerUrl().isEmpty();
     _skipUpdateCheck = false;
     _openIdConfig = loadOpenIdConfigFromTheme();
 

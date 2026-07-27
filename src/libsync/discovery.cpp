@@ -116,11 +116,7 @@ void ProcessDirectoryJob::process()
         // local stat function.
         // Recall file shall not be ignored (#4420)
         const bool isHidden = [&] {
-            if (Q_UNLIKELY(Theme::instance()->enableCernBranding())) {
-                return e.localEntry.isHidden || (f.first[0] == QLatin1Char('.') && f.first != QLatin1String(".sys.admin#recall#"));
-            } else {
                 return e.localEntry.isHidden || f.first[0] == QLatin1Char('.');
-            }
         }();
         if (handleExcluded(path._target,
                 e.localEntry.name,

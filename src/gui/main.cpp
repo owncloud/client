@@ -369,7 +369,7 @@ int main(int argc, char **argv)
         app.setOrganizationDomain(Theme::instance()->orgDomainName());
         app.setApplicationName(Theme::instance()->appName());
         app.setWindowIcon(Theme::instance()->applicationIcon());
-        app.setApplicationVersion(Theme::instance()->versionSwitchOutput());
+        app.setApplicationVersion(Theme::instance()->aboutVersions(Theme::VersionFormat::Url));
 
 #ifdef Q_OS_LINUX
         // HACK:

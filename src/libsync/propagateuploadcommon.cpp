@@ -319,17 +319,6 @@ QMap<QByteArray, QByteArray> PropagateUploadCommon::headers()
     headers[QByteArrayLiteral("Content-Type")] = QByteArrayLiteral("application/octet-stream");
     headers[QByteArrayLiteral("X-OC-Mtime")] = QByteArray::number(qint64(_item->_modtime));
 
-    if (Q_UNLIKELY(Theme::instance()->enableCernBranding() && _item->_file.contains(QLatin1String(".sys.admin#recall#")))) {
-        // This is a file recall triggered by the admin.  Note: the
-        // recall list file created by the admin and downloaded by the
-        // client (.sys.admin#recall#) also falls into this category
-        // (albeit users are not supposed to mess up with it)
-
-        // We use a special tag header so that the server may decide to store this file away in some admin stage area
-        // And not directly in the user's area (which would trigger redownloads etc.).
-        headers["OC-Tag"] = ".sys.admin#recall#";
-    }
-
     if (!_item->_etag.isEmpty() && _item->_etag != QLatin1String("empty_etag")
         && (_item->instruction() & ~(CSYNC_INSTRUCTION_NEW | CSYNC_INSTRUCTION_TYPE_CHANGE)) // On new files never send an "If-Match"
         && !_deleteExisting) {
