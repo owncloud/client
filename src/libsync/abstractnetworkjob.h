@@ -208,6 +208,16 @@ private:
     void adoptRequest(QPointer<QNetworkReply> reply);
     void slotFinished();
 
+    /** Fired by the job-owned timeout timer: marks the job as timed out and aborts the reply. */
+    void slotTimeout();
+
+    /** (Re)start the timeout timer with the configured interval.
+     *
+     * Connected to the reply's upload/download progress so the timer only
+     * fires on an idle (stalled) connection, not on a long but active transfer.
+     */
+    void resetTimeout();
+
     const QUrl _baseUrl;
     const QString _path;
 
@@ -220,6 +230,12 @@ private:
     QNetworkRequest _request;
     QByteArray _verb;
     QPointer<QNetworkReply> _reply; // (QPointer because the NetworkManager may be destroyed before the jobs at exit)
+
+    // Job-owned timeout timer. Owning the timer here (rather than relying on
+    // QNetworkRequest::setTransferTimeout, which creates a timer owned by the
+    // reply) ensures no queued timeout callback can outlive the job and reach a
+    // freed reply - the wake-from-sleep use-after-free (#12600).
+    QTimer _timer;
 
     // Set by the xyzRequest() functions and needed to be able to redirect
     // requests, should it be required.
