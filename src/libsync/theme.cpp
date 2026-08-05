@@ -103,6 +103,10 @@ QIcon Theme::applicationIcon() const
 
 QString Theme::applicationIconName() const
 {
+    // attention! if APPLICATION_ICON_NAME is not defined, it is auto-set to APPLICATION_SHORTNAME in CMakeLists.txt:131
+    // I STRONGLY prefer to move that "fallback" here, to avoid confusion, as *how many cmake files do we have to navigate to
+    // find these values*?
+    // it's not ok, imo. I quasi understand the "need" for these vars but they are nothing but trouble.
     return QStringLiteral(APPLICATION_ICON_NAME);
 }
 
@@ -117,6 +121,7 @@ QIcon Theme::themeTrayIcon(const SyncResult &result, [[maybe_unused]] bool sysTr
         QString flavor;
         if (_mono) {
             flavor = Utility::hasDarkSystray() ? whiteTheme() : blackTheme();
+
 
 #ifdef Q_OS_MAC
             if (sysTrayMenuVisible) {

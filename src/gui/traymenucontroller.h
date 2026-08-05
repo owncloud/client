@@ -62,7 +62,7 @@ public Q_SLOTS:
     void slotShowShareInBrowser(const QString &sharePath, const QString &localPath);
 
 private:
-    QIcon getTrayStatusIcon(const SyncResult::Status &status) const;
+    QIcon getTrayStatusIcon(const SyncResult &status) const;
 
     QSystemTrayIcon *_tray;
     QPointer<ShareDialog> _shareDialog;

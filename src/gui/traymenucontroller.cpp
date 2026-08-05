@@ -21,6 +21,8 @@
 #include "guiutility.h"
 #include "libsync/theme.h"
 
+#include "iconresources.h"
+
 #include <QApplication>
 #include <QMenu>
 
@@ -33,16 +35,18 @@ using namespace std::chrono_literals;
 namespace OCC {
 
 // simple helper to compute the overall status for the tray icon
-SyncResult::Status trayOverallStatus()
+SyncResult trayOverallStatus()
 {
     TrayOverallStatusResult result;
     for (auto *folder : FolderMan::instance()->folders()) {
         result.addResult(folder);
     }
-    if (result.overallStatus().status() == SyncResult::Undefined) {
-        return SyncResult::Offline;
+    SyncResult finalResult = result.overallStatus();
+
+    if (finalResult.status() == SyncResult::Undefined) {
+        finalResult.setStatus(SyncResult::Offline);
     }
-    return result.overallStatus().status();
+    return finalResult;
 }
 
 TrayMenuController::TrayMenuController(QObject *parent)
@@ -107,10 +111,12 @@ void TrayMenuController::slotTrayMessageIfServerUnsupported(Account *account)
     }
 }
 
-QIcon TrayMenuController::getTrayStatusIcon(const SyncResult::Status &status) const
+QIcon TrayMenuController::getTrayStatusIcon(const SyncResult &status) const
 {
     auto contextMenuVisible = _tray->contextMenu() && _tray->contextMenu()->isVisible();
-    return Theme::instance()->themeTrayIcon(SyncResult{status}, contextMenuVisible);
+    bool hasDarkTray = Utility::hasDarkSystray();
+    return IconResources::themedTrayIcon(status.iconNameForStatus(), contextMenuVisible, hasDarkTray);
+    // return Theme::instance()->themeTrayIcon(SyncResult{status}, contextMenuVisible);
 }
 
 void TrayMenuController::slotComputeOverallSyncStatus()
