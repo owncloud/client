@@ -39,6 +39,8 @@ public:
     explicit TrayMenuController(QObject *parent);
     ~TrayMenuController() override;
 
+    void useMonoIconsChanged(bool useMono);
+
 Q_SIGNALS:
     void requestShowAbout();
     void requestShowHelp();

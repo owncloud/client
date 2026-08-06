@@ -52,6 +52,8 @@ public:
     // "bad" -> ie that no such icon exists in the app.
     static QIcon getThemedIcon(const QString &iconTheme, const QString &name);
 
+    static bool useMonoTrayIcons();
+    static void setUseMonoTrayIcons(bool useMono);
     static QIcon themedTrayIcon(const QString &name, bool sysTrayMenuVisible, bool trayIsDark);
 
     // attempts to find the path for an icon theme in branded resources. If the theme does not exist in the branding,

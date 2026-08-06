@@ -42,9 +42,21 @@ SyncResult trayOverallStatus()
         result.addResult(folder);
     }
     SyncResult finalResult = result.overallStatus();
+    if (finalResult.status() == SyncResult::Paused)
+        qDebug() << "just break here";
 
+    // this is confusing. basically we have "standard" icons associated with different sync statuses
+    // the only way to "pick" a particular icon for our tray use case is to update the status if the "real"
+    // icon is not what we want to show in the tray.
+    // Also! I would prefer to use the "warning" icon for unavailable status but the resources for the tray icons
+    // do not provide a warning icon. this is only offered via the core icons so we can't use it in the tray
     if (finalResult.status() == SyncResult::Undefined) {
+        // actual icon for offline is "error"
         finalResult.setStatus(SyncResult::Offline);
+    } else if (finalResult.status() == SyncResult::Unavailable) {
+        // actual icon for Unavailable is "error" - this is too much for the overall tray status so
+        // change it to undefined, which shows the "info" icon :/
+        finalResult.setStatus(SyncResult::Undefined);
     }
     return finalResult;
 }
@@ -58,7 +70,10 @@ TrayMenuController::TrayMenuController(QObject *parent)
 
     setupTrayContextMenu();
 
-    // init systray
+    ConfigFile cfg;
+    bool useMonoIcons = cfg.monoIcons();
+    useMonoIconsChanged(useMonoIcons);
+
     slotComputeOverallSyncStatus();
     _tray->show();
 
@@ -69,6 +84,9 @@ TrayMenuController::TrayMenuController(QObject *parent)
     // of an app building routine. The global singletons have to go and this is an important step to achieving that.
     FolderMan *folderMan = FolderMan::instance();
     connect(folderMan, &FolderMan::folderSyncStateChange, this, &TrayMenuController::slotSyncStateChange);
+    // adding this as when a folder is causing some "problem" - removing it should immediately update overall sync status instead of
+    // waiting for next sync
+    connect(folderMan, &FolderMan::folderRemoved, this, &TrayMenuController::slotComputeOverallSyncStatus);
 }
 
 TrayMenuController::~TrayMenuController()
@@ -111,12 +129,19 @@ void TrayMenuController::slotTrayMessageIfServerUnsupported(Account *account)
     }
 }
 
+void TrayMenuController::useMonoIconsChanged(bool useMono)
+{
+    if (useMono != IconResources::useMonoTrayIcons()) {
+        IconResources::setUseMonoTrayIcons(useMono);
+        slotComputeOverallSyncStatus();
+    }
+}
+
 QIcon TrayMenuController::getTrayStatusIcon(const SyncResult &status) const
 {
     auto contextMenuVisible = _tray->contextMenu() && _tray->contextMenu()->isVisible();
     bool hasDarkTray = Utility::hasDarkSystray();
     return IconResources::themedTrayIcon(status.iconNameForStatus(), contextMenuVisible, hasDarkTray);
-    // return Theme::instance()->themeTrayIcon(SyncResult{status}, contextMenuVisible);
 }
 
 void TrayMenuController::slotComputeOverallSyncStatus()

@@ -207,6 +207,16 @@ QIcon IconResources::getThemedIcon(const QString &iconTheme, const QString &name
     return cached;
 }
 
+bool IconResources::useMonoTrayIcons()
+{
+    return _useMonoTrayIcons;
+}
+
+void IconResources::setUseMonoTrayIcons(bool useMono)
+{
+    _useMonoTrayIcons = useMono;
+}
+
 void IconResources::handleSystemStyleChanged()
 {
     // for now this is all we should do

@@ -42,6 +42,9 @@ SettingsView::SettingsView(QWidget *parent)
 
     // misc
     connect(_ui->monoIconsCheckBox, &QAbstractButton::toggled, this, &SettingsView::saveMiscSettings);
+    // I am NOT a fan of this approach. However. Until we have a real data model for general settings which will notify changes in a
+    // normal way, I hold my nose and do it this way.
+    connect(_ui->monoIconsCheckBox, &QAbstractButton::toggled, ocApp()->tray(), &TrayMenuController::useMonoIconsChanged);
     connect(_ui->crashreporterCheckBox, &QAbstractButton::toggled, this, &SettingsView::saveMiscSettings);
 
     connect(_ui->languageDropdown, QOverload<int>::of(&QComboBox::activated), this, [this]() {
@@ -112,7 +115,6 @@ void SettingsView::saveMiscSettings()
     ConfigFile cfgFile;
     bool isChecked = _ui->monoIconsCheckBox->isChecked();
     cfgFile.setMonoIcons(isChecked);
-    Theme::instance()->setSystrayUseMonoIcons(isChecked);
     cfgFile.setCrashReporter(_ui->crashreporterCheckBox->isChecked());
 
     // the first entry, identified by index 0, means "use default", which is a special case handled below
