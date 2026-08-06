@@ -1,5 +1,6 @@
 # Table of Contents
 
+* [Changelog for unreleased](#changelog-for-owncloud-desktop-client-unreleased-unreleased)
 * [Changelog for 7.1.0](#changelog-for-owncloud-desktop-client-710-2026-06-08)
 * [Changelog for 6.0.3](#changelog-for-owncloud-desktop-client-603-2026-01-07)
 * [Changelog for 6.0.2](#changelog-for-owncloud-desktop-client-602-2025-11-03)
@@ -41,6 +42,23 @@
 * [Changelog for 2.6.3](#changelog-for-owncloud-desktop-client-263-2020-06-10)
 * [Changelog for 2.6.2](#changelog-for-owncloud-desktop-client-262-2020-02-21)
 * [Changelog for 2.6.1 versions and below](#changelog-for-261-versions-and-below)
+# Changelog for ownCloud Desktop Client [unreleased] (UNRELEASED)
+
+The following sections list the changes in ownCloud Desktop Client unreleased relevant to
+ownCloud admins and users.
+
+[unreleased]: https://github.com/owncloud/client/compare/v7.1.0...master
+
+## Summary
+
+* Bugfix - Load OIDC prompt from the right value: [#12597](https://github.com/owncloud/client/pull/12597)
+
+## Details
+
+* Bugfix - Load OIDC prompt from the right value: [#12597](https://github.com/owncloud/client/pull/12597)
+
+   https://github.com/owncloud/client/pull/12597
+
 # Changelog for ownCloud Desktop Client [7.1.0] (2026-06-08)
 
 The following sections list the changes in ownCloud Desktop Client 7.1.0 relevant to
