@@ -264,8 +264,10 @@ void AccountViewController::onAccountStateChanged(AccountState::State state)
         errors = _accountState->connectionErrors();
         break;
     case AccountState::NetworkError:
-        // don't display the error to the user, https://github.com/owncloud/client/issues/9790
-        [[fallthrough]];
+        text = tr("Server is temporarily unavailable");
+        icon = StatusIcon::Disconnected;
+        errors = _accountState->connectionErrors();
+        break;
     case AccountState::Disconnected:
         text = tr("Disconnected");
         icon = StatusIcon::Disconnected;
