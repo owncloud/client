@@ -91,13 +91,6 @@ public:
      */
     virtual QString configFileName() const;
 
-    /**
-     * get a sync state icon
-     */
-
-    QIcon themeTrayIcon(const SyncResult &result, bool sysTrayMenuVisible = false,
-        Resources::IconType iconType = Resources::IconType::BrandedIconWithFallbackToVanillaIcon) const;
-
     QString syncStateIconName(const SyncResult &result) const;
 
     virtual QIcon applicationIcon() const;
@@ -171,11 +164,6 @@ public:
      * About dialog contents
      */
     virtual QString about() const;
-
-    /**
-     * Define if the systray icons should be using mono design
-     */
-    void setSystrayUseMonoIcons(bool mono);
 
 
     /**
@@ -274,17 +262,11 @@ protected:
     QString gitSHA1(VersionFormat format = VersionFormat::Plain) const;
 
 
-Q_SIGNALS:
-    void systrayUseMonoIconsChanged(bool);
-
-    void themeChanged();
-
 private:
     Theme(Theme const &);
     Theme &operator=(Theme const &);
 
     static Theme *_instance;
-    bool _mono = false;
 };
 
 }

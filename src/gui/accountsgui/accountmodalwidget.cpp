@@ -15,8 +15,6 @@
 #include "accountmodalwidget.h"
 #include "ui_accountmodalwidget.h"
 
-#include "gui/qmlutils.h"
-
 #include <QDialog>
 
 namespace OCC {
@@ -43,18 +41,6 @@ AccountModalWidget::AccountModalWidget(const QString &title, QWidget *widget, QW
     }
 }
 
-
-AccountModalWidget::AccountModalWidget(const QString &title, const QUrl &qmlSource, QObject *qmlContext, QWidget *parent)
-    : AccountModalWidget(
-          title,
-          [&] {
-              auto *out = new QmlUtils::OCQuickWidget;
-              out->setOCContext(qmlSource, parent, qmlContext, QJSEngine::JavaScriptOwnership);
-              return out;
-          }(),
-          parent)
-{
-}
 void AccountModalWidget::setStandardButtons(QDialogButtonBox::StandardButtons buttons)
 {
     if (!_widgetHasButtons)

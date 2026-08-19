@@ -15,7 +15,7 @@
 #include "accountfolderscontroller.h"
 
 #include "accountfoldersview.h"
-#include "accountmodalwidget.h"
+#include "accountsgui/accountmodalwidget.h"
 #include "application.h"
 #include "commonstrings.h"
 #include "configfile.h"
