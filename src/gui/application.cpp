@@ -86,10 +86,6 @@ Application::Application(Platform *platform, const QString &displayLanguage, boo
 
     qApp->setQuitOnLastWindowClosed(false);
 
-    // todo: dc-307 - there should be no setters and hence no notifications from theme
-    Theme::instance()->setSystrayUseMonoIcons(cfg.monoIcons());
-    connect(Theme::instance(), &Theme::systrayUseMonoIconsChanged, this, &Application::slotUseMonoIconsChanged);
-
 #ifdef WITH_AUTO_UPDATER
     // Update checks
     UpdaterScheduler *updaterScheduler = new UpdaterScheduler(this, this);
@@ -124,12 +120,11 @@ void Application::showModalWidget(ModalWrapperWidget *wrapper) const
 }
 
 
-// move to owncloudgui or wherever we end up consolidating the tray meny/socketApi management
 void Application::slotAccountStateAdded(AccountState *accountState) const
 {
     if (!accountState || !accountState->account())
         return;
-    // Hook up the GUI slots to the account state's Q_SIGNALS:
+
     Account *account = accountState->account();
 
     connect(accountState, &AccountState::stateChanged, _trayController, &TrayMenuController::slotComputeOverallSyncStatus);
@@ -169,11 +164,6 @@ void Application::updateAutoRun(bool firstRun)
     if (shouldSetAutoStart) {
         Utility::setLaunchOnStartup(Theme::instance()->appName(), Theme::instance()->appNameGUI(), true);
     }
-}
-
-void Application::slotUseMonoIconsChanged(bool)
-{
-    _trayController->slotComputeOverallSyncStatus();
 }
 
 bool Application::debugMode()
