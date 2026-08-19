@@ -16,6 +16,7 @@
 
 #include "aboutview.h"
 #include "application.h"
+#include "guiutility.h"
 #include "localactivitywidget.h"
 #include "mainwindow.h"
 #include "modalwrapperwidget.h"
@@ -43,9 +44,41 @@ void MainWindowController::setup()
     buildMenuActions();
 }
 
+QList<QAction *> MainWindowController::buildUrlActions()
+{
+    QList<QAction *> actions;
+    if (!Theme::instance()->urlActions().isEmpty()) {
+        QVector<std::tuple<QString, QString, QUrl>> themeDefs = Theme::instance()->urlActions();
+        int num = themeDefs.count();
+        for (int i = 0; i < num; i++) {
+            QAction *urlAction = new QAction(this);
+            auto def = themeDefs[i];
+            // todo: the theme should provide any path to subdir relative to "universal"
+            QString iconName = QString("urlIcons/%1").arg(std::get<0>(def));
+            if (!iconName.isEmpty()) {
+                QIcon ic = Resources::themeUniversalIcon(iconName);
+                Q_ASSERT(!ic.isNull());
+                urlAction->setIcon(ic);
+                urlAction->setIconVisibleInMenu(true);
+            }
+            urlAction->setText(std::get<1>(def));
+            QUrl url = std::get<2>(def);
+            connect(urlAction, &QAction::triggered, this, [url]() { Utility::openBrowser(url, nullptr); });
+            actions.push_back(urlAction);
+        }
+        QAction *urlsSeparator = new QAction(this);
+        urlsSeparator->setObjectName("urlsSeparatorAction");
+        urlsSeparator->setSeparator(true);
+        actions.push_back(urlsSeparator);
+    }
+    return actions;
+}
+
 void MainWindowController::buildMenuActions()
 {
     QList<QAction *> menuActions;
+
+    menuActions.append(buildUrlActions());
 
     QAction *addAccountAction = new QAction(tr("Add account..."), this);
     addAccountAction->setObjectName("addAcountAction");
