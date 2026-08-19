@@ -72,6 +72,42 @@ void SyncResult::setStatus(Status stat)
     _syncTime = QDateTime::currentDateTimeUtc();
 }
 
+QString SyncResult::iconNameForStatus() const
+{
+    switch (_status) {
+    case SyncResult::NotYetStarted:
+        [[fallthrough]];
+    case SyncResult::SyncRunning:
+        return QStringLiteral("sync");
+    case SyncResult::SyncAbortRequested:
+        [[fallthrough]];
+    case SyncResult::Paused:
+        return QStringLiteral("pause");
+    case SyncResult::SyncPrepare:
+        [[fallthrough]];
+    case SyncResult::Success:
+        if (!hasUnresolvedConflicts()) {
+            return QStringLiteral("ok");
+        }
+        [[fallthrough]];
+    case SyncResult::Problem:
+        [[fallthrough]];
+    case SyncResult::Undefined:
+        // this can happen if no sync connections are configured.
+        return QStringLiteral("information");
+    case SyncResult::Offline:
+        return QStringLiteral("offline");
+    case SyncResult::Error:
+        [[fallthrough]];
+    case SyncResult::Unavailable:
+        [[fallthrough]];
+    case SyncResult::SetupError:
+        // FIXME: Use problem once we have an icon.
+        return QStringLiteral("error");
+    }
+    Q_UNREACHABLE();
+}
+
 QDateTime SyncResult::syncTime() const
 {
     return _syncTime;
