@@ -187,28 +187,76 @@ void AccountState::setState(State state)
         }
     }
 
-    // might not have changed but the underlying _connectionErrors might have
-    if (_state == Connected) {
-        QTimer::singleShot(0, this, [this, oldState] {
+    // only do this once when the state actually changes from something to connected
+    // todo: need to investigate whether it's ever the case that we go from connected to connected.
+    // so far it looks to me as if this happens when the connection validator confirms all is still well?
+    if (_state == Connected && oldState != _state) {
+        QTimer::singleShot(0, this, [this] {
             // ensure the connection validator is done
             _queueGuard.unblock();
             // update capabilities and fetch relevant settings
-            _fetchCapabilitiesJob = new FetchServerSettingsJob(_account, this);
-            connect(_fetchCapabilitiesJob.get(), &FetchServerSettingsJob::finishedSignal, this, [oldState, this] {
-                // Lisa todo: I do not understand this logic at all - review it
-                if (oldState == Connected || _state == Connected) {
-                    _fetchCapabilitiesJob.clear();
-                    Q_EMIT isConnectedChanged();
-                }
-            });
-            _fetchCapabilitiesJob->start();
+            fetchServerSettings();
         });
     }
 
     if (oldState != _state) {
         Q_EMIT stateChanged(_state);
+        // the old->new state is confirmed to be different and one of them is connected state
+        if (oldState == Connected || _state == Connected)
+            emit isConnectedChanged();
     }
 }
+
+void AccountState::fetchServerSettings()
+{
+    Q_ASSERT(_fetchServerSettingsJob == nullptr);
+    _fetchServerSettingsJob = new FetchServerSettingsJob(_account, this);
+
+    connect(_fetchServerSettingsJob, &FetchServerSettingsJob::finishedSignal, this, &AccountState::slotFetchServerSettingsResult);
+    /*  connect(_fetchServerSettingsJob.get(), &FetchServerSettingsJob::finishedSignal, this, [oldState, this] {
+          // Lisa todo: I do not understand this logic at all - review it
+          if (oldState == Connected || _state == Connected) {
+              _fetchServerSettingsJob.clear();
+              Q_EMIT isConnectedChanged();
+          }
+      });*/
+    _fetchServerSettingsJob->start();
+}
+
+void AccountState::slotFetchServerSettingsResult(FetchServerSettingsJob::Result result)
+{
+    _connectionErrors.clear();
+
+    switch (result) {
+    case FetchServerSettingsJob::Result::UnsupportedServer:
+        _connectionErrors.append(tr("The server is not supported by this client."));
+        setState(ConfigurationError);
+        break;
+    case FetchServerSettingsJob::Result::InvalidCredentials:
+        slotInvalidCredentials();
+        break;
+    case FetchServerSettingsJob::Result::TimeOut:
+        _connectionErrors.append(tr("Retrieving user settings and server capabilities timed out."));
+        // hmmm...do we need to retry in this case? I'm guessing yes but needs discussion
+        setState(NetworkError);
+        break;
+    case FetchServerSettingsJob::Result::Undefined:
+        _connectionErrors.append(tr("Unable to retrieve user settings and server capabilities."));
+        setState(Disconnected);
+        break;
+    case FetchServerSettingsJob::Result::Success:
+        Q_ASSERT(_state == Connected);
+        break;
+    }
+
+    // this is really finished so we should not need to deleteLater
+    // but if I do a straight delete I get a crash in AbstractNetworkJob (I don't know which one) related to a deleteLater there?!
+    // this is such a mess
+    // the original handling just called clear() on the QPointer but that sure as heck looks like a leak to me
+    // _fetchServerSettingsJob->deleteLater();
+    // Q_ASSERT(_fetchServerSettingsJob == nullptr);
+}
+
 
 bool AccountState::isSignedOut() const
 {
@@ -590,7 +638,7 @@ void AccountState::setSettingUp(bool settingUp)
 }
 bool AccountState::readyForSync() const
 {
-    return !_fetchCapabilitiesJob && isConnected();
+    return !_fetchServerSettingsJob && isConnected();
 }
 
 } // namespace OCC

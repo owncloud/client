@@ -19,7 +19,6 @@
 #include "libsync/creds/abstractcredentials.h"
 #include "libsync/networkjobs.h"
 #include "libsync/networkjobs/checkserverjobfactory.h"
-#include "libsync/theme.h"
 
 #include <QJsonObject>
 #include <QLoggingCategory>
@@ -284,38 +283,38 @@ void ConnectionValidator::slotAuthSuccess()
     }
 
     _errors.clear();
-    if (_mode != ConnectionValidator::ValidationMode::ValidateAuth) {
-        auto *fetchSetting = new FetchServerSettingsJob(_account, this);
-        const auto unsupportedServerError = [this] {
-            _errors.append({tr("The configured server for this client is too old."), tr("Please update to the latest server and restart the client.")});
-        };
-        connect(fetchSetting, &FetchServerSettingsJob::finishedSignal, this, [unsupportedServerError, this](FetchServerSettingsJob::Result result) {
-            switch (result) {
-            case FetchServerSettingsJob::Result::UnsupportedServer:
-                unsupportedServerError();
-                reportResult(ServerVersionMismatch);
-                break;
-            case FetchServerSettingsJob::Result::InvalidCredentials:
-                reportResult(CredentialsWrong);
-                break;
-            case FetchServerSettingsJob::Result::TimeOut:
-                reportResult(Timeout);
-                break;
-            case FetchServerSettingsJob::Result::Success:
-                if (_account->serverSupportLevel() == Account::ServerSupportLevel::Unknown) {
-                    unsupportedServerError();
-                }
-                reportResult(Connected);
-                break;
-            case FetchServerSettingsJob::Result::Undefined:
-                reportResult(Undefined);
-                break;
-            }
-        });
+    /* if (_mode != ConnectionValidator::ValidationMode::ValidateAuth) {
+         auto *fetchSetting = new FetchServerSettingsJob(_account, this);
+         const auto unsupportedServerError = [this] {
+             _errors.append({tr("The configured server for this client is too old."), tr("Please update to the latest server and restart the client.")});
+         };
+         connect(fetchSetting, &FetchServerSettingsJob::finishedSignal, this, [unsupportedServerError, this](FetchServerSettingsJob::Result result) {
+             switch (result) {
+             case FetchServerSettingsJob::Result::UnsupportedServer:
+                 unsupportedServerError();
+                 reportResult(ServerVersionMismatch);
+                 break;
+             case FetchServerSettingsJob::Result::InvalidCredentials:
+                 reportResult(CredentialsWrong);
+                 break;
+             case FetchServerSettingsJob::Result::TimeOut:
+                 reportResult(Timeout);
+                 break;
+             case FetchServerSettingsJob::Result::Success:
+                 if (_account->serverSupportLevel() == Account::ServerSupportLevel::Unknown) {
+                     unsupportedServerError();
+                 }
+                 reportResult(Connected);
+                 break;
+             case FetchServerSettingsJob::Result::Undefined:
+                 reportResult(Undefined);
+                 break;
+             }
+         });
 
-        fetchSetting->start();
-        return;
-    }
+         fetchSetting->start();
+         return;
+     }*/
     reportResult(Connected);
 }
 
