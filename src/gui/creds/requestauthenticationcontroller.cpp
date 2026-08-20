@@ -17,7 +17,7 @@
 #include "application.h"
 #include "requestauthenticationwidget.h"
 
-#include "accountmodalwidget.h"
+#include "accountsgui/accountmodalwidget.h"
 
 #include <config/appconfig.h>
 

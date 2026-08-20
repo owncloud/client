@@ -6,6 +6,7 @@ add_library(owncloudResources SHARED
     qmlresources.cpp
     themewatcher.cpp
     template.cpp
+    iconresources.cpp
 )
 
 generate_theme(owncloudResources OWNCLOUD_SIDEBAR_ICONS)

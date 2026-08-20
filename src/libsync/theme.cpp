@@ -23,33 +23,10 @@
 #include <QSslSocket>
 #include <QStyle>
 
-#include "themewatcher.h"
-
 #ifdef THEME_INCLUDE
 #include THEME_INCLUDE
 #endif
 
-namespace {
-QString whiteTheme()
-{
-    return QStringLiteral("white");
-}
-
-QString blackTheme()
-{
-    return QStringLiteral("black");
-}
-
-QString darkTheme()
-{
-    return QStringLiteral("dark");
-}
-
-QString coloredTheme()
-{
-    return QStringLiteral("colored");
-}
-}
 namespace OCC {
 
 Theme *Theme::_instance = nullptr;
@@ -58,8 +35,8 @@ Theme *Theme::instance()
 {
     if (!_instance) {
         _instance = new THEME_CLASS;
-        auto *watcher = new Resources::ThemeWatcher(_instance);
-        connect(watcher, &Resources::ThemeWatcher::themeChanged, _instance, &Theme::themeChanged);
+        //      auto *watcher = new Resources::ThemeWatcher(_instance);
+        //      connect(watcher, &Resources::ThemeWatcher::themeChanged, _instance, &Theme::themeChanged);
     }
     return _instance;
 }
@@ -98,6 +75,9 @@ QString Theme::configFileName() const
     return QStringLiteral(APPLICATION_EXECUTABLE ".cfg");
 }
 
+// returning an icon instead of just the icon name is really questionable here. Need to see if this is somehow required for the
+// branding builds - if not, get rid of this entirely and make the applicationIconName return the correct name by appending the -icon
+// this is SO confusing - theme should have no responsibility for *retrieving* resources!!!
 QIcon Theme::applicationIcon() const
 {
     return Resources::themeUniversalIcon(applicationIconName() + QStringLiteral("-icon"));
@@ -105,39 +85,16 @@ QIcon Theme::applicationIcon() const
 
 QString Theme::applicationIconName() const
 {
+    // attention! if APPLICATION_ICON_NAME is not defined, it is auto-set to APPLICATION_SHORTNAME in CMakeLists.txt:131
+    // I STRONGLY prefer to move that "fallback" here, to avoid confusion, as *how many cmake files do we have to navigate to
+    // find these values*?
+    // it's not ok, imo. I quasi understand the "need" for these vars but they are nothing but trouble.
     return QStringLiteral(APPLICATION_ICON_NAME);
 }
 
 QIcon Theme::aboutIcon() const
 {
     return applicationIcon();
-}
-
-QIcon Theme::themeTrayIcon(const SyncResult &result, [[maybe_unused]] bool sysTrayMenuVisible, Resources::IconType iconType) const
-{
-    auto systrayIconFlavor = [&]() {
-        QString flavor;
-        if (_mono) {
-            flavor = Utility::hasDarkSystray() ? whiteTheme() : blackTheme();
-
-#ifdef Q_OS_MAC
-            if (sysTrayMenuVisible) {
-                flavor = whiteTheme();
-            }
-#endif
-        } else {
-            // we have a dark sys tray and the theme has support for that
-            flavor = (Utility::hasDarkSystray() && Resources::hasDarkTheme()) ? darkTheme() : coloredTheme();
-        }
-        return flavor;
-    };
-    auto icon = Resources::loadIcon(systrayIconFlavor(), QStringLiteral("state-%1").arg(syncStateIconName(result)), iconType);
-#ifdef Q_OS_MAC
-    // This defines the icon as a template and enables automatic macOS color handling
-    // See https://bugreports.qt.io/browse/QTBUG-42109
-    icon.setIsMask(_mono && !sysTrayMenuVisible);
-#endif
-    return icon;
 }
 
 Theme::Theme()
@@ -168,12 +125,6 @@ QString Theme::overrideServerUrl() const
 QString Theme::overrideServerPath() const
 {
     return {};
-}
-
-void Theme::setSystrayUseMonoIcons(bool mono)
-{
-    _mono = mono;
-    Q_EMIT systrayUseMonoIconsChanged(mono);
 }
 
 QUrl Theme::updateCheckUrl() const
@@ -253,6 +204,8 @@ QString Theme::about() const
 {
     // Ideally, the vendor should be "ownCloud GmbH", but it cannot be changed without
     // changing the location of the settings and other registry keys.
+    // todo: I do not agree with checking the resources for whether this is oc or not. imo we should just take the application_vendor in all
+    // cases for this default about() impl.
     const QString vendor = Resources::isVanillaTheme() ? QStringLiteral("ownCloud GmbH") : QStringLiteral(APPLICATION_VENDOR);
     return tr("<p>Version %1. For more information visit <a href=\"%2\">https://%3</a></p>"
               "<p>For known issues and help, please visit: <a href=\"https://central.owncloud.com/c/desktop-client\">https://central.owncloud.com</a></p>"

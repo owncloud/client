@@ -37,16 +37,17 @@ struct IconCache
 {
     IconCache()
     {
-        auto *watcher = new ThemeWatcher(qApp);
-        QObject::connect(watcher, &ThemeWatcher::themeChanged, [this]() { _cache.clear(); });
+        // auto *watcher = new ThemeWatcher(qApp);
+        // QObject::connect(watcher, &ThemeWatcher::themeChanged, [this]() { _cache.clear(); });
 
-        // this is the currently "correct" way to listen for system color changes - I'm leaving it out
-        // for the time being
+        // as of qt 6.5 this is the "correct" way to listen for system color changes
         // this generally works to clear the old icons, but places where the icon is already set, eg
         // the toolbar actions and connection status, need to be reset to what is in the new cache.
         // this will not work here, as we need to be sure the cache has been cleared *before* anyone
-        // asks for the icon again. Conceptually though, it's correct to do it this way.
-        // QObject::connect(qGuiApp->styleHints(), &QStyleHints::colorSchemeChanged, [this]() { _cache.clear(); });
+        // asks for the icon again.
+        // I think at some point we should have a colorManager that orchestrates these updates relative
+        // to system color changes. The responsibility does not belong in resources!
+        QObject::connect(qGuiApp->styleHints(), &QStyleHints::colorSchemeChanged, [this]() { _cache.clear(); });
     }
     QMap<QString, QIcon> _cache;
 };
@@ -133,10 +134,6 @@ QIcon OCC::Resources::getCoreIcon(const QString &iconName)
         return cached = QPixmap::fromImageReader(&iconReader);
     }
     return cached;
-    // "<svg width="60" height="60" viewBox="0 0 60 60" fill="#ADACAB" xmlns="http://www.w3.org/2000/svg">
-    //<path d="M15 15H45V45H15V15Z" fill="#ADACAB"
-    //    </svg>
-    //   "
 }
 
 /*
@@ -228,6 +225,7 @@ QIcon OCC::Resources::buildAvatar(const QString &initials, QUuid accountUid)
         font.setBold(true);
         painter.setFont(font);
         // use base color to simulate transparent text that reveals what is behind it, as we have in other icons...ie the base color
+        // no I can't use color "Transparent" because the circle/ellipse has already been filled, so the text would be net invisible ;)
         painter.setPen(pal.color(QPalette::Base));
         painter.drawText(pix.rect(), Qt::AlignCenter, initials);
         painter.end();

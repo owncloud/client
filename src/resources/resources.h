@@ -56,6 +56,7 @@ QIcon OWNCLOUDRESOURCES_EXPORT buildAvatar(const QString &initials, QUuid accoun
  */
 QIcon OWNCLOUDRESOURCES_EXPORT themeUniversalIcon(const QString &name, IconType iconType = IconType::BrandedIcon);
 
+// this needs to stay until we get rid of qml in spacesBrowser
 class OWNCLOUDRESOURCES_EXPORT CoreImageProvider : public QQuickImageProvider
 {
     Q_OBJECT
