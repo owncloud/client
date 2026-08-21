@@ -50,6 +50,8 @@ public:
 
     void setStatus(Status);
     Status status() const;
+    QString iconNameForStatus() const;
+
     QDateTime syncTime() const;
 
     bool foundFilesNotSynced() const { return _foundFilesNotSynced; }

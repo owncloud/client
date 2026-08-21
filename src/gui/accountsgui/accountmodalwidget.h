@@ -36,7 +36,6 @@ class AccountModalWidget : public QWidget
     Q_OBJECT
 public:
     AccountModalWidget(const QString &title, QWidget *widget, QWidget *parent);
-    AccountModalWidget(const QString &title, const QUrl &qmlSource, QObject *qmlContext, QWidget *parent);
 
     // if the widget is a QDialog, these functions silently do nothing (because the dialog buttons already exist)
     void setStandardButtons(QDialogButtonBox::StandardButtons buttons);

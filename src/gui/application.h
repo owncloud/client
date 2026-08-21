@@ -84,7 +84,6 @@ public:
     void updateAutoRun(bool firstRun);
 
 protected Q_SLOTS:
-    void slotUseMonoIconsChanged(bool);
     void slotCleanup();
     void slotAccountStateAdded(AccountState *accountState) const;
 
