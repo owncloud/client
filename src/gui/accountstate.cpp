@@ -16,7 +16,8 @@
 #include "application.h"
 #include "configfile.h"
 
-#include "fetchserversettings.h"
+// #include "fetchserversettings.h"
+#include "libsync/networkjobs/jsonjob.h"
 
 #include "libsync/creds/abstractcredentials.h"
 
@@ -187,28 +188,112 @@ void AccountState::setState(State state)
         }
     }
 
-    // might not have changed but the underlying _connectionErrors might have
+    // only do this once when the state actually changes from something to connected
+    // todo: need to investigate whether it's ever the case that we go from connected to connected.
+    // so far it looks to me as if this happens when the connection validator confirms all is still well?
     if (_state == Connected) {
-        QTimer::singleShot(0, this, [this, oldState] {
-            // ensure the connection validator is done
-            _queueGuard.unblock();
+        //_queueGuard.unblock();
+        // QTimer::singleShot(0, this, [this, oldState] {
+        //  ensure the connection validator is done
+        // how can it not be done, given it is telling us we're connected?
+        _queueGuard.unblock();
+        if (oldState != _state) {
             // update capabilities and fetch relevant settings
-            _fetchCapabilitiesJob = new FetchServerSettingsJob(_account, this);
-            connect(_fetchCapabilitiesJob.get(), &FetchServerSettingsJob::finishedSignal, this, [oldState, this] {
-                // Lisa todo: I do not understand this logic at all - review it
-                if (oldState == Connected || _state == Connected) {
-                    _fetchCapabilitiesJob.clear();
-                    Q_EMIT isConnectedChanged();
-                }
-            });
-            _fetchCapabilitiesJob->start();
-        });
+            fetchServerSettings();
+        }
+        //});
     }
 
     if (oldState != _state) {
         Q_EMIT stateChanged(_state);
+        // the old->new state is confirmed to be different and one of them is connected state so
+        // isConnected did actually change
+        if (oldState == Connected || _state == Connected)
+            emit isConnectedChanged();
     }
 }
+
+void AccountState::fetchServerSettings()
+{
+    Q_ASSERT(_fetchServerSettingsJob == nullptr);
+    _fetchServerSettingsJob = new FetchServerSettingsJob(_account, this);
+
+    connect(_fetchServerSettingsJob, &FetchServerSettingsJob::finishedSignal, this, &AccountState::slotFetchServerSettingsResult);
+    /*  connect(_fetchServerSettingsJob.get(), &FetchServerSettingsJob::finishedSignal, this, [oldState, this] {
+          // Lisa todo: I do not understand this logic at all - review it
+          if (oldState == Connected || _state == Connected) {
+              _fetchServerSettingsJob.clear();
+              Q_EMIT isConnectedChanged();
+          }
+      });*/
+    _fetchServerSettingsJob->start();
+}
+
+void AccountState::slotFetchServerSettingsResult(FetchServerSettingsJob::Result result)
+{
+    _connectionErrors.clear();
+
+    switch (result) {
+    case FetchServerSettingsJob::Result::UnsupportedServer:
+        _connectionErrors.append(tr("The server is not supported by this client."));
+        setState(ConfigurationError);
+        break;
+    case FetchServerSettingsJob::Result::InvalidCredentials:
+        slotInvalidCredentials();
+        break;
+    case FetchServerSettingsJob::Result::TimeOut:
+        _connectionErrors.append(tr("Retrieving user settings and server capabilities timed out."));
+        // hmmm...do we need to retry in this case? I'm guessing yes but needs discussion
+        setState(NetworkError);
+        break;
+    case FetchServerSettingsJob::Result::Undefined:
+        _connectionErrors.append(tr("Unable to retrieve user settings and server capabilities."));
+        setState(Disconnected);
+        break;
+    case FetchServerSettingsJob::Result::Success:
+        Q_ASSERT(_state == Connected);
+        break;
+    }
+
+    // this is really finished so we should not need to deleteLater
+    // the original handling just called clear() on the QPointer but that sure as heck looks like a leak to me
+    // delete _fetchServerSettingsJob;
+    // Q_ASSERT(_fetchServerSettingsJob == nullptr);
+
+    // these are both self deleting.
+    // but there is an unidentified problem:
+    // running the job here instead of in the FetchServerSettingsJob eventually times out but only if I have deleted the
+    //_fetchServerSettingsJob, above!
+    // they have nothing to do with each other anymore - what the ever living...???
+    // need extra eyes on this. it makes NO sense
+    if (_account->capabilities().avatarsAvailable()) {
+        auto *avatarJob = new AvatarJob(_account, _account->davUser(), 128, nullptr);
+        connect(avatarJob, &AvatarJob::avatarPixmap, this, [this](const QPixmap &img) { _account->setAvatar(AvatarJob::makeCircularAvatar(img)); });
+        avatarJob->start();
+    }
+
+    if (_account->capabilities().appProviders().enabled) {
+        auto *jsonJob = new JsonJob(_account, _account->capabilities().appProviders().appsUrl, {}, "GET");
+        connect(jsonJob, &JsonJob::finishedSignal, this, [jsonJob, this] { _account->setAppProvider(AppProvider{jsonJob->data()}); });
+        jsonJob->start();
+    }
+
+    // deleting it here crashes. naturally >:/
+    // the crash in AbstractNetworkJob (I don't know which one but have to presume it's the avatar job) related to a deleteLater there?!
+    // this is such a mess
+    // delete _fetchServerSettingsJob;
+    // Q_ASSERT(_fetchServerSettingsJob == nullptr);
+    // this seems to work but I have no idea why deleteLater is "required".
+    // leaving all of this mess in place until I have discussed with cohorts
+    // note I have confirmed it does get deleted I am just not sure why it has to be later. The side effect is that the pointer is still live
+    // when it's checked in readyForSync which is part of Folder::canSync and if it returns false, the folder is not enqueued.
+    _fetchServerSettingsJob->deleteLater();
+    _fetchServerSettingsJob.clear();
+    // we have to call this again to trigger the folder manager to try to re-enqueue the folders now that the settings job is cleared.
+    // None of this is ok! Just demonstrated what acutally works with this current mess
+    emit isConnectedChanged();
+}
+
 
 bool AccountState::isSignedOut() const
 {
@@ -590,7 +675,12 @@ void AccountState::setSettingUp(bool settingUp)
 }
 bool AccountState::readyForSync() const
 {
-    return !_fetchCapabilitiesJob && isConnected();
+    // this is highly questionable.
+    // first, this explains why the folders aren't ever syncing after refactoring the fetchServerSettings job. Folder::canSync calls this and
+    // that is checked when trying to enqueue the folder
+    // net is that because we can't cleanly get rid of the fetshServerSettingsJob (yet) this always returns false! or at least it does
+    // on first folder load.
+    return !_fetchServerSettingsJob && isConnected();
 }
 
 } // namespace OCC

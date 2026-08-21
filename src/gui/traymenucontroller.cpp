@@ -42,8 +42,6 @@ SyncResult trayOverallStatus()
         result.addResult(folder);
     }
     SyncResult finalResult = result.overallStatus();
-    if (finalResult.status() == SyncResult::Paused)
-        qDebug() << "just break here";
 
     // this is confusing. basically we have "standard" icons associated with different sync statuses
     // the only way to "pick" a particular icon for our tray use case is to update the status if the "real"

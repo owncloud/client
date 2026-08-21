@@ -28,14 +28,14 @@ public:
     enum class Result { Success, TimeOut, InvalidCredentials, UnsupportedServer, Undefined };
     Q_ENUM(Result);
     FetchServerSettingsJob(Account *account, QObject *parent);
-
+    ~FetchServerSettingsJob() override { qDebug() << "server settings job deleted"; }
     void start();
 
 Q_SIGNALS:
     void finishedSignal(Result);
 
 private:
-    void runAsyncUpdates();
+    // void runAsyncUpdates();
 
     // returns whether the started jobs should be excluded from the retry queue
     bool isAuthJob() const;
