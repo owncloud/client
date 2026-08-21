@@ -2,8 +2,8 @@ name: GUI Tests (Branded Client)
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "0 0 * * *"
+  # schedule:
+  #   - cron: "0 0 * * *"
 
 env:
   NPM_GHERLINT: "@gherlint/gherlint@1.1.0"
