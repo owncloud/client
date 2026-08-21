@@ -16,7 +16,8 @@
 #include "application.h"
 #include "configfile.h"
 
-#include "fetchserversettings.h"
+// #include "fetchserversettings.h"
+#include "libsync/networkjobs/jsonjob.h"
 
 #include "libsync/creds/abstractcredentials.h"
 
@@ -201,7 +202,8 @@ void AccountState::setState(State state)
 
     if (oldState != _state) {
         Q_EMIT stateChanged(_state);
-        // the old->new state is confirmed to be different and one of them is connected state
+        // the old->new state is confirmed to be different and one of them is connected state so
+        // isConnected did actually change
         if (oldState == Connected || _state == Connected)
             emit isConnectedChanged();
     }
@@ -250,11 +252,37 @@ void AccountState::slotFetchServerSettingsResult(FetchServerSettingsJob::Result 
     }
 
     // this is really finished so we should not need to deleteLater
-    // but if I do a straight delete I get a crash in AbstractNetworkJob (I don't know which one) related to a deleteLater there?!
-    // this is such a mess
     // the original handling just called clear() on the QPointer but that sure as heck looks like a leak to me
-    // _fetchServerSettingsJob->deleteLater();
+
+    // delete _fetchServerSettingsJob;
     // Q_ASSERT(_fetchServerSettingsJob == nullptr);
+
+    // these are both self deleting.
+    // but there is an unidentified problem:
+    // running the job here instead of in the FetchServerSettingsJob eventually times out but only if I have deleted the
+    //_fetchServerSettingsJob, above!
+    // they have nothing to do with each other anymore - what the ever living...???
+    // need extra eyes on this. it makes NO sense
+    if (_account->capabilities().avatarsAvailable()) {
+        auto *avatarJob = new AvatarJob(_account, _account->davUser(), 128, nullptr);
+        connect(avatarJob, &AvatarJob::avatarPixmap, this, [this](const QPixmap &img) { _account->setAvatar(AvatarJob::makeCircularAvatar(img)); });
+        avatarJob->start();
+    }
+
+    if (_account->capabilities().appProviders().enabled) {
+        auto *jsonJob = new JsonJob(_account, _account->capabilities().appProviders().appsUrl, {}, "GET");
+        connect(jsonJob, &JsonJob::finishedSignal, this, [jsonJob, this] { _account->setAppProvider(AppProvider{jsonJob->data()}); });
+        jsonJob->start();
+    }
+
+    // deleting it here crashes. naturally >:/
+    // the crash in AbstractNetworkJob (I don't know which one but have to presume it's the avatar job) related to a deleteLater there?!
+    // this is such a mess
+    // delete _fetchServerSettingsJob;
+    // Q_ASSERT(_fetchServerSettingsJob == nullptr);
+    // this seems to work but I have no idea why deleteLater is "required".
+    // leaving all of this mess in place until I have discussed with cohorts
+    _fetchServerSettingsJob->deleteLater();
 }
 
 

@@ -35,7 +35,7 @@ Q_SIGNALS:
     void finishedSignal(Result);
 
 private:
-    void runAsyncUpdates();
+    // void runAsyncUpdates();
 
     // returns whether the started jobs should be excluded from the retry queue
     bool isAuthJob() const;
