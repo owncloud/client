@@ -28,7 +28,7 @@ public:
     enum class Result { Success, TimeOut, InvalidCredentials, UnsupportedServer, Undefined };
     Q_ENUM(Result);
     FetchServerSettingsJob(Account *account, QObject *parent);
-
+    ~FetchServerSettingsJob() override { qDebug() << "server settings job deleted"; }
     void start();
 
 Q_SIGNALS:

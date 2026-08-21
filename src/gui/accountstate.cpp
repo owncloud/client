@@ -191,13 +191,17 @@ void AccountState::setState(State state)
     // only do this once when the state actually changes from something to connected
     // todo: need to investigate whether it's ever the case that we go from connected to connected.
     // so far it looks to me as if this happens when the connection validator confirms all is still well?
-    if (_state == Connected && oldState != _state) {
-        QTimer::singleShot(0, this, [this] {
-            // ensure the connection validator is done
-            _queueGuard.unblock();
+    if (_state == Connected) {
+        //_queueGuard.unblock();
+        // QTimer::singleShot(0, this, [this, oldState] {
+        //  ensure the connection validator is done
+        // how can it not be done, given it is telling us we're connected?
+        _queueGuard.unblock();
+        if (oldState != _state) {
             // update capabilities and fetch relevant settings
             fetchServerSettings();
-        });
+        }
+        //});
     }
 
     if (oldState != _state) {
@@ -253,7 +257,6 @@ void AccountState::slotFetchServerSettingsResult(FetchServerSettingsJob::Result 
 
     // this is really finished so we should not need to deleteLater
     // the original handling just called clear() on the QPointer but that sure as heck looks like a leak to me
-
     // delete _fetchServerSettingsJob;
     // Q_ASSERT(_fetchServerSettingsJob == nullptr);
 
@@ -282,7 +285,13 @@ void AccountState::slotFetchServerSettingsResult(FetchServerSettingsJob::Result 
     // Q_ASSERT(_fetchServerSettingsJob == nullptr);
     // this seems to work but I have no idea why deleteLater is "required".
     // leaving all of this mess in place until I have discussed with cohorts
+    // note I have confirmed it does get deleted I am just not sure why it has to be later. The side effect is that the pointer is still live
+    // when it's checked in readyForSync which is part of Folder::canSync and if it returns false, the folder is not enqueued.
     _fetchServerSettingsJob->deleteLater();
+    _fetchServerSettingsJob.clear();
+    // we have to call this again to trigger the folder manager to try to re-enqueue the folders now that the settings job is cleared.
+    // None of this is ok! Just demonstrated what acutally works with this current mess
+    emit isConnectedChanged();
 }
 
 
@@ -666,6 +675,11 @@ void AccountState::setSettingUp(bool settingUp)
 }
 bool AccountState::readyForSync() const
 {
+    // this is highly questionable.
+    // first, this explains why the folders aren't ever syncing after refactoring the fetchServerSettings job. Folder::canSync calls this and
+    // that is checked when trying to enqueue the folder
+    // net is that because we can't cleanly get rid of the fetshServerSettingsJob (yet) this always returns false! or at least it does
+    // on first folder load.
     return !_fetchServerSettingsJob && isConnected();
 }
 
