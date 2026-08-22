@@ -1,33 +1,5 @@
 <?xml version="1.0" ?><!DOCTYPE TS><TS version="2.1" language="lo">
 <context>
-    <name>AccountBar</name>
-    <message>
-        <location filename="../src/gui/qml/AccountBar.qml" line="27"/>
-        <source>Navigation bar</source>
-        <translation>ແຖບນໍາທາງ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/qml/AccountBar.qml" line="114"/>
-        <source>Add Account</source>
-        <translation>ເພີ່ມບັນຊີ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/qml/AccountBar.qml" line="141"/>
-        <source>Activity</source>
-        <translation>ກິດຈະກຳ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/qml/AccountBar.qml" line="155"/>
-        <source>Settings</source>
-        <translation>ການຕັ້ງຄ່າ</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/qml/AccountBar.qml" line="184"/>
-        <source>Quit</source>
-        <translation>ອອກ</translation>
-    </message>
-</context>
-<context>
     <name>AppImageUpdateAvailableWidgetUi</name>
     <message>
         <location filename="../src/gui/updater/appimageupdateavailablewidget.ui" line="123"/>
@@ -383,7 +355,7 @@ File synchronization desktop utility.</source>
 <context>
     <name>OCC::Account</name>
     <message>
-        <location filename="../src/libsync/account.cpp" line="162"/>
+        <location filename="../src/libsync/account.cpp" line="166"/>
         <source>%1@%2</source>
         <translation>%1@%2</translation>
     </message>
@@ -550,7 +522,6 @@ This action will abort any currently running synchronization.</source>
 <context>
     <name>OCC::AccountModalWidget</name>
     <message>
-        <location filename="../src/gui/accountmodalwidget.ui" line="14"/>
         <location filename="../src/gui/accountsgui/accountmodalwidget.ui" line="14"/>
         <source>Form</source>
         <translation>ແບບຟອມ</translation>
@@ -1336,27 +1307,27 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::GETFileJob</name>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="168"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="102"/>
         <source>Connection Timeout</source>
         <translation>ການເຊື່ອມຕໍ່ໝົດເວລາ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="246"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="180"/>
         <source>No E-Tag received from server, check Proxy/Gateway</source>
         <translation>ບໍ່ໄດ້ຮັບ E-Tag ຈາກເຊີບເວີ, ກວດສອບ Proxy/Gateway</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="253"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="187"/>
         <source>We received a different E-Tag for resuming. Retrying next time.</source>
         <translation>ພວກເຮົາໄດ້ຮັບ E-Tag ທີ່ແຕກຕ່າງສຳລັບການດາວໂຫຼດຕໍ່. ຈະລອງໃໝ່ໃນຄັ້ງຕໍ່ໄປ.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="264"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="198"/>
         <source>We received an unexpected download Content-Length.</source>
         <translation>ພວກເຮົາໄດ້ຮັບ Content-Length ຂອງການດາວໂຫຼດທີ່ບໍ່ຄາດຄິດ.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="292"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="226"/>
         <source>Server returned wrong content-range</source>
         <translation>ເຊີບເວີສົ່ງ content-range ທີ່ບໍ່ຖືກຕ້ອງກັບມາ</translation>
     </message>
@@ -2032,141 +2003,141 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::ProcessDirectoryJob</name>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="185"/>
+        <location filename="../src/libsync/discovery.cpp" line="181"/>
         <source>Symbolic links are not supported in syncing.</source>
         <translation>ບໍ່ຮອງຮັບການຊິ້ງຂໍ້ມູນຜ່ານລິ້ງສັນຍາລັກ.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="194"/>
+        <location filename="../src/libsync/discovery.cpp" line="190"/>
         <source>File is listed on the ignore list.</source>
         <translation>ໄຟລ໌ນີ້ຢູ່ໃນລາຍການທີ່ຈະບໍ່ສົນໃຈ.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="199"/>
+        <location filename="../src/libsync/discovery.cpp" line="195"/>
         <source>File names ending with a period are not supported on this file system.</source>
         <translation>ລະບົບໄຟລ໌ນີ້ບໍ່ຮອງຮັບຊື່ໄຟລ໌ທີ່ລົງທ້າຍດ້ວຍຈ້ຳ.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="212"/>
+        <location filename="../src/libsync/discovery.cpp" line="208"/>
         <source>File names containing the character &apos;%1&apos; are not supported on this file system.</source>
         <translation>ລະບົບໄຟລ໌ນີ້ບໍ່ຮອງຮັບຊື່ໄຟລ໌ທີ່ມີຕົວອັກສອນ &apos;%1&apos;.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="215"/>
+        <location filename="../src/libsync/discovery.cpp" line="211"/>
         <source>File name contains at least one invalid character</source>
         <translation>ຊື່ໄຟລ໌ມີຕົວອັກສອນທີ່ບໍ່ຖືກຕ້ອງຢ່າງໜ້ອຍໜຶ່ງຕົວ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="217"/>
+        <location filename="../src/libsync/discovery.cpp" line="213"/>
         <source>The file name is a reserved name on this file system.</source>
         <translation>ຊື່ໄຟລ໌ນີ້ເປັນຊື່ທີ່ສະຫງວນໄວ້ໃນລະບົບໄຟລ໌ນີ້.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="226"/>
+        <location filename="../src/libsync/discovery.cpp" line="222"/>
         <source>Filename contains trailing spaces.</source>
         <translation>ຊື່ໄຟລ໌ມີຍະຫວ່າງຢູ່ທ້າຍ.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="229"/>
+        <location filename="../src/libsync/discovery.cpp" line="225"/>
         <source>Filename is too long.</source>
         <translation>ຊື່ໄຟລ໌ຍາວເກີນໄປ.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="232"/>
+        <location filename="../src/libsync/discovery.cpp" line="228"/>
         <source>File/Folder is ignored because it&apos;s hidden.</source>
         <translation>ໄຟລ໌/ໂຟເດີຖືກບໍ່ສົນໃຈ ເນື່ອງຈາກມັນຖືກເຊື່ອງໄວ້.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="236"/>
+        <location filename="../src/libsync/discovery.cpp" line="232"/>
         <source>Stat failed.</source>
         <translation>ການກວດສອບສະຖານະຜິດພາດ.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="239"/>
+        <location filename="../src/libsync/discovery.cpp" line="235"/>
         <source>Conflict: Server version downloaded, local copy renamed and not uploaded.</source>
         <translation>ຂໍ້ຂັດແຍ່ງ: ດາວໂຫຼດເວີຊັນຈາກເຊີບເວີແລ້ວ, ສຳເນົາໃນເຄື່ອງໄດ້ຖືກປ່ຽນຊື່ ແລະ ບໍ່ໄດ້ອັບໂຫຼດ.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="243"/>
+        <location filename="../src/libsync/discovery.cpp" line="239"/>
         <source>The filename cannot be encoded on your file system.</source>
         <translation>ບໍ່ສາມາດເຂົ້າລະຫັດຊື່ໄຟລ໌ໃນລະບົບໄຟລ໌ຂອງທ່ານໄດ້.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="246"/>
+        <location filename="../src/libsync/discovery.cpp" line="242"/>
         <source>The filename is blacklisted on the server.</source>
         <translation>ຊື່ໄຟລ໌ນີ້ຖືກຫ້າມໃນເຊີບເວີ.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="347"/>
-        <location filename="../src/libsync/discovery.cpp" line="669"/>
-        <location filename="../src/libsync/discovery.cpp" line="1379"/>
-        <location filename="../src/libsync/discovery.cpp" line="1436"/>
+        <location filename="../src/libsync/discovery.cpp" line="343"/>
+        <location filename="../src/libsync/discovery.cpp" line="665"/>
+        <location filename="../src/libsync/discovery.cpp" line="1375"/>
+        <location filename="../src/libsync/discovery.cpp" line="1432"/>
         <source>the VFS instance is missing. Unable to continue.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="377"/>
+        <location filename="../src/libsync/discovery.cpp" line="373"/>
         <source>server reported no %1</source>
         <translation>ເຊີບເວີລາຍງານວ່າບໍ່ມີ %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="556"/>
-        <location filename="../src/libsync/discovery.cpp" line="958"/>
+        <location filename="../src/libsync/discovery.cpp" line="552"/>
+        <location filename="../src/libsync/discovery.cpp" line="954"/>
         <source>account was deleted. Unable to continue</source>
         <translation>ບັນຊີຖືກລຶບແລ້ວ. ບໍ່ສາມາດດຳເນີນການຕໍ່ໄດ້</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1117"/>
+        <location filename="../src/libsync/discovery.cpp" line="1113"/>
         <source>SelectiveSync: Ignored because its path is deselected</source>
         <translation>ການຊິ້ງແບບເລືອກ: ບໍ່ສົນໃຈ ເນື່ອງຈາກເສັ້ນທາງຂອງມັນບໍ່ໄດ້ຖືກເລືອກ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1191"/>
+        <location filename="../src/libsync/discovery.cpp" line="1187"/>
         <source>Moved to invalid target, restoring</source>
         <translation>ຍ້າຍໄປທີ່ປາຍທາງທີ່ບໍ່ຖືກຕ້ອງ, ກຳລັງກູ້ຄືນ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1204"/>
+        <location filename="../src/libsync/discovery.cpp" line="1200"/>
         <source>Not allowed to remove, restoring</source>
         <translation>ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ລຶບ, ກຳລັງກູ້ຄືນ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1314"/>
+        <location filename="../src/libsync/discovery.cpp" line="1310"/>
         <source>Error while reading the database.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1320"/>
+        <location filename="../src/libsync/discovery.cpp" line="1316"/>
         <source>account was deleted. Unable to continue.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1150"/>
+        <location filename="../src/libsync/discovery.cpp" line="1146"/>
         <source>Not allowed because you don&apos;t have permission to add subfolders to that folder</source>
         <translation>ບໍ່ໄດ້ຮັບອະນຸຍາດ ເພາະທ່ານບໍ່ມີສິດເພີ່ມໂຟເດີຍ່ອຍໃນໂຟເດີນັ້ນ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="581"/>
+        <location filename="../src/libsync/discovery.cpp" line="577"/>
         <source>Error while doing a rename, unhandled status code: %1</source>
         <translation>ເກີດຂໍ້ຜິດພາດຂະນະປ່ຽນຊື່, ລະຫັດສະຖານະທີ່ບໍ່ຮອງຮັບ: %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1155"/>
+        <location filename="../src/libsync/discovery.cpp" line="1151"/>
         <source>Not allowed because you don&apos;t have permission to add files in that folder</source>
         <translation>ບໍ່ໄດ້ຮັບອະນຸຍາດ ເພາະທ່ານບໍ່ມີສິດເພີ່ມໄຟລ໌ໃນໂຟເດີນັ້ນ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1168"/>
+        <location filename="../src/libsync/discovery.cpp" line="1164"/>
         <source>Not allowed to upload this file because it is read-only on the server, restoring</source>
         <translation>ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ອັບໂຫຼດໄຟລ໌ນີ້ ເພາະມັນເປັນແບບອ່ານຢ່າງດຽວເທິງເຊີບເວີ, ກຳລັງກູ້ຄືນ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1346"/>
+        <location filename="../src/libsync/discovery.cpp" line="1342"/>
         <source>This Space is currently unavailable</source>
         <translation>ພື້ນທີ່ນີ້ບໍ່ສາມາດໃຊ້ງານໄດ້ໃນຂະນະນີ້</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1367"/>
+        <location filename="../src/libsync/discovery.cpp" line="1363"/>
         <source>Server replied with an error while reading directory &apos;%1&apos; : %2</source>
         <translation>ເຊີບເວີຕອບກັບດ້ວຍຂໍ້ຜິດພາດຂະນະອ່ານໄດເຣັກທໍຣີ &apos;%1&apos; : %2</translation>
     </message>
@@ -2187,67 +2158,67 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateDownloadFile</name>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="375"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="309"/>
         <source>Failed to free up space, the file %1 is currently in use</source>
         <translation>ບໍ່ສາມາດສ້າງພື້ນທີ່ວ່າງໄດ້, ໄຟລ໌ %1 ກຳລັງຖືກນຳໃຊ້ຢູ່</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="400"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="481"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="334"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="415"/>
         <source>File %1 can not be downloaded because of a local file name clash with %2!</source>
         <translation>ບໍ່ສາມາດດາວໂຫຼດໄຟລ໌ %1 ໄດ້ ເນື່ອງຈາກຊື່ໄຟລ໌ຊ້ຳກັບ %2 ທີ່ມີຢູ່ໃນເຄື່ອງ!</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="539"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="473"/>
         <source>The download would reduce free local disk space below the limit</source>
         <translation>ການດາວໂຫຼດຈະເຮັດໃຫ້ພື້ນທີ່ວ່າງໃນດິສກ໌ເຫຼືອໜ້ອຍກວ່າທີ່ກຳນົດ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="543"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="477"/>
         <source>Free space on disk is less than %1</source>
         <translation>ພື້ນທີ່ວ່າງໃນດິສກ໌ເຫຼືອໜ້ອຍກວ່າ %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="664"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="598"/>
         <source>File was deleted from server</source>
         <translation>ໄຟລ໌ຖືກລຶບອອກຈາກເຊີບເວີແລ້ວ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="723"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="657"/>
         <source>Broken webserver returned empty content length for non-empty file on resume</source>
         <translation>ເວັບເຊີບເວີທີ່ຜິດພາດໄດ້ສົ່ງຄືນຄ່າຄວາມຍາວຂອງເນື້ອຫາເປັນສູນສຳລັບໄຟລ໌ທີ່ບໍ່ວ່າງໃນການດາວໂຫຼດຕໍ່</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="730"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="664"/>
         <source>The file could not be downloaded completely.</source>
         <translation>ບໍ່ສາມາດດາວໂຫຼດໄຟລ໌ໄດ້ຢ່າງສົມບູນ.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="737"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="671"/>
         <source>The downloaded file is empty despite the server announced it should have been %1.</source>
         <translation>ໄຟລ໌ທີ່ດາວໂຫຼດມາວ່າງເປົ່າ ທັງທີ່ເຊີບເວີແຈ້ງວ່າມັນຄວນມີຂະໜາດ %1.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="844"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="778"/>
         <source>File %1 cannot be saved because of a local file name clash with %2!</source>
         <translation>ບໍ່ສາມາດບັນທຶກໄຟລ໌ %1 ໄດ້ ເນື່ອງຈາກຊື່ໄຟລ໌ຊ້ຳກັບ %2 ທີ່ມີຢູ່ໃນເຄື່ອງ!</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="932"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="866"/>
         <source>Error updating metadata: %1</source>
         <translation>ເກີດຂໍ້ຜິດພາດໃນການອັບເດດຂໍ້ມູນ Metadata: %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="489"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="868"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="900"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="935"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="423"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="802"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="834"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="869"/>
         <source>The file %1 is currently in use</source>
         <translation>ໄຟລ໌ %1 ກຳລັງຖືກນຳໃຊ້ຢູ່</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="370"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="892"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="304"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="826"/>
         <source>File has changed since discovery</source>
         <translation>ໄຟລ໌ມີການປ່ຽນແປງຕັ້ງແຕ່ການກວດພົບຄັ້ງທຳອິດ</translation>
     </message>
@@ -2442,12 +2413,12 @@ Note that using any logging command line options will override the settings.</so
         <translation>ໄຟລ໌ຖືກລຶບອອກແລ້ວ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateuploadcommon.cpp" line="383"/>
+        <location filename="../src/libsync/propagateuploadcommon.cpp" line="372"/>
         <source>The server did not provide the file permissions</source>
         <translation>ເຊີບເວີບໍ່ໄດ້ໃຫ້ສິດໃນການເຂົ້າເຖິງໄຟລ໌</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateuploadcommon.cpp" line="391"/>
+        <location filename="../src/libsync/propagateuploadcommon.cpp" line="380"/>
         <source>Error updating metadata: %1</source>
         <translation>ເກີດຂໍ້ຜິດພາດໃນການອັບເດດຂໍ້ມູນ Metadata: %1</translation>
     </message>
@@ -2539,12 +2510,17 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::RequestAuthenticationController</name>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="102"/>
+        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="91"/>
+        <source>Unable to retrieve authorization link! Please contact your system administrator.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="105"/>
         <source>IdP is unreachable. Contact your system administrator or try again later.</source>
         <translation>ບໍ່ສາມາດເຂົ້າເຖິງ IdP ໄດ້. ຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ ຫຼື ລອງໃໝ່ພາຍຫຼັງ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="113"/>
+        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="116"/>
         <source>Authentication failed.</source>
         <translation>ການຢືນຢັນຕົວຕົນລົ້ມເຫຼວ.</translation>
     </message>
@@ -2597,12 +2573,12 @@ Note that using any logging command line options will override the settings.</so
         <translation>ລອງໃໝ່</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="179"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="181"/>
         <source>URL copied</source>
         <translation>ສຳເນົາ URL ແລ້ວ</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="181"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="183"/>
         <source>Copy URL</source>
         <translation>ສຳເນົາ URL</translation>
     </message>
@@ -2737,27 +2713,27 @@ Note that using any logging command line options will override the settings.</so
         <translation>ເຄືອຂ່າຍ</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/settingsview.cpp" line="52"/>
+        <location filename="../src/gui/mainwindow/settingsview.cpp" line="55"/>
         <source>Warning</source>
         <translation>ຄຳເຕືອນ</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/settingsview.cpp" line="52"/>
+        <location filename="../src/gui/mainwindow/settingsview.cpp" line="55"/>
         <source>Language changes require a restart of this application to take effect.</source>
         <translation>ການປ່ຽນພາສາຕ້ອງການການເລີ່ມໃໝ່ຂອງໂປຣແກຣມນີ້ເພື່ອໃຫ້ມີຜົນ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/settingsview.cpp" line="153"/>
+        <location filename="../src/gui/mainwindow/settingsview.cpp" line="154"/>
         <source>You cannot disable autostart because system-wide autostart is enabled.</source>
         <translation>ທ່ານບໍ່ສາມາດປິດການເລີ່ມອັດຕະໂນມັດໄດ້ ເພາະການເລີ່ມອັດຕະໂນມັດທົ່ວລະບົບຖືກເປີດຢູ່.</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/settingsview.cpp" line="169"/>
+        <location filename="../src/gui/mainwindow/settingsview.cpp" line="170"/>
         <source>(use default)</source>
         <translation>(ໃຊ້ຄ່າເລີ່ມຕົ້ນ)</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/settingsview.cpp" line="185"/>
+        <location filename="../src/gui/mainwindow/settingsview.cpp" line="186"/>
         <source>unknown (%1)</source>
         <translation>ບໍ່ຮູ້ຈັກ (%1)</translation>
     </message>
@@ -2800,7 +2776,7 @@ Note that using any logging command line options will override the settings.</so
 %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="695"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="694"/>
         <source>I shared something with you</source>
         <translation>ຂ້ອຍໄດ້ແຊຣ໌ບາງຢ່າງກັບເຈົ້າ</translation>
     </message>
@@ -2810,70 +2786,70 @@ Note that using any logging command line options will override the settings.</so
         <translation>ເລືອກສະຖານທີ່ໃໝ່…</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="708"/>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="737"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="707"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="736"/>
         <source>Share…</source>
         <translation>ແຊຣ໌…</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="710"/>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="741"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="709"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="740"/>
         <source>Copy private link to clipboard</source>
         <translation>ສຳເນົາລິ້ງສ່ວນຕົວໃສ່ຄລິບບອດ</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="735"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="734"/>
         <source>Resharing this file is not allowed</source>
         <translation>ບໍ່ອະນຸຍາດໃຫ້ແຊຣ໌ໄຟລ໌ນີ້ຕໍ່</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="735"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="734"/>
         <source>Resharing this folder is not allowed</source>
         <translation>ບໍ່ອະນຸຍາດໃຫ້ແຊຣ໌ໂຟເດີນີ້ຕໍ່</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="810"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="809"/>
         <source>Open in %1</source>
         <translation>ເປີດໃນ %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="821"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="820"/>
         <source>Show file versions in web browser</source>
         <translation>ສະແດງເວີຊັນຂອງໄຟລ໌ໃນເວັບເບຣົາເຊີ</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="843"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="842"/>
         <source>Rename…</source>
         <translation>ປ່ຽນຊື່…</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="846"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="845"/>
         <source>Rename and upload…</source>
         <translation>ປ່ຽນຊື່ ແລະ ອັບໂຫຼດ…</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="851"/>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="855"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="850"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="854"/>
         <source>Move and rename…</source>
         <translation>ຍ້າຍ ແລະ ປ່ຽນຊື່…</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="858"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="857"/>
         <source>Move, rename and upload…</source>
         <translation>ຍ້າຍ, ປ່ຽນຊື່ ແລະ ອັບໂຫຼດ…</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="866"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="865"/>
         <source>Move and upload…</source>
         <translation>ຍ້າຍ ແລະ ອັບໂຫຼດ…</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="861"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="860"/>
         <source>Delete local changes</source>
         <translation>ລຶບການປ່ຽນແປງໃນເຄື່ອງ</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="867"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="866"/>
         <source>Delete</source>
         <translation>ລຶບ</translation>
     </message>
@@ -3013,7 +2989,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::Theme</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="322"/>
+        <location filename="../src/libsync/theme.cpp" line="210"/>
         <source>&lt;p&gt;Version %1. For more information visit &lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;For known issues and help, please visit: &lt;a href=&quot;https://central.owncloud.com/c/desktop-client&quot;&gt;https://central.owncloud.com&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;small&gt;By Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz,  Jan-Christoph Borchardt, Thomas Müller,&lt;br&gt;Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller and others.&lt;/small&gt;&lt;/p&gt;&lt;p&gt;Copyright ownCloud GmbH (A Kiteworks Company)&lt;/p&gt;&lt;p&gt;Distributed by %4 and licensed under the GNU General Public License (GPL) Version 2.0.&lt;br/&gt;%5 and the %5 logo are registered trademarks of %4 in the United States, other countries, or both.&lt;/p&gt;&lt;p&gt;&lt;small&gt;%6&lt;/small&gt;&lt;/p&gt;</source>
         <translation>&lt;p&gt;ເວີຊັນ %1. ສຳລັບຂໍ້ມູນເພີ່ມເຕີມເຂົ້າຊົມໄດ້ທີ່ &lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;ສຳລັບບັນຫາທີ່ຮູ້ຈັກ ແລະ ການຊ່ວຍເຫຼືອ, ກະລຸນາເຂົ້າຊົມ: &lt;a href=&quot;https://central.owncloud.com/c/desktop-client&quot;&gt;https://central.owncloud.com&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;small&gt;ໂດຍ Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz,  Jan-Christoph Borchardt, Thomas Müller,&lt;br&gt;Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller ແລະ ທ່ານອື່ນໆ.&lt;/small&gt;&lt;/p&gt;&lt;p&gt;ສະຫງວນລິຂະສິດໂດຍ ownCloud GmbH (A Kiteworks Company)&lt;/p&gt;&lt;p&gt;ແຈກຢາຍໂດຍ %4 ແລະ ໄດ້ຮັບອະນຸຍາດພາຍໃຕ້ GNU General Public License (GPL) ເວີຊັນ 2.0.&lt;br/&gt;%5 ແລະ ໂລໂກ້ %5 ເປັນເຄື່ອງໝາຍການຄ້າທີ່ຈົດທະບຽນຂອງ %4 ໃນສະຫະລັດອາເມລິກາ, ປະເທດອື່ນໆ, ຫຼື ທັງສອງ.&lt;/p&gt;&lt;p&gt;&lt;small&gt;%6&lt;/small&gt;&lt;/p&gt;</translation>
     </message>
@@ -3049,32 +3025,32 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::TrayMenuController</name>
     <message>
-        <location filename="../src/gui/traymenucontroller.cpp" line="102"/>
+        <location filename="../src/gui/traymenucontroller.cpp" line="124"/>
         <source>Unsupported Server Version</source>
         <translation>ເວີຊັນເຊີບເວີບໍ່ຮອງຮັບ</translation>
     </message>
     <message>
-        <location filename="../src/gui/traymenucontroller.cpp" line="103"/>
+        <location filename="../src/gui/traymenucontroller.cpp" line="125"/>
         <source>The server on account %1 runs an unsupported version %2. Using this client with unsupported server versions is untested and potentially dangerous. Proceed at your own risk.</source>
         <translation>ເຊີບເວີໃນບັນຊີ %1 ໃຊ້ເວີຊັນ %2 ທີ່ບໍ່ຮອງຮັບ. ການໃຊ້ໂປຣແກຣມນີ້ກັບເວີຊັນເຊີບເວີທີ່ບໍ່ຮອງຮັບນັ້ນຍັງບໍ່ໄດ້ຜ່ານການທົດສອບ ແລະ ອາດເປັນອັນຕະລາຍ. ກະລຸນາດຳເນີນການຕໍ່ດ້ວຍຄວາມສ່ຽງຂອງທ່ານເອງ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/traymenucontroller.cpp" line="134"/>
+        <location filename="../src/gui/traymenucontroller.cpp" line="165"/>
         <source>Show %1</source>
         <translation>ສະແດງ %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/traymenucontroller.cpp" line="159"/>
+        <location filename="../src/gui/traymenucontroller.cpp" line="190"/>
         <source>Help</source>
         <translation>ຊ່ວຍເຫຼືອ</translation>
     </message>
     <message>
-        <location filename="../src/gui/traymenucontroller.cpp" line="163"/>
+        <location filename="../src/gui/traymenucontroller.cpp" line="194"/>
         <source>About %1</source>
         <translation>ກ່ຽວກັບ %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/traymenucontroller.cpp" line="166"/>
+        <location filename="../src/gui/traymenucontroller.cpp" line="197"/>
         <source>Quit %1</source>
         <translation>ອອກຈາກ %1</translation>
     </message>
@@ -3335,7 +3311,7 @@ Note that using any logging command line options will override the settings.</so
         <translation><numerusform>%n ນາທີກ່ອນ</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncresult.cpp" line="117"/>
+        <location filename="../src/libsync/syncresult.cpp" line="153"/>
         <source>%1: %2</source>
         <extracomment>this displays an error string (%2) for a file %1</extracomment>
         <translation>%1: %2</translation>
@@ -3496,7 +3472,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>ownCloudTheme::aboutVersions()</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="306"/>
+        <location filename="../src/libsync/theme.cpp" line="192"/>
         <source>%1 %2%7%8Libraries Qt %3, %4%7Using virtual files plugin: %5%7%6</source>
         <translation>%1 %2%7%8Libraries Qt %3, %4%7ກຳລັງໃຊ້ປລັກອິນໄຟລ໌ສະເໝືອນ: %5%7%6</translation>
     </message>
@@ -3504,7 +3480,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>ownCloudTheme::qtVer</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="289"/>
+        <location filename="../src/libsync/theme.cpp" line="174"/>
         <source>%1 (Built against Qt %2)</source>
         <translation>%1 (ສ້າງດ້ວຍ Qt %2)</translation>
     </message>
@@ -3512,7 +3488,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>ownCloudTheme::versionWithSha</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="294"/>
+        <location filename="../src/libsync/theme.cpp" line="180"/>
         <source>%1 %2</source>
         <translation>%1 %2</translation>
     </message>
