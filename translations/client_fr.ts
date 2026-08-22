@@ -1,33 +1,5 @@
 <?xml version="1.0" ?><!DOCTYPE TS><TS version="2.1" language="fr">
 <context>
-    <name>AccountBar</name>
-    <message>
-        <location filename="../src/gui/qml/AccountBar.qml" line="27"/>
-        <source>Navigation bar</source>
-        <translation>Barre de navigation</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/qml/AccountBar.qml" line="114"/>
-        <source>Add Account</source>
-        <translation>Ajouter un compte</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/qml/AccountBar.qml" line="141"/>
-        <source>Activity</source>
-        <translation>Activité</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/qml/AccountBar.qml" line="155"/>
-        <source>Settings</source>
-        <translation>Paramètres</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/qml/AccountBar.qml" line="184"/>
-        <source>Quit</source>
-        <translation>Quitter</translation>
-    </message>
-</context>
-<context>
     <name>AppImageUpdateAvailableWidgetUi</name>
     <message>
         <location filename="../src/gui/updater/appimageupdateavailablewidget.ui" line="123"/>
@@ -383,7 +355,7 @@ Utilitaire de synchronisation de fichiers pour ordinateur de bureau. </translati
 <context>
     <name>OCC::Account</name>
     <message>
-        <location filename="../src/libsync/account.cpp" line="162"/>
+        <location filename="../src/libsync/account.cpp" line="166"/>
         <source>%1@%2</source>
         <translation>%1@%2</translation>
     </message>
@@ -550,7 +522,6 @@ Cette action stoppera toute synchronisation en cours.</translation>
 <context>
     <name>OCC::AccountModalWidget</name>
     <message>
-        <location filename="../src/gui/accountmodalwidget.ui" line="14"/>
         <location filename="../src/gui/accountsgui/accountmodalwidget.ui" line="14"/>
         <source>Form</source>
         <translation>Formulaire</translation>
@@ -1336,27 +1307,27 @@ Cela veut dire que le client de synchronisation ne peut pas téléverser les cha
 <context>
     <name>OCC::GETFileJob</name>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="168"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="102"/>
         <source>Connection Timeout</source>
         <translation>Délai d&apos;attente de connexion dépassé</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="246"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="180"/>
         <source>No E-Tag received from server, check Proxy/Gateway</source>
         <translation>Aucun E-Tag reçu du serveur, vérifiez le proxy / la passerelle</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="253"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="187"/>
         <source>We received a different E-Tag for resuming. Retrying next time.</source>
         <translation>Nous avons reçu un E-Tag différent pour reprendre le téléchargement. Nouvel essai la prochaine fois.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="264"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="198"/>
         <source>We received an unexpected download Content-Length.</source>
         <translation>Nous avons reçu un téléchargement inattendu Content-Length.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="292"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="226"/>
         <source>Server returned wrong content-range</source>
         <translation>Le serveur a retourné une gamme de contenu erronée</translation>
     </message>
@@ -2032,141 +2003,141 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
 <context>
     <name>OCC::ProcessDirectoryJob</name>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="185"/>
+        <location filename="../src/libsync/discovery.cpp" line="181"/>
         <source>Symbolic links are not supported in syncing.</source>
         <translation>Les liens symboliques ne sont pas pris en charge par la synchronisation.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="194"/>
+        <location filename="../src/libsync/discovery.cpp" line="190"/>
         <source>File is listed on the ignore list.</source>
         <translation>Le fichier est présent dans la liste des fichiers à exclure.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="199"/>
+        <location filename="../src/libsync/discovery.cpp" line="195"/>
         <source>File names ending with a period are not supported on this file system.</source>
         <translation>Les noms de fichier se terminant par un point ne sont pas pris en charge sur votre système.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="212"/>
+        <location filename="../src/libsync/discovery.cpp" line="208"/>
         <source>File names containing the character &apos;%1&apos; are not supported on this file system.</source>
         <translation>Les noms de fichier contenant le caractère &apos;%1&apos; ne sont pas pris en charge sur votre système.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="215"/>
+        <location filename="../src/libsync/discovery.cpp" line="211"/>
         <source>File name contains at least one invalid character</source>
         <translation>Le nom de fichier contient au moins un caractère non valable</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="217"/>
+        <location filename="../src/libsync/discovery.cpp" line="213"/>
         <source>The file name is a reserved name on this file system.</source>
         <translation>Le nom du fichier est réservé sur votre système.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="226"/>
+        <location filename="../src/libsync/discovery.cpp" line="222"/>
         <source>Filename contains trailing spaces.</source>
         <translation>Le nom du fichier se fini par des espaces.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="229"/>
+        <location filename="../src/libsync/discovery.cpp" line="225"/>
         <source>Filename is too long.</source>
         <translation>Le nom de fichier est trop long.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="232"/>
+        <location filename="../src/libsync/discovery.cpp" line="228"/>
         <source>File/Folder is ignored because it&apos;s hidden.</source>
         <translation>Le fichier ou dossier a été ignoré car il est masqué.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="236"/>
+        <location filename="../src/libsync/discovery.cpp" line="232"/>
         <source>Stat failed.</source>
         <translation>Stat échoué.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="239"/>
+        <location filename="../src/libsync/discovery.cpp" line="235"/>
         <source>Conflict: Server version downloaded, local copy renamed and not uploaded.</source>
         <translation>Conflit : La version du serveur a été téléchargée, la version locale renommée et non téléversée.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="243"/>
+        <location filename="../src/libsync/discovery.cpp" line="239"/>
         <source>The filename cannot be encoded on your file system.</source>
         <translation>Le nom de fichier ne peut pas être encodé sur votre système.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="246"/>
+        <location filename="../src/libsync/discovery.cpp" line="242"/>
         <source>The filename is blacklisted on the server.</source>
         <translation>Le nom de fichier est sur la liste noire sur le serveur.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="347"/>
-        <location filename="../src/libsync/discovery.cpp" line="669"/>
-        <location filename="../src/libsync/discovery.cpp" line="1379"/>
-        <location filename="../src/libsync/discovery.cpp" line="1436"/>
+        <location filename="../src/libsync/discovery.cpp" line="343"/>
+        <location filename="../src/libsync/discovery.cpp" line="665"/>
+        <location filename="../src/libsync/discovery.cpp" line="1375"/>
+        <location filename="../src/libsync/discovery.cpp" line="1432"/>
         <source>the VFS instance is missing. Unable to continue.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="377"/>
+        <location filename="../src/libsync/discovery.cpp" line="373"/>
         <source>server reported no %1</source>
         <translation>Le serveur n&apos;a pas reporté de %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="556"/>
-        <location filename="../src/libsync/discovery.cpp" line="958"/>
+        <location filename="../src/libsync/discovery.cpp" line="552"/>
+        <location filename="../src/libsync/discovery.cpp" line="954"/>
         <source>account was deleted. Unable to continue</source>
         <translation>Le compte a été supprimé. Impossible de continuer.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1117"/>
+        <location filename="../src/libsync/discovery.cpp" line="1113"/>
         <source>SelectiveSync: Ignored because its path is deselected</source>
         <translation>SelectiveSync : ignoré car son chemin d&apos;accès est désélectionné</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1191"/>
+        <location filename="../src/libsync/discovery.cpp" line="1187"/>
         <source>Moved to invalid target, restoring</source>
         <translation>Déplacé vers une cible invalide, restauration</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1204"/>
+        <location filename="../src/libsync/discovery.cpp" line="1200"/>
         <source>Not allowed to remove, restoring</source>
         <translation>Non autorisé à supprimer. Restauration</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1314"/>
+        <location filename="../src/libsync/discovery.cpp" line="1310"/>
         <source>Error while reading the database.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1320"/>
+        <location filename="../src/libsync/discovery.cpp" line="1316"/>
         <source>account was deleted. Unable to continue.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1150"/>
+        <location filename="../src/libsync/discovery.cpp" line="1146"/>
         <source>Not allowed because you don&apos;t have permission to add subfolders to that folder</source>
         <translation>Non autorisé car vous n&apos;avez pas la permission d&apos;ajouter des sous-dossiers dans ce dossier</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="581"/>
+        <location filename="../src/libsync/discovery.cpp" line="577"/>
         <source>Error while doing a rename, unhandled status code: %1</source>
         <translation>Erreur lors du renommage, code d&apos;état non géré : %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1155"/>
+        <location filename="../src/libsync/discovery.cpp" line="1151"/>
         <source>Not allowed because you don&apos;t have permission to add files in that folder</source>
         <translation>Non autorisé car vous n&apos;avez pas la permission d&apos;ajouter des fichiers dans ce dossier</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1168"/>
+        <location filename="../src/libsync/discovery.cpp" line="1164"/>
         <source>Not allowed to upload this file because it is read-only on the server, restoring</source>
         <translation>Non autorisé à envoyer ce fichier car il est en lecture seule sur le serveur. Restauration</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1346"/>
+        <location filename="../src/libsync/discovery.cpp" line="1342"/>
         <source>This Space is currently unavailable</source>
         <translation>Cet espace n&apos;est actuellement pas disponible</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1367"/>
+        <location filename="../src/libsync/discovery.cpp" line="1363"/>
         <source>Server replied with an error while reading directory &apos;%1&apos; : %2</source>
         <translation>Le serveur a répondu avec une erreur durant la lecture du répertoire &apos;%1&apos; : %2</translation>
     </message>
@@ -2187,67 +2158,67 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
 <context>
     <name>OCC::PropagateDownloadFile</name>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="375"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="309"/>
         <source>Failed to free up space, the file %1 is currently in use</source>
         <translation>Impossible de libérer de l&apos;espace, le fichier %1 est actuellement utilisé.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="400"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="481"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="334"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="415"/>
         <source>File %1 can not be downloaded because of a local file name clash with %2!</source>
         <translation>Le fichier %1 ne peut pas être téléchargé en raison d&apos;un conflit de nom de fichier local avec %2 !</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="539"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="473"/>
         <source>The download would reduce free local disk space below the limit</source>
         <translation>Le téléchargement réduira l&apos;espace disque libre en dessous de la limite</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="543"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="477"/>
         <source>Free space on disk is less than %1</source>
         <translation>Il y a moins de %1 d&apos;espace libre sur le disque</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="664"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="598"/>
         <source>File was deleted from server</source>
         <translation>Le fichier a été supprimé du serveur</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="723"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="657"/>
         <source>Broken webserver returned empty content length for non-empty file on resume</source>
         <translation>Le serveur web défectueux a renvoyé une longueur de contenu vide pour un fichier non vide lors de la reprise.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="730"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="664"/>
         <source>The file could not be downloaded completely.</source>
         <translation>Le fichier n&apos;a pas pu être téléchargé intégralement.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="737"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="671"/>
         <source>The downloaded file is empty despite the server announced it should have been %1.</source>
         <translation>Le fichier téléchargé est vide bien que le serveur indique que sa taille devrait être de %1.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="844"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="778"/>
         <source>File %1 cannot be saved because of a local file name clash with %2!</source>
         <translation>Le fichier %1 ne peut pas être sauvegardé en raison d&apos;un conflit de nom de fichier local avec %2 !</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="932"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="866"/>
         <source>Error updating metadata: %1</source>
         <translation>Erreur lors de la mise à jour des métadonnées : %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="489"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="868"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="900"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="935"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="423"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="802"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="834"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="869"/>
         <source>The file %1 is currently in use</source>
         <translation>Le fichier %1 est en cours d&apos;utilisation</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="370"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="892"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="304"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="826"/>
         <source>File has changed since discovery</source>
         <translation>Le fichier a changé depuis sa découverte</translation>
     </message>
@@ -2442,12 +2413,12 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
         <translation>Fichier supprimé</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateuploadcommon.cpp" line="383"/>
+        <location filename="../src/libsync/propagateuploadcommon.cpp" line="372"/>
         <source>The server did not provide the file permissions</source>
         <translation>Le serveur n&apos;a pas fourni les autorisations d&apos;accès au fichier.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateuploadcommon.cpp" line="391"/>
+        <location filename="../src/libsync/propagateuploadcommon.cpp" line="380"/>
         <source>Error updating metadata: %1</source>
         <translation>Erreur lors de la mise à jour des métadonnées : %1</translation>
     </message>
@@ -2539,12 +2510,17 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
 <context>
     <name>OCC::RequestAuthenticationController</name>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="102"/>
+        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="91"/>
+        <source>Unable to retrieve authorization link! Please contact your system administrator.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="105"/>
         <source>IdP is unreachable. Contact your system administrator or try again later.</source>
         <translation>IdP est inaccessible. Contactez votre administrateur système ou réessayez plus tard.</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="113"/>
+        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="116"/>
         <source>Authentication failed.</source>
         <translation>L&apos;authentification a échoué.</translation>
     </message>
@@ -2597,12 +2573,12 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
         <translation>S&apos;identifier</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="179"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="181"/>
         <source>URL copied</source>
         <translation>URL copiée</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="181"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="183"/>
         <source>Copy URL</source>
         <translation>Copier l&apos;URL</translation>
     </message>
@@ -2737,27 +2713,27 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
         <translation>Réseau</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/settingsview.cpp" line="52"/>
+        <location filename="../src/gui/mainwindow/settingsview.cpp" line="55"/>
         <source>Warning</source>
         <translation>Attention</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/settingsview.cpp" line="52"/>
+        <location filename="../src/gui/mainwindow/settingsview.cpp" line="55"/>
         <source>Language changes require a restart of this application to take effect.</source>
         <translation>Le changement de langue nécessite un redémarrage de l&apos;application pour prendre effet.</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/settingsview.cpp" line="153"/>
+        <location filename="../src/gui/mainwindow/settingsview.cpp" line="154"/>
         <source>You cannot disable autostart because system-wide autostart is enabled.</source>
         <translation>Vous ne pouvez pas désactiver le démarrage automatique parce que le démarrage automatique à l&apos;échelle du système est activé.</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/settingsview.cpp" line="169"/>
+        <location filename="../src/gui/mainwindow/settingsview.cpp" line="170"/>
         <source>(use default)</source>
         <translation>(Utiliser la valeur par défaut)</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/settingsview.cpp" line="185"/>
+        <location filename="../src/gui/mainwindow/settingsview.cpp" line="186"/>
         <source>unknown (%1)</source>
         <translation>Inconnu (%1)</translation>
     </message>
@@ -2800,7 +2776,7 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
 %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="695"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="694"/>
         <source>I shared something with you</source>
         <translation>J&apos;ai partagé quelque chose avec vous</translation>
     </message>
@@ -2810,70 +2786,70 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
         <translation>Sélectionner un nouvel emplacement…</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="708"/>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="737"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="707"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="736"/>
         <source>Share…</source>
         <translation>Partage…</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="710"/>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="741"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="709"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="740"/>
         <source>Copy private link to clipboard</source>
         <translation>Copier le lien privé vers le presse-papier</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="735"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="734"/>
         <source>Resharing this file is not allowed</source>
         <translation>Le repartage de ce fichier n&apos;est pas permis</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="735"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="734"/>
         <source>Resharing this folder is not allowed</source>
         <translation>Le repartage de ce dossier n&apos;est pas autorisé</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="810"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="809"/>
         <source>Open in %1</source>
         <translation>Ouvrir dans %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="821"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="820"/>
         <source>Show file versions in web browser</source>
         <translation>Afficher les versions des fichiers dans le navigateur Web</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="843"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="842"/>
         <source>Rename…</source>
         <translation>Renommer…</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="846"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="845"/>
         <source>Rename and upload…</source>
         <translation>Renommer et uploader…</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="851"/>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="855"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="850"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="854"/>
         <source>Move and rename…</source>
         <translation>Déplacer et renommer…</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="858"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="857"/>
         <source>Move, rename and upload…</source>
         <translation>Déplacer, renommer et téléverser…</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="866"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="865"/>
         <source>Move and upload…</source>
         <translation>Déplacer et téléverser…</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="861"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="860"/>
         <source>Delete local changes</source>
         <translation>Supprimer les changements locaux</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="867"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="866"/>
         <source>Delete</source>
         <translation>Supprimer</translation>
     </message>
@@ -3013,7 +2989,7 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
 <context>
     <name>OCC::Theme</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="322"/>
+        <location filename="../src/libsync/theme.cpp" line="210"/>
         <source>&lt;p&gt;Version %1. For more information visit &lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;For known issues and help, please visit: &lt;a href=&quot;https://central.owncloud.com/c/desktop-client&quot;&gt;https://central.owncloud.com&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;small&gt;By Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz,  Jan-Christoph Borchardt, Thomas Müller,&lt;br&gt;Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller and others.&lt;/small&gt;&lt;/p&gt;&lt;p&gt;Copyright ownCloud GmbH (A Kiteworks Company)&lt;/p&gt;&lt;p&gt;Distributed by %4 and licensed under the GNU General Public License (GPL) Version 2.0.&lt;br/&gt;%5 and the %5 logo are registered trademarks of %4 in the United States, other countries, or both.&lt;/p&gt;&lt;p&gt;&lt;small&gt;%6&lt;/small&gt;&lt;/p&gt;</source>
         <translation>&lt;p&gt;Version %1. Pour plus d&apos;informations rendez-vous sur &lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Pour connaître les problèmes connus et obtenir de l&apos;aide, veuillez consulter : &lt;a href=&quot;https://central.owncloud.com/c/desktop-client&quot;&gt;https://central.owncloud.com&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;small&gt;Par Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz,  Jan-Christoph Borchardt, Thomas Müller,&lt;br&gt;Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller et d&apos;autres.&lt;/small&gt;&lt;/p&gt;&lt;p&gt;Copyright ownCloud GmbH (Une société Kiteworks)&lt;/p&gt;&lt;p&gt;Distribué par %4 et sous license GNU General Public License (GPL) Version 2.0.&lt;br/&gt;%5 et le logo %5 sont des marques déposées de %4 aux États-Unis, dans d&apos;autres pays, ou dans les deux.&lt;/p&gt;&lt;p&gt;&lt;small&gt;%6&lt;/small&gt;&lt;/p&gt;</translation>
     </message>
@@ -3049,32 +3025,32 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
 <context>
     <name>OCC::TrayMenuController</name>
     <message>
-        <location filename="../src/gui/traymenucontroller.cpp" line="102"/>
+        <location filename="../src/gui/traymenucontroller.cpp" line="124"/>
         <source>Unsupported Server Version</source>
         <translation>Version du Serveur non prise en charge</translation>
     </message>
     <message>
-        <location filename="../src/gui/traymenucontroller.cpp" line="103"/>
+        <location filename="../src/gui/traymenucontroller.cpp" line="125"/>
         <source>The server on account %1 runs an unsupported version %2. Using this client with unsupported server versions is untested and potentially dangerous. Proceed at your own risk.</source>
         <translation>Le serveur du compte %1 utilise une version non-supportée %2. Utiliser ce client avec cette version non supportée du serveur n&apos;a pas été testée et est potentiellement dangereux. Continuez à vos risques et périls.</translation>
     </message>
     <message>
-        <location filename="../src/gui/traymenucontroller.cpp" line="134"/>
+        <location filename="../src/gui/traymenucontroller.cpp" line="165"/>
         <source>Show %1</source>
         <translation>Afficher %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/traymenucontroller.cpp" line="159"/>
+        <location filename="../src/gui/traymenucontroller.cpp" line="190"/>
         <source>Help</source>
         <translation>Aide...</translation>
     </message>
     <message>
-        <location filename="../src/gui/traymenucontroller.cpp" line="163"/>
+        <location filename="../src/gui/traymenucontroller.cpp" line="194"/>
         <source>About %1</source>
         <translation>À propos de %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/traymenucontroller.cpp" line="166"/>
+        <location filename="../src/gui/traymenucontroller.cpp" line="197"/>
         <source>Quit %1</source>
         <translation>Quitter %1</translation>
     </message>
@@ -3335,7 +3311,7 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
         <translation><numerusform>il y a %n minute</numerusform><numerusform>il y a %n minutes</numerusform><numerusform>il y a %n minutes</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncresult.cpp" line="117"/>
+        <location filename="../src/libsync/syncresult.cpp" line="153"/>
         <source>%1: %2</source>
         <extracomment>this displays an error string (%2) for a file %1</extracomment>
         <translation>%1 : %2</translation>
@@ -3496,7 +3472,7 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
 <context>
     <name>ownCloudTheme::aboutVersions()</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="306"/>
+        <location filename="../src/libsync/theme.cpp" line="192"/>
         <source>%1 %2%7%8Libraries Qt %3, %4%7Using virtual files plugin: %5%7%6</source>
         <translation>%1 %2%7%8Bibliothèques Qt %3, %4%7Utilisation du plugin de fichiers virtuels : %5%7%6</translation>
     </message>
@@ -3504,7 +3480,7 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
 <context>
     <name>ownCloudTheme::qtVer</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="289"/>
+        <location filename="../src/libsync/theme.cpp" line="174"/>
         <source>%1 (Built against Qt %2)</source>
         <translation>%1 (Compilé avec Qt %2)</translation>
     </message>
@@ -3512,7 +3488,7 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
 <context>
     <name>ownCloudTheme::versionWithSha</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="294"/>
+        <location filename="../src/libsync/theme.cpp" line="180"/>
         <source>%1 %2</source>
         <translation>%1 %2</translation>
     </message>
