@@ -231,7 +231,10 @@ bool FolderMan::addFoldersFromConfigByAccount(QSettings &settings, AccountState 
     if (!account || !account->account() || !account->account()->spacesManager())
         return false;
 
-    settings.beginGroup(QStringLiteral("%1/Folders").arg(account->account()->groupIndex()));
+    QList<QByteArray> deadFolders;
+
+    QString accountGroup = account->account()->groupIndex();
+    settings.beginGroup(QStringLiteral("%1/Folders").arg(accountGroup));
 
     const auto &childGroups = settings.childGroups();
     for (const auto &folderAlias : childGroups) {
@@ -249,7 +252,14 @@ bool FolderMan::addFoldersFromConfigByAccount(QSettings &settings, AccountState 
 
         Folder *folder = addFolder(account, folderDefinition);
         if (!folder) {
-            // todo: decide if we should actively remove the folder data from the config! I think we should but let's see
+            // basically something went wrong when trying to recreate the Folder. Most egregious situation is the user deleted the
+            // local folder manually instead of removing it via the gui, so it's still in the config, but can't possibly work.
+            // Strange behavior results if the space is added back again using the same (original) local folder path, so we should
+            // remove it from the config since it's dead anyway.
+            qCWarning(lcFolderMan) << "Unable to rebuild previous folder associated with space display name:" << folderDefinition.displayName()
+                                   << ". The associated folder definition will be removed from the configuration.";
+            deadFolders.append(folderDefinition.id());
+            settings.endGroup(); // folder alias
             continue;
         }
 
@@ -262,6 +272,14 @@ bool FolderMan::addFoldersFromConfigByAccount(QSettings &settings, AccountState 
         settings.endGroup(); // folderAlias
     }
     settings.endGroup(); // accountId\Folders
+
+    if (!deadFolders.isEmpty()) {
+        settings.beginGroup(accountGroup);
+        for (const auto &folderId : deadFolders) {
+            removeFolderSettings(folderId, settings);
+        }
+        settings.endGroup();
+    }
 
     GraphApi::SpacesManager *spaceMan = account->account()->spacesManager();
     _scheduler->connectSpacesManager(spaceMan);
@@ -627,7 +645,8 @@ void FolderMan::slotRemoveFoldersForAccount(AccountState *accountState)
     emit folderListChanged(id, {});
 
     for (const auto &f : std::as_const(_folders[id])) {
-        removeFolderSettings(f, settings);
+        disconnectAutoSave(f);
+        removeFolderSettings(f->id(), settings);
         deleteFolderSync(f);
     }
 
@@ -637,13 +656,12 @@ void FolderMan::slotRemoveFoldersForAccount(AccountState *accountState)
     emit unsyncedSpaceCountChanged(id, 0, 0);
 }
 
-void FolderMan::removeFolderSettings(Folder *folder, QSettings &settings)
+void FolderMan::removeFolderSettings(const QByteArray &folderId, QSettings &settings)
 {
-    if (!folder) {
+    if (folderId.isEmpty()) {
         return;
     }
-    disconnectAutoSave(folder);
-    QString id = QString::fromUtf8(folder->id());
+    QString id = QString::fromUtf8(folderId);
     if (id.isEmpty())
         return;
     settings.remove(QStringLiteral("Folders/%1").arg(id));
@@ -653,10 +671,13 @@ void FolderMan::removeFolderSettings(Folder *folder, QSettings &settings)
 
 void FolderMan::removeFolderSettings(Folder *folder)
 {
+    if (!folder)
+        return;
+    disconnectAutoSave(folder);
     QSettings settings = ConfigFile::makeQSettings();
     QString accountGroup = QStringLiteral("Accounts/%1").arg(folder->accountState()->account()->groupIndex());
     settings.beginGroup(accountGroup);
-    removeFolderSettings(folder, settings);
+    removeFolderSettings(folder->id(), settings);
 }
 
 void FolderMan::slotServerVersionChanged(Account *account)
