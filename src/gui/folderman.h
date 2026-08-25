@@ -445,8 +445,8 @@ private:
     void saveFolder(Folder *folder, QSettings &settings);
 
     // used to reduce file operation overhead when removing multiple folders
-    // impl detail: we also disconnect the folder from autosave here!
-    void removeFolderSettings(Folder *folder, QSettings &settings);
+    // note: the settings need to be set to the group = accounts/accountIdAlias (alias provided by Account::groupIndex())
+    void removeFolderSettings(const QByteArray &folderId, QSettings &settings);
 
     /**
      *  Removes a folder sync permanently and deletes the folder
