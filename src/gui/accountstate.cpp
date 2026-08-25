@@ -57,6 +57,7 @@ AccountState::AccountState(Account *account)
     , _waitingForNewCredentials(false)
     , _connectionValidator(nullptr)
     , _maintenanceToConnectedDelay(1min + minutes(QRandomGenerator::global()->generate() % 4)) // 1-5min delay
+    , _needsServerSettingsRefresh(true)
 {
     qRegisterMetaType<AccountState *>("AccountState*");
 
@@ -192,16 +193,12 @@ void AccountState::setState(State state)
     // todo: need to investigate whether it's ever the case that we go from connected to connected.
     // so far it looks to me as if this happens when the connection validator confirms all is still well?
     if (_state == Connected) {
-        //_queueGuard.unblock();
-        // QTimer::singleShot(0, this, [this, oldState] {
-        //  ensure the connection validator is done
-        // how can it not be done, given it is telling us we're connected?
-        _queueGuard.unblock();
-        if (oldState != _state) {
+        // todo: final eval of whether _queueGuard.unblock should be moved until after server settings have been updated
+        if (_needsServerSettingsRefresh) {
             // update capabilities and fetch relevant settings
             fetchServerSettings();
-        }
-        //});
+        } else
+            _queueGuard.unblock();
     }
 
     if (oldState != _state) {
@@ -219,24 +216,22 @@ void AccountState::fetchServerSettings()
     _fetchServerSettingsJob = new FetchServerSettingsJob(_account, this);
 
     connect(_fetchServerSettingsJob, &FetchServerSettingsJob::finishedSignal, this, &AccountState::slotFetchServerSettingsResult);
-    /*  connect(_fetchServerSettingsJob.get(), &FetchServerSettingsJob::finishedSignal, this, [oldState, this] {
-          // Lisa todo: I do not understand this logic at all - review it
-          if (oldState == Connected || _state == Connected) {
-              _fetchServerSettingsJob.clear();
-              Q_EMIT isConnectedChanged();
-          }
-      });*/
     _fetchServerSettingsJob->start();
 }
 
 void AccountState::slotFetchServerSettingsResult(FetchServerSettingsJob::Result result)
 {
+    Q_ASSERT(_state == Connected);
+
     _connectionErrors.clear();
+
+    // let's be optimistic
+    State newState = _state;
 
     switch (result) {
     case FetchServerSettingsJob::Result::UnsupportedServer:
         _connectionErrors.append(tr("The server is not supported by this client."));
-        setState(ConfigurationError);
+        newState = ConfigurationError;
         break;
     case FetchServerSettingsJob::Result::InvalidCredentials:
         slotInvalidCredentials();
@@ -244,28 +239,27 @@ void AccountState::slotFetchServerSettingsResult(FetchServerSettingsJob::Result 
     case FetchServerSettingsJob::Result::TimeOut:
         _connectionErrors.append(tr("Retrieving user settings and server capabilities timed out."));
         // hmmm...do we need to retry in this case? I'm guessing yes but needs discussion
-        setState(NetworkError);
+        // actually no, we should not need to do it explicitly as the next round(s) of connection validator should
+        // hopefully resolve it
+        newState = NetworkError;
         break;
     case FetchServerSettingsJob::Result::Undefined:
         _connectionErrors.append(tr("Unable to retrieve user settings and server capabilities."));
-        setState(Disconnected);
+        newState = Disconnected;
         break;
     case FetchServerSettingsJob::Result::Success:
-        Q_ASSERT(_state == Connected);
         break;
     }
 
-    // this is really finished so we should not need to deleteLater
-    // the original handling just called clear() on the QPointer but that sure as heck looks like a leak to me
-    // delete _fetchServerSettingsJob;
-    // Q_ASSERT(_fetchServerSettingsJob == nullptr);
+    // this step is done, delete after this slot finishes
+    _fetchServerSettingsJob->deleteLater();
+
+    if (newState != Connected) {
+        setState(newState);
+        return;
+    }
 
     // these are both self deleting.
-    // but there is an unidentified problem:
-    // running the job here instead of in the FetchServerSettingsJob eventually times out but only if I have deleted the
-    //_fetchServerSettingsJob, above!
-    // they have nothing to do with each other anymore - what the ever living...???
-    // need extra eyes on this. it makes NO sense
     if (_account->capabilities().avatarsAvailable()) {
         auto *avatarJob = new AvatarJob(_account, _account->davUser(), 128, nullptr);
         connect(avatarJob, &AvatarJob::avatarPixmap, this, [this](const QPixmap &img) { _account->setAvatar(AvatarJob::makeCircularAvatar(img)); });
@@ -278,19 +272,8 @@ void AccountState::slotFetchServerSettingsResult(FetchServerSettingsJob::Result 
         jsonJob->start();
     }
 
-    // deleting it here crashes. naturally >:/
-    // the crash in AbstractNetworkJob (I don't know which one but have to presume it's the avatar job) related to a deleteLater there?!
-    // this is such a mess
-    // delete _fetchServerSettingsJob;
-    // Q_ASSERT(_fetchServerSettingsJob == nullptr);
-    // this seems to work but I have no idea why deleteLater is "required".
-    // leaving all of this mess in place until I have discussed with cohorts
-    // note I have confirmed it does get deleted I am just not sure why it has to be later. The side effect is that the pointer is still live
-    // when it's checked in readyForSync which is part of Folder::canSync and if it returns false, the folder is not enqueued.
-    _fetchServerSettingsJob->deleteLater();
-    _fetchServerSettingsJob.clear();
-    // we have to call this again to trigger the folder manager to try to re-enqueue the folders now that the settings job is cleared.
-    // None of this is ok! Just demonstrated what acutally works with this current mess
+    _needsServerSettingsRefresh = false;
+    _queueGuard.unblock();
     emit isConnectedChanged();
 }
 
@@ -574,8 +557,6 @@ void AccountState::slotConnectionValidatorResult(ConnectionValidator::Status sta
         setState(Disconnected);
         break;
     case ConnectionValidator::ClientUnsupported:
-        [[fallthrough]];
-    case ConnectionValidator::ServerVersionMismatch:
         setState(ConfigurationError);
         break;
     case ConnectionValidator::StatusNotFound:
@@ -628,6 +609,7 @@ void AccountState::slotInvalidCredentials()
     qCInfo(lcAccountState) << "refreshing oauth failed";
     qCInfo(lcAccountState) << "asking user";
 
+    _needsServerSettingsRefresh = true;
     creds->askFromUser();
     setState(AskingCredentials);
 }
@@ -680,7 +662,7 @@ bool AccountState::readyForSync() const
     // that is checked when trying to enqueue the folder
     // net is that because we can't cleanly get rid of the fetshServerSettingsJob (yet) this always returns false! or at least it does
     // on first folder load.
-    return !_fetchServerSettingsJob && isConnected();
+    return !_needsServerSettingsRefresh && isConnected();
 }
 
 } // namespace OCC

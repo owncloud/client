@@ -219,6 +219,7 @@ private:
     QuotaInfo *_quotaInfo = nullptr;
 
     QPointer<FetchServerSettingsJob> _fetchServerSettingsJob;
+    bool _needsServerSettingsRefresh = false;
 };
 }
 

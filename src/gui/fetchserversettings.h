@@ -35,9 +35,8 @@ Q_SIGNALS:
     void finishedSignal(Result);
 
 private:
-    // void runAsyncUpdates();
-
     // returns whether the started jobs should be excluded from the retry queue
+    // I think this is obsolete because this is no longer run by ConnectionValidator
     bool isAuthJob() const;
 
     QPointer<Account> _account;

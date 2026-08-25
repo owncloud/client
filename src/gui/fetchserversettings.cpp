@@ -96,13 +96,6 @@ void FetchServerSettingsJob::start()
                     if (!displayName.isEmpty()) {
                         _account->setDavDisplayName(displayName);
                     }
-                    // yeah ok, but with these async updates *you can't delete the FetchServerSettingsJob when it reports finished*!
-                    // as it's not actually finished!
-                    // hard delete -> crash in AbstractNetworkJob which is trying to delete itself later
-                    // deleteLater means the async stuff won't necessarily finish. At least that is what I have observed.
-                    // so imo this needs to be a *complete* set of operations that are really done when finished is emitted.
-                    // otherwise we have no hope of clearly managing the lifetime of the FetchServerSettingsJob
-                    // runAsyncUpdates();
                     Q_EMIT finishedSignal(Result::Success);
                 } else {
                     Q_EMIT finishedSignal(Result::Undefined);
@@ -121,32 +114,6 @@ void FetchServerSettingsJob::start()
     });
     job->start();
 }
-
-/*void FetchServerSettingsJob::runAsyncUpdates()
-{
-    if (!_account)
-        return;
-
-    // those jobs are:
-    // - never auth jobs
-    // - might get queued
-    // - have the default timeout
-    // - must not be parented by this object
-
-    // ideally we would parent them to the account, but as things are messed up by the shared pointer stuff we can't at the moment
-    // so we just set them free
-    if (_account->capabilities().avatarsAvailable()) {
-        auto *avatarJob = new AvatarJob(_account, _account->davUser(), 128, nullptr);
-        connect(avatarJob, &AvatarJob::avatarPixmap, this, [this](const QPixmap &img) { _account->setAvatar(AvatarJob::makeCircularAvatar(img)); });
-        avatarJob->start();
-    };
-
-    if (_account->capabilities().appProviders().enabled) {
-        auto *jsonJob = new JsonJob(_account, _account->capabilities().appProviders().appsUrl, {}, "GET");
-        connect(jsonJob, &JsonJob::finishedSignal, this, [jsonJob, this] { _account->setAppProvider(AppProvider{jsonJob->data()}); });
-        jsonJob->start();
-    }
-}*/
 
 bool FetchServerSettingsJob::isAuthJob() const
 {
