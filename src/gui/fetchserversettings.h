@@ -14,30 +14,27 @@
 
 #pragma once
 
-#include "account.h"
 #include <QObject>
 #include <QPointer>
 
-namespace OCC {
-class Capabilities;
+#include "account.h"
 
-class FetchServerSettingsJob : public QObject
+namespace OCC {
+// class Capabilities;
+
+class FetchServerSettingsRunner : public QObject
 {
     Q_OBJECT
 public:
     enum class Result { Success, TimeOut, InvalidCredentials, UnsupportedServer, Undefined };
     Q_ENUM(Result);
-    FetchServerSettingsJob(Account *account, QObject *parent);
-    ~FetchServerSettingsJob() override { qDebug() << "server settings job deleted"; }
+    FetchServerSettingsRunner(Account *account, QObject *parent);
     void start();
 
 Q_SIGNALS:
     void finishedSignal(Result);
 
 private:
-    // returns whether the started jobs should be excluded from the retry queue
-    // I think this is obsolete because this is no longer run by ConnectionValidator
-    bool isAuthJob() const;
 
     QPointer<Account> _account;
 };

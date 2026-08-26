@@ -193,9 +193,9 @@ void AccountState::setState(State state)
     // todo: need to investigate whether it's ever the case that we go from connected to connected.
     // so far it looks to me as if this happens when the connection validator confirms all is still well?
     if (_state == Connected) {
-        // todo: final eval of whether _queueGuard.unblock should be moved until after server settings have been updated
         if (_needsServerSettingsRefresh) {
             // update capabilities and fetch relevant settings
+            // in the code path we unblock the queue *after* the caps retrieval has succeeded
             fetchServerSettings();
         } else
             _queueGuard.unblock();
@@ -212,47 +212,48 @@ void AccountState::setState(State state)
 
 void AccountState::fetchServerSettings()
 {
-    Q_ASSERT(_fetchServerSettingsJob == nullptr);
-    _fetchServerSettingsJob = new FetchServerSettingsJob(_account, this);
+    Q_ASSERT(_fetchServerSettingsRunner == nullptr);
+    _fetchServerSettingsRunner = new FetchServerSettingsRunner(_account, this);
 
-    connect(_fetchServerSettingsJob, &FetchServerSettingsJob::finishedSignal, this, &AccountState::slotFetchServerSettingsResult);
-    _fetchServerSettingsJob->start();
+    connect(_fetchServerSettingsRunner, &FetchServerSettingsRunner::finishedSignal, this, &AccountState::slotFetchServerSettingsResult);
+    _fetchServerSettingsRunner->start();
 }
 
-void AccountState::slotFetchServerSettingsResult(FetchServerSettingsJob::Result result)
+void AccountState::slotFetchServerSettingsResult(FetchServerSettingsRunner::Result result)
 {
     Q_ASSERT(_state == Connected);
 
     _connectionErrors.clear();
 
-    // let's be optimistic
     State newState = _state;
 
     switch (result) {
-    case FetchServerSettingsJob::Result::UnsupportedServer:
+    case FetchServerSettingsRunner::Result::UnsupportedServer:
         _connectionErrors.append(tr("The server is not supported by this client."));
         newState = ConfigurationError;
         break;
-    case FetchServerSettingsJob::Result::InvalidCredentials:
+    case FetchServerSettingsRunner::Result::InvalidCredentials:
         slotInvalidCredentials();
         break;
-    case FetchServerSettingsJob::Result::TimeOut:
+    case FetchServerSettingsRunner::Result::TimeOut:
         _connectionErrors.append(tr("Retrieving user settings and server capabilities timed out."));
         // hmmm...do we need to retry in this case? I'm guessing yes but needs discussion
         // actually no, we should not need to do it explicitly as the next round(s) of connection validator should
         // hopefully resolve it
         newState = NetworkError;
         break;
-    case FetchServerSettingsJob::Result::Undefined:
+    case FetchServerSettingsRunner::Result::Undefined:
         _connectionErrors.append(tr("Unable to retrieve user settings and server capabilities."));
         newState = Disconnected;
         break;
-    case FetchServerSettingsJob::Result::Success:
+    case FetchServerSettingsRunner::Result::Success:
         break;
     }
 
-    // this step is done, delete after this slot finishes
-    _fetchServerSettingsJob->deleteLater();
+    // this step is done, delete after this slot finishes else the self deleting jobs inside get munged up -> crash. TODO: evaluate whether there is any
+    // value to use the parenting mechanism for the AbstractNetworkJobs inside the FetchServerSettingsJob - I find it really questionable to parent
+    // self deleting objects but this needs deeper investigation.
+    _fetchServerSettingsRunner->deleteLater();
 
     if (newState != Connected) {
         setState(newState);
@@ -260,6 +261,7 @@ void AccountState::slotFetchServerSettingsResult(FetchServerSettingsJob::Result 
     }
 
     // these are both self deleting.
+    // they can finish whenever, everything else can carry on.
     if (_account->capabilities().avatarsAvailable()) {
         auto *avatarJob = new AvatarJob(_account, _account->davUser(), 128, nullptr);
         connect(avatarJob, &AvatarJob::avatarPixmap, this, [this](const QPixmap &img) { _account->setAvatar(AvatarJob::makeCircularAvatar(img)); });

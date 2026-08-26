@@ -169,7 +169,7 @@ Q_SIGNALS:
 
 protected Q_SLOTS:
     void slotConnectionValidatorResult(ConnectionValidator::Status status, const QStringList &errors);
-    void slotFetchServerSettingsResult(OCC::FetchServerSettingsJob::Result result);
+    void slotFetchServerSettingsResult(OCC::FetchServerSettingsRunner::Result result);
     void slotInvalidCredentials();
     void slotCredentialsFetched();
 
@@ -218,7 +218,7 @@ private:
 
     QuotaInfo *_quotaInfo = nullptr;
 
-    QPointer<FetchServerSettingsJob> _fetchServerSettingsJob;
+    QPointer<FetchServerSettingsRunner> _fetchServerSettingsRunner;
     bool _needsServerSettingsRefresh = false;
 };
 }

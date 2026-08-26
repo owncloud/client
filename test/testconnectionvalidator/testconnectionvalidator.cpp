@@ -71,22 +71,6 @@ private Q_SLOTS:
         QTest::newRow("auth timeout") << FailStage::AuthValidation << defaultValue << ConnectionValidator::Timeout;
         QTest::newRow("auth ServiceUnavailable") << FailStage::AuthValidation << defaultValue << ConnectionValidator::ServiceUnavailable;
         QTest::newRow("auth UnsupportedClient") << FailStage::AuthValidation << defaultValue << ConnectionValidator::ClientUnsupported;
-
-        // todo: dc-324 either remove these tests that are no longer part of connection validator or move them elsewhere
-        // leaving it failing so I don't forget ;)
-        QTest::newRow("capabilites timeout") << FailStage::Capabilities << defaultValue << ConnectionValidator::CredentialsWrong;
-        /* QTest::newRow("capabilites 401") << FailStage::Capabilities << defaultValue << ConnectionValidator::Timeout;
-         QTest::newRow("capabilites unsupported server") << FailStage::Capabilities << [value = defaultValue]() mutable {
-             value[QStringLiteral("version")] = QStringLiteral("7.0");
-             value[QStringLiteral("productversion")] = QString();
-             return value;
-         }() << ConnectionValidator::ServerVersionMismatch;
-
-
-         QTest::newRow("user info timeout") << FailStage::UserInfo << defaultValue << ConnectionValidator::Timeout;
-         QTest::newRow("user info 401") << FailStage::UserInfo << defaultValue << ConnectionValidator::CredentialsWrong;
-         QTest::newRow("success") << FailStage::UserInfo << defaultValue << ConnectionValidator::Connected;
-   */
     }
 
     void testStatusPhp()
