@@ -29,11 +29,6 @@ public:
     ~IconResources() = delete;
 
     /**
-     *      * @return Whether we are using the vanilla theme which means this is default oc branding
-     */
-    static bool isDefaultTheme();
-
-    /**
      * checks whether the system is using dark theme. If this returns false assume system is using light theme.
      */
     static bool isUsingDarkTheme();
@@ -52,6 +47,7 @@ public:
     // "bad" -> ie that no such icon exists in the app.
     static QIcon getThemedIcon(const QString &iconTheme, const QString &name);
 
+    static bool hasMonoIcons();
     static bool useMonoTrayIcons();
     static void setUseMonoTrayIcons(bool useMono);
     static QIcon themedTrayIcon(const QString &name, bool sysTrayMenuVisible, bool trayIsDark);

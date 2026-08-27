@@ -27,27 +27,9 @@ Q_NAMESPACE
 enum class IconType { BrandedIcon, BrandedIconWithFallbackToVanillaIcon, VanillaIcon };
 Q_ENUM_NS(IconType);
 
-
-/**
- *
- * @return Whether we are using the vanilla theme
- */
-bool OWNCLOUDRESOURCES_EXPORT isVanillaTheme();
-
-/**
- * Whether use the dark icon theme
- * The function also ensures the theme supports the dark theme
- */
-bool OWNCLOUDRESOURCES_EXPORT isUsingDarkTheme();
-
 bool OWNCLOUDRESOURCES_EXPORT hasDarkTheme();
 
-/** Whether the theme provides monochrome tray icons
- */
-bool OWNCLOUDRESOURCES_EXPORT hasMonoTheme();
-
-QIcon OWNCLOUDRESOURCES_EXPORT loadIcon(const QString &flavor, const QString &name, IconType iconType);
-QIcon OWNCLOUDRESOURCES_EXPORT themeIcon(const QString &name, IconType iconType = IconType::BrandedIconWithFallbackToVanillaIcon);
+// QIcon OWNCLOUDRESOURCES_EXPORT loadIcon(const QString &flavor, const QString &name, IconType iconType);
 
 // this needs to stay until we get rid of qml in spacesBrowser
 class OWNCLOUDRESOURCES_EXPORT CoreImageProvider : public QQuickImageProvider

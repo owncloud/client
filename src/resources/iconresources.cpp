@@ -33,11 +33,6 @@ namespace OCC {
 
 Q_LOGGING_CATEGORY(lcIconResources, "sync.iconresources", QtInfoMsg)
 
-bool IconResources::isDefaultTheme()
-{
-    return std::string_view(APPLICATION_SHORTNAME) == "ownCloud";
-}
-
 QString IconResources::brandedRootPath()
 {
     if (_brandedRootPath.isEmpty())
@@ -212,6 +207,16 @@ QIcon IconResources::getThemedIcon(const QString &iconTheme, const QString &name
     }
 
     return cached;
+}
+
+bool IconResources::hasMonoIcons()
+{
+    // refresh the maps before checking in case the paths were not cached yet. Don't use the result
+    // as if there is no branded black/white theme we'll get the default which we don't want in this case
+    pathForTheme(_whiteMonoTheme);
+    pathForTheme(_blackMonoTheme);
+    // the branded theme should have BOTH black and white resources to support mono theme
+    return _brandedThemePaths.contains(_whiteMonoTheme) && _brandedThemePaths.contains(_blackMonoTheme);
 }
 
 bool IconResources::useMonoTrayIcons()

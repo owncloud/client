@@ -208,7 +208,8 @@ QString Theme::about() const
     // changing the location of the settings and other registry keys.
     // todo: I do not agree with checking the resources for whether this is oc or not. imo we should just take the application_vendor in all
     // cases for this default about() impl.
-    const QString vendor = Resources::isVanillaTheme() ? QStringLiteral("ownCloud GmbH") : QStringLiteral(APPLICATION_VENDOR);
+    bool isOwnCloud = std::string_view(APPLICATION_SHORTNAME) == "ownCloud";
+    const QString vendor = isOwnCloud ? QStringLiteral("ownCloud GmbH") : QStringLiteral(APPLICATION_VENDOR);
     return tr("<p>Version %1. For more information visit <a href=\"%2\">https://%3</a></p>"
               "<p>For known issues and help, please visit: <a href=\"https://central.owncloud.com/c/desktop-client\">https://central.owncloud.com</a></p>"
               "<p><small>By Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz, "
