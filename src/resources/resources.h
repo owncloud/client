@@ -29,8 +29,6 @@ Q_ENUM_NS(IconType);
 
 bool OWNCLOUDRESOURCES_EXPORT hasDarkTheme();
 
-// QIcon OWNCLOUDRESOURCES_EXPORT loadIcon(const QString &flavor, const QString &name, IconType iconType);
-
 // this needs to stay until we get rid of qml in spacesBrowser
 class OWNCLOUDRESOURCES_EXPORT CoreImageProvider : public QQuickImageProvider
 {
