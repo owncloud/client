@@ -18,6 +18,7 @@
 
 #include <QBuffer>
 #include <QByteArray>
+#include <QDir>
 #include <QFileInfo>
 #include <QFont>
 #include <QGuiApplication>
@@ -52,20 +53,23 @@ bool IconResources::isUsingDarkTheme()
 QString IconResources::pathForTheme(const QString &iconTheme, bool branded)
 {
     if (branded) {
+        if (_brandedThemePaths.contains(iconTheme))
+            return _brandedThemePaths[iconTheme];
+
         if (!_brandedThemePaths.contains(iconTheme)) {
             QString themeRoot = brandedRootPath();
             QString themePath = themeRoot % "/" % iconTheme % "/";
             //  QFileInfo brandedInfo(themeRoot);
             // if (brandedInfo.exists(iconTheme)) {
-            if (QFileInfo::exists(themePath))
+            if (QFileInfo::exists(themePath)) {
                 // QString themePath = themeRoot % "/" % iconTheme % "/";
                 _brandedThemePaths.insert(iconTheme, themePath);
-        } else {
+                return themePath;
+            }
+        } /*else
             // we can't find the theme folder in the branding resources so fall back to default oc theme
             return pathForTheme(iconTheme, false);
-        }
-
-        return _brandedThemePaths[iconTheme];
+        }*/
     }
 
 
@@ -161,6 +165,14 @@ QString IconResources::findIconPath(const QString &iconTheme, const QString &nam
     if (found)
         return iconPath;
 
+    // also check to see if this "path" will be built from multiple sized png's
+    // filter on the icon name + a wildcard where the size will be
+    QStringList filter{name + "-*.png"};
+    QDir themeDir(themePath);
+    QStringList searchRes = themeDir.entryList(filter);
+    if (!searchRes.isEmpty())
+        return themePath % name;
+
     // if we haven't found it in the expected location so try one more time in case the icon itself is missing, hopefully we can find it
     // in the fallback theme
     if (branded)
@@ -172,6 +184,7 @@ QString IconResources::findIconPath(const QString &iconTheme, const QString &nam
 QIcon IconResources::getThemedIcon(const QString &iconTheme, const QString &name)
 {
     // find the icon: prefer branded location but if not, take it from the fallback
+    // note that findIconPath also "clears"
     QString iconPath = findIconPath(iconTheme, name);
     if (iconPath.isEmpty()) {
         qCWarning(lcIconResources) << "Failed to locate the icon" << iconPath;
@@ -183,26 +196,28 @@ QIcon IconResources::getThemedIcon(const QString &iconTheme, const QString &name
     }
 
     QIcon &cached = _themedIconCache[iconPath];
-    if (cached.isNull())
+    if (cached.isNull()) {
         cached = QIcon(iconPath);
 
-
-    /*
-             const QList<int> sizes{16, 22, 32, 48, 64, 128, 256, 512, 1024};
-             QString previousIcon;
-             for (int size : sizes) {
-                 QString pixmapName = QStringLiteral("%1-%2.png").arg(path, QString::number(size));
-                 if (QFile::exists(pixmapName)) {
-                     previousIcon = pixmapName;
-                     cached.addFile(pixmapName, {size, size});
-                 } else if (size >= 128) {
-                     if (!previousIcon.isEmpty()) {
-                         qCWarning(lcResources) << "Upscaling:" << previousIcon << "to" << size;
-                         cached.addPixmap(QPixmap(previousIcon).scaled({size, size}, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-                     }
-                 }
-             }
-         }*/
+        if (cached.isNull()) {
+            // then this needs to be built from multiple png's - it is very likely the app icon but anything is possible, apparently
+            const QList<int> sizes{16, 22, 32, 48, 64, 128, 256, 512, 1024};
+            QString previousIcon;
+            for (int size : sizes) {
+                QString pixmapName = QStringLiteral("%1-%2.png").arg(iconPath, QString::number(size));
+                if (QFile::exists(pixmapName)) {
+                    previousIcon = pixmapName;
+                    cached.addFile(pixmapName, {size, size});
+                } else if (size >= 128) {
+                    if (!previousIcon.isEmpty()) {
+                        qCWarning(lcIconResources) << "Upscaling:" << previousIcon << "to" << size;
+                        cached.addPixmap(QPixmap(previousIcon).scaled({size, size}, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+                    }
+                }
+            }
+        }
+        Q_ASSERT(!cached.isNull());
+    }
 
     return cached;
 }

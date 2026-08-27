@@ -18,6 +18,7 @@
 #include "common/vfs.h"
 #include "config.h"
 
+#include "resources/iconresources.h"
 #include "resources/resources.h"
 
 #include <QSslSocket>
@@ -80,7 +81,8 @@ QString Theme::configFileName() const
 // this is SO confusing - theme should have no responsibility for *retrieving* resources!!!
 QIcon Theme::applicationIcon() const
 {
-    return Resources::themeUniversalIcon(applicationIconName() + QStringLiteral("-icon"));
+    return IconResources::getUniversalIcon(applicationIconName() + QStringLiteral("-icon"));
+    // return Resources::themeUniversalIcon(applicationIconName() + QStringLiteral("-icon"));
 }
 
 QString Theme::applicationIconName() const
