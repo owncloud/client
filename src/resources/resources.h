@@ -46,7 +46,7 @@ bool OWNCLOUDRESOURCES_EXPORT hasDarkTheme();
  */
 bool OWNCLOUDRESOURCES_EXPORT hasMonoTheme();
 
-QIcon OWNCLOUDRESOURCES_EXPORT getCoreIcon(const QString &icon_name);
+// QIcon OWNCLOUDRESOURCES_EXPORT getCoreIcon(const QString &icon_name);
 
 QIcon OWNCLOUDRESOURCES_EXPORT loadIcon(const QString &flavor, const QString &name, IconType iconType);
 QIcon OWNCLOUDRESOURCES_EXPORT themeIcon(const QString &name, IconType iconType = IconType::BrandedIconWithFallbackToVanillaIcon);

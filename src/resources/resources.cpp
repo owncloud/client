@@ -13,6 +13,7 @@
  */
 
 #include "resources/resources.h"
+#include "resources/iconresources.h"
 #include "resources/qmlresources.h"
 #include "resources/template.h"
 #include "resources/themewatcher.h"
@@ -118,7 +119,7 @@ bool OCC::Resources::isUsingDarkTheme()
     return forceDark || QPalette().base().color().lightnessF() <= 0.5;
 }
 
-QIcon OCC::Resources::getCoreIcon(const QString &iconName)
+/*QIcon OCC::Resources::getCoreIcon(const QString &iconName)
 {
     if (iconName.isEmpty()) {
         return {};
@@ -134,7 +135,7 @@ QIcon OCC::Resources::getCoreIcon(const QString &iconName)
         return cached = QPixmap::fromImageReader(&iconReader);
     }
     return cached;
-}
+}*/
 
 /*
  * helper to load a icon from either the icon theme the desktop provides or from
@@ -246,7 +247,7 @@ QPixmap CoreImageProvider::requestPixmap(const QString &id, QSize *size, const Q
 
     QIcon icon;
     if (qmlIcon.theme == QLatin1String("core")) {
-        icon = getCoreIcon(qmlIcon.iconName);
+        icon = IconResources::getCoreIcon(qmlIcon.iconName);
     } else if (qmlIcon.theme == QLatin1String("universal")) {
         icon = themeUniversalIcon(qmlIcon.iconName);
     } else {

@@ -29,7 +29,7 @@
 #include "logger.h"
 #include "ui_logbrowser.h"
 
-#include "resources/resources.h"
+#include "resources/iconresources.h"
 
 namespace OCC {
 
@@ -41,7 +41,7 @@ LogBrowser::LogBrowser(QWidget *parent)
 {
     ui->setupUi(this);
 
-    ui->warningIcon->setPixmap(Resources::getCoreIcon(QStringLiteral("warning")).pixmap(ui->warningIcon->size()));
+    ui->warningIcon->setPixmap(IconResources::getCoreIcon(QStringLiteral("warning")).pixmap(ui->warningIcon->size()));
     ui->locationLabel->setText(Logger::instance()->temporaryFolderLogDirPath());
 
     ui->enableLoggingButton->setChecked(ConfigFile().automaticLogDir());

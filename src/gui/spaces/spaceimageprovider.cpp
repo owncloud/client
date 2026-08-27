@@ -13,8 +13,8 @@
  */
 #include "spaceimageprovider.h"
 #include "libsync/graphapi/spacesmanager.h"
+#include "resources/iconresources.h"
 #include "resources/qmlresources.h"
-#include "resources/resources.h"
 
 using namespace OCC;
 using namespace Spaces;
@@ -32,7 +32,7 @@ QPixmap SpaceImageProvider::requestPixmap(const QString &id, QSize *size, const 
 
     QIcon icon;
     if (id == QLatin1String("placeholder")) {
-        icon = Resources::getCoreIcon(QStringLiteral("defaultSpaceImage"));
+        icon = IconResources::getCoreIcon(QStringLiteral("defaultSpaceImage"));
     } else {
         const auto ids = id.split(QLatin1Char('/'));
         const auto *space = _spacesManager->space(ids.last());

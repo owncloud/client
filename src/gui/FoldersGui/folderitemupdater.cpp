@@ -15,7 +15,7 @@
 
 #include "folder.h"
 #include "folderitem.h"
-#include "resources.h"
+#include "iconresources.h"
 #include "space.h"
 
 namespace OCC {
@@ -94,7 +94,7 @@ void FolderItemUpdater::onSyncStateChanged()
             errors.append(tr("There are unresolved conflicts."));
 
         for (const QString &error : std::as_const(errors)) {
-            QIcon errorIcon = Resources::getCoreIcon("states/warning");
+            QIcon errorIcon = IconResources::getCoreIcon("states/warning");
             QStandardItem *errorItem = new QStandardItem(errorIcon, error);
             errorItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
