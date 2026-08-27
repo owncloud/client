@@ -48,7 +48,6 @@ bool OWNCLOUDRESOURCES_EXPORT hasMonoTheme();
 
 QIcon OWNCLOUDRESOURCES_EXPORT loadIcon(const QString &flavor, const QString &name, IconType iconType);
 QIcon OWNCLOUDRESOURCES_EXPORT themeIcon(const QString &name, IconType iconType = IconType::BrandedIconWithFallbackToVanillaIcon);
-QIcon OWNCLOUDRESOURCES_EXPORT buildAvatar(const QString &initials, QUuid accountUid);
 
 // this needs to stay until we get rid of qml in spacesBrowser
 class OWNCLOUDRESOURCES_EXPORT CoreImageProvider : public QQuickImageProvider
