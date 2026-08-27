@@ -119,24 +119,6 @@ bool OCC::Resources::isUsingDarkTheme()
     return forceDark || QPalette().base().color().lightnessF() <= 0.5;
 }
 
-/*QIcon OCC::Resources::getCoreIcon(const QString &iconName)
-{
-    if (iconName.isEmpty()) {
-        return {};
-    }
-    QIcon &cached = iconCache->_cache[iconName]; // Take reference, this will also "set" the cache entry
-    if (cached.isNull()) {
-        const QString iconPath = QStringLiteral(":/client/resources/core/%1.svg").arg(iconName);
-        Q_ASSERT(QFileInfo::exists(iconPath));
-        const QString color = isUsingDarkTheme() ? QStringLiteral("#ADACAB") : QStringLiteral("#435671");
-        QByteArray data = Template::renderTemplateFromFile(iconPath, {{QStringLiteral("color"), color}}).toUtf8();
-        QBuffer buffer(&data);
-        QImageReader iconReader(&buffer, "svg");
-        return cached = QPixmap::fromImageReader(&iconReader);
-    }
-    return cached;
-}*/
-
 /*
  * helper to load a icon from either the icon theme the desktop provides or from
  * the apps Qt resources.
@@ -189,11 +171,6 @@ QIcon OCC::Resources::loadIcon(const QString &flavor, const QString &name, IconT
 QIcon OCC::Resources::themeIcon(const QString &name, IconType iconType)
 {
     return loadIcon((Resources::isUsingDarkTheme() && hasDarkTheme()) ? darkTheme() : coloredTheme(), name, iconType);
-}
-
-QIcon OCC::Resources::themeUniversalIcon(const QString &name, IconType iconType)
-{
-    return loadIcon(QStringLiteral("universal"), name, iconType);
 }
 
 QIcon OCC::Resources::buildAvatar(const QString &initials, QUuid accountUid)
@@ -249,7 +226,7 @@ QPixmap CoreImageProvider::requestPixmap(const QString &id, QSize *size, const Q
     if (qmlIcon.theme == QLatin1String("core")) {
         icon = IconResources::getCoreIcon(qmlIcon.iconName);
     } else if (qmlIcon.theme == QLatin1String("universal")) {
-        icon = themeUniversalIcon(qmlIcon.iconName);
+        icon = IconResources::getUniversalIcon(qmlIcon.iconName);
     } else {
         icon = themeIcon(qmlIcon.iconName);
     }
