@@ -18,7 +18,7 @@
 #include "libsync/networkjobs.h"
 #include "libsync/theme.h"
 
-#include "resources/resources.h"
+#include "resources/iconresources.h"
 
 #include <QHeaderView>
 #include <QLabel>
@@ -190,7 +190,7 @@ void SelectiveSyncWidget::recursiveInsert(QTreeWidgetItem *parent, QStringList p
             } else if (parent->checkState(0) == Qt::Unchecked) {
                 item->setCheckState(0, Qt::Unchecked);
             }
-            item->setIcon(0, Resources::getCoreIcon(QStringLiteral("folder-sync")));
+            item->setIcon(0, IconResources::getCoreIcon(QStringLiteral("folder-sync")));
             item->setText(0, pathTrail.first());
             if (size >= 0) {
                 item->setText(1, Utility::octetsToString(size));

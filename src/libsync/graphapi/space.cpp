@@ -18,7 +18,6 @@
 #include "libsync/networkjobs.h"
 #include "libsync/networkjobs/resources.h"
 
-#include "resources/resources.h"
 
 using namespace OCC;
 using namespace GraphApi;

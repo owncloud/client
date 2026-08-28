@@ -197,7 +197,7 @@ void TrayMenuController::setupTrayContextMenu()
 
 void TrayMenuController::slotShowTrayMessage(const QString &title, const QString &msg, const QIcon &icon)
 {
-    _tray->showMessage(title, msg, icon.isNull() ? Resources::getCoreIcon(QStringLiteral("states/information")) : icon);
+    _tray->showMessage(title, msg, icon.isNull() ? IconResources::getCoreIcon(QStringLiteral("states/information")) : icon);
 }
 
 void TrayMenuController::slotShowOptionalTrayMessage(const QString &title, const QString &msg, const QIcon &icon)

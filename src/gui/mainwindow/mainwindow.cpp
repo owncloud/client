@@ -24,6 +24,7 @@
 #include <QMenu>
 
 #include "configfile.h"
+#include "iconresources.h"
 #include "modalwrapperwidget.h"
 #include "theme.h"
 
@@ -103,7 +104,7 @@ void MainWindow::buildWindow()
 
     QAction *moreAction = new QAction(tr("More"), this);
     moreAction->setObjectName("moreAction");
-    moreAction->setIcon(Resources::getCoreIcon("more"));
+    moreAction->setIcon(IconResources::getCoreIcon("more"));
     moreAction->setToolTip(tr("More"));
     _toolbar->addAction(moreAction);
     _moreButton = qobject_cast<QToolButton *>(_toolbar->widgetForAction(moreAction));

@@ -14,8 +14,8 @@
 
 
 #include "activitysettings.h"
+#include "iconresources.h"
 #include "localactivitywidget.h"
-#include "resources.h"
 #include "syncerrorwidget.h"
 
 #include <QHBoxLayout>
@@ -34,10 +34,10 @@ ActivitySettings::ActivitySettings(QWidget *parent)
     setLayout(hbox);
 
     auto _localActivityWidget = new LocalActivityWidget(this);
-    auto localActivityTabId = _tab->addTab(_localActivityWidget, Resources::getCoreIcon(QStringLiteral("states/sync")), tr("Local Activity"));
+    auto localActivityTabId = _tab->addTab(_localActivityWidget, IconResources::getCoreIcon(QStringLiteral("states/sync")), tr("Local Activity"));
 
     auto _syncErrorWidget = new SyncErrorWidget(this);
-    _syncErrorTabId = _tab->addTab(_syncErrorWidget, Resources::getCoreIcon(QStringLiteral("states/warning")), QString());
+    _syncErrorTabId = _tab->addTab(_syncErrorWidget, IconResources::getCoreIcon(QStringLiteral("states/warning")), QString());
     slotShowIssueItemCount(0); // to display the label.
     connect(_syncErrorWidget, &SyncErrorWidget::issueCountUpdated, this, &ActivitySettings::slotShowIssueItemCount);
 
