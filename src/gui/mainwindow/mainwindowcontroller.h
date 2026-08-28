@@ -16,6 +16,8 @@
 
 #include <QObject>
 
+class QAction;
+
 namespace OCC {
 
 class MainWindow;
@@ -37,6 +39,7 @@ signals:
     void requestAccountWizard();
 
 private:
+    QList<QAction *> buildUrlActions();
     void buildMenuActions();
     void createSyncErrorsAction();
     void createActivityAction();
