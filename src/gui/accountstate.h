@@ -19,6 +19,7 @@
 #include "gui/owncloudguilib.h"
 
 #include "connectionvalidator.h"
+#include "fetchserversettings.h"
 #include "jobqueue.h"
 
 #include "account.h"
@@ -38,7 +39,6 @@ namespace OCC {
 
 class QuotaInfo;
 class TlsErrorDialog;
-class FetchServerSettingsJob;
 
 /**
  * @brief Extra info about an ownCloud server account.
@@ -159,8 +159,8 @@ public:
     void checkConnectivity(bool blockJobs = false);
 
 private:
-
     void setState(State state);
+    void fetchServerSettings();
 
 Q_SIGNALS:
     void stateChanged(State state);
@@ -169,6 +169,7 @@ Q_SIGNALS:
 
 protected Q_SLOTS:
     void slotConnectionValidatorResult(ConnectionValidator::Status status, const QStringList &errors);
+    void slotFetchServerSettingsResult(OCC::FetchServerSettingsRunner::Result result);
     void slotInvalidCredentials();
     void slotCredentialsFetched();
 
@@ -217,7 +218,8 @@ private:
 
     QuotaInfo *_quotaInfo = nullptr;
 
-    QPointer<FetchServerSettingsJob> _fetchCapabilitiesJob;
+    QPointer<FetchServerSettingsRunner> _fetchServerSettingsRunner;
+    bool _needsServerSettingsRefresh = false;
 };
 }
 

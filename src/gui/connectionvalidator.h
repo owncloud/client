@@ -62,18 +62,9 @@ namespace OCC {
         |
         +-> slotAuthSuccess --+--> X (depending if coming from checkServerAndAuth or not)
                               |
-  +---------------------------+
-  |
-  +-> checkServerCapabilities
-        JsonApiJob (cloud/capabilities) -> slotCapabilitiesRecieved -+
-                                                                     |
-  +------------------------------------------------------------------+
-  |
-  +-> fetchUser -+
-                 |
-                 +-> AvatarJob
-                            |
-                            +-> slotAvatarImage --> reportResult()
+
+retrieving server capabilities, user settings, avatar and app providers (if enabled) has moved to account state as those
+checks should happen much less frequently!
 
     \endcode
  */
@@ -99,7 +90,7 @@ public:
         Undefined,
         Connected,
         NotConfigured,
-        ServerVersionMismatch, // The server version is too old
+        //  ServerVersionMismatch, // The server version is too old
         CredentialsNotReady, // Credentials aren't ready
         CredentialsWrong, // AuthenticationRequiredError
         SslError, // SSL handshake error, certificate rejected by user?
