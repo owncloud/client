@@ -14,31 +14,27 @@
 
 #pragma once
 
-#include "account.h"
 #include <QObject>
 #include <QPointer>
 
-namespace OCC {
-class Capabilities;
+#include "account.h"
 
-class FetchServerSettingsJob : public QObject
+namespace OCC {
+// class Capabilities;
+
+class FetchServerSettingsRunner : public QObject
 {
     Q_OBJECT
 public:
     enum class Result { Success, TimeOut, InvalidCredentials, UnsupportedServer, Undefined };
     Q_ENUM(Result);
-    FetchServerSettingsJob(Account *account, QObject *parent);
-
+    FetchServerSettingsRunner(Account *account, QObject *parent);
     void start();
 
 Q_SIGNALS:
     void finishedSignal(Result);
 
 private:
-    void runAsyncUpdates();
-
-    // returns whether the started jobs should be excluded from the retry queue
-    bool isAuthJob() const;
 
     QPointer<Account> _account;
 };

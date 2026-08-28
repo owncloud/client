@@ -42,8 +42,6 @@ SyncResult trayOverallStatus()
         result.addResult(folder);
     }
     SyncResult finalResult = result.overallStatus();
-    if (finalResult.status() == SyncResult::Paused)
-        qDebug() << "just break here";
 
     // this is confusing. basically we have "standard" icons associated with different sync statuses
     // the only way to "pick" a particular icon for our tray use case is to update the status if the "real"
@@ -199,7 +197,7 @@ void TrayMenuController::setupTrayContextMenu()
 
 void TrayMenuController::slotShowTrayMessage(const QString &title, const QString &msg, const QIcon &icon)
 {
-    _tray->showMessage(title, msg, icon.isNull() ? Resources::getCoreIcon(QStringLiteral("states/information")) : icon);
+    _tray->showMessage(title, msg, icon.isNull() ? IconResources::getCoreIcon(QStringLiteral("states/information")) : icon);
 }
 
 void TrayMenuController::slotShowOptionalTrayMessage(const QString &title, const QString &msg, const QIcon &icon)

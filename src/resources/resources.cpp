@@ -13,6 +13,7 @@
  */
 
 #include "resources/resources.h"
+#include "resources/iconresources.h"
 #include "resources/qmlresources.h"
 #include "resources/template.h"
 #include "resources/themewatcher.h"
@@ -73,10 +74,6 @@ QString coloredTheme()
     return QStringLiteral("colored");
 }
 
-QString whiteTheme()
-{
-    return QStringLiteral("white");
-}
 
 bool hasTheme(IconType type, const QString &theme)
 {
@@ -100,141 +97,6 @@ bool OCC::Resources::hasDarkTheme()
     return _hasBrandedColored == _hasBrandedDark;
 }
 
-bool Resources::hasMonoTheme()
-{
-    // mono icons are only supported in vanilla and if a customer provides them
-    // no fallback to vanilla
-    return hasTheme(Resources::IconType::BrandedIcon, whiteTheme());
-}
-
-bool Resources::isVanillaTheme()
-{
-    return std::string_view(APPLICATION_SHORTNAME) == "ownCloud";
-}
-
-bool OCC::Resources::isUsingDarkTheme()
-{
-    static bool forceDark = qEnvironmentVariableIntValue("OWNCLOUD_FORCE_DARK_MODE") != 0;
-    return forceDark || QPalette().base().color().lightnessF() <= 0.5;
-}
-
-QIcon OCC::Resources::getCoreIcon(const QString &iconName)
-{
-    if (iconName.isEmpty()) {
-        return {};
-    }
-    QIcon &cached = iconCache->_cache[iconName]; // Take reference, this will also "set" the cache entry
-    if (cached.isNull()) {
-        const QString iconPath = QStringLiteral(":/client/resources/core/%1.svg").arg(iconName);
-        Q_ASSERT(QFileInfo::exists(iconPath));
-        const QString color = isUsingDarkTheme() ? QStringLiteral("#ADACAB") : QStringLiteral("#435671");
-        QByteArray data = Template::renderTemplateFromFile(iconPath, {{QStringLiteral("color"), color}}).toUtf8();
-        QBuffer buffer(&data);
-        QImageReader iconReader(&buffer, "svg");
-        return cached = QPixmap::fromImageReader(&iconReader);
-    }
-    return cached;
-}
-
-/*
- * helper to load a icon from either the icon theme the desktop provides or from
- * the apps Qt resources.
- */
-QIcon OCC::Resources::loadIcon(const QString &flavor, const QString &name, IconType iconType)
-{
-    // prevent recusion
-    const bool useCoreIcon = (iconType == IconType::VanillaIcon) || isVanillaTheme();
-    const QString path = QStringLiteral("%1/%2/%3").arg(useCoreIcon ? vanillaThemePath() : brandThemePath(), flavor, name);
-    QIcon &cached = iconCache->_cache[path]; // Take reference, this will also "set" the cache entry
-    if (cached.isNull()) {
-        if (isVanillaTheme() && QIcon::hasThemeIcon(name)) {
-            // use from theme
-            return cached = QIcon::fromTheme(name);
-        }
-        const QString svg = QStringLiteral("%1.svg").arg(path);
-        if (QFile::exists(svg)) {
-            return cached = QIcon(svg);
-        }
-
-        const QString png = QStringLiteral("%1.png").arg(path);
-        if (QFile::exists(png)) {
-            return cached = QIcon(png);
-        }
-
-        const QList<int> sizes{16, 22, 32, 48, 64, 128, 256, 512, 1024};
-        QString previousIcon;
-        for (int size : sizes) {
-            QString pixmapName = QStringLiteral("%1-%2.png").arg(path, QString::number(size));
-            if (QFile::exists(pixmapName)) {
-                previousIcon = pixmapName;
-                cached.addFile(pixmapName, {size, size});
-            } else if (size >= 128) {
-                if (!previousIcon.isEmpty()) {
-                    qCWarning(lcResources) << "Upscaling:" << previousIcon << "to" << size;
-                    cached.addPixmap(QPixmap(previousIcon).scaled({size, size}, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-                }
-            }
-        }
-    }
-    if (cached.isNull()) {
-        if (!useCoreIcon && iconType == IconType::BrandedIconWithFallbackToVanillaIcon) {
-            return loadIcon(flavor, name, IconType::VanillaIcon);
-        }
-        qCWarning(lcResources) << "Failed to locate the icon" << path;
-    }
-    return cached;
-}
-
-QIcon OCC::Resources::themeIcon(const QString &name, IconType iconType)
-{
-    return loadIcon((Resources::isUsingDarkTheme() && hasDarkTheme()) ? darkTheme() : coloredTheme(), name, iconType);
-}
-
-QIcon OCC::Resources::themeUniversalIcon(const QString &name, IconType iconType)
-{
-    return loadIcon(QStringLiteral("universal"), name, iconType);
-}
-
-QIcon OCC::Resources::buildAvatar(const QString &initials, QUuid accountUid)
-{
-    QIcon &cached = iconCache->_cache[accountUid.toString()]; // Take reference, this will also "set" the cache entry
-    if (cached.isNull()) {
-        // for now we are going for a color scheme that mimics our other icons.
-        // the logic:
-        // it is extremely difficult to "pick" random colors that are going to look good and have
-        // sufficient contrast with dark and light mode on all platforms
-        // additionally, a random colorful icon looks a bit out of place given we have no other "custom" colors
-        // in the app outside of the account wizard - I think using the same gray we do for other icons is harmonious, at least
-        QColor badgeColor = isUsingDarkTheme() ? "#ADACAB" : "#435671";
-
-        QPalette pal = qGuiApp->palette();
-
-        // I really don't think this needs to be larger than 64x64 ever...let's see how it goes
-        QPixmap pix(64, 64);
-        pix.fill(Qt::transparent);
-
-        QPainter painter;
-        painter.begin(&pix);
-        painter.setRenderHint(QPainter::Antialiasing, true);
-        painter.setBrush(badgeColor);
-        painter.setPen(Qt::NoPen);
-        painter.drawEllipse(pix.rect());
-
-        QFont font = painter.font();
-        font.setPixelSize(32);
-        font.setBold(true);
-        painter.setFont(font);
-        // use base color to simulate transparent text that reveals what is behind it, as we have in other icons...ie the base color
-        // no I can't use color "Transparent" because the circle/ellipse has already been filled, so the text would be net invisible ;)
-        painter.setPen(pal.color(QPalette::Base));
-        painter.drawText(pix.rect(), Qt::AlignCenter, initials);
-        painter.end();
-        cached = pix;
-    }
-    return cached;
-}
-
-
 // todo: all of this will die soon :)
 CoreImageProvider::CoreImageProvider()
     : QQuickImageProvider(QQuickImageProvider::Pixmap)
@@ -246,11 +108,12 @@ QPixmap CoreImageProvider::requestPixmap(const QString &id, QSize *size, const Q
 
     QIcon icon;
     if (qmlIcon.theme == QLatin1String("core")) {
-        icon = getCoreIcon(qmlIcon.iconName);
+        icon = IconResources::getCoreIcon(qmlIcon.iconName);
     } else if (qmlIcon.theme == QLatin1String("universal")) {
-        icon = themeUniversalIcon(qmlIcon.iconName);
+        icon = IconResources::getUniversalIcon(qmlIcon.iconName);
     } else {
-        icon = themeIcon(qmlIcon.iconName);
+        QString themeName = IconResources::isUsingDarkTheme() && hasDarkTheme() ? darkTheme() : coloredTheme();
+        icon = IconResources::getThemedIcon(themeName, qmlIcon.iconName);
     }
     return Resources::pixmap(requestedSize, icon, qmlIcon.enabled ? QIcon::Normal : QIcon::Disabled, size);
 }

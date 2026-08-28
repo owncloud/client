@@ -16,6 +16,7 @@
 
 #include "aboutview.h"
 #include "application.h"
+#include "iconresources.h"
 #include "guiutility.h"
 #include "localactivitywidget.h"
 #include "mainwindow.h"
@@ -95,6 +96,14 @@ void MainWindowController::buildMenuActions()
     connect(aboutAction, &QAction::triggered, this, &MainWindowController::onAbout);
     menuActions.push_back(aboutAction);
 
+    QUrl helpUrl(Theme::instance()->helpUrl());
+    if (helpUrl.isValid()) {
+        QAction *helpAction = new QAction(tr("Help"));
+        helpAction->setObjectName("helpAction");
+        connect(helpAction, &QAction::triggered, this, [helpUrl]() { Utility::openBrowser(helpUrl, nullptr); });
+        menuActions.push_back(helpAction);
+    }
+
     QAction *separator = new QAction(this);
     separator->setObjectName("sparatorAction");
     separator->setSeparator(true);
@@ -110,7 +119,7 @@ void MainWindowController::buildMenuActions()
 void MainWindowController::createSyncErrorsAction()
 {
     QAction *syncErrorsAction = new QAction(tr("Errors: %1").arg(0), this);
-    syncErrorsAction->setIcon(Resources::getCoreIcon("states/error"));
+    syncErrorsAction->setIcon(IconResources::getCoreIcon("states/error"));
     syncErrorsAction->setObjectName("syncErrorsAction");
     syncErrorsAction->setCheckable(true);
     auto syncErrorWidget = new SyncErrorWidget(_window);
@@ -124,7 +133,7 @@ void MainWindowController::createSyncErrorsAction()
 void MainWindowController::createActivityAction()
 {
     QAction *activityAction = new QAction(tr("Activity"), this);
-    activityAction->setIcon(Resources::getCoreIcon("states/sync"));
+    activityAction->setIcon(IconResources::getCoreIcon("states/sync"));
     activityAction->setObjectName("activityAction");
     activityAction->setCheckable(true);
     auto localActivityWidget = new LocalActivityWidget(_window);
