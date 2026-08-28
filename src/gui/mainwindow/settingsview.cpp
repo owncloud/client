@@ -65,11 +65,7 @@ SettingsView::SettingsView(QWidget *parent)
     _ui->crashreporterCheckBox->setVisible(Theme::instance()->withCrashReporter());
 
     _ui->moveToTrashCheckBox->setVisible(true);
-    connect(_ui->moveToTrashCheckBox, &QCheckBox::toggled, this, &SettingsView::moveToTrashChanged); /*[this](bool checked) {
-         ConfigFile().setMoveToTrash(checked);
-         Q_EMIT moveToTrashChanged(checked);
-     });*/
-
+    connect(_ui->moveToTrashCheckBox, &QCheckBox::toggled, this, &SettingsView::moveToTrashChanged);
     // OEM themes are not obliged to ship mono icons, so there
     // is no point in offering an option
     _ui->monoIconsCheckBox->setVisible(Resources::hasMonoTheme());
