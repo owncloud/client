@@ -57,7 +57,7 @@ QList<QAction *> MainWindowController::buildUrlActions()
             // todo: the theme should provide any path to subdir relative to "universal"
             QString iconName = QString("urlIcons/%1").arg(std::get<0>(def));
             if (!iconName.isEmpty()) {
-                QIcon ic = Resources::themeUniversalIcon(iconName);
+                QIcon ic = IconResources::getUniversalIcon(iconName);
                 Q_ASSERT(!ic.isNull());
                 urlAction->setIcon(ic);
                 urlAction->setIconVisibleInMenu(true);
