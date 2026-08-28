@@ -14,7 +14,6 @@
 #include "jsonjob.h"
 
 #include "account.h"
-#include "common/utility.h"
 
 #include <QJsonDocument>
 #include <QLoggingCategory>

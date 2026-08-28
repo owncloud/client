@@ -14,10 +14,13 @@
 
 #include "owncloudtheme.h"
 
+#include "iconresources.h"
+
 #include <QCoreApplication>
 #include <QIcon>
 #include <QString>
 #include <QVariant>
+
 
 namespace OCC {
 
@@ -38,12 +41,12 @@ QColor ownCloudTheme::wizardHeaderTitleColor() const
 
 QIcon ownCloudTheme::wizardHeaderLogo() const
 {
-    return Resources::themeUniversalIcon(QStringLiteral("wizard_logo"));
+    return IconResources::getUniversalIcon(QStringLiteral("wizard_logo"));
 }
 
 QIcon ownCloudTheme::aboutIcon() const
 {
-    return Resources::themeUniversalIcon(QStringLiteral("oc-image-about"));
+    return IconResources::getUniversalIcon(QStringLiteral("oc-image-about"));
 }
 
 bool ownCloudTheme::moveToTrashDefaultValue() const

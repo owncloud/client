@@ -20,6 +20,7 @@
 #include "libsync/configfile.h"
 #include "libsync/theme.h"
 #include "logbrowser.h"
+#include "resources/iconresources.h"
 #include "translations.h"
 
 #include <QMessageBox>
@@ -65,14 +66,10 @@ SettingsView::SettingsView(QWidget *parent)
     _ui->crashreporterCheckBox->setVisible(Theme::instance()->withCrashReporter());
 
     _ui->moveToTrashCheckBox->setVisible(true);
-    connect(_ui->moveToTrashCheckBox, &QCheckBox::toggled, this, &SettingsView::moveToTrashChanged); /*[this](bool checked) {
-         ConfigFile().setMoveToTrash(checked);
-         Q_EMIT moveToTrashChanged(checked);
-     });*/
-
+    connect(_ui->moveToTrashCheckBox, &QCheckBox::toggled, this, &SettingsView::moveToTrashChanged);
     // OEM themes are not obliged to ship mono icons, so there
     // is no point in offering an option
-    _ui->monoIconsCheckBox->setVisible(Resources::hasMonoTheme());
+    _ui->monoIconsCheckBox->setVisible(IconResources::hasMonoIcons());
 
     connect(_ui->ignoredFilesButton, &QAbstractButton::clicked, this, &SettingsView::slotIgnoreFilesEditor);
     connect(_ui->logSettingsButton, &QPushButton::clicked, this, &SettingsView::slotShowLogSettings);

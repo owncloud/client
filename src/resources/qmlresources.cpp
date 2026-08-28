@@ -14,6 +14,7 @@
 
 #include "resources/qmlresources.h"
 
+#include "resources/iconresources.h"
 #include "resources/resources.h"
 
 namespace {
@@ -24,7 +25,7 @@ using namespace OCC;
 QUrl Resources::QMLResources::resourcePath2(const QString &provider, const QString &icon, bool enabled, const QVariantMap &properies)
 {
     auto map =
-        QVariantMap{{QStringLiteral("enabled"), enabled}, {QStringLiteral("icon"), icon}, {QStringLiteral("systemtheme"), Resources::isUsingDarkTheme()}};
+        QVariantMap{{QStringLiteral("enabled"), enabled}, {QStringLiteral("icon"), icon}, {QStringLiteral("systemtheme"), IconResources::isUsingDarkTheme()}};
     map.insert(properies);
     const auto data = QJsonDocument::fromVariant(map).toJson();
     return QUrl(QStringLiteral("image://%1/%2").arg(provider, QString::fromUtf8(data.toBase64())));

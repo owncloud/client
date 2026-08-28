@@ -22,6 +22,7 @@
 #include "configfile.h"
 #include "folderman.h"
 #include "folderwizard.h"
+#include "iconresources.h"
 #include "libsync/theme.h"
 
 #include <QDesktopServices>
@@ -193,16 +194,16 @@ QIcon AccountViewController::lookupStatusIcon(StatusIcon status)
     case StatusIcon::None:
         break;
     case StatusIcon::Connected:
-        icon = Resources::getCoreIcon(QStringLiteral("states/ok"));
+        icon = IconResources::getCoreIcon(QStringLiteral("states/ok"));
         break;
     case StatusIcon::Disconnected:
-        icon = Resources::getCoreIcon(QStringLiteral("states/offline"));
+        icon = IconResources::getCoreIcon(QStringLiteral("states/offline"));
         break;
     case StatusIcon::Info:
-        icon = Resources::getCoreIcon(QStringLiteral("states/information"));
+        icon = IconResources::getCoreIcon(QStringLiteral("states/information"));
         break;
     case StatusIcon::Warning:
-        icon = Resources::getCoreIcon(QStringLiteral("states/warning"));
+        icon = IconResources::getCoreIcon(QStringLiteral("states/warning"));
         break;
     }
     return icon;

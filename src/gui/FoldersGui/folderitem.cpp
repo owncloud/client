@@ -17,6 +17,7 @@
 #include "configfile.h"
 #include "folderitemupdater.h"
 #include "progressdispatcher.h"
+#include "resources/iconresources.h"
 #include "theme.h"
 
 namespace OCC {
@@ -189,7 +190,7 @@ void FolderItem::updateImage()
         spaceIcon = _folder->space()->image()->image();
 
     if (spaceIcon.isNull())
-        spaceIcon = Resources::getCoreIcon("defaultSpaceImage");
+        spaceIcon = IconResources::getCoreIcon("defaultSpaceImage");
 
     // sure I would like to see if they are equal before the set, but apparently there are no available ==/!= operators.
     _image = spaceIcon;
@@ -211,7 +212,7 @@ QVariant FolderItem::data(int role) const
     case Qt::DecorationRole:
         return _image;
     case FolderItemRoles::StatusIconRole:
-        return Resources::getCoreIcon(statusIconName());
+        return IconResources::getCoreIcon(statusIconName());
     case FolderItemRoles::StatusStringRole:
         return _statusString;
     case FolderItemRoles::SortPriorityRole:

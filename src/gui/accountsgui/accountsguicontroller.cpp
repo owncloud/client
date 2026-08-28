@@ -27,11 +27,11 @@
 #include "application.h"
 #include "creds/abstractcredentials.h"
 #include "folderman.h"
+#include "iconresources.h"
 #include "mainwindow/mainwindow.h"
 #include "newaccountwizard/newaccountbuilder.h"
 #include "newaccountwizard/newaccountwizard.h"
 #include "newaccountwizard/newaccountwizardcontroller.h"
-#include "resources.h"
 
 namespace OCC {
 
@@ -194,7 +194,7 @@ void AccountsGuiController::setupAccountPlaceholder()
         placeholderAccountAction = new QAction(tr("Accounts"));
         placeholderAccountAction->setObjectName("placeholderAccountAction");
         placeholderAccountAction->setCheckable(true);
-        placeholderAccountAction->setIcon(Resources::getCoreIcon("warning"));
+        placeholderAccountAction->setIcon(IconResources::getCoreIcon("warning"));
         // use null uuid for placeholder action since there IS no account for it
         _actionForAccount.insert(QUuid(), placeholderAccountAction);
         auto placeholderWidget = new AccountPlaceholderWidget(_window);
@@ -251,7 +251,7 @@ void AccountsGuiController::startModal(QUuid accountId)
     if (!action)
         return;
 
-    action->setIcon(Resources::getCoreIcon("states/warning"));
+    action->setIcon(IconResources::getCoreIcon("states/warning"));
     action->setChecked(true);
     ocApp()->ensureVisible();
 }

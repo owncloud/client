@@ -13,7 +13,6 @@
  */
 #include "requestauthenticationwidget.h"
 
-// #include "resources.h"
 #include "template.h"
 #include "theme.h"
 
