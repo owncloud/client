@@ -17,6 +17,7 @@
 #include "aboutview.h"
 #include "application.h"
 #include "iconresources.h"
+#include "guiutility.h"
 #include "localactivitywidget.h"
 #include "mainwindow.h"
 #include "modalwrapperwidget.h"
@@ -62,6 +63,14 @@ void MainWindowController::buildMenuActions()
     aboutAction->setObjectName("aboutAction");
     connect(aboutAction, &QAction::triggered, this, &MainWindowController::onAbout);
     menuActions.push_back(aboutAction);
+
+    QUrl helpUrl(Theme::instance()->helpUrl());
+    if (helpUrl.isValid()) {
+        QAction *helpAction = new QAction(tr("Help"));
+        helpAction->setObjectName("helpAction");
+        connect(helpAction, &QAction::triggered, this, [helpUrl]() { Utility::openBrowser(helpUrl, nullptr); });
+        menuActions.push_back(helpAction);
+    }
 
     QAction *separator = new QAction(this);
     separator->setObjectName("sparatorAction");
