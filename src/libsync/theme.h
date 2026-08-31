@@ -15,9 +15,6 @@
 #pragma once
 
 #include <QObject>
-
-
-// #include <QFileInfo>
 #include <QColor>
 
 #include "owncloudlib.h"
@@ -44,7 +41,10 @@ public:
     };
     Q_ENUM(VersionFormat);
 
-    /* polymorphically returns a singleton instance of the branding theme in play. */
+    /**
+     * @brief instance
+     * @return polymorphically returns a singleton instance of the branding theme in play.
+     */
     static Theme *instance();
 
     ~Theme() override;
@@ -101,7 +101,7 @@ public:
      *
      * @return the icon for the application
      */
-    // todo: dc-346 the icon retrieval functions must go
+    // todo: dc-346 the icon retrieval functions must go - this will apply to all the xxxIcon() functions
     virtual QIcon applicationIcon() const;
 
     /**
@@ -184,8 +184,6 @@ public:
      */
     virtual QString overrideServerPath() const;
 
-
-    /** @return color for the setup wizard. This is effectively the text color for the wizard pages*/
     /**
      * @brief wizardHeaderTitleColor allows branding to override text color for wizard pages.
      *
@@ -197,7 +195,7 @@ public:
      */
     virtual QColor wizardHeaderTitleColor() const;
 
-    /** @return color for the setup wizard.  This is effectively the background color for each page*/
+
     /**
      * @brief wizardHeaderBackgroundColor allows branding to override the background color of wizard pages
      *
@@ -209,7 +207,6 @@ public:
      */
     virtual QColor wizardHeaderBackgroundColor() const;
 
-    /** @return logo for the setup wizard. */
     /**
      * @brief wizardHeaderLogo which appears in some wizard pages.
      *
@@ -219,7 +216,6 @@ public:
      */
     virtual QIcon wizardHeaderLogo() const;
 
-    /** @return logo that is used below the main wizard page content. */
     /**
      * @brief wizardFooterLogo appears below all other content in some wizard pages
      *
@@ -230,7 +226,8 @@ public:
     virtual QIcon wizardFooterLogo() const;
 
 
-    /** @brief aboutVersions supplies the version information including the current application version as well
+    /**
+     * @brief aboutVersions supplies the version information including the current application version as well
      * as versions of various build dependencies.
      *
      * @param format determines how the version information is formatted.
@@ -422,7 +419,7 @@ protected:
     Theme();
 
     /**
-     * The SHA sum of the released git commit
+     * The formatted SHA sum of the released git commit
      */
     QString gitSHA1(VersionFormat format = VersionFormat::Plain) const;
 
