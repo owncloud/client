@@ -50,17 +50,15 @@ ownCloud admins and users.
 
 ## Summary
 
-* Bugfix - Fix VFS enable/disable checkbox in the folder wizard: [#12144](https://github.com/owncloud/client/pull/12144)
+* Bugfix - Fix VFS checkbox in folder wizard: [#12144](https://github.com/owncloud/client/pull/12144)
 * Bugfix - Fix file sync with NFD/NFC filename normalization differences on macOS: [#12336](https://github.com/owncloud/client/pull/12336)
 * Bugfix - Fix compatibility with extra-cmake-modules-6.19.0: [#12374](https://github.com/owncloud/client/pull/12374)
 * Bugfix - Fix crash on PROPFIND HTTP 400 response: [#12380](https://github.com/owncloud/client/pull/12380)
 * Bugfix - Make Windows VFS (CfAPI) locking more granular: [#12386](https://github.com/owncloud/client/pull/12386)
 * Bugfix - Fix re-authentication prompt: [#12487](https://github.com/owncloud/client/pull/12487)
-* Change - Update sync exclusion list for Infinite Scale: [#12093](https://github.com/owncloud/client/pull/12093)
 * Change - Remove the command line sync client: [#12162](https://github.com/owncloud/client/pull/12162)
 * Change - Remove support for ownCloud Server (OC10): [#12167](https://github.com/owncloud/client/pull/12167)
 * Change - Remove the suffix VFS plugin: [#12174](https://github.com/owncloud/client/pull/12174)
-* Change - MacOS 13 is now the minimum supported macOS version: [#12245](https://github.com/owncloud/client/pull/12245)
 * Change - Qt 6.8 is now the minimum required Qt version: [#12270](https://github.com/owncloud/client/pull/12270)
 * Change - Remove the activity tab from account settings: [#12307](https://github.com/owncloud/client/pull/12307)
 * Change - Remove bandwidth throttling controls: [#12335](https://github.com/owncloud/client/pull/12335)
@@ -73,15 +71,12 @@ ownCloud admins and users.
 
 ## Details
 
-* Bugfix - Fix VFS enable/disable checkbox in the folder wizard: [#12144](https://github.com/owncloud/client/pull/12144)
+* Bugfix - Fix VFS checkbox in folder wizard: [#12144](https://github.com/owncloud/client/pull/12144)
 
-   After unchecking the VFS checkbox on the last page of the folder wizard, it
-   could not be re-checked. The selective-sync chooser is now correctly disabled
-   when VFS is forced on, and the selective-sync page is skipped entirely in that
-   case to avoid confusion.
+   The selective-sync chooser is now correctly disabled when VFS is forced on, and
+   the selective-sync page is skipped entirely in that case.
 
    https://github.com/owncloud/client/pull/12144
-   https://github.com/owncloud/client/pull/12305
 
 * Bugfix - Fix file sync with NFD/NFC filename normalization differences on macOS: [#12336](https://github.com/owncloud/client/pull/12336)
 
@@ -122,13 +117,6 @@ ownCloud admins and users.
 
    https://github.com/owncloud/client/pull/12487
 
-* Change - Update sync exclusion list for Infinite Scale: [#12093](https://github.com/owncloud/client/pull/12093)
-
-   Two file extensions commonly produced by ownCloud Infinite Scale were added to
-   the default sync exclusion list.
-
-   https://github.com/owncloud/client/pull/12093
-
 * Change - Remove the command line sync client: [#12162](https://github.com/owncloud/client/pull/12162)
 
    The `owncloudcmd` command line client has been removed. The `--cmd` command line
@@ -159,14 +147,9 @@ ownCloud admins and users.
 
    https://github.com/owncloud/client/pull/12174
 
-* Change - MacOS 13 is now the minimum supported macOS version: [#12245](https://github.com/owncloud/client/pull/12245)
-
-   https://github.com/owncloud/client/pull/12245
-
 * Change - Qt 6.8 is now the minimum required Qt version: [#12270](https://github.com/owncloud/client/pull/12270)
 
-   The minimum required Qt version was raised to 6.8. This also raises the minimum
-   macOS deployment target to 12.
+   The minimum required Qt version was raised to 6.8.
 
    https://github.com/owncloud/client/pull/12270
    https://github.com/owncloud/client/pull/12271
