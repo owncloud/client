@@ -13,6 +13,7 @@
  */
 
 #include "logger.h"
+#include "common/utility.h"
 #include "configfile.h"
 #include "theme.h"
 
