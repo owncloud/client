@@ -19,7 +19,6 @@
 #include "libsync/account.h"
 #include "libsync/cookiejar.h"
 #include "libsync/creds/abstractcredentials.h"
-#include "libsync/theme.h"
 
 #include <QJsonParseError>
 

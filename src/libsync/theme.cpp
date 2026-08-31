@@ -217,7 +217,7 @@ QString Theme::about() const
 
 QColor Theme::wizardHeaderTitleColor() const
 {
-    return qApp->palette().text().color();
+    return QColor();
 }
 
 QColor Theme::wizardHeaderBackgroundColor() const

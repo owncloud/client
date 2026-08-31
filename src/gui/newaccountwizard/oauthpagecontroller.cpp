@@ -24,6 +24,7 @@
 
 #include <QBuffer>
 #include <QClipboard>
+#include <QGuiApplication>
 #include <QHBoxLayout>
 #include <QImageReader>
 #include <QLabel>

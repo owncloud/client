@@ -26,8 +26,6 @@
 #include "propagateremotedelete.h"
 #include "syncengine.h"
 
-#include "libsync/theme.h"
-
 #include <QDir>
 #include <QFileInfo>
 

@@ -14,7 +14,6 @@
 
 #include "syncresult.h"
 #include "progressdispatcher.h"
-#include "theme.h"
 
 namespace OCC {
 

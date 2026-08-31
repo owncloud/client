@@ -18,11 +18,13 @@
 
 #include <QBuffer>
 #include <QClipboard>
+#include <QGuiApplication>
 #include <QHBoxLayout>
 #include <QImageReader>
 #include <QLabel>
 #include <QPalette>
 #include <QPushButton>
+#include <QResizeEvent>
 #include <QToolTip>
 #include <QVBoxLayout>
 

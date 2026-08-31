@@ -18,7 +18,6 @@
 #include "folderitemupdater.h"
 #include "progressdispatcher.h"
 #include "resources/iconresources.h"
-#include "theme.h"
 
 namespace OCC {
 
@@ -113,7 +112,6 @@ QString FolderItem::statusIconName() const
     }
 
     return QString("states/%1").arg(status.iconNameForStatus());
-    // return QString("states/%1").arg(Theme::instance()->syncStateIconName(status));
 }
 
 QString FolderItem::statusAsString() const

@@ -17,9 +17,8 @@
 #include <QObject>
 
 
-#include <QFileInfo>
-#include <QObject>
-#include <QPalette>
+// #include <QFileInfo>
+#include <QColor>
 
 #include "owncloudlib.h"
 
@@ -187,15 +186,47 @@ public:
 
 
     /** @return color for the setup wizard. This is effectively the text color for the wizard pages*/
+    /**
+     * @brief wizardHeaderTitleColor allows branding to override text color for wizard pages.
+     *
+     * If the value is empty, the default system text color will be used.
+     *
+     * @default empty color.
+     *
+     * @return the preferred text color for the wizards.
+     */
     virtual QColor wizardHeaderTitleColor() const;
 
     /** @return color for the setup wizard.  This is effectively the background color for each page*/
+    /**
+     * @brief wizardHeaderBackgroundColor allows branding to override the background color of wizard pages
+     *
+     * If the value is empty, the default system background color will be used.
+     *
+     * @default empty color.
+     *
+     * @return the preferred background color for the wizard pages.
+     */
     virtual QColor wizardHeaderBackgroundColor() const;
 
     /** @return logo for the setup wizard. */
+    /**
+     * @brief wizardHeaderLogo which appears in some wizard pages.
+     *
+     * @default is applicationIcon().
+     *
+     * @return the icon that should be used in the wizard.
+     */
     virtual QIcon wizardHeaderLogo() const;
 
     /** @return logo that is used below the main wizard page content. */
+    /**
+     * @brief wizardFooterLogo appears below all other content in some wizard pages
+     *
+     * @default empty QIcon.
+     *
+     * @return the footer logo to be used in the wizard.
+     */
     virtual QIcon wizardFooterLogo() const;
 
 

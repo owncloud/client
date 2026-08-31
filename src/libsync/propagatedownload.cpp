@@ -26,14 +26,11 @@
 #include "common/utility.h"
 #include "common/vfs.h"
 
-#include "libsync/theme.h"
-
 #include <QDir>
 #include <QFileInfo>
 #include <QLoggingCategory>
 #include <QRandomGenerator>
 
-#include <cmath>
 
 #ifdef Q_OS_UNIX
 #include <unistd.h>
