@@ -66,32 +66,45 @@ public:
     /**
      * @brief appName - Application name (short)
      *
-     * Use and redefine this as an application name. Keep it straight as
-     * it is used for config files etc. If you need a more sophisticated
-     * name in the GUI, redefine appNameGUI.
+     * The name is derived from the APPLICATION_SHORTNAME
+     * cmake variable, and can't be overridden.
      *
-     * By default, the name is derived from the APPLICATION_SHORTNAME
-     * cmake variable, and should be the same. This method exists only for
-     * legacy reasons.
-     *
-     * Warning: Do not modify this value, as many things, e.g. settings
-     * depend on it! You most likely want to modify \ref appNameGUI().
+     * If you need a more sophisticated
+     * name in the GUI, override appNameGUI().
      *
      * @return QString with app name.
      */
     QString appName() const;
 
+    /**
+     * @brief orgDomainName
+     *
+     * The name is derived from the APPLICATION_REV_DOMAIN
+     * cmake variable, and can't be overridden.
+     *
+     * @return  QString with domain name
+     */
     QString orgDomainName() const;
 
+    /**
+     * @brief vendor
+     *
+     * The name is derived from the APPLICATION_VENDOR
+     * cmake variable, and can't be overridden.
+     *
+     * @return QString with vendor
+     */
     QString vendor() const;
 
     /**
      * @brief configFileName
+     *
+     * The default value is taken from the cmake variable APPLICATION_EXECUTABLE
+     * with file extension .cfg
+     *
      * @return the name of the config file.
      */
     virtual QString configFileName() const;
-
-    QString syncStateIconName(const SyncResult &result) const;
 
     virtual QIcon applicationIcon() const;
     virtual QString applicationIconName() const;

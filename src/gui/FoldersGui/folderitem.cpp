@@ -111,7 +111,9 @@ QString FolderItem::statusIconName() const
         || (NetworkInformation::instance()->isMetered() && ConfigFile().pauseSyncWhenMetered())) {
         status.setStatus(SyncResult::Status::Paused);
     }
-    return QString("states/%1").arg(Theme::instance()->syncStateIconName(status));
+
+    return QString("states/%1").arg(status.iconNameForStatus());
+    // return QString("states/%1").arg(Theme::instance()->syncStateIconName(status));
 }
 
 QString FolderItem::statusAsString() const
