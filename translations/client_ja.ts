@@ -169,55 +169,55 @@ File synchronization desktop utility.</source>
 <context>
     <name>FolderItem</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="122"/>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="151"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="123"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="152"/>
         <source>Offline</source>
         <translation>オフライン</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="127"/>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="143"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="128"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="144"/>
         <source>Unavailable: the space is no longer available on the server</source>
         <translation>利用不可: サーバー上の空き容量がなくなりました</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="131"/>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="149"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="132"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="150"/>
         <source>Sync paused</source>
         <translation>同期の一時停止</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="141"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="142"/>
         <source>Synced</source>
         <translation>同期済み</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="147"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="148"/>
         <source>Sync failed</source>
         <translation>同期の失敗</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="153"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="154"/>
         <source>Sync pending</source>
         <translation>同期保留中</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="158"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="159"/>
         <source>Syncing %1 of %2 (%3 %</source>
         <translation>同期中 %2 件中 %1 ( %3 %</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="162"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="163"/>
         <source>, ⬇️ %1/s</source>
         <translation>, ⬇️ %1/秒</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="166"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="167"/>
         <source>, ⬆️ %1/s</source>
         <translation>, ⬆️ %1/秒</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="209"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="210"/>
         <source>%1, sync status: %2</source>
         <extracomment>Accessible text, read out by a screen reader.</extracomment>
         <translation>%1、同期ステータス: %2</translation>
@@ -548,6 +548,24 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
     </message>
 </context>
 <context>
+    <name>OCC::AccountState</name>
+    <message>
+        <location filename="../src/gui/accountstate.cpp" line="232"/>
+        <source>The server is not supported by this client.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/accountstate.cpp" line="239"/>
+        <source>Retrieving user settings and server capabilities timed out.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/accountstate.cpp" line="246"/>
+        <source>Unable to retrieve user settings and server capabilities.</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
     <name>OCC::AccountView</name>
     <message>
         <location filename="../src/gui/accountsgui/accountview.ui" line="14"/>
@@ -578,108 +596,108 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
 <context>
     <name>OCC::AccountViewController</name>
     <message>
-        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="92"/>
-        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="128"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="93"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="129"/>
         <source>Log in</source>
         <translation>ログイン</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="97"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="98"/>
         <source>Reconnect</source>
         <translation>リコネクト</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="107"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="108"/>
         <source>Remove</source>
         <translation>削除</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="128"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="129"/>
         <source>Log out</source>
         <translation>ログアウト</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="167"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="168"/>
         <source>Confirm Account Removal</source>
         <translation>アカウント削除確認</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="168"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="169"/>
         <source>&lt;p&gt;Do you really want to remove the connection to the account &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
         <translation>&lt;p&gt; アカウント &lt;i&gt;%1&lt;/i&gt; を本当に削除しますか?&lt;/p&gt;&lt;p&gt;&lt;b&gt;注意:&lt;/b&gt; これによりファイルが一切削除されることはありません。&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="173"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="174"/>
         <source>Remove connection</source>
         <translation>接続削除</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="175"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="176"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="227"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="228"/>
         <source>The server version %1 is unsupported! Proceed at your own risk.</source>
         <translation>サーバーバージョン %1 は非サポートです！　自己責任で進めてください。</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="230"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="231"/>
         <source>Connected</source>
         <translation>接続しました</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="234"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="235"/>
         <source>Server is temporarily unavailable.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="238"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="239"/>
         <source>Server is currently in maintenance mode.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="242"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="243"/>
         <source>Signed out</source>
         <translation>サインアウト</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="246"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="247"/>
         <source>Updating credentials…</source>
         <translation>証明書を更新しています…</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="251"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="252"/>
         <source>Captive portal prevents connections to the server.</source>
         <translation>キャプティブポータルは、サーバーへの接続を防ぎます。</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="254"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="255"/>
         <source>Sync is paused due to metered internet connection.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="257"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="258"/>
         <source>Connecting…</source>
         <translation>接続中 …</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="262"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="263"/>
         <source>Server configuration error</source>
         <translation>サーバー設定エラー</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="267"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="268"/>
         <source>Server is temporarily unavailable</source>
         <translation>サーバーは一時的に利用できません</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="272"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="273"/>
         <source>Disconnected</source>
         <translation>切断しました</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="276"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="277"/>
         <source>Invalid connection status</source>
         <translation type="unfinished"/>
     </message>
@@ -871,39 +889,29 @@ AppImage の更新はバックグラウンドプロセスで実行され、現�
 <context>
     <name>OCC::ConnectionValidator</name>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="74"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="73"/>
         <source>No ownCloud account configured</source>
         <translation>ownCloudアカウントが設定されていません</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="290"/>
-        <source>Please update to the latest server and restart the client.</source>
-        <translation>サーバーを最新にアップデートして、クライアントを再起動してください。</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="171"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="170"/>
         <source>Authentication error: Either username or password are wrong.</source>
         <translation>認証エラー: ユーザー名またはパスワードが間違っています。</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="153"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="152"/>
         <source>timeout</source>
         <translation>タイムアウト</translation>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="226"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="225"/>
         <source>No account configured</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="261"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="260"/>
         <source>The provided credentials are not correct</source>
         <translation>入力された資格情報が正しくありません</translation>
-    </message>
-    <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="290"/>
-        <source>The configured server for this client is too old.</source>
-        <translation>このクライアントに設定されているサーバーが古すぎます。</translation>
     </message>
 </context>
 <context>
@@ -1338,12 +1346,12 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::GraphApi::Space</name>
     <message>
-        <location filename="../src/libsync/graphapi/space.cpp" line="87"/>
+        <location filename="../src/libsync/graphapi/space.cpp" line="86"/>
         <source>Personal</source>
         <translation>個人</translation>
     </message>
     <message>
-        <location filename="../src/libsync/graphapi/space.cpp" line="91"/>
+        <location filename="../src/libsync/graphapi/space.cpp" line="90"/>
         <source>Shares</source>
         <translation>共有</translation>
     </message>
@@ -1519,23 +1527,23 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::MainWindow</name>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindow.cpp" line="52"/>
+        <location filename="../src/gui/mainwindow/mainwindow.cpp" line="53"/>
         <source>Hide</source>
         <translation>非表示</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindow.cpp" line="90"/>
+        <location filename="../src/gui/mainwindow/mainwindow.cpp" line="91"/>
         <source>Main toolbar for the application</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindow.cpp" line="91"/>
+        <location filename="../src/gui/mainwindow/mainwindow.cpp" line="92"/>
         <source>Main toolbar</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindow.cpp" line="104"/>
-        <location filename="../src/gui/mainwindow/mainwindow.cpp" line="107"/>
+        <location filename="../src/gui/mainwindow/mainwindow.cpp" line="105"/>
+        <location filename="../src/gui/mainwindow/mainwindow.cpp" line="108"/>
         <source>More</source>
         <translation>もっと見る</translation>
     </message>
@@ -1543,43 +1551,48 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::MainWindowController</name>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="50"/>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="84"/>
         <source>Add account...</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="55"/>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="89"/>
         <source>Settings...</source>
         <translation>設定...</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="60"/>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="94"/>
         <source>About...</source>
         <translation>ownCloudについて...</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="70"/>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="101"/>
+        <source>Help</source>
+        <translation>ヘルプ</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="112"/>
         <source>Quit</source>
         <translation>終了</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="79"/>
-        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="85"/>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="121"/>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="127"/>
         <source>Errors: %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="93"/>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="135"/>
         <source>Activity</source>
         <translation>アクティビティ</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="126"/>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="168"/>
         <source>Quit %1</source>
         <translation>%1 を終了</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="127"/>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="169"/>
         <source>Are you sure you want to quit %1?</source>
         <translation>%1 を終了してもよろしいですか?</translation>
     </message>
@@ -2531,57 +2544,57 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::RequestAuthenticationWidget</name>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="43"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="42"/>
         <source>Application Name Logo %1</source>
         <translation>アプリケーション名ロゴ %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="45"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="44"/>
         <source>Sign in required</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="53"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="52"/>
         <source>You may have been automatically disconnected due to a server issue or time out. Please sign in again.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="64"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="63"/>
         <source>Sign in URL</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="65"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="64"/>
         <source>To copy the sign in URL to the clipboard, use the copy button</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="71"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="70"/>
         <source>Copy URL to sign in</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="92"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="91"/>
         <source>Additional logo defined by the organization</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="95"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="94"/>
         <source>Stay logged out</source>
         <translation>ログアウトしたままにする</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="97"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="96"/>
         <source>Sign in</source>
         <translation>ログイン</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="181"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="180"/>
         <source>URL copied</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="183"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="182"/>
         <source>Copy URL</source>
         <translation>URLをコピー</translation>
     </message>
@@ -2716,27 +2729,27 @@ Note that using any logging command line options will override the settings.</so
         <translation>ネットワーク</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/settingsview.cpp" line="55"/>
+        <location filename="../src/gui/mainwindow/settingsview.cpp" line="56"/>
         <source>Warning</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/settingsview.cpp" line="55"/>
+        <location filename="../src/gui/mainwindow/settingsview.cpp" line="56"/>
         <source>Language changes require a restart of this application to take effect.</source>
         <translation>言語の変更を有効にするには、このアプリケーションの再起動が必要です。</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/settingsview.cpp" line="154"/>
+        <location filename="../src/gui/mainwindow/settingsview.cpp" line="151"/>
         <source>You cannot disable autostart because system-wide autostart is enabled.</source>
         <translation>システム全体の自動起動が有効になっているため、自動起動を無効にすることはできません。</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/settingsview.cpp" line="170"/>
+        <location filename="../src/gui/mainwindow/settingsview.cpp" line="167"/>
         <source>(use default)</source>
         <translation>(デフォルトを使用)</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/settingsview.cpp" line="186"/>
+        <location filename="../src/gui/mainwindow/settingsview.cpp" line="183"/>
         <source>unknown (%1)</source>
         <translation>不明 (%1)</translation>
     </message>
@@ -2992,7 +3005,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::Theme</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="210"/>
+        <location filename="../src/libsync/theme.cpp" line="209"/>
         <source>&lt;p&gt;Version %1. For more information visit &lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;For known issues and help, please visit: &lt;a href=&quot;https://central.owncloud.com/c/desktop-client&quot;&gt;https://central.owncloud.com&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;small&gt;By Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz,  Jan-Christoph Borchardt, Thomas Müller,&lt;br&gt;Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller and others.&lt;/small&gt;&lt;/p&gt;&lt;p&gt;Copyright ownCloud GmbH (A Kiteworks Company)&lt;/p&gt;&lt;p&gt;Distributed by %4 and licensed under the GNU General Public License (GPL) Version 2.0.&lt;br/&gt;%5 and the %5 logo are registered trademarks of %4 in the United States, other countries, or both.&lt;/p&gt;&lt;p&gt;&lt;small&gt;%6&lt;/small&gt;&lt;/p&gt;</source>
         <translation>&lt;p&gt;バージョン %1 詳細については、&lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt;をご覧ください&lt;/p&gt;&lt;p&gt;既知の問題とヘルプは、&lt;a href=&quot;https://central.owncloud.com/c/desktop-client&quot;&gt;https://central.owncloud.com&lt;/a&gt;をご覧ください。&lt;/p&gt;&lt;p&gt;&lt;small&gt;Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz,  Jan-Christoph Borchardt, Thomas Müller,&lt;br&gt;Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller およびその他の貢献者。&lt;/small&gt;&lt;/p&gt;&lt;p&gt;著作権 ownCloud GmbH (A Kiteworks 社)&lt;/p&gt;&lt;p&gt;%4 によって配布され、GNU General Public License (GPL) バージョン 2.0 でライセンスされています。&lt;br/&gt;%5 および %5 ロゴは、アメリカ合衆国、その他の国、またはその両方における %4 の登録商標です。&lt;/p&gt;&lt;p&gt;&lt;small&gt;%6&lt;/small&gt;&lt;/p&gt;</translation>
     </message>
@@ -3028,32 +3041,32 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::TrayMenuController</name>
     <message>
-        <location filename="../src/gui/traymenucontroller.cpp" line="124"/>
+        <location filename="../src/gui/traymenucontroller.cpp" line="122"/>
         <source>Unsupported Server Version</source>
         <translation>サポートされていないサーバーバージョン</translation>
     </message>
     <message>
-        <location filename="../src/gui/traymenucontroller.cpp" line="125"/>
+        <location filename="../src/gui/traymenucontroller.cpp" line="123"/>
         <source>The server on account %1 runs an unsupported version %2. Using this client with unsupported server versions is untested and potentially dangerous. Proceed at your own risk.</source>
         <translation>アカウント %1 のサーバーは サポートされていないバージョン %2 を実行しています。このクライアントをサポートされていないサーバーバージョンで使用することはテストされておらず、危険な状況です。自己責任で進めてください。</translation>
     </message>
     <message>
-        <location filename="../src/gui/traymenucontroller.cpp" line="165"/>
+        <location filename="../src/gui/traymenucontroller.cpp" line="163"/>
         <source>Show %1</source>
         <translation>%1を表示</translation>
     </message>
     <message>
-        <location filename="../src/gui/traymenucontroller.cpp" line="190"/>
+        <location filename="../src/gui/traymenucontroller.cpp" line="188"/>
         <source>Help</source>
         <translation>ヘルプ</translation>
     </message>
     <message>
-        <location filename="../src/gui/traymenucontroller.cpp" line="194"/>
+        <location filename="../src/gui/traymenucontroller.cpp" line="192"/>
         <source>About %1</source>
         <translation>%1 について</translation>
     </message>
     <message>
-        <location filename="../src/gui/traymenucontroller.cpp" line="197"/>
+        <location filename="../src/gui/traymenucontroller.cpp" line="195"/>
         <source>Quit %1</source>
         <translation>%1 を終了</translation>
     </message>
@@ -3475,7 +3488,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>ownCloudTheme::aboutVersions()</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="192"/>
+        <location filename="../src/libsync/theme.cpp" line="190"/>
         <source>%1 %2%7%8Libraries Qt %3, %4%7Using virtual files plugin: %5%7%6</source>
         <translation>%1 %2%7%8Libraries Qt %3, %4%7仮想ファイルプラグインの使用:%5%7%6</translation>
     </message>
@@ -3483,7 +3496,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>ownCloudTheme::qtVer</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="174"/>
+        <location filename="../src/libsync/theme.cpp" line="172"/>
         <source>%1 (Built against Qt %2)</source>
         <translation>%1 (Qt に対して構築 %2)</translation>
     </message>
@@ -3491,7 +3504,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>ownCloudTheme::versionWithSha</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="180"/>
+        <location filename="../src/libsync/theme.cpp" line="178"/>
         <source>%1 %2</source>
         <translation>%1 %2</translation>
     </message>
