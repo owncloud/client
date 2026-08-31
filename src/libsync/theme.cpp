@@ -20,6 +20,7 @@
 
 #include "resources/iconresources.h"
 
+#include <QGuiApplication>
 #include <QSslSocket>
 #include <QStyle>
 
@@ -37,13 +38,6 @@ Theme *Theme::instance()
         _instance = new THEME_CLASS;
     }
     return _instance;
-}
-
-Theme *Theme::create(QQmlEngine *qmlEngine, QJSEngine *)
-{
-    Q_ASSERT(qmlEngine->thread() == Theme::instance()->thread());
-    QJSEngine::setObjectOwnership(Theme::instance(), QJSEngine::CppOwnership);
-    return instance();
 }
 
 Theme::~Theme() { }

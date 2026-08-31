@@ -4,6 +4,7 @@
 #include "appconfig.h"
 
 #include "../theme.h"
+#include "common/asserts.h"
 #include "common/utility.h"
 #include "openidconfig.h"
 
