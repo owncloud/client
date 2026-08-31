@@ -493,6 +493,13 @@ void SocketApi::command_COPY_PRIVATE_LINK(const QString &localFile, SocketListen
     fetchPrivateLinkUrlHelper(localFile, &SocketApi::copyUrlToClipboard);
 }
 
+void SocketApi::command_GET_PRIVATE_LINK(const QString &localFile, SocketListener *listener)
+{
+    fetchPrivateLinkUrlHelper(localFile, [listener](const QUrl &url) {
+        listener->sendMessage(QStringLiteral("PRIVATE_LINK:") + url.toString());
+    });
+}
+
 void SocketApi::command_EMAIL_PRIVATE_LINK(const QString &localFile, SocketListener *)
 {
     fetchPrivateLinkUrlHelper(localFile, &SocketApi::emailPrivateLink);
