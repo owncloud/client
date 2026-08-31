@@ -53,11 +53,10 @@ public:
     /**
      * @brief appNameGUI - Human readable application name.
      *
-     * Use and redefine this if the human-readable name contains spaces,
-     * special chars and such.
+     * Override this if the gui should present a name which does not match the cmake definition.
+     * Eg. when the name should include spaces or other special characters.
      *
-     * By default, the name is derived from the APPLICATION_NAME
-     * cmake variable.
+     * @default value of the APPLICATION_NAME cmake variable.
      *
      * @return QString with human readable app name.
      */
@@ -99,59 +98,100 @@ public:
     /**
      * @brief configFileName
      *
-     * The default value is taken from the cmake variable APPLICATION_EXECUTABLE
-     * with file extension .cfg
+     * @default value cmake variable APPLICATION_EXECUTABLE + ".cfg"
      *
      * @return the name of the config file.
      */
     virtual QString configFileName() const;
 
+    /**
+     * @brief applicationIcon
+     *
+     * @default the default implementation expects that the universal folder contains an icon
+     * named applicationIconName() + "-icon" (with extension of .svg or a collection of
+     * one or more sized .png's)
+     *
+     * @return the icon for the application
+     */
     virtual QIcon applicationIcon() const;
+
+    /**
+     * @brief applicationIconName
+     *
+     * @default value of cmake variable APPLICATION_SHORTNAME
+     *
+     * @return the base application icon name
+     */
     virtual QString applicationIconName() const;
+
+    /**
+     * @brief aboutIcon
+     *
+     * @default returns applicationIcon()
+     *
+     * @return the icon to be used in the "about" gui
+     */
     virtual QIcon aboutIcon() const;
 
 
     /**
-    * URL to documentation.
-    *
-    * This is opened in the browser when the "Help" action is selected from the tray menu.
-    *
-    * If the function is overridden to return an empty string the action is removed from
-    * the menu.
-    *
-    * Defaults to ownCloud's client documentation website.
-    */
+     * @brief helpUrl
+     *
+     * This is opened in the browser when the "Help" action is selected from the tray menu or
+     * the "more" menu in the main window.
+     *
+     * If the function is overridden to return an empty string the action is removed from
+     * the menu.
+     *
+     * @default ownCloud's client documentation URL.
+     *
+     * @return URL for help documentation
+     */
     virtual QString helpUrl() const;
 
     /**
-     * The url to use for showing help on conflicts.
+     * @brief conflictHelpUrl
      *
-     * If the function is overridden to return an empty string no help link will be shown.
+     * The url to use for help on conflicts shown in the sync errors panel.
      *
-     * Defaults to helpUrl() + "conflicts.html", which is a page in ownCloud's client
-     * documentation website. If helpUrl() is empty, this function will also return the
-     * empty string.
+     * If the function is overridden to return an empty string no help link for conflicts will be shown.
+     *
+     * @default helpUrl() + "conflicts.html".
+     * Note that if the help URL is empty, the default implemenation returns empty string.
+
+     * @return the URL for conflicts help
      */
     virtual QString conflictHelpUrl() const;
 
     /**
-     * Setting a value here will pre-define the server url.
+     * @brief overrideServerUrl
      *
-     * The respective UI controls will be disabled
-     * NOT deprecated. overrideServerUrlV2 is gone as "overrides" (for what purpose? smells like a backdoor) should happen in theme only,
-     * or via the managed device config
+     * Sets a fixed, predefined URL in the new account wizard.
+     *
+     * If this value is non-empty, the URL field in the account wizard will be disabled so the user must use
+     * this URL to create accounts.
+     *
+     * @default empty string
+     *
+     * @return the predefined URL for creating new accounts.
      */
-
     virtual QString overrideServerUrl() const;
 
+
     /**
-     * If set to a non-empty string, the path part of the URL will be overwritten with this path.
-     * This can be used to set the end-point to a fixed location, and thereby shorten the URL that
-     * is given to the users.
+     * @brief overrideServerPath
      *
-     * For example, if the URL for the product always contains `/dav` as the path, and setting that
-     * here, and the URL given to the user is `example.com`, the branded application will contact
-     * `example.com/dav`.
+     * If non-emtpy, overwrites the path segment of the account's URL with this path.
+     *
+     * This can be used to set the end-point to a fixed location, and thereby shorten the URL that
+     * the user must provide when creating a new account.
+     *
+     * For example, if the URL for the product always contains `/dav` as the path, and the URL provided
+     * by the user is `example.com`, the branded application will contact `example.com/dav`.
+     *
+     * @default empty string
+     *
+     * @return the server path to be used with all account URLs
      */
     virtual QString overrideServerPath() const;
 
@@ -173,97 +213,182 @@ public:
      */
     QString aboutVersions(VersionFormat format = VersionFormat::Plain) const;
 
+
     /**
-     * About dialog contents
+     * @brief about defines the text used in the About panel
+     *
+     * @default the About text for ownCloud
+     *
+     * @return the About text
      */
     virtual QString about() const;
 
 
     /**
-     * @brief Where to check for new Updates.
+     * @brief updateCheckUrl
+     *
+     * This value controls the location used for update checks, if this feature is enabled.
+     *
+     * The URL is defined by the cmake environment variable APPLICATION_UPDATE_URL. If this variable
+     * does not exist, an empty URL is returned.
+     *
+     * Note the function is not virtual! If you do not wish to support the updater, you should unset
+     * any definition of APPLICATION_UPDATE_URL in cmake.
+     *
+     * @return the URL to use when checking for updates
      */
     QUrl updateCheckUrl() const;
 
-
     /**
-     * If this returns true, the user cannot configure the proxy in the network settings.
-     * The proxy settings will be disabled in the configuration dialog.
-     * Default returns false.
+     * @brief forceSystemNetworkProxy
+     *
+     * If this returns true, the user cannot configure the network proxy in the application Settings.
+     *
+     * @default false.
+     *
+     * @return whether the system proxy should always be used
      */
     virtual bool forceSystemNetworkProxy() const;
 
     /**
      * @brief wizardUrlPlaceholder provides placeholder text for the URL field in the new account wizard
-     * @return empty string unless overridden
+     *
+     * @default empty string
+     *
+     * @return QString with placeholder
      */
     virtual QString wizardUrlPlaceholder() const;
 
     /**
-     * The OAuth client_id, secret pair.
-     * Note that client that change these value cannot connect to un-branded owncloud servers.
+     * The following five functions exist to define the client's OIDC configuration.
+     *
+     * At minimum the ClientId and ClientSecret should be overridden for all branded clients.
+     *
      */
-    virtual QString oauthClientId() const;
-    virtual QString oauthClientSecret() const;
 
     /**
-     * List of ports to use for the local redirect server
+     * @brief oauthClientId
+     *
+     * @default the OIDC client Id for ownCloud servers
+     *
+     * @return the OIDC client Id
+     */
+    virtual QString oauthClientId() const;
+
+    /**
+     * @brief oauthClientSecret
+     *
+     * @default the OIDC client secret for ownCloud servers
+     *
+     * @return the OIDC client secret
+     */
+    virtual QString oauthClientSecret() const;
+
+
+    /**
+     * @brief oauthPorts
+     *
+     * The list of ports to use for the local redirect server.
+     *
+     * @default is 0, which means any port can be used
+     *
+     * @return the list of allowed OIDC ports.
      */
     virtual QVector<quint16> oauthPorts() const;
 
     /**
-     * Returns the required OpenIDConnect scopes
+     * @brief openIdConnectScopes
+     *
+     * @default "openid offline_access email profile"
+     *
+     * @return the allowed OIDC scopes
      */
     virtual QString openIdConnectScopes() const;
 
     /**
-     * Returns the OpenIDConnect prompt type
-     * It is supposed to be "consent select_account".
-     * For "Konnect" it currently needs to be select_account,
-     * which is the current default.
+     * @brief openIdConnectPrompt
+     *
+     * @default "select_account consent"
+     *
+     * @return the OIDC connect prompt
      */
     virtual QString openIdConnectPrompt() const;
 
 
     /**
-     * On windows, force the user to use vfs, by disabling options to turn it off.
-     * Default: false
+     * @brief forceVirtualFilesOption
+     *
+     * When this returns true, the user must use VFS on Windows (and any other platforms that have
+     * a VFS implementation).
+     *
+     * @default false.
+     *
+     * @return whether VFS should be forced on in the application.
      */
     virtual bool forceVirtualFilesOption() const;
 
     /**
-     * Returns a list of IconName, Name, Url triplets that will be displayed as buttons or menu items in the main view
+     * @brief urlActions
+     *
+     * Defines a list of IconName, Text, Url triplets that will be displayed as buttons or menu items in the main view.
+     *
      * For each url an optional icon can be provided in the form of #IconName.svg or multiple #IconName-#resolution.png like for the other theme icons.
-     * if the icon name is empty or "wrong" there will be no icon on the action, just text
-     * */
+     * if the icon name is empty or can't be located in resources, there will be no icon on the action, just text
+     *
+     * @default empty
+     *
+     * @return definitions for URL actions
+     */
     virtual QVector<std::tuple<QString, QString, QUrl>> urlActions() const;
 
     /**
-     * Set the default value for move to trash option
-     * Default: false
+     * @brief moveToTrashDefaultValue sets a default value for move-to-trash option in application Settings
+     *
+     * @default false
+     *
+     * @return the default value for move-to-trash in the Settings
      */
     virtual bool moveToTrashDefaultValue() const;
 
     /**
-     * @brief Allow the system configuration to override theme values.
+     * @brief Allow a system configuration to override theme values related to the OIDC parameters.
+     *
      * @default false
+     *
+     * @return whether a system configuration can be used to define the OIDC values.
      */
     virtual bool allowSystemConfigOverrides() const;
 
     /**
-     * @brief Automatically add sync connections for newly discovered Spaces.
+     * @brief syncNewlyDiscoveredSpaces
      *
-     * Default: false
-     * See #11749
+     * Automatically add sync connections for newly discovered Spaces.
+     *
+     * Note this functionality is implemented but may not be very nice for users!
+     *
+     * If this functionality is desired please contact dev to discuss the fine points, and which updates
+     * may be useful to make the experience more pleasant.
+     *
+     * @default false
+     *
+     * @return whether to automatically sync new spaces from the server
      */
     virtual bool syncNewlyDiscoveredSpaces() const;
 
     /**
-     * Whether to call spaces "Spaces" in the UI, or call them "Folders"
+     * @brief spacesAreCalledFolders determines whether the gui should call spaces "Folders" or not
      *
-     * Default: false
+     * @default false
+     *
+     * @return call spaces "Folders".
      */
     virtual bool spacesAreCalledFolders() const;
 
+    /**
+     * @brief withCrashReporter reveals whether crash reporting should be enabled
+     *
+     * @return value for cmake variable WITH_CRASHREPORTER
+     */
     bool withCrashReporter() const;
 
 protected:
