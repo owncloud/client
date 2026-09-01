@@ -185,7 +185,9 @@ public:
     virtual QString overrideServerPath() const;
 
     /**
-     * @brief wizardHeaderTitleColor allows branding to override text color for wizard pages.
+     * @brief wizardHeaderTitleColor
+     *
+     * This allows branding to override text color for wizard pages.
      *
      * If the value is empty, the default system text color will be used.
      *
@@ -197,7 +199,9 @@ public:
 
 
     /**
-     * @brief wizardHeaderBackgroundColor allows branding to override the background color of wizard pages
+     * @brief wizardHeaderBackgroundColor
+     *
+     * This allows branding to override the background color of wizard pages.
      *
      * If the value is empty, the default system background color will be used.
      *
@@ -208,7 +212,9 @@ public:
     virtual QColor wizardHeaderBackgroundColor() const;
 
     /**
-     * @brief wizardHeaderLogo which appears in some wizard pages.
+     * @brief wizardHeaderLogo
+     *
+     * This is the primary logo which appears in some wizard pages.
      *
      * @default is applicationIcon().
      *
@@ -217,7 +223,9 @@ public:
     virtual QIcon wizardHeaderLogo() const;
 
     /**
-     * @brief wizardFooterLogo appears below all other content in some wizard pages
+     * @brief wizardFooterLogo
+     *
+     * This is the optional logo that appears below all other content in some wizard pages
      *
      * @default empty QIcon.
      *
@@ -227,7 +235,9 @@ public:
 
 
     /**
-     * @brief aboutVersions supplies the version information including the current application version as well
+     * @brief aboutVersions
+     *
+     * This function supplies formatted version information, including the current application version as well
      * as versions of various build dependencies.
      *
      * @param format determines how the version information is formatted.
@@ -242,7 +252,9 @@ public:
 
 
     /**
-     * @brief about defines the text used in the About panel.
+     * @brief about
+     *
+     * Defines the text used in the About panel.
      *
      * @default the About text for ownCloud.
      *
@@ -266,7 +278,8 @@ public:
     /**
      * @brief forceSystemNetworkProxy
      *
-     * If this returns true, the user cannot configure the network proxy in the Settings panel.
+     * If this returns true, the user cannot configure the network proxy in the Settings panel, and the
+     * system network proxy will always be used.
      *
      * @default false.
      *
@@ -275,7 +288,9 @@ public:
     virtual bool forceSystemNetworkProxy() const;
 
     /**
-     * @brief wizardUrlPlaceholder provides placeholder text for the URL field in the new account wizard.
+     * @brief wizardUrlPlaceholder
+     *
+     * Provides placeholder text for the URL field in the new account wizard.
      *
      * @default empty string.
      *
@@ -338,6 +353,16 @@ public:
      */
     virtual QString openIdConnectPrompt() const;
 
+    /**
+     * @brief allowSystemConfigurationOverrides
+     *
+     * When true, allow a system configuration to override theme values related to the OIDC parameters.
+     *
+     * @default false.
+     *
+     * @return whether a system configuration can be used to replace the theme's OIDC values.
+     */
+    virtual bool allowSystemConfigOverrides() const;
 
     /**
      * @brief forceVirtualFilesOption
@@ -366,22 +391,15 @@ public:
     virtual QVector<std::tuple<QString, QString, QUrl>> urlActions() const;
 
     /**
-     * @brief moveToTrashDefaultValue sets a default value for move-to-trash option in the Settings panel.
+     * @brief moveToTrashDefaultValue
+     *
+     * This sets a default value for the move-to-trash option in the Settings panel.
      *
      * @default false.
      *
      * @return the default value for move-to-trash in the Settings.
      */
     virtual bool moveToTrashDefaultValue() const;
-
-    /**
-     * @brief Allow a system configuration to override theme values related to the OIDC parameters.
-     *
-     * @default false.
-     *
-     * @return whether a system configuration can be used to replace the theme's OIDC values.
-     */
-    virtual bool allowSystemConfigOverrides() const;
 
     /**
      * @brief syncNewlyDiscoveredSpaces
@@ -400,7 +418,9 @@ public:
     virtual bool syncNewlyDiscoveredSpaces() const;
 
     /**
-     * @brief spacesAreCalledFolders determines whether the gui should call spaces "Folders" or not.
+     * @brief spacesAreCalledFolders
+     *
+     * This determines whether the gui should call spaces "Folders" or not.
      *
      * @default false.
      *
@@ -409,7 +429,9 @@ public:
     virtual bool spacesAreCalledFolders() const;
 
     /**
-     * @brief withCrashReporter reveals whether crash reporting should be enabled.
+     * @brief withCrashReporter
+     *
+     * This reveals whether crash reporting should be enabled.
      *
      * @return value for cmake variable WITH_CRASHREPORTER.
      */
