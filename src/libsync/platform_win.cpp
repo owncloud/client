@@ -21,6 +21,7 @@
 #include <QApplication>
 #include <QGuiApplication>
 #include <QIcon>
+#include <QLoggingCategory>
 #include <QQuickStyle>
 
 
