@@ -22,7 +22,6 @@
 #include "common/version.h"
 #include "libsync/configfile.h"
 #include "mainwindow/modalwrapperwidget.h"
-#include "theme.h"
 #include "updater_private.h"
 
 #include "appimageupdateavailablewidget.h"

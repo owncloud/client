@@ -14,6 +14,7 @@
 
 #pragma once
 
+// #include "libsync/theme.h"
 #include "resources/owncloudresources.h"
 
 #include <QHash>
@@ -40,7 +41,7 @@ public:
      * a default "owncloud" icon but should never actually happen in practice aside from the wizard_footer_logo which most brands don't
      * provide, so the default oc version is a blank icon
      */
-    static QIcon getUniversalIcon(const QString &name);
+    static QIcon getBrandingIcon(const QString &name);
 
     // tries to find the icon with "name" in the branded resources subdir "iconTheme". If the branding does not contain the icon,
     // automatically fall back to default/owncloud icon which should always be there. If that fails, we have to assume the filename was

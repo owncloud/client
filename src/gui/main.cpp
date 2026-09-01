@@ -19,6 +19,7 @@
 #include "gui/application.h"
 #include "gui/logbrowser.h"
 #include "gui/networkinformation.h"
+#include "iconresources.h"
 #include "libsync/configfile.h"
 #include "libsync/platform.h"
 #include "libsync/theme.h"
@@ -368,7 +369,7 @@ int main(int argc, char **argv)
         QApplication app(argc, argv);
         app.setOrganizationDomain(Theme::instance()->orgDomainName());
         app.setApplicationName(Theme::instance()->appName());
-        app.setWindowIcon(Theme::instance()->applicationIcon());
+        app.setWindowIcon(IconResources::getBrandingIcon(Theme::instance()->applicationIconName()));
         app.setApplicationVersion(Theme::instance()->aboutVersions(Theme::VersionFormat::Url));
 
 #ifdef Q_OS_LINUX

@@ -13,6 +13,7 @@
  */
 
 #include "updatedownloadedwidget.h"
+#include "iconresources.h"
 #include "theme.h"
 #include "ui_updatedownloadedwidget.h"
 
@@ -27,7 +28,7 @@ UpdateDownloadedWidget::UpdateDownloadedWidget(QWidget *parent, const QString &s
 {
     _ui->setupUi(this);
 
-    _ui->iconLabel->setPixmap(Theme::instance()->applicationIcon().pixmap(128, 128));
+    _ui->iconLabel->setPixmap(IconResources::getBrandingIcon(Theme::instance()->applicationIconName()).pixmap(128, 128));
     _ui->iconLabel->setText(QString());
 
     _ui->descriptionLabel->setText(statusMessage);
@@ -46,16 +47,4 @@ UpdateDownloadedWidget::~UpdateDownloadedWidget()
     delete _ui;
 }
 
-/*
-void UpdateDownloadedWidget::accept()
-{
-    Q_EMIT accepted();
-    Q_EMIT finished();
-}
-
-void UpdateDownloadedWidget::reject()
-{
-    Q_EMIT finished();
-}
-*/
 } // OCC namespace

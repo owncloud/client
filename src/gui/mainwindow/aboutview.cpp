@@ -15,6 +15,7 @@
 #include "ui_aboutview.h"
 
 #include "gui/guiutility.h"
+#include "iconresources.h"
 #include "libsync/theme.h"
 
 // #include <QMessageBox>
@@ -27,7 +28,7 @@ AboutView::AboutView(QWidget *parent)
 {
     ui->setupUi(this);
     ui->aboutText->setText(Theme::instance()->about());
-    ui->icon->setPixmap(Theme::instance()->aboutIcon().pixmap(256));
+    ui->icon->setPixmap(IconResources::getBrandingIcon(Theme::instance()->aboutIconName()).pixmap(256));
     ui->versionInfo->setText(Theme::instance()->aboutVersions(Theme::VersionFormat::RichText));
 
     connect(ui->versionInfo, &QTextBrowser::anchorClicked, this, &AboutView::openBrowserFromUrl);

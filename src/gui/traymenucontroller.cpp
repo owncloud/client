@@ -160,7 +160,8 @@ void TrayMenuController::setupTrayContextMenu()
 
     auto app = ocApp();
     // Populate the context menu now.
-    menu->addAction(Theme::instance()->applicationIcon(), tr("Show %1").arg(Theme::instance()->appNameGUI()), app, &Application::ensureVisible);
+    menu->addAction(IconResources::getBrandingIcon(Theme::instance()->applicationIconName()), tr("Show %1").arg(Theme::instance()->appNameGUI()), app,
+        &Application::ensureVisible);
     menu->addSeparator();
 
     if (ocApp()->debugMode()) {

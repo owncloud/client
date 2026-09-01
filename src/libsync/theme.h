@@ -93,21 +93,9 @@ public:
     virtual QString configFileName() const;
 
     /**
-     * @brief applicationIcon
-     *
-     * @default the default implementation expects that the universal folder contains an icon
-     * named applicationIconName() + "-icon" (with extension of .svg or a collection of
-     * one or more sized .png's)
-     *
-     * @return the icon for the application
-     */
-    // todo: dc-346 the icon retrieval functions must go - this will apply to all the xxxIcon() functions
-    virtual QIcon applicationIcon() const;
-
-    /**
      * @brief applicationIconName
      *
-     * @default value of cmake variable APPLICATION_SHORTNAME.
+     * @default value of cmake variable APPLICATION_SHORTNAME + "-icon".
      *
      * @return the base application icon name.
      */
@@ -116,11 +104,11 @@ public:
     /**
      * @brief aboutIcon
      *
-     * @default returns applicationIcon().
+     * @default returns applicationIconName().
      *
      * @return the icon to be used in the "about" gui.
      */
-    virtual QIcon aboutIcon() const;
+    virtual QString aboutIconName() const;
 
 
     /**
@@ -216,22 +204,22 @@ public:
      *
      * This is the primary logo which appears in some wizard pages.
      *
-     * @default is applicationIcon().
+     * @default is applicationIconName().
      *
      * @return the icon that should be used in the wizard.
      */
-    virtual QIcon wizardHeaderLogo() const;
+    virtual QString wizardHeaderLogoName() const;
 
     /**
      * @brief wizardFooterLogo
      *
      * This is the optional logo that appears below all other content in some wizard pages
      *
-     * @default empty QIcon.
+     * @default empty QString.
      *
      * @return the footer logo to be used in the wizard.
      */
-    virtual QIcon wizardFooterLogo() const;
+    virtual QString wizardFooterLogoName() const;
 
 
     /**

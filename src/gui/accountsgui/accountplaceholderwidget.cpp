@@ -17,6 +17,7 @@
 #include <QLabel>
 #include <QVBoxLayout>
 
+#include "iconresources.h"
 #include "theme.h"
 
 namespace OCC {
@@ -28,7 +29,7 @@ AccountPlaceholderWidget::AccountPlaceholderWidget(QWidget *parent)
     QString appName = Theme::instance()->appNameGUI();
 
     QLabel *logoLabel = new QLabel({}, this);
-    logoLabel->setPixmap(Theme::instance()->wizardHeaderLogo().pixmap(200, 100));
+    logoLabel->setPixmap(IconResources::getBrandingIcon(Theme::instance()->wizardHeaderLogoName()).pixmap(200, 100));
     logoLabel->setAlignment(Qt::AlignCenter);
     logoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     logoLabel->setAccessibleName(tr("%1 logo").arg(appName));
@@ -40,9 +41,9 @@ AccountPlaceholderWidget::AccountPlaceholderWidget(QWidget *parent)
     instructionLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     QLabel *footerLogoLabel = nullptr;
-    if (!Theme::instance()->wizardFooterLogo().isNull()) {
+    if (!Theme::instance()->wizardFooterLogoName().isEmpty()) {
         footerLogoLabel = new QLabel({}, this);
-        footerLogoLabel->setPixmap(Theme::instance()->wizardFooterLogo().pixmap(100, 52));
+        footerLogoLabel->setPixmap(IconResources::getBrandingIcon(Theme::instance()->wizardFooterLogoName()).pixmap(100, 52));
         footerLogoLabel->setAlignment(Qt::AlignCenter);
         footerLogoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         footerLogoLabel->setAccessibleName(tr("Additional logo defined by the organization"));
