@@ -203,6 +203,7 @@ QVariant FolderItem::data(int role) const
 
     switch (role) {
     case Qt::DisplayRole:
+    case Qt::ToolTipRole:
         return _folder->displayName();
     case Qt::AccessibleTextRole: {
         //: Accessible text, read out by a screen reader.
