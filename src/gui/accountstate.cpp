@@ -193,7 +193,9 @@ void AccountState::setState(State state)
     // todo: need to investigate whether it's ever the case that we go from connected to connected.
     // so far it looks to me as if this happens when the connection validator confirms all is still well?
     if (_state == Connected) {
-        if (_needsServerSettingsRefresh) {
+        // the account is briefly connected when setting up. If we're in this setup state, don't fetch the
+        // server settings yet!
+        if (_needsServerSettingsRefresh && !_settingUp) {
             // update capabilities and fetch relevant settings
             // in the code path we unblock the queue *after* the caps retrieval has succeeded
             fetchServerSettings();

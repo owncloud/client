@@ -18,7 +18,6 @@
 #include "folderitemupdater.h"
 #include "progressdispatcher.h"
 #include "resources/iconresources.h"
-#include "theme.h"
 
 namespace OCC {
 
@@ -111,7 +110,8 @@ QString FolderItem::statusIconName() const
         || (NetworkInformation::instance()->isMetered() && ConfigFile().pauseSyncWhenMetered())) {
         status.setStatus(SyncResult::Status::Paused);
     }
-    return QString("states/%1").arg(Theme::instance()->syncStateIconName(status));
+
+    return QString("states/%1").arg(status.iconNameForStatus());
 }
 
 QString FolderItem::statusAsString() const

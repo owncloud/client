@@ -17,12 +17,14 @@
 #include <QAction>
 #include <QActionGroup>
 #include <QApplication>
+#include <QMenu>
+#include <QScreen>
 #include <QStackedWidget>
 #include <QToolBar>
 #include <QToolButton>
+#include <QWindow>
 
-#include <QMenu>
-
+#include "common/utility.h"
 #include "configfile.h"
 #include "iconresources.h"
 #include "modalwrapperwidget.h"

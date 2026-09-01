@@ -22,9 +22,6 @@
 #include "common/checksums.h"
 #include "common/syncjournaldb.h"
 
-#include "libsync/theme.h"
-
-
 #include <QFile>
 #include <QFileInfo>
 #include <QThreadPool>

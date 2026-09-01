@@ -12,20 +12,11 @@
  * for more details.
  */
 
-#include "account.h"
 #include "filesystem.h"
-#include "propagateuploadfile.h"
-#include "syncengine.h"
 #include "uploaddevice.h"
-
 #include "common/asserts.h"
-#include "common/utility.h"
-
-#include "libsync/theme.h"
 
 #include <QFileInfo>
-
-#include <cmath>
 
 using namespace std::chrono_literals;
 

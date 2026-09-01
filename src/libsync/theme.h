@@ -14,28 +14,25 @@
 
 #pragma once
 
-#include "common/utility.h"
-#include "resources/resources.h"
-#include "syncresult.h"
-
-#include <QFileInfo>
 #include <QObject>
-#include <QPalette>
-#include <qquickwindow.h>
+#include <QColor>
+
+#include "owncloudlib.h"
 
 namespace OCC {
-class SyncResult;
 
 /**
- * @brief The Theme class
+ * @brief The Theme class allows branded clients to override certain values in the application.
  * @ingroup libsync
  */
-
 class OWNCLOUDSYNC_EXPORT Theme : public QObject
 {
     Q_OBJECT
 
 public:
+    /**
+     * @brief The VersionFormat enum controls how version information is formatted in the application.
+     */
     enum class VersionFormat {
         Plain,
         Url,
@@ -44,220 +41,407 @@ public:
     };
     Q_ENUM(VersionFormat);
 
-    /* returns a singleton instance. */
+    /**
+     * @brief instance
+     * @return polymorphically returns a singleton instance of the branding theme in play.
+     */
     static Theme *instance();
-    static Theme *create(QQmlEngine *qmlEngine, QJSEngine *);
 
     ~Theme() override;
 
     /**
-     * @brief appNameGUI - Human readable application name.
+     * @brief appNameGUI is the human readable application name.
      *
-     * Use and redefine this if the human-readable name contains spaces,
-     * special chars and such.
+     * Override this if the gui should present a name which does not match the cmake definition,
+     * eg. when the name should include spaces or other special characters.
      *
-     * By default, the name is derived from the APPLICATION_NAME
-     * cmake variable.
+     * @default value of the APPLICATION_NAME cmake variable.
      *
-     * @return QString with human readable app name.
+     * @return QString for human readable app name.
      */
     virtual QString appNameGUI() const;
 
     /**
-     * @brief appName - Application name (short)
+     * @brief appName is the general application name.
      *
-     * Use and redefine this as an application name. Keep it straight as
-     * it is used for config files etc. If you need a more sophisticated
-     * name in the GUI, redefine appNameGUI.
-     *
-     * By default, the name is derived from the APPLICATION_SHORTNAME
-     * cmake variable, and should be the same. This method exists only for
-     * legacy reasons.
-     *
-     * Warning: Do not modify this value, as many things, e.g. settings
-     * depend on it! You most likely want to modify \ref appNameGUI().
-     *
-     * @return QString with app name.
+     * @return value of the APPLICATION_SHORTNAME cmake variable.
      */
     QString appName() const;
 
+    /**
+     * @brief orgDomainName
+     *
+     * @return  the value of APPLICATION_REV_DOMAIN cmake variable.
+
+     */
     QString orgDomainName() const;
 
+    /**
+     * @brief vendor
+     *
+     * @return value of the APPLICATION_VENDOR cmake variable.
+     */
     QString vendor() const;
 
     /**
-     * @brief configFileName
+     * @brief configFileName is the name used for the application's user configuration file.
+     *
+     * @default value of cmake variable APPLICATION_EXECUTABLE + ".cfg".
+     *
      * @return the name of the config file.
      */
     virtual QString configFileName() const;
 
-    QString syncStateIconName(const SyncResult &result) const;
-
+    /**
+     * @brief applicationIcon
+     *
+     * @default the default implementation expects that the universal folder contains an icon
+     * named applicationIconName() + "-icon" (with extension of .svg or a collection of
+     * one or more sized .png's)
+     *
+     * @return the icon for the application
+     */
+    // todo: dc-346 the icon retrieval functions must go - this will apply to all the xxxIcon() functions
     virtual QIcon applicationIcon() const;
+
+    /**
+     * @brief applicationIconName
+     *
+     * @default value of cmake variable APPLICATION_SHORTNAME.
+     *
+     * @return the base application icon name.
+     */
     virtual QString applicationIconName() const;
+
+    /**
+     * @brief aboutIcon
+     *
+     * @default returns applicationIcon().
+     *
+     * @return the icon to be used in the "about" gui.
+     */
     virtual QIcon aboutIcon() const;
 
 
     /**
-    * URL to documentation.
-    *
-    * This is opened in the browser when the "Help" action is selected from the tray menu.
-    *
-    * If the function is overridden to return an empty string the action is removed from
-    * the menu.
-    *
-    * Defaults to ownCloud's client documentation website.
-    */
+     * @brief helpUrl
+     *
+     * This is opened in the browser when the "Help" action is selected from the tray menu or
+     * the "more" menu in the main window.
+     *
+     * If the function is overridden to return an empty string the action is removed from
+     * the menu.
+     *
+     * @default ownCloud's client documentation URL.
+     *
+     * @return URL for help documentation.
+     */
     virtual QString helpUrl() const;
 
     /**
-     * The url to use for showing help on conflicts.
+     * @brief conflictHelpUrl
      *
-     * If the function is overridden to return an empty string no help link will be shown.
+     * The url to use for help on conflicts shown in the sync errors panel.
      *
-     * Defaults to helpUrl() + "conflicts.html", which is a page in ownCloud's client
-     * documentation website. If helpUrl() is empty, this function will also return the
-     * empty string.
+     * If the function is overridden to return an empty string no help link for conflicts will be shown.
+     *
+     * @default helpUrl() + "conflicts.html".
+     * Note that if the help URL is empty, the default implementation returns empty string.
+
+     * @return the URL for conflicts help.
      */
     virtual QString conflictHelpUrl() const;
 
     /**
-     * Setting a value here will pre-define the server url.
+     * @brief overrideServerUrl
      *
-     * The respective UI controls will be disabled
-     * NOT deprecated. overrideServerUrlV2 is gone as "overrides" (for what purpose? smells like a backdoor) should happen in theme only,
-     * or via the managed device config
+     * Sets a predefined URL in the new account wizard.
+     *
+     * If this value is non-empty, the URL field in the account wizard will be disabled so the user must use
+     * this URL to create accounts.
+     *
+     * @default empty string.
+     *
+     * @return the predefined URL for creating new accounts.
      */
-
     virtual QString overrideServerUrl() const;
 
+
     /**
-     * If set to a non-empty string, the path part of the URL will be overwritten with this path.
-     * This can be used to set the end-point to a fixed location, and thereby shorten the URL that
-     * is given to the users.
+     * @brief overrideServerPath
      *
-     * For example, if the URL for the product always contains `/dav` as the path, and setting that
-     * here, and the URL given to the user is `example.com`, the branded application will contact
-     * `example.com/dav`.
+     * If non-emtpy, overwrites the path segment of the account's URL with this path.
+     *
+     * This can be used to set the end-point to a fixed location, and thereby shorten the URL that
+     * the user must provide when creating a new account.
+     *
+     * For example, if the URL for the product always contains `/dav` as the path, and the URL provided
+     * by the user is `example.com`, the branded application will contact `example.com/dav`.
+     *
+     * @default empty string.
+     *
+     * @return the server path to be used with all account URLs.
      */
     virtual QString overrideServerPath() const;
 
-
-    /** @return color for the setup wizard. This is effectively the text color for the wizard pages*/
+    /**
+     * @brief wizardHeaderTitleColor
+     *
+     * This allows branding to override text color for wizard pages.
+     *
+     * If the value is empty, the default system text color will be used.
+     *
+     * @default empty color.
+     *
+     * @return the preferred text color for the wizards.
+     */
     virtual QColor wizardHeaderTitleColor() const;
 
-    /** @return color for the setup wizard.  This is effectively the background color for each page*/
-    virtual QColor wizardHeaderBackgroundColor() const;
-
-    /** @return logo for the setup wizard. */
-    virtual QIcon wizardHeaderLogo() const;
-
-    /** @return logo that is used below the main wizard page content. */
-    virtual QIcon wizardFooterLogo() const;
 
     /**
-     * The used library versions
+     * @brief wizardHeaderBackgroundColor
+     *
+     * This allows branding to override the background color of wizard pages.
+     *
+     * If the value is empty, the default system background color will be used.
+     *
+     * @default empty color.
+     *
+     * @return the preferred background color for the wizard pages.
+     */
+    virtual QColor wizardHeaderBackgroundColor() const;
+
+    /**
+     * @brief wizardHeaderLogo
+     *
+     * This is the primary logo which appears in some wizard pages.
+     *
+     * @default is applicationIcon().
+     *
+     * @return the icon that should be used in the wizard.
+     */
+    virtual QIcon wizardHeaderLogo() const;
+
+    /**
+     * @brief wizardFooterLogo
+     *
+     * This is the optional logo that appears below all other content in some wizard pages
+     *
+     * @default empty QIcon.
+     *
+     * @return the footer logo to be used in the wizard.
+     */
+    virtual QIcon wizardFooterLogo() const;
+
+
+    /**
+     * @brief aboutVersions
+     *
+     * This function supplies formatted version information, including the current application version as well
+     * as versions of various build dependencies.
+     *
+     * @param format determines how the version information is formatted.
+     *      VersionFormat::OneLiner is appropriate for log output
+     *      VersionFormat::RichText is appropriate for various gui's, but importantly, it provides a url link to the build version's sha in github.
+     *      VersionFormat::Url returns build version text with a url link to the sha in github.
+     *      VersionFormat::Plain is what you'd expect: it's just the version information with plain text formatting.
+     *
+     * @return the formatted version information for the current build.
      */
     QString aboutVersions(VersionFormat format = VersionFormat::Plain) const;
 
+
     /**
-     * About dialog contents
+     * @brief about
+     *
+     * Defines the text used in the About panel.
+     *
+     * @default the About text for ownCloud.
+     *
+     * @return the About text.
      */
     virtual QString about() const;
 
 
     /**
-     * @brief Where to check for new Updates.
+     * @brief updateCheckUrl
+     *
+     * This value controls the location used for update checks, and effectively controls whether the updater feature is enabled.
+     *
+     * The URL is defined by the cmake environment variable APPLICATION_UPDATE_URL. If this variable
+     * does not exist, an empty URL is returned.
+     *
+     * @return the value of APPLICATION_UPDATE_URL (may be empty).
      */
     QUrl updateCheckUrl() const;
 
-
     /**
-     * If this returns true, the user cannot configure the proxy in the network settings.
-     * The proxy settings will be disabled in the configuration dialog.
-     * Default returns false.
+     * @brief forceSystemNetworkProxy
+     *
+     * If this returns true, the user cannot configure the network proxy in the Settings panel, and the
+     * system network proxy will always be used.
+     *
+     * @default false.
+     *
+     * @return whether the system proxy should always be used.
      */
     virtual bool forceSystemNetworkProxy() const;
 
     /**
-     * @brief wizardUrlPlaceholder provides placeholder text for the URL field in the new account wizard
-     * @return empty string unless overridden
+     * @brief wizardUrlPlaceholder
+     *
+     * Provides placeholder text for the URL field in the new account wizard.
+     *
+     * @default empty string.
+     *
+     * @return QString with URL placeholder.
      */
     virtual QString wizardUrlPlaceholder() const;
 
     /**
-     * The OAuth client_id, secret pair.
-     * Note that client that change these value cannot connect to un-branded owncloud servers.
+     * The following five functions exist to define the client's OIDC configuration.
+     *
+     * At minimum the ClientId and ClientSecret should be overridden for all branded clients.
+     *
      */
-    virtual QString oauthClientId() const;
-    virtual QString oauthClientSecret() const;
 
     /**
-     * List of ports to use for the local redirect server
+     * @brief oauthClientId
+     *
+     * @default the OIDC client Id for ownCloud servers.
+     *
+     * @return the OIDC client Id.
+     */
+    virtual QString oauthClientId() const;
+
+    /**
+     * @brief oauthClientSecret
+     *
+     * @default the OIDC client secret for ownCloud servers.
+     *
+     * @return the OIDC client secret.
+     */
+    virtual QString oauthClientSecret() const;
+
+
+    /**
+     * @brief oauthPorts
+     *
+     * The list of ports to use for the local redirect server.
+     *
+     * @default is 0, which means any port can be used.
+     *
+     * @return the list of allowed OIDC ports.
      */
     virtual QVector<quint16> oauthPorts() const;
 
     /**
-     * Returns the required OpenIDConnect scopes
+     * @brief openIdConnectScopes
+     *
+     * @default "openid offline_access email profile"
+     *
+     * @return the allowed OIDC scopes.
      */
     virtual QString openIdConnectScopes() const;
 
     /**
-     * Returns the OpenIDConnect prompt type
-     * It is supposed to be "consent select_account".
-     * For "Konnect" it currently needs to be select_account,
-     * which is the current default.
+     * @brief openIdConnectPrompt
+     *
+     * @default "select_account consent"
+     *
+     * @return the OIDC connect prompt.
      */
     virtual QString openIdConnectPrompt() const;
 
-
     /**
-     * On windows, force the user to use vfs, by disabling options to turn it off.
-     * Default: false
-     */
-    virtual bool forceVirtualFilesOption() const;
-
-    /**
-     * Returns a list of IconName, Name, Url triplets that will be displayed as buttons or menu items in the main view
-     * For each url an optional icon can be provided in the form of #IconName.svg or multiple #IconName-#resolution.png like for the other theme icons.
-     * if the icon name is empty or "wrong" there will be no icon on the action, just text
-     * */
-    virtual QVector<std::tuple<QString, QString, QUrl>> urlActions() const;
-
-    /**
-     * Set the default value for move to trash option
-     * Default: false
-     */
-    virtual bool moveToTrashDefaultValue() const;
-
-    /**
-     * @brief Allow the system configuration to override theme values.
-     * @default false
+     * @brief allowSystemConfigurationOverrides
+     *
+     * When true, allow a system configuration to override theme values related to the OIDC parameters.
+     *
+     * @default false.
+     *
+     * @return whether a system configuration can be used to replace the theme's OIDC values.
      */
     virtual bool allowSystemConfigOverrides() const;
 
     /**
-     * @brief Automatically add sync connections for newly discovered Spaces.
+     * @brief forceVirtualFilesOption
      *
-     * Default: false
-     * See #11749
+     * When this returns true, the user must use VFS on Windows (and any other platforms that have
+     * a VFS implementation).
+     *
+     * @default false.
+     *
+     * @return whether VFS should be forced on in the application.
+     */
+    virtual bool forceVirtualFilesOption() const;
+
+    /**
+     * @brief urlActions
+     *
+     * Defines a list of IconName, Text, Url triplets that will be displayed as buttons or menu items in the main view.
+     *
+     * For each url an optional icon name can be provided.
+     * If the icon name is empty or can't be located in resources, there will be no icon on the action, just text.
+     *
+     * @default empty.
+     *
+     * @return definitions for URL actions.
+     */
+    virtual QVector<std::tuple<QString, QString, QUrl>> urlActions() const;
+
+    /**
+     * @brief moveToTrashDefaultValue
+     *
+     * This sets a default value for the move-to-trash option in the Settings panel.
+     *
+     * @default false.
+     *
+     * @return the default value for move-to-trash in the Settings.
+     */
+    virtual bool moveToTrashDefaultValue() const;
+
+    /**
+     * @brief syncNewlyDiscoveredSpaces
+     *
+     * Automatically add sync connections for newly discovered Spaces.
+     *
+     * Note this functionality is implemented but may not be very nice for users!
+     *
+     * If this functionality is desired please contact dev to discuss the fine points, and which updates
+     * may be useful to make the experience more pleasant.
+     *
+     * @default false.
+     *
+     * @return whether to automatically sync new spaces from the server.
      */
     virtual bool syncNewlyDiscoveredSpaces() const;
 
     /**
-     * Whether to call spaces "Spaces" in the UI, or call them "Folders"
+     * @brief spacesAreCalledFolders
      *
-     * Default: false
+     * This determines whether the gui should call spaces "Folders" or not.
+     *
+     * @default false.
+     *
+     * @return call spaces "Folders".
      */
     virtual bool spacesAreCalledFolders() const;
 
+    /**
+     * @brief withCrashReporter
+     *
+     * This reveals whether crash reporting should be enabled.
+     *
+     * @return value for cmake variable WITH_CRASHREPORTER.
+     */
     bool withCrashReporter() const;
 
 protected:
     Theme();
 
     /**
-     * The SHA sum of the released git commit
+     * The formatted SHA sum of the released git commit
      */
     QString gitSHA1(VersionFormat format = VersionFormat::Plain) const;
 

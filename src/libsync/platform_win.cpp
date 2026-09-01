@@ -21,15 +21,16 @@
 #include <QApplication>
 #include <QGuiApplication>
 #include <QIcon>
+#include <QLoggingCategory>
 #include <QQuickStyle>
 
 
 #include <chrono>
 #include <thread>
 
-#include "theme.h"
-
 #include "common/asserts.h"
+#include "common/utility.h"
+#include "theme.h"
 
 using namespace std::chrono;
 using namespace std::chrono_literals;

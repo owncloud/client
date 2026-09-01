@@ -13,20 +13,8 @@
  */
 
 #include "account.h"
-#include "filesystem.h"
 #include "networkjobs.h"
-#include "owncloudpropagator_p.h"
-#include "propagateremotedelete.h"
-#include "propagateuploadfile.h"
 #include "putfilejob.h"
-#include "syncengine.h"
-
-#include "common/asserts.h"
-#include "common/utility.h"
-
-#include "libsync/theme.h"
-
-#include <cmath>
 
 using namespace std::chrono_literals;
 

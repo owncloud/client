@@ -15,6 +15,7 @@
 #include "oauth.h"
 
 #include "accessmanager.h"
+#include "common/asserts.h"
 #include "creds/credentialssupport.h"
 #include "gui/networkadapters/userinfoadapter.h"
 #include "libsync/creds/credentialmanager.h"
@@ -110,7 +111,7 @@ void OAuth::startAuthentication()
     }
 
     _pkceCodeVerifier = generateRandomString(24);
-    OC_ASSERT(_pkceCodeVerifier.size() == 128)
+    OC_ASSERT(_pkceCodeVerifier.size() == 128);
     _state = generateRandomString(8);
 
     connect(this, &OAuth::fetchWellKnownFinished, this, &OAuth::authorisationLinkChanged);

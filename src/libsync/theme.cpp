@@ -20,6 +20,7 @@
 
 #include "resources/iconresources.h"
 
+#include <QGuiApplication>
 #include <QSslSocket>
 #include <QStyle>
 
@@ -37,13 +38,6 @@ Theme *Theme::instance()
         _instance = new THEME_CLASS;
     }
     return _instance;
-}
-
-Theme *Theme::create(QQmlEngine *qmlEngine, QJSEngine *)
-{
-    Q_ASSERT(qmlEngine->thread() == Theme::instance()->thread());
-    QJSEngine::setObjectOwnership(Theme::instance(), QJSEngine::CppOwnership);
-    return instance();
 }
 
 Theme::~Theme() { }
@@ -75,7 +69,7 @@ QString Theme::configFileName() const
 
 // returning an icon instead of just the icon name is really questionable here. Need to see if this is somehow required for the
 // branding builds - if not, get rid of this entirely and make the applicationIconName return the correct name by appending the -icon
-// this is SO confusing - theme should have no responsibility for *retrieving* resources!!!
+// ideally theme should have no responsibility for *retrieving* resources!!!
 QIcon Theme::applicationIcon() const
 {
     return IconResources::getUniversalIcon(applicationIconName() + QStringLiteral("-icon"));
@@ -87,7 +81,7 @@ QString Theme::applicationIconName() const
     // I STRONGLY prefer to move that "fallback" here, to avoid confusion, as *how many cmake files do we have to navigate to
     // find these values*?
     // it's not ok, imo. I quasi understand the "need" for these vars but they are nothing but trouble.
-    return QStringLiteral(APPLICATION_ICON_NAME);
+    return QStringLiteral(APPLICATION_SHORTNAME);
 }
 
 QIcon Theme::aboutIcon() const
@@ -221,45 +215,9 @@ QString Theme::about() const
             aboutVersions(Theme::VersionFormat::RichText));
 }
 
-QString Theme::syncStateIconName(const SyncResult &result) const
-{
-    switch (result.status()) {
-    case SyncResult::NotYetStarted:
-        [[fallthrough]];
-    case SyncResult::SyncRunning:
-        return QStringLiteral("sync");
-    case SyncResult::SyncAbortRequested:
-        [[fallthrough]];
-    case SyncResult::Paused:
-        return QStringLiteral("pause");
-    case SyncResult::SyncPrepare:
-        [[fallthrough]];
-    case SyncResult::Success:
-        if (!result.hasUnresolvedConflicts()) {
-            return QStringLiteral("ok");
-        }
-        [[fallthrough]];
-    case SyncResult::Problem:
-        [[fallthrough]];
-    case SyncResult::Undefined:
-        // this can happen if no sync connections are configured.
-        return QStringLiteral("information");
-    case SyncResult::Offline:
-        return QStringLiteral("offline");
-    case SyncResult::Error:
-        [[fallthrough]];
-    case SyncResult::Unavailable:
-        [[fallthrough]];
-    case SyncResult::SetupError:
-        // FIXME: Use problem once we have an icon.
-        return QStringLiteral("error");
-    }
-    Q_UNREACHABLE();
-}
-
 QColor Theme::wizardHeaderTitleColor() const
 {
-    return qApp->palette().text().color();
+    return QColor();
 }
 
 QColor Theme::wizardHeaderBackgroundColor() const

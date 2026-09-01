@@ -3,11 +3,12 @@
 
 #pragma once
 
-#include "../theme.h"
-#include "owncloudlib.h"
 #include "openidconfig.h"
+#include "owncloudlib.h"
+#include "theme.h"
 
 #include <QOperatingSystemVersion>
+#include <QSettings>
 #include <QString>
 #include <QVariant>
 
