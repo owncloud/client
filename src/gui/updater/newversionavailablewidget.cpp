@@ -13,6 +13,7 @@
  */
 
 #include "newversionavailablewidget.h"
+#include "iconresources.h"
 #include "theme.h"
 #include "ui_newversionavailablewidget.h"
 
@@ -27,7 +28,7 @@ NewVersionAvailableWidget::NewVersionAvailableWidget(QWidget *parent, const QStr
 {
     _ui->setupUi(this);
 
-    _ui->icon->setPixmap(Theme::instance()->applicationIcon().pixmap(128, 128));
+    _ui->icon->setPixmap(IconResources::getBrandingIcon(Theme::instance()->applicationIconName()).pixmap(128, 128));
     _ui->label->setText(statusMessage);
 
     QPushButton *skipButton = _ui->buttonBox->addButton(tr("Skip this version"), QDialogButtonBox::ResetRole);
@@ -49,17 +50,5 @@ void NewVersionAvailableWidget::skipVersion()
     Q_EMIT versionSkipped();
     Q_EMIT finished(QDialog::Rejected);
 }
-
-/*void NewVersionAvailableWidget::notNow()
-{
-    Q_EMIT noUpdateNow();
-    Q_EMIT finished();
-}
-
-void NewVersionAvailableWidget::getUpdate()
-{
-    Q_EMIT updateNow();
-    Q_EMIT finished();
-}*/
 
 } // OCC namespace

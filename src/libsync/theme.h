@@ -93,34 +93,62 @@ public:
     virtual QString configFileName() const;
 
     /**
-     * @brief applicationIcon
+     * The branding icon related functions simply return the names of various icons without extension.
      *
-     * @default the default implementation expects that the universal folder contains an icon
-     * named applicationIconName() + "-icon" (with extension of .svg or a collection of
-     * one or more sized .png's)
+     * All branding icons must be located in the universal folder.
      *
-     * @return the icon for the application
+     * If an icon is in a subfolder of universal, the returned name must include the relative path (no leading separator).
+     *
+     * Encoding of the concrete file may be .svg or .png, and we also support merging a collection of "sized" pngs into
+     * a single icon.
+     *
+     * A multi resolution icon requires that the individual pngs are named: iconName-xxx.png where xxx is the resolution of
+     * the individual file.
+     *
+     * General recommendation is that if the icon only needs to scale, supply an svg. If it should be drawn differently at
+     * different resolutions, eg to avoid a very small size not having enough detail to recognize what it represents, provide
+     * a collection of sized pngs.
      */
-    // todo: dc-346 the icon retrieval functions must go - this will apply to all the xxxIcon() functions
-    virtual QIcon applicationIcon() const;
 
     /**
      * @brief applicationIconName
      *
-     * @default value of cmake variable APPLICATION_SHORTNAME.
+     * @default value of cmake variable APPLICATION_SHORTNAME + "-icon".
      *
-     * @return the base application icon name.
+     * @return the application icon name.
      */
     virtual QString applicationIconName() const;
 
     /**
      * @brief aboutIcon
      *
-     * @default returns applicationIcon().
+     * @default returns applicationIconName().
      *
-     * @return the icon to be used in the "about" gui.
+     * @return the name of the icon to be used in the "about" gui.
      */
-    virtual QIcon aboutIcon() const;
+    virtual QString aboutIconName() const;
+
+    /**
+     * @brief wizardHeaderLogo
+     *
+     * This is the primary logo which appears in some wizard pages.
+     *
+     * @default is applicationIconName().
+     *
+     * @return the name of the primary icon/logo that should be used in the wizard.
+     */
+    virtual QString wizardHeaderLogoName() const;
+
+    /**
+     * @brief wizardFooterLogo
+     *
+     * This is the optional logo that appears below all other content in some wizard pages
+     *
+     * @default empty QString.
+     *
+     * @return the name of the optional footer logo to be used in the wizard.
+     */
+    virtual QString wizardFooterLogoName() const;
 
 
     /**
@@ -197,7 +225,6 @@ public:
      */
     virtual QColor wizardHeaderTitleColor() const;
 
-
     /**
      * @brief wizardHeaderBackgroundColor
      *
@@ -210,29 +237,6 @@ public:
      * @return the preferred background color for the wizard pages.
      */
     virtual QColor wizardHeaderBackgroundColor() const;
-
-    /**
-     * @brief wizardHeaderLogo
-     *
-     * This is the primary logo which appears in some wizard pages.
-     *
-     * @default is applicationIcon().
-     *
-     * @return the icon that should be used in the wizard.
-     */
-    virtual QIcon wizardHeaderLogo() const;
-
-    /**
-     * @brief wizardFooterLogo
-     *
-     * This is the optional logo that appears below all other content in some wizard pages
-     *
-     * @default empty QIcon.
-     *
-     * @return the footer logo to be used in the wizard.
-     */
-    virtual QIcon wizardFooterLogo() const;
-
 
     /**
      * @brief aboutVersions
@@ -304,7 +308,6 @@ public:
      * At minimum the ClientId and ClientSecret should be overridden for all branded clients.
      *
      */
-
     /**
      * @brief oauthClientId
      *
@@ -381,7 +384,9 @@ public:
      *
      * Defines a list of IconName, Text, Url triplets that will be displayed as buttons or menu items in the main view.
      *
-     * For each url an optional icon name can be provided.
+     * For each url an optional icon name can be provided. The icon must be located in the universal folder, and the name
+     * should include any subpath (no leading separator) if necessary. The icon name should not specify the file extension.
+     *
      * If the icon name is empty or can't be located in resources, there will be no icon on the action, just text.
      *
      * @default empty.

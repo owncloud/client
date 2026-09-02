@@ -99,9 +99,9 @@ QIcon IconResources::getCoreIcon(const QString &name)
     return cached;
 }
 
-QIcon IconResources::getUniversalIcon(const QString &name)
+QIcon IconResources::getBrandingIcon(const QString &name)
 {
-    return getThemedIcon(QStringLiteral("universal"), name);
+    return getThemedIcon(_universalTheme, name);
 }
 
 QIcon IconResources::themedTrayIcon(const QString &name, [[maybe_unused]] bool sysTrayMenuVisible, bool trayIsDark)

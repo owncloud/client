@@ -18,8 +18,6 @@
 #include "common/vfs.h"
 #include "config.h"
 
-#include "resources/iconresources.h"
-
 #include <QGuiApplication>
 #include <QSslSocket>
 #include <QStyle>
@@ -67,26 +65,18 @@ QString Theme::configFileName() const
     return QStringLiteral(APPLICATION_EXECUTABLE ".cfg");
 }
 
-// returning an icon instead of just the icon name is really questionable here. Need to see if this is somehow required for the
-// branding builds - if not, get rid of this entirely and make the applicationIconName return the correct name by appending the -icon
-// ideally theme should have no responsibility for *retrieving* resources!!!
-QIcon Theme::applicationIcon() const
-{
-    return IconResources::getUniversalIcon(applicationIconName() + QStringLiteral("-icon"));
-}
-
 QString Theme::applicationIconName() const
 {
     // attention! if APPLICATION_ICON_NAME is not defined, it is auto-set to APPLICATION_SHORTNAME in CMakeLists.txt:131
     // I STRONGLY prefer to move that "fallback" here, to avoid confusion, as *how many cmake files do we have to navigate to
     // find these values*?
     // it's not ok, imo. I quasi understand the "need" for these vars but they are nothing but trouble.
-    return QStringLiteral(APPLICATION_SHORTNAME);
+    return QStringLiteral(APPLICATION_SHORTNAME) + "-icon";
 }
 
-QIcon Theme::aboutIcon() const
+QString Theme::aboutIconName() const
 {
-    return applicationIcon();
+    return applicationIconName();
 }
 
 Theme::Theme()
@@ -225,14 +215,14 @@ QColor Theme::wizardHeaderBackgroundColor() const
     return QColor();
 }
 
-QIcon Theme::wizardHeaderLogo() const
+QString Theme::wizardHeaderLogoName() const
 {
-    return applicationIcon();
+    return applicationIconName();
 }
 
-QIcon Theme::wizardFooterLogo() const
+QString Theme::wizardFooterLogoName() const
 {
-    return QIcon();
+    return {};
 }
 
 bool Theme::forceSystemNetworkProxy() const

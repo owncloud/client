@@ -38,7 +38,7 @@ AppImageUpdateAvailableWidget::AppImageUpdateAvailableWidget(const QVersionNumbe
                                "background, and overwrite the current AppImage file. You need to restart the app to complete the update.")
                                 .arg(theme->appNameGUI()));
 
-    _ui->appIconLabel->setPixmap(theme->aboutIcon().pixmap(QSize(128, 128)));
+    _ui->appIconLabel->setPixmap(IconResources::getBrandingIcon(theme->aboutIconName()).pixmap(QSize(128, 128)));
 
     // we use custom icons to ensure a unified look on all platforms
     _ui->buttonBox->button(QDialogButtonBox::Ok)->setIcon(IconResources::getCoreIcon(QStringLiteral("check")));

@@ -110,7 +110,7 @@ QPixmap CoreImageProvider::requestPixmap(const QString &id, QSize *size, const Q
     if (qmlIcon.theme == QLatin1String("core")) {
         icon = IconResources::getCoreIcon(qmlIcon.iconName);
     } else if (qmlIcon.theme == QLatin1String("universal")) {
-        icon = IconResources::getUniversalIcon(qmlIcon.iconName);
+        icon = IconResources::getBrandingIcon(qmlIcon.iconName);
     } else {
         QString themeName = IconResources::isUsingDarkTheme() && hasDarkTheme() ? darkTheme() : coloredTheme();
         icon = IconResources::getThemedIcon(themeName, qmlIcon.iconName);
