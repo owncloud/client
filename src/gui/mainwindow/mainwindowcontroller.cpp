@@ -54,8 +54,7 @@ QList<QAction *> MainWindowController::buildUrlActions()
         for (int i = 0; i < num; i++) {
             QAction *urlAction = new QAction(this);
             auto def = themeDefs[i];
-            // todo: the theme should provide any path to subdir relative to "universal"
-            QString iconName = QString("urlIcons/%1").arg(std::get<0>(def));
+            QString iconName = std::get<0>(def);
             if (!iconName.isEmpty()) {
                 QIcon ic = IconResources::getBrandingIcon(iconName);
                 Q_ASSERT(!ic.isNull());
