@@ -18,8 +18,6 @@
 #include "common/vfs.h"
 #include "config.h"
 
-// #include "resources/iconresources.h"
-
 #include <QGuiApplication>
 #include <QSslSocket>
 #include <QStyle>
@@ -66,14 +64,6 @@ QString Theme::configFileName() const
 {
     return QStringLiteral(APPLICATION_EXECUTABLE ".cfg");
 }
-
-// returning an icon instead of just the icon name is really questionable here. Need to see if this is somehow required for the
-// branding builds - if not, get rid of this entirely and make the applicationIconName return the correct name by appending the -icon
-// ideally theme should have no responsibility for *retrieving* resources!!!
-/*QIcon Theme::applicationIcon() const
-{
-    return IconResources::getBrandingIcon(applicationIconName());
-}*/
 
 QString Theme::applicationIconName() const
 {
