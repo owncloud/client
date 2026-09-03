@@ -17,7 +17,7 @@
 #include "configfile.h"
 #include "folderitemupdater.h"
 #include "progressdispatcher.h"
-#include "theme.h"
+#include "resources/iconresources.h"
 
 namespace OCC {
 
@@ -110,7 +110,8 @@ QString FolderItem::statusIconName() const
         || (NetworkInformation::instance()->isMetered() && ConfigFile().pauseSyncWhenMetered())) {
         status.setStatus(SyncResult::Status::Paused);
     }
-    return QString("states/%1").arg(Theme::instance()->syncStateIconName(status));
+
+    return QString("states/%1").arg(status.iconNameForStatus());
 }
 
 QString FolderItem::statusAsString() const
@@ -189,7 +190,7 @@ void FolderItem::updateImage()
         spaceIcon = _folder->space()->image()->image();
 
     if (spaceIcon.isNull())
-        spaceIcon = Resources::getCoreIcon("defaultSpaceImage");
+        spaceIcon = IconResources::getCoreIcon("defaultSpaceImage");
 
     // sure I would like to see if they are equal before the set, but apparently there are no available ==/!= operators.
     _image = spaceIcon;
@@ -202,6 +203,7 @@ QVariant FolderItem::data(int role) const
 
     switch (role) {
     case Qt::DisplayRole:
+    case Qt::ToolTipRole:
         return _folder->displayName();
     case Qt::AccessibleTextRole: {
         //: Accessible text, read out by a screen reader.
@@ -211,7 +213,7 @@ QVariant FolderItem::data(int role) const
     case Qt::DecorationRole:
         return _image;
     case FolderItemRoles::StatusIconRole:
-        return Resources::getCoreIcon(statusIconName());
+        return IconResources::getCoreIcon(statusIconName());
     case FolderItemRoles::StatusStringRole:
         return _statusString;
     case FolderItemRoles::SortPriorityRole:

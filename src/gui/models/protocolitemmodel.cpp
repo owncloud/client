@@ -15,8 +15,8 @@
 
 #include "account.h"
 #include "accountstate.h"
+#include "iconresources.h"
 #include "models.h"
-#include "resources.h"
 
 using namespace OCC;
 
@@ -80,12 +80,12 @@ QVariant ProtocolItemModel::data(const QModelIndex &index, int role) const
                 || status == SyncFileItem::FatalError
                 || status == SyncFileItem::DetailError
                 || status == SyncFileItem::BlacklistedError) {
-                return Resources::getCoreIcon(QStringLiteral("states/error"));
+                return IconResources::getCoreIcon(QStringLiteral("states/error"));
                 ;
             } else if (Progress::isWarningKind(status) || status == SyncFileItem::Excluded) {
-                return Resources::getCoreIcon(QStringLiteral("states/information"));
+                return IconResources::getCoreIcon(QStringLiteral("states/information"));
             } else {
-                return Resources::getCoreIcon(QStringLiteral("states/ok"));
+                return IconResources::getCoreIcon(QStringLiteral("states/ok"));
             }
         }
         break;

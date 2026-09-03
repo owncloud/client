@@ -17,7 +17,6 @@
 #include "abstractcorejob.h"
 #include "common/utility.h"
 #include "creds/credentialssupport.h"
-#include "theme.h"
 
 #include <QEventLoop>
 #include <QLoggingCategory>

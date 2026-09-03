@@ -13,17 +13,19 @@
  */
 #include "requestauthenticationwidget.h"
 
-// #include "resources.h"
+#include "iconresources.h"
 #include "template.h"
 #include "theme.h"
 
 #include <QBuffer>
 #include <QClipboard>
+#include <QGuiApplication>
 #include <QHBoxLayout>
 #include <QImageReader>
 #include <QLabel>
 #include <QPalette>
 #include <QPushButton>
+#include <QResizeEvent>
 #include <QToolTip>
 #include <QVBoxLayout>
 
@@ -37,7 +39,7 @@ RequestAuthenticationWidget::RequestAuthenticationWidget(QWidget *parent)
     QString appName = Theme::instance()->appNameGUI();
 
     QLabel *logoLabel = new QLabel({}, this);
-    logoLabel->setPixmap(Theme::instance()->wizardHeaderLogo().pixmap(200, 100));
+    logoLabel->setPixmap(IconResources::getBrandingIcon(Theme::instance()->wizardHeaderLogoName()).pixmap(200, 100));
     logoLabel->setAlignment(Qt::AlignCenter);
     logoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     logoLabel->setAccessibleName(tr("Application Name Logo %1").arg(appName));
@@ -83,9 +85,9 @@ RequestAuthenticationWidget::RequestAuthenticationWidget(QWidget *parent)
     _errorField->setTextInteractionFlags(Qt::TextSelectableByKeyboard | Qt::TextSelectableByMouse);
 
     QLabel *footerLogoLabel = nullptr;
-    if (!Theme::instance()->wizardFooterLogo().isNull()) {
+    if (!Theme::instance()->wizardFooterLogoName().isEmpty()) {
         footerLogoLabel = new QLabel({}, this);
-        footerLogoLabel->setPixmap(Theme::instance()->wizardFooterLogo().pixmap(100, 52));
+        footerLogoLabel->setPixmap(IconResources::getBrandingIcon(Theme::instance()->wizardFooterLogoName()).pixmap(100, 52));
         footerLogoLabel->setAlignment(Qt::AlignCenter);
         footerLogoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 

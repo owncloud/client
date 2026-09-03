@@ -19,9 +19,9 @@
 #include "creds/abstractcredentials.h"
 #include "creds/credentialmanager.h"
 #include "graphapi/spacesmanager.h"
+#include "iconresources.h"
 #include "networkjobs.h"
 #include "networkjobs/resources.h"
-#include "resources.h"
 
 #include <QAuthenticator>
 #include <QDir>
@@ -132,7 +132,7 @@ QIcon Account::avatar()
 {
     if (_avatarImg.isNull()) {
         // note this caches the built avatar, so once it exists it just returns a cached version.
-        return Resources::buildAvatar(initials(), uuid());
+        return IconResources::buildAvatar(initials(), uuid());
     }
     return _avatarImg;
 }

@@ -10,7 +10,6 @@
 
 #include <QtTest>
 #include <syncengine.h>
-#include <theme.h>
 
 using namespace OCC;
 

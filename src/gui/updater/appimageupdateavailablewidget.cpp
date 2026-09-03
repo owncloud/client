@@ -17,7 +17,7 @@
 
 #include "theme.h"
 
-#include "resources/resources.h"
+#include "resources/iconresources.h"
 
 #include <QStyle>
 
@@ -38,12 +38,12 @@ AppImageUpdateAvailableWidget::AppImageUpdateAvailableWidget(const QVersionNumbe
                                "background, and overwrite the current AppImage file. You need to restart the app to complete the update.")
                                 .arg(theme->appNameGUI()));
 
-    _ui->appIconLabel->setPixmap(theme->aboutIcon().pixmap(QSize(128, 128)));
+    _ui->appIconLabel->setPixmap(IconResources::getBrandingIcon(theme->aboutIconName()).pixmap(QSize(128, 128)));
 
     // we use custom icons to ensure a unified look on all platforms
-    _ui->buttonBox->button(QDialogButtonBox::Ok)->setIcon(Resources::getCoreIcon(QStringLiteral("check")));
-    _ui->buttonBox->button(QDialogButtonBox::Cancel)->setIcon(Resources::getCoreIcon(QStringLiteral("ban")));
-    _ui->skipButton->setIcon(Resources::getCoreIcon(QStringLiteral("step-forward")));
+    _ui->buttonBox->button(QDialogButtonBox::Ok)->setIcon(IconResources::getCoreIcon(QStringLiteral("check")));
+    _ui->buttonBox->button(QDialogButtonBox::Cancel)->setIcon(IconResources::getCoreIcon(QStringLiteral("ban")));
+    _ui->skipButton->setIcon(IconResources::getCoreIcon(QStringLiteral("step-forward")));
 
     // the minimum size of the info label (and a few other labels) depends on their contents
     // we can't persuade the dialog to resize automatically to the recommended size in Qt Designer, so we do it manually

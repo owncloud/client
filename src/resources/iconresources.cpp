@@ -18,6 +18,7 @@
 
 #include <QBuffer>
 #include <QByteArray>
+#include <QDir>
 #include <QFileInfo>
 #include <QFont>
 #include <QGuiApplication>
@@ -31,11 +32,6 @@
 namespace OCC {
 
 Q_LOGGING_CATEGORY(lcIconResources, "sync.iconresources", QtInfoMsg)
-
-bool IconResources::isDefaultTheme()
-{
-    return std::string_view(APPLICATION_SHORTNAME) == "ownCloud";
-}
 
 QString IconResources::brandedRootPath()
 {
@@ -52,30 +48,27 @@ bool IconResources::isUsingDarkTheme()
 QString IconResources::pathForTheme(const QString &iconTheme, bool branded)
 {
     if (branded) {
+        if (_brandedThemePaths.contains(iconTheme))
+            return _brandedThemePaths[iconTheme];
+
         if (!_brandedThemePaths.contains(iconTheme)) {
             QString themeRoot = brandedRootPath();
             QString themePath = themeRoot % "/" % iconTheme % "/";
-            //  QFileInfo brandedInfo(themeRoot);
-            // if (brandedInfo.exists(iconTheme)) {
-            if (QFileInfo::exists(themePath))
-                // QString themePath = themeRoot % "/" % iconTheme % "/";
+            if (QFileInfo::exists(themePath)) {
                 _brandedThemePaths.insert(iconTheme, themePath);
-        } else {
-            // we can't find the theme folder in the branding resources so fall back to default oc theme
-            return pathForTheme(iconTheme, false);
+                return themePath;
+            }
         }
-
-        return _brandedThemePaths[iconTheme];
     }
-
-
+    // if not branded or we never found a branded theme for this one, go with the default/oc resources
     if (!_fallbackThemePaths.contains(iconTheme)) {
         QFileInfo baseInfo(_defaultRootPath);
         QString fullPath = _defaultRootPath % "/" % iconTheme % "/";
+
+        // We intentionally add the default full path to the _fallbackThemePaths even if it is empty.
+        // This indicates that if the caller gets an empty path back, it's really *nowhere* to be found.
+        // Should never happen but who knows.
         if (QFileInfo::exists(fullPath)) {
-            // we intentionally add the default full path to the _fallbackThemePaths *even if it is empty*
-            // this indicates that if the caller gets an empty path back, it's really *nowhere* to be found.
-            // should never happen but who knows.
             _fallbackThemePaths.insert(iconTheme, fullPath);
         } else {
             _fallbackThemePaths.insert(iconTheme, {});
@@ -106,9 +99,9 @@ QIcon IconResources::getCoreIcon(const QString &name)
     return cached;
 }
 
-QIcon IconResources::getUniversalIcon(const QString &name)
+QIcon IconResources::getBrandingIcon(const QString &name)
 {
-    return getThemedIcon(QStringLiteral("universal"), name);
+    return getThemedIcon(_universalTheme, name);
 }
 
 QIcon IconResources::themedTrayIcon(const QString &name, [[maybe_unused]] bool sysTrayMenuVisible, bool trayIsDark)
@@ -161,8 +154,17 @@ QString IconResources::findIconPath(const QString &iconTheme, const QString &nam
     if (found)
         return iconPath;
 
-    // if we haven't found it in the expected location so try one more time in case the icon itself is missing, hopefully we can find it
-    // in the fallback theme
+    // also check to see if this "path" will be built from multiple sized png's
+    // filter on the icon name + a wildcard where the size will appear
+    // it's a bit loose but since we are in control of resources it should be reasonably safe to do it this way
+    QStringList filter{name + "-*.png"};
+    QDir themeDir(themePath);
+    QStringList searchRes = themeDir.entryList(filter);
+    if (!searchRes.isEmpty())
+        return themePath % name; // we do not want to add an extension in this case as there literally isn't one
+
+    // we haven't found it in the expected branding location so try one more time in case the icon itself is missing. Hopefully we can find it
+    // in the fallback theme.
     if (branded)
         return findIconPath(iconTheme, name, false);
 
@@ -172,39 +174,49 @@ QString IconResources::findIconPath(const QString &iconTheme, const QString &nam
 QIcon IconResources::getThemedIcon(const QString &iconTheme, const QString &name)
 {
     // find the icon: prefer branded location but if not, take it from the fallback
+    // note that findIconPath also tests for multi-sized icons and returns the "imaginary" file name which does not carry an extension
     QString iconPath = findIconPath(iconTheme, name);
     if (iconPath.isEmpty()) {
         qCWarning(lcIconResources) << "Failed to locate the icon" << iconPath;
-        // this may be where we add the sized png's in the commented code below?
-        // I have no idea what those are actually for in the first place and would expect the caller to specify the size in the name?
-
-        // returning this placeholder so we can easily see where icons are dead related to the sized icons - should be temporary
+        // returning this placeholder so we can easily see any dead icons
         return getCoreIcon("delete");
     }
 
     QIcon &cached = _themedIconCache[iconPath];
-    if (cached.isNull())
+    if (cached.isNull()) {
         cached = QIcon(iconPath);
 
-
-    /*
-             const QList<int> sizes{16, 22, 32, 48, 64, 128, 256, 512, 1024};
-             QString previousIcon;
-             for (int size : sizes) {
-                 QString pixmapName = QStringLiteral("%1-%2.png").arg(path, QString::number(size));
-                 if (QFile::exists(pixmapName)) {
-                     previousIcon = pixmapName;
-                     cached.addFile(pixmapName, {size, size});
-                 } else if (size >= 128) {
-                     if (!previousIcon.isEmpty()) {
-                         qCWarning(lcResources) << "Upscaling:" << previousIcon << "to" << size;
-                         cached.addPixmap(QPixmap(previousIcon).scaled({size, size}, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-                     }
-                 }
-             }
-         }*/
+        if (cached.isNull()) {
+            // then this icon needs to be built from multiple png's - it is very likely the app icon but anything is possible, apparently
+            const QList<int> sizes{16, 22, 32, 48, 64, 128, 256, 512, 1024};
+            QString previousIcon;
+            for (int size : sizes) {
+                QString pixmapName = QStringLiteral("%1-%2.png").arg(iconPath, QString::number(size));
+                if (QFile::exists(pixmapName)) {
+                    previousIcon = pixmapName;
+                    cached.addFile(pixmapName, {size, size});
+                } else if (size >= 128) {
+                    if (!previousIcon.isEmpty()) {
+                        qCWarning(lcIconResources) << "Upscaling:" << previousIcon << "to" << size;
+                        cached.addPixmap(QPixmap(previousIcon).scaled({size, size}, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+                    }
+                }
+            }
+        }
+        Q_ASSERT(!cached.isNull());
+    }
 
     return cached;
+}
+
+bool IconResources::hasMonoIcons()
+{
+    // refresh the maps before checking in case the paths were not cached yet. Don't use the result
+    // as if there is no branded black/white theme we'll get the default which we don't want in this case
+    pathForTheme(_whiteMonoTheme);
+    pathForTheme(_blackMonoTheme);
+    // the branded theme should have BOTH black and white resources to support mono theme
+    return _brandedThemePaths.contains(_whiteMonoTheme) && _brandedThemePaths.contains(_blackMonoTheme);
 }
 
 bool IconResources::useMonoTrayIcons()

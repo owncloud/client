@@ -14,12 +14,13 @@
 
 #include "accountmanager.h"
 #include "account.h"
+#include "common/asserts.h"
 #include "configfile.h"
 #include "creds/credentialmanager.h"
 #include "creds/credentials.h"
 #include "guiutility.h"
 
-#include <theme.h>
+#include <QQmlEngine>
 
 #ifdef Q_OS_WIN
 #include "common/utility_win.h"

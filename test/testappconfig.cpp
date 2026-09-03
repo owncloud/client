@@ -2,8 +2,9 @@
 
 #include <QtTest>
 
-#include "libsync/owncloudtheme.h"
+#include "common/utility.h"
 #include "libsync/config/appconfig.h"
+#include "libsync/owncloudtheme.h"
 
 static const std::string_view iniData{
     "[Setup]\n"

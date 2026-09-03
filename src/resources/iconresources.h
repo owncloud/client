@@ -14,6 +14,7 @@
 
 #pragma once
 
+// #include "libsync/theme.h"
 #include "resources/owncloudresources.h"
 
 #include <QHash>
@@ -29,11 +30,6 @@ public:
     ~IconResources() = delete;
 
     /**
-     *      * @return Whether we are using the vanilla theme which means this is default oc branding
-     */
-    static bool isDefaultTheme();
-
-    /**
      * checks whether the system is using dark theme. If this returns false assume system is using light theme.
      */
     static bool isUsingDarkTheme();
@@ -45,13 +41,14 @@ public:
      * a default "owncloud" icon but should never actually happen in practice aside from the wizard_footer_logo which most brands don't
      * provide, so the default oc version is a blank icon
      */
-    static QIcon getUniversalIcon(const QString &name);
+    static QIcon getBrandingIcon(const QString &name);
 
     // tries to find the icon with "name" in the branded resources subdir "iconTheme". If the branding does not contain the icon,
     // automatically fall back to default/owncloud icon which should always be there. If that fails, we have to assume the filename was
     // "bad" -> ie that no such icon exists in the app.
     static QIcon getThemedIcon(const QString &iconTheme, const QString &name);
 
+    static bool hasMonoIcons();
     static bool useMonoTrayIcons();
     static void setUseMonoTrayIcons(bool useMono);
     static QIcon themedTrayIcon(const QString &name, bool sysTrayMenuVisible, bool trayIsDark);

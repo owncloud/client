@@ -21,15 +21,17 @@
 #include <QApplication>
 #include <QGuiApplication>
 #include <QIcon>
+#include <QLoggingCategory>
 #include <QQuickStyle>
 
 
 #include <chrono>
 #include <thread>
 
-#include "theme.h"
-
 #include "common/asserts.h"
+#include "common/utility.h"
+#include "iconresources.h"
+#include "theme.h"
 
 using namespace std::chrono;
 using namespace std::chrono_literals;
@@ -95,7 +97,7 @@ void WinPlatform::startShutdownWatcher()
     // ensure to initialise the icon in the main thread
     HICON icon = {};
     if (qobject_cast<QGuiApplication *>(qApp)) {
-        icon = Theme::instance()->applicationIcon().pixmap(64, 64).toImage().toHICON();
+        icon = IconResources::getBrandingIcon(Theme::instance()->applicationIconName()).pixmap(64, 64).toImage().toHICON();
     }
     watchWMCtx.watcherThread = new std::thread([icon] {
         WNDCLASS wc = {};

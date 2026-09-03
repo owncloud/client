@@ -13,6 +13,7 @@
  */
 #include "authsuccesspagecontroller.h"
 
+#include "iconresources.h"
 #include "theme.h"
 
 #include <QHBoxLayout>
@@ -39,7 +40,7 @@ void AuthSuccessPageController::buildPage()
     QString appName = Theme::instance()->appNameGUI();
 
     QLabel *logoLabel = new QLabel({}, _page);
-    logoLabel->setPixmap(Theme::instance()->wizardHeaderLogo().pixmap(200, 100));
+    logoLabel->setPixmap(IconResources::getBrandingIcon(Theme::instance()->wizardHeaderLogoName()).pixmap(200, 100));
     logoLabel->setAlignment(Qt::AlignCenter);
     logoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     logoLabel->setAccessibleName(tr("Application Name Logo %1").arg(appName));
@@ -54,9 +55,9 @@ void AuthSuccessPageController::buildPage()
     instructionLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     QLabel *footerLogoLabel = nullptr;
-    if (!Theme::instance()->wizardFooterLogo().isNull()) {
+    if (!Theme::instance()->wizardFooterLogoName().isEmpty()) {
         footerLogoLabel = new QLabel({}, _page);
-        footerLogoLabel->setPixmap(Theme::instance()->wizardFooterLogo().pixmap(100, 52));
+        footerLogoLabel->setPixmap(IconResources::getBrandingIcon(Theme::instance()->wizardFooterLogoName()).pixmap(100, 52));
         footerLogoLabel->setAlignment(Qt::AlignCenter);
         footerLogoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         // this is not the same logo as the header logo but we have no idea what this logo could be.

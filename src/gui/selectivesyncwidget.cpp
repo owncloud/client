@@ -18,7 +18,7 @@
 #include "libsync/networkjobs.h"
 #include "libsync/theme.h"
 
-#include "resources/resources.h"
+#include "resources/iconresources.h"
 
 #include <QHeaderView>
 #include <QLabel>
@@ -190,7 +190,7 @@ void SelectiveSyncWidget::recursiveInsert(QTreeWidgetItem *parent, QStringList p
             } else if (parent->checkState(0) == Qt::Unchecked) {
                 item->setCheckState(0, Qt::Unchecked);
             }
-            item->setIcon(0, Resources::getCoreIcon(QStringLiteral("folder-sync")));
+            item->setIcon(0, IconResources::getCoreIcon(QStringLiteral("folder-sync")));
             item->setText(0, pathTrail.first());
             if (size >= 0) {
                 item->setText(1, Utility::octetsToString(size));
@@ -254,7 +254,7 @@ void SelectiveSyncWidget::slotUpdateDirectories(QStringList list)
     if (!root) {
         root = new SelectiveSyncTreeViewItem(_folderTree);
         root->setText(0, _rootName);
-        root->setIcon(0, Theme::instance()->applicationIcon());
+        root->setIcon(0, IconResources::getBrandingIcon(Theme::instance()->applicationIconName()));
         root->setData(0, Qt::UserRole, QString());
         root->setCheckState(0, Qt::Checked);
         qint64 size = job ? job->sizes().value(rootPath, -1) : -1;

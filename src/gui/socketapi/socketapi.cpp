@@ -29,6 +29,7 @@
 #include "folder.h"
 #include "folderman.h"
 #include "guiutility.h"
+#include "iconresources.h"
 #include "syncengine.h"
 #include "syncfileitem.h"
 #include "theme.h"
@@ -660,7 +661,7 @@ void SocketApi::command_V2_GET_CLIENT_ICON(const QSharedPointer<SocketApiJobV2> 
     QByteArray data;
     const Theme *theme = Theme::instance();
     // return an empty answer if the end point was disabled
-    const QIcon appIcon = theme->applicationIcon();
+    const QIcon appIcon = IconResources::getBrandingIcon(theme->applicationIconName());
     qCDebug(lcSocketApi) << Q_FUNC_INFO << " got icon from theme: " << appIcon;
 
     // convert to pixmap (might be smaller if size is not available)

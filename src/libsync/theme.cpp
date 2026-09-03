@@ -18,8 +18,7 @@
 #include "common/vfs.h"
 #include "config.h"
 
-#include "resources/resources.h"
-
+#include <QGuiApplication>
 #include <QSslSocket>
 #include <QStyle>
 
@@ -35,17 +34,8 @@ Theme *Theme::instance()
 {
     if (!_instance) {
         _instance = new THEME_CLASS;
-        //      auto *watcher = new Resources::ThemeWatcher(_instance);
-        //      connect(watcher, &Resources::ThemeWatcher::themeChanged, _instance, &Theme::themeChanged);
     }
     return _instance;
-}
-
-Theme *Theme::create(QQmlEngine *qmlEngine, QJSEngine *)
-{
-    Q_ASSERT(qmlEngine->thread() == Theme::instance()->thread());
-    QJSEngine::setObjectOwnership(Theme::instance(), QJSEngine::CppOwnership);
-    return instance();
 }
 
 Theme::~Theme() { }
@@ -75,26 +65,18 @@ QString Theme::configFileName() const
     return QStringLiteral(APPLICATION_EXECUTABLE ".cfg");
 }
 
-// returning an icon instead of just the icon name is really questionable here. Need to see if this is somehow required for the
-// branding builds - if not, get rid of this entirely and make the applicationIconName return the correct name by appending the -icon
-// this is SO confusing - theme should have no responsibility for *retrieving* resources!!!
-QIcon Theme::applicationIcon() const
-{
-    return Resources::themeUniversalIcon(applicationIconName() + QStringLiteral("-icon"));
-}
-
 QString Theme::applicationIconName() const
 {
     // attention! if APPLICATION_ICON_NAME is not defined, it is auto-set to APPLICATION_SHORTNAME in CMakeLists.txt:131
     // I STRONGLY prefer to move that "fallback" here, to avoid confusion, as *how many cmake files do we have to navigate to
     // find these values*?
     // it's not ok, imo. I quasi understand the "need" for these vars but they are nothing but trouble.
-    return QStringLiteral(APPLICATION_ICON_NAME);
+    return QStringLiteral(APPLICATION_SHORTNAME) + "-icon";
 }
 
-QIcon Theme::aboutIcon() const
+QString Theme::aboutIconName() const
 {
-    return applicationIcon();
+    return applicationIconName();
 }
 
 Theme::Theme()
@@ -206,7 +188,8 @@ QString Theme::about() const
     // changing the location of the settings and other registry keys.
     // todo: I do not agree with checking the resources for whether this is oc or not. imo we should just take the application_vendor in all
     // cases for this default about() impl.
-    const QString vendor = Resources::isVanillaTheme() ? QStringLiteral("ownCloud GmbH") : QStringLiteral(APPLICATION_VENDOR);
+    bool isOwnCloud = std::string_view(APPLICATION_SHORTNAME) == "ownCloud";
+    const QString vendor = isOwnCloud ? QStringLiteral("ownCloud GmbH") : QStringLiteral(APPLICATION_VENDOR);
     return tr("<p>Version %1. For more information visit <a href=\"%2\">https://%3</a></p>"
               "<p>For known issues and help, please visit: <a href=\"https://central.owncloud.com/c/desktop-client\">https://central.owncloud.com</a></p>"
               "<p><small>By Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz, "
@@ -222,45 +205,9 @@ QString Theme::about() const
             aboutVersions(Theme::VersionFormat::RichText));
 }
 
-QString Theme::syncStateIconName(const SyncResult &result) const
-{
-    switch (result.status()) {
-    case SyncResult::NotYetStarted:
-        [[fallthrough]];
-    case SyncResult::SyncRunning:
-        return QStringLiteral("sync");
-    case SyncResult::SyncAbortRequested:
-        [[fallthrough]];
-    case SyncResult::Paused:
-        return QStringLiteral("pause");
-    case SyncResult::SyncPrepare:
-        [[fallthrough]];
-    case SyncResult::Success:
-        if (!result.hasUnresolvedConflicts()) {
-            return QStringLiteral("ok");
-        }
-        [[fallthrough]];
-    case SyncResult::Problem:
-        [[fallthrough]];
-    case SyncResult::Undefined:
-        // this can happen if no sync connections are configured.
-        return QStringLiteral("information");
-    case SyncResult::Offline:
-        return QStringLiteral("offline");
-    case SyncResult::Error:
-        [[fallthrough]];
-    case SyncResult::Unavailable:
-        [[fallthrough]];
-    case SyncResult::SetupError:
-        // FIXME: Use problem once we have an icon.
-        return QStringLiteral("error");
-    }
-    Q_UNREACHABLE();
-}
-
 QColor Theme::wizardHeaderTitleColor() const
 {
-    return qApp->palette().text().color();
+    return QColor();
 }
 
 QColor Theme::wizardHeaderBackgroundColor() const
@@ -268,14 +215,14 @@ QColor Theme::wizardHeaderBackgroundColor() const
     return QColor();
 }
 
-QIcon Theme::wizardHeaderLogo() const
+QString Theme::wizardHeaderLogoName() const
 {
-    return applicationIcon();
+    return applicationIconName();
 }
 
-QIcon Theme::wizardFooterLogo() const
+QString Theme::wizardFooterLogoName() const
 {
-    return QIcon();
+    return {};
 }
 
 bool Theme::forceSystemNetworkProxy() const
