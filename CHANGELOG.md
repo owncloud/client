@@ -1,5 +1,7 @@
 # Table of Contents
 
+* [Changelog for unreleased](#changelog-for-owncloud-desktop-client-unreleased-unreleased)
+* [Changelog for 7.1.1](#changelog-for-owncloud-desktop-client-711-2026-08-27)
 * [Changelog for 7.1.0](#changelog-for-owncloud-desktop-client-710-2026-06-08)
 * [Changelog for 6.0.3](#changelog-for-owncloud-desktop-client-603-2026-01-07)
 * [Changelog for 6.0.2](#changelog-for-owncloud-desktop-client-602-2025-11-03)
@@ -41,6 +43,61 @@
 * [Changelog for 2.6.3](#changelog-for-owncloud-desktop-client-263-2020-06-10)
 * [Changelog for 2.6.2](#changelog-for-owncloud-desktop-client-262-2020-02-21)
 * [Changelog for 2.6.1 versions and below](#changelog-for-261-versions-and-below)
+# Changelog for ownCloud Desktop Client [unreleased] (UNRELEASED)
+
+The following sections list the changes in ownCloud Desktop Client unreleased relevant to
+ownCloud admins and users.
+
+[unreleased]: https://github.com/owncloud/client/compare/v7.1.1...master
+
+## Summary
+
+* Change - Eliminated excessive server checks: [#12619](https://github.com/owncloud/client/pull/12619)
+* Change - We ended support for OWNCLOUD_FORCE_DARK_MODE environment variable: [#12625](https://github.com/owncloud/client/pull/12625)
+
+## Details
+
+* Change - Eliminated excessive server checks: [#12619](https://github.com/owncloud/client/pull/12619)
+
+   The server capabilities, user settings, avatar and app providers are now updated
+   only on application start and after the user has re-authenticated during a
+   running session.
+
+   https://github.com/owncloud/client/pull/12619
+
+* Change - We ended support for OWNCLOUD_FORCE_DARK_MODE environment variable: [#12625](https://github.com/owncloud/client/pull/12625)
+
+   The application now relies exclusively on the chosen system theme to determine
+   if dark mode should be used.
+
+   https://github.com/owncloud/client/pull/12625
+
+# Changelog for ownCloud Desktop Client [7.1.1] (2026-08-27)
+
+The following sections list the changes in ownCloud Desktop Client 7.1.1 relevant to
+ownCloud admins and users.
+
+[7.1.1]: https://github.com/owncloud/client/compare/v7.1.0...v7.1.1
+
+## Summary
+
+* Bugfix - Load OIDC configuration values from the right keys: [#12597](https://github.com/owncloud/client/pull/12597)
+
+## Details
+
+* Bugfix - Load OIDC configuration values from the right keys: [#12597](https://github.com/owncloud/client/pull/12597)
+
+   The OIDC `prompt` setting was read from the `Ports` configuration value, so a
+   bogus `prompt` parameter was sent to the identity provider. The configured
+   redirect `Ports` were also parsed as a single string, which is empty on
+   platforms where QSettings returns a string list for comma-separated values
+   (ini-based configurations) — every system-configured port was silently dropped
+   when more than one was configured. Both values are now read from their own key
+   and with the right type.
+
+   https://github.com/owncloud/client/pull/12597
+   https://github.com/owncloud/client/pull/12606
+
 # Changelog for ownCloud Desktop Client [7.1.0] (2026-06-08)
 
 The following sections list the changes in ownCloud Desktop Client 7.1.0 relevant to
