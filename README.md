@@ -1,6 +1,6 @@
 # ownCloud Desktop Client
 
-[![Build Status](https://drone.owncloud.com/api/badges/owncloud/client/status.svg)](https://drone.owncloud.com/owncloud/client) [![Build Status](https://github.com/owncloud/client/workflows/ownCloud%20CI/badge.svg)](https://github.com/owncloud/client/actions)
+[![ownCloud CI](https://github.com/owncloud/client/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/owncloud/client/actions/workflows/main.yml?query=branch%3Amaster)
 
 ## Introduction
 
