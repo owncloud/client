@@ -110,7 +110,7 @@ void MainWindow::buildWindow()
     moreAction->setToolTip(tr("More"));
     _toolbar->addAction(moreAction);
     _moreButton = qobject_cast<QToolButton *>(_toolbar->widgetForAction(moreAction));
-    _moreButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
+    _moreButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     _moreButton->setFocusPolicy(Qt::StrongFocus);
     if (Utility::isMac()) {
         // does not work for QToolButton:
