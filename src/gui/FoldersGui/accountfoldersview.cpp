@@ -121,9 +121,7 @@ void AccountFoldersView::buildView()
 
     FolderItemDelegate *delegate = new FolderItemDelegate(_treeView->indentation(), _treeView);
     _treeView->setItemDelegateForColumn(0, delegate);
-    // note this is not the normal ellipses character, it's vertically centered instead of positioned at font baseline. This is better
-    // for this button than normal ellipses. We also have an elipses icon (core/more.svg) but it looks quite bad in the button so text it is
-    ButtonDelegate *buttonDel = new ButtonDelegate("⋯", _treeView);
+    ButtonDelegate *buttonDel = new ButtonDelegate(_treeView);
     buttonDel->setMenu(_itemMenu);
     _treeView->setItemDelegateForColumn(1, buttonDel);
 

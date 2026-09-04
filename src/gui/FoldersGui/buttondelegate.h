@@ -24,13 +24,13 @@ namespace OCC {
 class ButtonDelegate : public QItemDelegate
 {
 public:
-    ButtonDelegate(const QString &text, QAbstractItemView *parent);
+    ButtonDelegate(QAbstractItemView *parent);
 
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
     QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 
     QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
-    // void closeEditor()
+
     void destroyEditor(QWidget *editor, const QModelIndex &index) const override;
     void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 
@@ -39,7 +39,7 @@ public:
 
 private:
     QPushButton *_button = nullptr;
-    QString _buttonText;
     bool _clickThrough = false;
+    inline static const int _targetIconSize = 18;
 };
 }

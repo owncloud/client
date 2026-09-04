@@ -13,26 +13,42 @@
  */
 
 #include "buttondelegate.h"
+#include "common/utility.h"
 #include "commonstrings.h"
+
+#include "iconresources.h"
 
 #include <QAbstractItemView>
 #include <QEvent>
 #include <QPainter>
 #include <QPushButton>
 #include <QStandardItemModel>
+#include <QStyleOptionButton>
 #include <QTreeView>
-
 namespace OCC {
 
-ButtonDelegate::ButtonDelegate(const QString &text, QAbstractItemView *parent)
+ButtonDelegate::ButtonDelegate(QAbstractItemView *parent)
     : QItemDelegate{parent}
-    , _buttonText(text)
 {
-    // note we will update the widget parent in the first createEditor as that passes the correct parent for the pop
     // we can't really get the "right" parent here, and reusing the button is simpler and I'd guess slightly more efficient
-    // than creating it over and over in create editor.
+    // than creating it over and over in createEditor.
+    // note we update the widget parent in the first call to createEditor as that passes the correct parent
+    // Not a leak!
+    _button = new QPushButton();
 
-    _button = new QPushButton(_buttonText);
+    // on mac set the button to flat to get rid of crazy attempt to make it look "3d" or something
+    if (Utility::isMac())
+        _button->setFlat(true);
+
+    // this is so shady: if I set the icon to 24x24 it still comes out at around 18x18
+    // note the button height is actually 32 so I don't understand what the issue is if it's 24x24.
+    // the target size could only be identified by trial and error so far.
+    // To get a more robust impl, the only option I have found for getting the actual size of the button icon (maybe!)
+    // requires getting it from the style option in play, which needs a call button->initializeStyleOption.
+    // This function is protected so I'm not going crazy with that yet.
+    // so far this impl works on both win and mac so I'm leaving it with the "hack" for now.
+    QIcon elipsesIcon = IconResources::getCoreIcon("more").pixmap(_targetIconSize, _targetIconSize);
+    _button->setIcon(elipsesIcon);
     _button->setObjectName("buttonDelegateButton");
     _button->setFocusPolicy(Qt::StrongFocus);
     _button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -50,16 +66,19 @@ void ButtonDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option
     drawBackground(painter, opt, index);
 
     painter->save();
-    // this rigamarole is "needed" because if I set the button to autoFillBackground (which is super normal) there are weird artifacts of
-    // the window color above and below the button. No idea. This is on mac at least. The fix is to not paint the text dots if the button
-    // is showing on the current cell, as if we paint them there is bleed through visibility of the text under the button since we apparently
-    // autoFillBackground has to be off :/
+
+    // the test here for painting the button placeholder:
+    // this is a top level row (invalid parent index)
+    // AND
+    // the button is not visible OR it's visible but somewhere else, most likely in another row
+    // the idea is we *don't* want to paint the placeholder if the button is actually there, as it bleeds through
+    // (button->setAutoFillBackground(true) is not an option as it has undesired side effects)
     if (!index.parent().isValid() && (!_button->isVisible() || !option.rect.contains(_button->pos()))) {
-        QFont f = painter->font();
-        f.setBold(true);
-        f.setPixelSize(18);
-        painter->setFont(f);
-        painter->drawText(option.rect, Qt::AlignCenter, _buttonText);
+        int xpos = option.rect.left() + (option.rect.width() - _targetIconSize) / 2;
+        int ypos = option.rect.top() + (option.rect.height() - _targetIconSize) / 2;
+        QPixmap ellipses = IconResources::getCoreIcon("more").pixmap(_targetIconSize, _targetIconSize);
+        QRect target(xpos, ypos, _targetIconSize, _targetIconSize);
+        painter->drawPixmap(target, ellipses);
     }
 
     painter->setPen(QPen(QBrush("#807F7F7F"), 1));
