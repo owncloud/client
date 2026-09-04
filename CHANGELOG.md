@@ -1,6 +1,8 @@
 # Table of Contents
 
 * [Changelog for unreleased](#changelog-for-owncloud-desktop-client-unreleased-unreleased)
+* [Changelog for 7.1.1](#changelog-for-owncloud-desktop-client-711-2026-08-27)
+* [Changelog for 7.1.0](#changelog-for-owncloud-desktop-client-710-2026-06-08)
 * [Changelog for 6.0.3](#changelog-for-owncloud-desktop-client-603-2026-01-07)
 * [Changelog for 6.0.2](#changelog-for-owncloud-desktop-client-602-2025-11-03)
 * [Changelog for 6.0.1](#changelog-for-owncloud-desktop-client-601-2025-10-10)
@@ -46,20 +48,182 @@
 The following sections list the changes in ownCloud Desktop Client unreleased relevant to
 ownCloud admins and users.
 
-[unreleased]: https://github.com/owncloud/client/compare/v6.0.3...master
+[unreleased]: https://github.com/owncloud/client/compare/v7.1.1...master
 
 ## Summary
 
-* Bugfix - Fix compatibility with extra-cmake-modules-6.19.0: [#12374](https://github.com/owncloud/client/pull/12374)
-* Change - Remove capability to upload conflict files: [#12369](https://github.com/owncloud/client/pull/12369)
+* Change - Eliminated excessive server checks: [#12619](https://github.com/owncloud/client/pull/12619)
+* Change - We ended support for OWNCLOUD_FORCE_DARK_MODE environment variable: [#12625](https://github.com/owncloud/client/pull/12625)
 
 ## Details
+
+* Change - Eliminated excessive server checks: [#12619](https://github.com/owncloud/client/pull/12619)
+
+   The server capabilities, user settings, avatar and app providers are now updated
+   only on application start and after the user has re-authenticated during a
+   running session.
+
+   https://github.com/owncloud/client/pull/12619
+
+* Change - We ended support for OWNCLOUD_FORCE_DARK_MODE environment variable: [#12625](https://github.com/owncloud/client/pull/12625)
+
+   The application now relies exclusively on the chosen system theme to determine
+   if dark mode should be used.
+
+   https://github.com/owncloud/client/pull/12625
+
+# Changelog for ownCloud Desktop Client [7.1.1] (2026-08-27)
+
+The following sections list the changes in ownCloud Desktop Client 7.1.1 relevant to
+ownCloud admins and users.
+
+[7.1.1]: https://github.com/owncloud/client/compare/v7.1.0...v7.1.1
+
+## Summary
+
+* Bugfix - Load OIDC configuration values from the right keys: [#12597](https://github.com/owncloud/client/pull/12597)
+
+## Details
+
+* Bugfix - Load OIDC configuration values from the right keys: [#12597](https://github.com/owncloud/client/pull/12597)
+
+   The OIDC `prompt` setting was read from the `Ports` configuration value, so a
+   bogus `prompt` parameter was sent to the identity provider. The configured
+   redirect `Ports` were also parsed as a single string, which is empty on
+   platforms where QSettings returns a string list for comma-separated values
+   (ini-based configurations) — every system-configured port was silently dropped
+   when more than one was configured. Both values are now read from their own key
+   and with the right type.
+
+   https://github.com/owncloud/client/pull/12597
+   https://github.com/owncloud/client/pull/12606
+
+# Changelog for ownCloud Desktop Client [7.1.0] (2026-06-08)
+
+The following sections list the changes in ownCloud Desktop Client 7.1.0 relevant to
+ownCloud admins and users.
+
+[7.1.0]: https://github.com/owncloud/client/compare/v6.0.3...v7.1.0
+
+## Summary
+
+* Bugfix - Fix VFS checkbox in folder wizard: [#12144](https://github.com/owncloud/client/pull/12144)
+* Bugfix - Fix file sync with NFD/NFC filename normalization differences on macOS: [#12336](https://github.com/owncloud/client/pull/12336)
+* Bugfix - Fix compatibility with extra-cmake-modules-6.19.0: [#12374](https://github.com/owncloud/client/pull/12374)
+* Bugfix - Fix crash on PROPFIND HTTP 400 response: [#12380](https://github.com/owncloud/client/pull/12380)
+* Bugfix - Make Windows VFS (CfAPI) locking more granular: [#12386](https://github.com/owncloud/client/pull/12386)
+* Bugfix - Fix re-authentication prompt: [#12487](https://github.com/owncloud/client/pull/12487)
+* Change - Remove the command line sync client: [#12162](https://github.com/owncloud/client/pull/12162)
+* Change - Remove support for ownCloud Server (OC10): [#12167](https://github.com/owncloud/client/pull/12167)
+* Change - Remove the suffix VFS plugin: [#12174](https://github.com/owncloud/client/pull/12174)
+* Change - Qt 6.8 is now the minimum required Qt version: [#12270](https://github.com/owncloud/client/pull/12270)
+* Change - Remove the activity tab from account settings: [#12307](https://github.com/owncloud/client/pull/12307)
+* Change - Remove bandwidth throttling controls: [#12335](https://github.com/owncloud/client/pull/12335)
+* Change - Remove capability to upload conflict files: [#12369](https://github.com/owncloud/client/pull/12369)
+* Change - Improve Windows VFS error messages: [#12371](https://github.com/owncloud/client/pull/12371)
+* Change - Distinguish between moves and renames in the activity view: [#12494](https://github.com/owncloud/client/pull/12494)
+* Enhancement - New account setup wizard: [#12189](https://github.com/owncloud/client/pull/12189)
+* Enhancement - System-based configuration (group policy support): [#12367](https://github.com/owncloud/client/pull/12367)
+* Enhancement - Redesigned account and folder management view: [#12399](https://github.com/owncloud/client/pull/12399)
+
+## Details
+
+* Bugfix - Fix VFS checkbox in folder wizard: [#12144](https://github.com/owncloud/client/pull/12144)
+
+   The selective-sync chooser is now correctly disabled when VFS is forced on, and
+   the selective-sync page is skipped entirely in that case.
+
+   https://github.com/owncloud/client/pull/12144
+
+* Bugfix - Fix file sync with NFD/NFC filename normalization differences on macOS: [#12336](https://github.com/owncloud/client/pull/12336)
+
+   After a migration from 6.x to 7.x, files whose names were stored in NFD form
+   locally but NFC form on the server were incorrectly treated as a delete and
+   re-upload instead of a rename. Local normalization-only renames are now detected
+   and not propagated to the server, since these differences are not visible to
+   users.
+
+   https://github.com/owncloud/client/pull/12336
+   https://github.com/owncloud/client/pull/12356
 
 * Bugfix - Fix compatibility with extra-cmake-modules-6.19.0: [#12374](https://github.com/owncloud/client/pull/12374)
 
    Fix runtime crash at startup with ECM 6.19.
 
    https://github.com/owncloud/client/pull/12374
+
+* Bugfix - Fix crash on PROPFIND HTTP 400 response: [#12380](https://github.com/owncloud/client/pull/12380)
+
+   The client no longer crashes when a server responds with HTTP status 400 to a
+   PROPFIND request.
+
+   https://github.com/owncloud/client/pull/12380
+
+* Bugfix - Make Windows VFS (CfAPI) locking more granular: [#12386](https://github.com/owncloud/client/pull/12386)
+
+   CfAPI locks are now acquired and released more precisely, reducing contention.
+   Sibling items are now consistently grouped in the Explorer sidebar.
+
+   https://github.com/owncloud/client/pull/12386
+
+* Bugfix - Fix re-authentication prompt: [#12487](https://github.com/owncloud/client/pull/12487)
+
+   When an access token expired but the refresh token was still valid, the client
+   incorrectly prompted the user to re-authenticate instead of transparently
+   refreshing the token.
+
+   https://github.com/owncloud/client/pull/12487
+
+* Change - Remove the command line sync client: [#12162](https://github.com/owncloud/client/pull/12162)
+
+   The `owncloudcmd` command line client has been removed. The `--cmd` command line
+   option was also removed from the desktop client binary.
+
+   https://github.com/owncloud/client/pull/12162
+   https://github.com/owncloud/client/pull/12460
+
+* Change - Remove support for ownCloud Server (OC10): [#12167](https://github.com/owncloud/client/pull/12167)
+
+   Support for ownCloud 10 servers has been removed. The client now requires
+   ownCloud Infinite Scale. This includes removal of OC10 authentication flows,
+   sharing code, thumbnail API, update channels, chunked uploads, and the legacy
+   WebFinger fallback.
+
+   https://github.com/owncloud/client/pull/12167
+   https://github.com/owncloud/client/pull/12176
+   https://github.com/owncloud/client/pull/12198
+   https://github.com/owncloud/client/pull/12204
+   https://github.com/owncloud/client/pull/12222
+   https://github.com/owncloud/client/pull/12302
+   https://github.com/owncloud/client/pull/12429
+
+* Change - Remove the suffix VFS plugin: [#12174](https://github.com/owncloud/client/pull/12174)
+
+   The suffix-based virtual file system plugin, which was deprecated in 6.0, has
+   been removed.
+
+   https://github.com/owncloud/client/pull/12174
+
+* Change - Qt 6.8 is now the minimum required Qt version: [#12270](https://github.com/owncloud/client/pull/12270)
+
+   The minimum required Qt version was raised to 6.8.
+
+   https://github.com/owncloud/client/pull/12270
+   https://github.com/owncloud/client/pull/12271
+
+* Change - Remove the activity tab from account settings: [#12307](https://github.com/owncloud/client/pull/12307)
+
+   The activity tab was no longer functional after the removal of ownCloud 10
+   support and has been removed.
+
+   https://github.com/owncloud/client/pull/12307
+
+* Change - Remove bandwidth throttling controls: [#12335](https://github.com/owncloud/client/pull/12335)
+
+   The bandwidth throttling settings UI and the underlying BandWidthManager have
+   been removed.
+
+   https://github.com/owncloud/client/pull/12335
 
 * Change - Remove capability to upload conflict files: [#12369](https://github.com/owncloud/client/pull/12369)
 
@@ -68,6 +232,65 @@ ownCloud admins and users.
    variable.
 
    https://github.com/owncloud/client/pull/12369
+
+* Change - Improve Windows VFS error messages: [#12371](https://github.com/owncloud/client/pull/12371)
+
+   Error codes are now included in Windows virtual file system error messages in
+   more cases, making issues easier to diagnose.
+
+   https://github.com/owncloud/client/pull/12371
+
+* Change - Distinguish between moves and renames in the activity view: [#12494](https://github.com/owncloud/client/pull/12494)
+
+   When a move operation has the same source and destination folder, it is now
+   displayed as a rename in the activity view instead of a move.
+
+   https://github.com/owncloud/client/pull/12494
+
+* Enhancement - New account setup wizard: [#12189](https://github.com/owncloud/client/pull/12189)
+
+   The account setup wizard was completely redesigned. The new wizard uses a modern
+   step-by-step flow with WebFinger-based server discovery, improved error
+   handling, and a configurable branded appearance including themed logos and
+   colors.
+
+   https://github.com/owncloud/client/pull/12189
+   https://github.com/owncloud/client/pull/12203
+   https://github.com/owncloud/client/pull/12212
+   https://github.com/owncloud/client/pull/12213
+   https://github.com/owncloud/client/pull/12216
+   https://github.com/owncloud/client/pull/12221
+   https://github.com/owncloud/client/pull/12226
+   https://github.com/owncloud/client/pull/12233
+   https://github.com/owncloud/client/pull/12235
+   https://github.com/owncloud/client/pull/12237
+   https://github.com/owncloud/client/pull/12277
+
+* Enhancement - System-based configuration (group policy support): [#12367](https://github.com/owncloud/client/pull/12367)
+
+   Administrators can now configure the client through system-level mechanisms:
+   group policy on Windows, and system configuration files on macOS and Linux. This
+   allows pre-configuring server URLs, authentication settings, and other options
+   for managed deployments.
+
+   https://github.com/owncloud/client/pull/12367
+
+* Enhancement - Redesigned account and folder management view: [#12399](https://github.com/owncloud/client/pull/12399)
+
+   The account and folder management panel was rewritten with a new model/delegate
+   architecture. It features improved error display, better tree navigation,
+   context menus for folder actions, and visual polish throughout.
+
+   https://github.com/owncloud/client/pull/12399
+   https://github.com/owncloud/client/pull/12407
+   https://github.com/owncloud/client/pull/12441
+   https://github.com/owncloud/client/pull/12456
+   https://github.com/owncloud/client/pull/12463
+   https://github.com/owncloud/client/pull/12468
+   https://github.com/owncloud/client/pull/12472
+   https://github.com/owncloud/client/pull/12477
+   https://github.com/owncloud/client/pull/12478
+   https://github.com/owncloud/client/pull/12480
 
 # Changelog for ownCloud Desktop Client [6.0.3] (2026-01-07)
 
