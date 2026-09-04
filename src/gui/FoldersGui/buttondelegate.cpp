@@ -13,6 +13,7 @@
  */
 
 #include "buttondelegate.h"
+#include "common/utility.h"
 #include "commonstrings.h"
 
 #include "iconresources.h"
@@ -26,23 +27,27 @@
 #include <QTreeView>
 namespace OCC {
 
-ButtonDelegate::ButtonDelegate(const QString &text, QAbstractItemView *parent)
+ButtonDelegate::ButtonDelegate(QAbstractItemView *parent)
     : QItemDelegate{parent}
-    , _buttonText(text)
 {
-    // note we will update the widget parent in the first createEditor as that passes the correct parent for the pop
     // we can't really get the "right" parent here, and reusing the button is simpler and I'd guess slightly more efficient
-    // than creating it over and over in create editor.
+    // than creating it over and over in createEditor.
+    // note we update the widget parent in the first call to createEditor as that passes the correct parent
+    // Not a leak!
+    _button = new QPushButton();
 
-    //  _button = new QPushButton(_buttonText);
+    // on mac set the button to flat to get rid of crazy attempt to make it look "3d" or something
+    if (Utility::isMac())
+        _button->setFlat(true);
+
     // this is so shady: if I set the icon to 24x24 it still comes out at around 18x18
-    // note the button height is actually 32 so I don't understand what the issue is.
-    // this can only be identified by trial and error as the pixmap set on the button knows it's size (whatever I give it),
-    // but it does not match the de facto painted size in the button.
-    // I can't find the prop for how that works so will go with this for now
-    // True test is whether it also works on windows. I expect it does not.
-    QIcon elipsesIcon = IconResources::getCoreIcon("more").pixmap(18, 18);
-    _button = new QPushButton("");
+    // note the button height is actually 32 so I don't understand what the issue is if it's 24x24.
+    // the target size could only be identified by trial and error so far.
+    // To get a more robust impl, the only option I have found for getting the actual size of the button icon (maybe!)
+    // requires getting it from the style option in play, which needs a call button->initializeStyleOption.
+    // This function is protected so I'm not going crazy with that yet.
+    // so far this impl works on both win and mac so I'm leaving it with the "hack" for now.
+    QIcon elipsesIcon = IconResources::getCoreIcon("more").pixmap(_targetIconSize, _targetIconSize);
     _button->setIcon(elipsesIcon);
     _button->setObjectName("buttonDelegateButton");
     _button->setFocusPolicy(Qt::StrongFocus);
@@ -66,21 +71,13 @@ void ButtonDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option
     // this is a top level row (invalid parent index)
     // AND
     // the button is not visible OR it's visible but somewhere else, most likely in another row
+    // the idea is we *don't* want to paint the placeholder if the button is actually there, as it bleeds through
+    // (button->setAutoFillBackground(true) is not an option as it has undesired side effects)
     if (!index.parent().isValid() && (!_button->isVisible() || !option.rect.contains(_button->pos()))) {
-        // for reasons I can't even guess, the icon on the button is smaller than the requested 24x24.
-        // so eyeball and hardcode the placeholder size so it's not too big.
-        int placeholderSize = 18;
-        /*   QStyleOptionButton buttonStyle;
-           _button->initStyleOption(&buttonStyle); -> nope! this is protected, naturally.
-           QSize optionSize = buttonStyle.iconSize; // this is -1, -1
-           // qDebug() << "option size = " << optionSize;
-           // option.icon.actualSize(optionSize);
-           qDebug() << "option size = " << optionSize;
-   */
-        int xpos = option.rect.left() + (option.rect.width() - placeholderSize) / 2;
-        int ypos = option.rect.top() + (option.rect.height() - placeholderSize) / 2;
-        QPixmap ellipses = IconResources::getCoreIcon("more").pixmap(placeholderSize, placeholderSize);
-        QRect target(xpos, ypos, placeholderSize, placeholderSize);
+        int xpos = option.rect.left() + (option.rect.width() - _targetIconSize) / 2;
+        int ypos = option.rect.top() + (option.rect.height() - _targetIconSize) / 2;
+        QPixmap ellipses = IconResources::getCoreIcon("more").pixmap(_targetIconSize, _targetIconSize);
+        QRect target(xpos, ypos, _targetIconSize, _targetIconSize);
         painter->drawPixmap(target, ellipses);
     }
 
