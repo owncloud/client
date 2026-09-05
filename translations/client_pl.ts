@@ -31,55 +31,55 @@
 <context>
     <name>CommandLine</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="97"/>
+        <location filename="../src/gui/main.cpp" line="98"/>
         <source>%1 version %2<byte value="xd"/>
 File synchronization desktop utility.</source>
         <translation>%1 wersja %2&lt;byte value=&quot;xd&quot;/&gt;
 Narzędzie pulpitu do synchronizacji plików.</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="105"/>
+        <location filename="../src/gui/main.cpp" line="106"/>
         <source>For more information, see %1</source>
         <comment>link to homepage</comment>
         <translation>Po dodatkowe informacje sprawdź %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="124"/>
+        <location filename="../src/gui/main.cpp" line="125"/>
         <source>Start with the main window visible, or if it is already running, bring it to the front. By default, the client launches in the background.</source>
         <translation>Rozpocznij z widocznym oknem głównym lub, jeśli jest już uruchomione, przenieś je na pierwszy plan. Domyślnie klient uruchamia się w tle.</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="126"/>
+        <location filename="../src/gui/main.cpp" line="127"/>
         <source>Quit the running instance.</source>
         <translation>Zakończenie uruchomionej instancji.</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="128"/>
+        <location filename="../src/gui/main.cpp" line="129"/>
         <source>Write log to file (use - to write to stdout).</source>
         <translation>Zapis dziennika do pliku (użyj - do zapisu na stdout).</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="130"/>
+        <location filename="../src/gui/main.cpp" line="131"/>
         <source>Write each sync log output in a new file in folder.</source>
         <translation>Zapisz dane wyjściowe każdego dziennika synchronizacji w nowym pliku w folderze.</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="131"/>
+        <location filename="../src/gui/main.cpp" line="132"/>
         <source>Flush the log file after every write.</source>
         <translation>Opróżnia plik dziennika po każdym zapisie.</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="132"/>
+        <location filename="../src/gui/main.cpp" line="133"/>
         <source>Output debug-level messages in the log.</source>
         <translation>Wyświetla w dzienniku komunikaty na poziomie debugowania.</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="133"/>
+        <location filename="../src/gui/main.cpp" line="134"/>
         <source>Enable debug mode.</source>
         <translation>Włącz tryb debugowania.</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="149"/>
+        <location filename="../src/gui/main.cpp" line="150"/>
         <source>--logfile and --logdir are mutually exclusive</source>
         <translation>--logfile i --logdir wzajemnie się wykluczają</translation>
     </message>
@@ -217,7 +217,7 @@ Narzędzie pulpitu do synchronizacji plików.</translation>
         <translation>, ⬆️ %1/s</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="210"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="211"/>
         <source>%1, sync status: %2</source>
         <extracomment>Accessible text, read out by a screen reader.</extracomment>
         <translation>%1, status synchronizacji: %2</translation>
@@ -515,7 +515,7 @@ Ta czynność spowoduje przerwanie obecnie działającej synchronizacji.
         <translation>Poruszaj się po liście %1 za pomocą strzałek w górę i w dół</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="250"/>
+        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="248"/>
         <source>%1 out of %2 %3 are synchronized</source>
         <translation>%1 z %2 %3 jest zsynchronizowanych</translation>
     </message>
@@ -531,19 +531,19 @@ Ta czynność spowoduje przerwanie obecnie działającej synchronizacji.
 <context>
     <name>OCC::AccountPlaceholderWidget</name>
     <message>
-        <location filename="../src/gui/accountsgui/accountplaceholderwidget.cpp" line="34"/>
+        <location filename="../src/gui/accountsgui/accountplaceholderwidget.cpp" line="35"/>
         <source>%1 logo</source>
         <translation>%1 logo</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsgui/accountplaceholderwidget.cpp" line="37"/>
+        <location filename="../src/gui/accountsgui/accountplaceholderwidget.cpp" line="38"/>
         <source>You don't have any connected accounts yet.
 
 Please create an account by selecting the &quot;Add account...&quot; option on the More button menu.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/accountsgui/accountplaceholderwidget.cpp" line="48"/>
+        <location filename="../src/gui/accountsgui/accountplaceholderwidget.cpp" line="49"/>
         <source>Additional logo defined by the organization</source>
         <translation>Dodatkowe logo zdefiniowane przez organizację</translation>
     </message>
@@ -551,17 +551,17 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
 <context>
     <name>OCC::AccountState</name>
     <message>
-        <location filename="../src/gui/accountstate.cpp" line="232"/>
+        <location filename="../src/gui/accountstate.cpp" line="234"/>
         <source>The server is not supported by this client.</source>
         <translation>Serwer nie jest obsługiwany przez tego klienta.</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountstate.cpp" line="239"/>
+        <location filename="../src/gui/accountstate.cpp" line="241"/>
         <source>Retrieving user settings and server capabilities timed out.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/accountstate.cpp" line="246"/>
+        <location filename="../src/gui/accountstate.cpp" line="248"/>
         <source>Unable to retrieve user settings and server capabilities.</source>
         <translation type="unfinished"/>
     </message>
@@ -853,7 +853,7 @@ Aktualizacja zostanie przeprowadzona w tle i zastąpi bieżący plik AppImage. A
 <context>
     <name>OCC::Application</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="174"/>
+        <location filename="../src/gui/main.cpp" line="175"/>
         <source>Quit</source>
         <translation>Wyjdź</translation>
     </message>
@@ -861,17 +861,17 @@ Aktualizacja zostanie przeprowadzona w tle i zastąpi bieżący plik AppImage. A
 <context>
     <name>OCC::AuthSuccessPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/authsuccesspagecontroller.cpp" line="45"/>
+        <location filename="../src/gui/newaccountwizard/authsuccesspagecontroller.cpp" line="46"/>
         <source>Application Name Logo %1</source>
         <translation>Nazwa aplikacji Logo %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/authsuccesspagecontroller.cpp" line="47"/>
+        <location filename="../src/gui/newaccountwizard/authsuccesspagecontroller.cpp" line="48"/>
         <source>You&apos;re all set! Open %1 and get started.</source>
         <translation>Wszystko gotowe! Otwórz %1 i zacznij.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/authsuccesspagecontroller.cpp" line="64"/>
+        <location filename="../src/gui/newaccountwizard/authsuccesspagecontroller.cpp" line="65"/>
         <source>Additional logo defined by the organization</source>
         <translation>Dodatkowe logo zdefiniowane przez organizację</translation>
     </message>
@@ -879,12 +879,12 @@ Aktualizacja zostanie przeprowadzona w tle i zastąpi bieżący plik AppImage. A
 <context>
     <name>OCC::ButtonDelegate</name>
     <message>
-        <location filename="../src/gui/FoldersGui/buttondelegate.cpp" line="41"/>
+        <location filename="../src/gui/FoldersGui/buttondelegate.cpp" line="57"/>
         <source>%1 options button</source>
         <translation>%1 przycisk opcji</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/buttondelegate.cpp" line="42"/>
+        <location filename="../src/gui/FoldersGui/buttondelegate.cpp" line="58"/>
         <source>Menu button with %1 options. Use the space key to show the menu</source>
         <translation>Przycisk menu z %1 opcjami. Użyj spacji, aby wyświetlić menu.</translation>
     </message>
@@ -928,17 +928,17 @@ Aktualizacja zostanie przeprowadzona w tle i zastąpi bieżący plik AppImage. A
 <context>
     <name>OCC::DetermineAuthTypeAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="63"/>
+        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="62"/>
         <source>Server does not support OAuth</source>
         <translation>Serwer nie obsługuje protokołu OAuth</translation>
     </message>
     <message>
-        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="71"/>
+        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="70"/>
         <source>Server did not ask for authorization</source>
         <translation>Serwer nie poprosił o autoryzację</translation>
     </message>
     <message>
-        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="73"/>
+        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="72"/>
         <source>Failed to determine authentication type: %1</source>
         <translation>Nie udało się określić typu uwierzytelniania: %1</translation>
     </message>
@@ -1319,27 +1319,27 @@ Oznacza to, że klient synchronizacji może nie przesyłać zmian lokalnych od r
 <context>
     <name>OCC::GETFileJob</name>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="102"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="99"/>
         <source>Connection Timeout</source>
         <translation>Limit czasu połączenia</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="180"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="177"/>
         <source>No E-Tag received from server, check Proxy/Gateway</source>
         <translation>Nie otrzymano E-Tag z serwera, sprawdź Proxy/Bramę</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="187"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="184"/>
         <source>We received a different E-Tag for resuming. Retrying next time.</source>
         <translation>Otrzymaliśmy inny E-Tag wznowienia. Spróbuje ponownie następnym razem.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="198"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="195"/>
         <source>We received an unexpected download Content-Length.</source>
         <translation>Otrzymaliśmy nieoczekiwane pobranie Content-Length.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="226"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="223"/>
         <source>Server returned wrong content-range</source>
         <translation>Serwer zwrócił błędną zakres zawartości</translation>
     </message>
@@ -1528,23 +1528,23 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::MainWindow</name>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindow.cpp" line="53"/>
+        <location filename="../src/gui/mainwindow/mainwindow.cpp" line="55"/>
         <source>Hide</source>
         <translation>Ukryj</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindow.cpp" line="91"/>
+        <location filename="../src/gui/mainwindow/mainwindow.cpp" line="93"/>
         <source>Main toolbar for the application</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindow.cpp" line="92"/>
+        <location filename="../src/gui/mainwindow/mainwindow.cpp" line="94"/>
         <source>Main toolbar</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindow.cpp" line="105"/>
-        <location filename="../src/gui/mainwindow/mainwindow.cpp" line="108"/>
+        <location filename="../src/gui/mainwindow/mainwindow.cpp" line="107"/>
+        <location filename="../src/gui/mainwindow/mainwindow.cpp" line="110"/>
         <source>More</source>
         <translation>Więcej</translation>
     </message>
@@ -1552,48 +1552,48 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::MainWindowController</name>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="84"/>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="83"/>
         <source>Add account...</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="89"/>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="88"/>
         <source>Settings...</source>
         <translation>Ustawienia...</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="94"/>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="93"/>
         <source>About...</source>
         <translation>O...</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="101"/>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="100"/>
         <source>Help</source>
         <translation>Pomoc</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="112"/>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="111"/>
         <source>Quit</source>
         <translation>Wyjdź</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="121"/>
-        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="127"/>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="120"/>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="126"/>
         <source>Errors: %1</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="135"/>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="134"/>
         <source>Activity</source>
         <translation>Aktywność</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="168"/>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="167"/>
         <source>Quit %1</source>
         <translation>Wyjdź %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="169"/>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="168"/>
         <source>Are you sure you want to quit %1?</source>
         <translation>Czy na pewno chcesz zamknąć %1?</translation>
     </message>
@@ -1782,17 +1782,17 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::NewVersionAvailableWidget</name>
     <message>
-        <location filename="../src/gui/updater/newversionavailablewidget.cpp" line="33"/>
+        <location filename="../src/gui/updater/newversionavailablewidget.cpp" line="34"/>
         <source>Skip this version</source>
         <translation>Pomiń tą wersję</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/newversionavailablewidget.cpp" line="34"/>
+        <location filename="../src/gui/updater/newversionavailablewidget.cpp" line="35"/>
         <source>Get update</source>
         <translation>Uaktualnij</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/newversionavailablewidget.cpp" line="35"/>
+        <location filename="../src/gui/updater/newversionavailablewidget.cpp" line="36"/>
         <source>Skip this time</source>
         <translation>Pomiń tym razem</translation>
     </message>
@@ -1800,60 +1800,60 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="155"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="156"/>
         <source>Successfully signed in</source>
         <translation>Pomyślnie zalogowano</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="156"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="157"/>
         <source>Now, explore %1 on desktop.</source>
         <translation>Teraz poznaj %1 na komputerze.</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="267"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="268"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Błąd zwrócony przez serwer: &lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="269"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="270"/>
         <source>There was an error accessing the &apos;token&apos; endpoint: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Wystąpił błąd podczas dostępu do punktu końcowego &apos;token&apos;: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="271"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="272"/>
         <source>Could not parse the JSON returned from the server: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Nie można przeanalizować danych JSON zwróconych przez serwer: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="273"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="274"/>
         <source>Unsupported token type: %1</source>
         <translation>Nieobsługiwany typ tokena: %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="275"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="276"/>
         <source>The reply from the server did not contain all expected fields
 :%1</source>
         <translation>Odpowiedź z serwera nie zawierała wszystkich oczekiwanych pól
 :%1</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="277"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="278"/>
         <source>Unknown Error</source>
         <translation>Nieznany błąd</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="280"/>
-        <location filename="../src/gui/creds/oauth.cpp" line="303"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="281"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="304"/>
         <source>Login Error</source>
         <translation>Błąd logowania</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="309"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="310"/>
         <source>You logged-in with user &lt;em&gt;%1&lt;/em&gt;, but must login with user &lt;em&gt;%2&lt;/em&gt;.&lt;br&gt;Please return to the %3 client and restart the authentication.</source>
         <translation>Zalogowano się jako użytkownik &lt;em&gt;%1&lt;/em&gt;, ale należy zalogować się jako użytkownik &lt;em&gt;%2&lt;/em&gt;. &lt;br&gt;Proszę wrócić do klienta %3 i ponownie uruchomić uwierzytelnianie.</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="312"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="313"/>
         <source>Wrong user</source>
         <translation>Zły użytkownik</translation>
     </message>
@@ -1861,92 +1861,92 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::OAuthPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="60"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="62"/>
         <source>Application Name Logo %1</source>
         <translation>Nazwa aplikacji Logo %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="63"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="65"/>
         <source>Leave this screen open. A sign in prompt will appear in your web browser to connect you to the following address.</source>
         <translation>Pozostaw ten ekran otwarty. W przeglądarce internetowej pojawi się monit o zalogowanie, który połączy Cię z poniższym adresem.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="75"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="77"/>
         <source>Sign in URL</source>
         <translation>Adres URL logowania</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="76"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="78"/>
         <source>To copy the sign in URL to the clipboard, use the copy button</source>
         <translation>Aby skopiować adres URL logowania do schowka, użyj przycisku kopiowania</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="83"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="85"/>
         <source>Copy URL to sign in</source>
         <translation>Skopiuj adres URL, aby się zalogować</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="103"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="105"/>
         <source>Additional logo defined by the organization</source>
         <translation>Dodatkowe logo zdefiniowane przez organizację</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="180"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="182"/>
         <source>URL copied</source>
         <translation>Skopiowano adres URL</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="182"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="184"/>
         <source>Copy URL</source>
         <translation>Kopiuj URL</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="228"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="230"/>
         <source>Unable to connect to the login service. If the problem continues, please contact support.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="244"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="246"/>
         <source>Please copy the authentication URL using the button above, and provide this information to support.</source>
         <translation>Skopiuj adres URL uwierzytelniania za pomocą przycisku powyżej i przekaż te informacje działowi pomocy technicznej.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="258"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="260"/>
         <source>Failed to look up WebFinger instances: %1</source>
         <translation>Nie udało się wyszukać instancji WebFinger: %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="275"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="277"/>
         <source>You are already connected to an account with these credentials.</source>
         <translation>Jesteś już połączony z kontem o tych danych logowania.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="293"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="295"/>
         <source>Unable to retrieve capabilities from server.</source>
         <translation>Nie można pobrać możliwości z serwera.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="297"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="299"/>
         <source>The server is not supported by this client.</source>
         <translation>Serwer nie jest obsługiwany przez tego klienta.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="307"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="309"/>
         <source>Error while trying to log in to OAuth2-enabled server. %1</source>
         <translation>Błąd podczas próby zalogowania się do serwera obsługującego OAuth2. %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="314"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="316"/>
         <source>Unable to open browser with provided URL. %1</source>
         <translation>Nie można otworzyć przeglądarki z podanym adresem URL. %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="318"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="320"/>
         <source>OAuth2 authentication requires a secured connection. %1</source>
         <translation>Uwierzytelnianie OAuth2 wymaga bezpiecznego połączenia. %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="322"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="324"/>
         <source>Authorization server unreachable. %1</source>
         <translation>Serwer autoryzacji jest niedostępny. %1</translation>
     </message>
@@ -2020,141 +2020,141 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::ProcessDirectoryJob</name>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="181"/>
+        <location filename="../src/libsync/discovery.cpp" line="178"/>
         <source>Symbolic links are not supported in syncing.</source>
         <translation>Linki symboliczne nie są wspierane przy synchronizacji. </translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="190"/>
+        <location filename="../src/libsync/discovery.cpp" line="187"/>
         <source>File is listed on the ignore list.</source>
         <translation>Plik jest na liście plików ignorowanych.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="195"/>
+        <location filename="../src/libsync/discovery.cpp" line="192"/>
         <source>File names ending with a period are not supported on this file system.</source>
         <translation>Nazwy plików kończące się kropką nie są obsługiwane w tym systemie plików.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="208"/>
+        <location filename="../src/libsync/discovery.cpp" line="205"/>
         <source>File names containing the character &apos;%1&apos; are not supported on this file system.</source>
         <translation>Nazwy plików zawierające znaki &apos;%1&apos; nie są wspierane </translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="211"/>
+        <location filename="../src/libsync/discovery.cpp" line="208"/>
         <source>File name contains at least one invalid character</source>
         <translation>Nazwa pliku zawiera co najmniej jeden nieprawidłowy znak</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="213"/>
+        <location filename="../src/libsync/discovery.cpp" line="210"/>
         <source>The file name is a reserved name on this file system.</source>
         <translation>Nazwa pliku jest zarezerwowana dla plików systemowych</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="222"/>
+        <location filename="../src/libsync/discovery.cpp" line="219"/>
         <source>Filename contains trailing spaces.</source>
         <translation>Nazwa pliku zawiera spacje</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="225"/>
+        <location filename="../src/libsync/discovery.cpp" line="222"/>
         <source>Filename is too long.</source>
         <translation>Nazwa pliku zbyt długa</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="228"/>
+        <location filename="../src/libsync/discovery.cpp" line="225"/>
         <source>File/Folder is ignored because it&apos;s hidden.</source>
         <translation>Plik / katalog zostanie zignorowany, ponieważ jest ukryty.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="232"/>
+        <location filename="../src/libsync/discovery.cpp" line="229"/>
         <source>Stat failed.</source>
         <translation>Błąd statystyk.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="235"/>
+        <location filename="../src/libsync/discovery.cpp" line="232"/>
         <source>Conflict: Server version downloaded, local copy renamed and not uploaded.</source>
         <translation>Konflikt: Pobrano wersję z serwera, lokalna kopia została zapisana z nową nazwą pliku i nie została wysłana na serwer.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="239"/>
+        <location filename="../src/libsync/discovery.cpp" line="236"/>
         <source>The filename cannot be encoded on your file system.</source>
         <translation>Nazwa pliku nie może zostać zakodowana w systemie plików.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="242"/>
+        <location filename="../src/libsync/discovery.cpp" line="239"/>
         <source>The filename is blacklisted on the server.</source>
         <translation>Nazwa pliku jest na czarnej liście na serwerze.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="343"/>
-        <location filename="../src/libsync/discovery.cpp" line="665"/>
-        <location filename="../src/libsync/discovery.cpp" line="1375"/>
-        <location filename="../src/libsync/discovery.cpp" line="1432"/>
+        <location filename="../src/libsync/discovery.cpp" line="340"/>
+        <location filename="../src/libsync/discovery.cpp" line="662"/>
+        <location filename="../src/libsync/discovery.cpp" line="1372"/>
+        <location filename="../src/libsync/discovery.cpp" line="1429"/>
         <source>the VFS instance is missing. Unable to continue.</source>
         <translation>Brak instancji VFS. Nie można kontynuować.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="373"/>
+        <location filename="../src/libsync/discovery.cpp" line="370"/>
         <source>server reported no %1</source>
         <translation>serwer zgłosił brak %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="552"/>
-        <location filename="../src/libsync/discovery.cpp" line="954"/>
+        <location filename="../src/libsync/discovery.cpp" line="549"/>
+        <location filename="../src/libsync/discovery.cpp" line="951"/>
         <source>account was deleted. Unable to continue</source>
         <translation>Konto zostało usunięte. Nie można kontynuować.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1113"/>
+        <location filename="../src/libsync/discovery.cpp" line="1110"/>
         <source>SelectiveSync: Ignored because its path is deselected</source>
         <translation>SelectiveSync: Zignorowano, ponieważ ścieżka nie została zaznaczona</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1187"/>
+        <location filename="../src/libsync/discovery.cpp" line="1184"/>
         <source>Moved to invalid target, restoring</source>
         <translation>Przeniesiono do nieprawidłowego celu, przywrócono</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1200"/>
+        <location filename="../src/libsync/discovery.cpp" line="1197"/>
         <source>Not allowed to remove, restoring</source>
         <translation>Brak uprawnień by usunąć, przywracanie</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1310"/>
+        <location filename="../src/libsync/discovery.cpp" line="1307"/>
         <source>Error while reading the database.</source>
         <translation>Wystąpił błąd podczas odczytu bazy danych.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1316"/>
+        <location filename="../src/libsync/discovery.cpp" line="1313"/>
         <source>account was deleted. Unable to continue.</source>
         <translation>Konto zostało usunięte. Nie można kontynuować.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1146"/>
+        <location filename="../src/libsync/discovery.cpp" line="1143"/>
         <source>Not allowed because you don&apos;t have permission to add subfolders to that folder</source>
         <translation>Niedozwolone, ponieważ nie masz uprawnień do dodawania podkatalogów w tym katalogu</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="577"/>
+        <location filename="../src/libsync/discovery.cpp" line="574"/>
         <source>Error while doing a rename, unhandled status code: %1</source>
         <translation>Błąd podczas zmiany nazwy, nieobsłużony kod stanu: %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1151"/>
+        <location filename="../src/libsync/discovery.cpp" line="1148"/>
         <source>Not allowed because you don&apos;t have permission to add files in that folder</source>
         <translation>Niedozwolone, ponieważ nie masz uprawnień do dodawania plików w tym katalogu</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1164"/>
+        <location filename="../src/libsync/discovery.cpp" line="1161"/>
         <source>Not allowed to upload this file because it is read-only on the server, restoring</source>
         <translation>Wgrywanie niedozwolone, ponieważ plik jest tylko do odczytu na serwerze, przywracanie</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1342"/>
+        <location filename="../src/libsync/discovery.cpp" line="1339"/>
         <source>This Space is currently unavailable</source>
         <translation>Ta przestrzeń jest obecnie niedostępna</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1363"/>
+        <location filename="../src/libsync/discovery.cpp" line="1360"/>
         <source>Server replied with an error while reading directory &apos;%1&apos; : %2</source>
         <translation>Serwer odpowiedział błędem podczas odczytu katalogu &apos;%1&apos; : %2</translation>
     </message>
@@ -2175,67 +2175,67 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::PropagateDownloadFile</name>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="309"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="306"/>
         <source>Failed to free up space, the file %1 is currently in use</source>
         <translation>Nie udało się zwolnić miejsca, plik %1 jest obecnie używany</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="334"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="415"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="331"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="412"/>
         <source>File %1 can not be downloaded because of a local file name clash with %2!</source>
         <translation>Nie można pobrać pliku %1 z powodu konfliktu nazw plików lokalnych z %2!</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="473"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="470"/>
         <source>The download would reduce free local disk space below the limit</source>
         <translation>Ściągnięcie danych spowoduje, że wolna przestrzeń dyskowa spadnie poniżej limitu.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="477"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="474"/>
         <source>Free space on disk is less than %1</source>
         <translation>Wolne miejsce na dysku jest mniejsze niż %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="598"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="595"/>
         <source>File was deleted from server</source>
         <translation>Plik został usunięty z serwera</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="657"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="654"/>
         <source>Broken webserver returned empty content length for non-empty file on resume</source>
         <translation>Zepsuty serwer WWW zwrócił pustą długość zawartości dla niepustego pliku podczas wznawiania</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="664"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="661"/>
         <source>The file could not be downloaded completely.</source>
         <translation>Ten plik nie mógł być całkowicie pobrany.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="671"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="668"/>
         <source>The downloaded file is empty despite the server announced it should have been %1.</source>
         <translation>Pobrany plik jest pusty pomimo tego, że według zapowiedzi serwera powinien mieć %1.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="778"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="775"/>
         <source>File %1 cannot be saved because of a local file name clash with %2!</source>
         <translation>Nie można zapisać pliku %1 z powodu konfliktu nazw plików lokalnych z %2!</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="866"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="863"/>
         <source>Error updating metadata: %1</source>
         <translation>Błąd podczas aktualizacji metadanych: %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="423"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="802"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="834"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="869"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="420"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="799"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="831"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="866"/>
         <source>The file %1 is currently in use</source>
         <translation>Plik %1 jest obecnie w użyciu</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="304"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="826"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="301"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="823"/>
         <source>File has changed since discovery</source>
         <translation>Plik został zmieniony od momentu odkrycia</translation>
     </message>
@@ -2403,39 +2403,39 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::PropagateUploadCommon</name>
     <message>
-        <location filename="../src/libsync/propagateuploadcommon.cpp" line="63"/>
+        <location filename="../src/libsync/propagateuploadcommon.cpp" line="61"/>
         <source>Local file changed during sync. It will be resumed.</source>
         <translation>Lokalny plik uległ zmianie w trakcie synchronizacji. Zostanie wznowiony.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateuploadcommon.cpp" line="80"/>
+        <location filename="../src/libsync/propagateuploadcommon.cpp" line="78"/>
         <source>File %1 cannot be uploaded because another file with the same name, differing only in case, exists</source>
         <translation>Nie można przesłać pliku %1, ponieważ istnieje inny plik o tej samej nazwie, różniący się jedynie wielkością liter.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateuploadcommon.cpp" line="91"/>
-        <location filename="../src/libsync/propagateuploadcommon.cpp" line="278"/>
+        <location filename="../src/libsync/propagateuploadcommon.cpp" line="89"/>
+        <location filename="../src/libsync/propagateuploadcommon.cpp" line="276"/>
         <source>Upload of %1 exceeds the quota for the folder</source>
         <translation>Przesłanie %1 przekracza limit dla folderu</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateuploadcommon.cpp" line="131"/>
-        <location filename="../src/libsync/propagateuploadcommon.cpp" line="162"/>
+        <location filename="../src/libsync/propagateuploadcommon.cpp" line="129"/>
+        <location filename="../src/libsync/propagateuploadcommon.cpp" line="160"/>
         <source>%1 the file is currently in use</source>
         <translation>%1 plik jest obecnie używany</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateuploadcommon.cpp" line="197"/>
+        <location filename="../src/libsync/propagateuploadcommon.cpp" line="195"/>
         <source>File Removed</source>
         <translation>Usunięto plik</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateuploadcommon.cpp" line="372"/>
+        <location filename="../src/libsync/propagateuploadcommon.cpp" line="370"/>
         <source>The server did not provide the file permissions</source>
         <translation>Serwer nie zapewnił uprawnień do pliku</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateuploadcommon.cpp" line="380"/>
+        <location filename="../src/libsync/propagateuploadcommon.cpp" line="378"/>
         <source>Error updating metadata: %1</source>
         <translation>Błąd podczas aktualizacji metadanych: %1</translation>
     </message>
@@ -2545,57 +2545,57 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::RequestAuthenticationWidget</name>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="42"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="45"/>
         <source>Application Name Logo %1</source>
         <translation>Nazwa aplikacji Logo %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="44"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="47"/>
         <source>Sign in required</source>
         <translation>Wymagane zalogowanie</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="52"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="55"/>
         <source>You may have been automatically disconnected due to a server issue or time out. Please sign in again.</source>
         <translation>Możliwe, że nastąpiło automatyczne rozłączenie z powodu problemu z serwerem lub przekroczenia limitu czasu. Zaloguj się ponownie.</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="63"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="66"/>
         <source>Sign in URL</source>
         <translation>Adres URL logowania</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="64"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="67"/>
         <source>To copy the sign in URL to the clipboard, use the copy button</source>
         <translation>Aby skopiować adres URL logowania do schowka, użyj przycisku kopiowania</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="70"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="73"/>
         <source>Copy URL to sign in</source>
         <translation>Skopiuj adres URL, aby się zalogować</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="91"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="94"/>
         <source>Additional logo defined by the organization</source>
         <translation>Dodatkowe logo zdefiniowane przez organizację</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="94"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="97"/>
         <source>Stay logged out</source>
         <translation>Pozostań wylogowany</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="96"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="99"/>
         <source>Sign in</source>
         <translation>Zaloguj</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="180"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="183"/>
         <source>URL copied</source>
         <translation>Skopiowano adres URL</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="182"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="185"/>
         <source>Copy URL</source>
         <translation>Kopiuj URL</translation>
     </message>
@@ -2758,33 +2758,33 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::SocketApi</name>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="470"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="471"/>
         <source>Share with %1</source>
         <comment>parameter is the application name</comment>
         <translation>Współdzielone z %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="575"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="576"/>
         <source>Confirm deletion</source>
         <translation>Potwierdź usunięcie</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="577"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="578"/>
         <source>Do you want to delete the directory &lt;i&gt;%1&lt;/i&gt; and all its contents permanently?</source>
         <translation>Czy chcesz trwale usunąć katalog &lt;i&gt;%1&lt;/i&gt; i całą jego zawartość?</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="578"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="579"/>
         <source>Do you want to delete the file &lt;i&gt;%1&lt;/i&gt; permanently?</source>
         <translation>Czy chcesz trwale usunąć plik &lt;i&gt;%1&lt;/i&gt; trwale?</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="630"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="631"/>
         <source>Error</source>
         <translation>Błąd</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="631"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="632"/>
         <source>Moving file failed:
 
 %1</source>
@@ -2793,80 +2793,80 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="694"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="695"/>
         <source>I shared something with you</source>
         <translation>Udostępniam Tobie</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="620"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="621"/>
         <source>Select new location…</source>
         <translation>Wybierz nową lokalizację…</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="707"/>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="736"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="708"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="737"/>
         <source>Share…</source>
         <translation>Współdzielić</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="709"/>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="740"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="710"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="741"/>
         <source>Copy private link to clipboard</source>
         <translation>Kopiuj link prywatny do schowka</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="734"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="735"/>
         <source>Resharing this file is not allowed</source>
         <translation>Współdzielenie tego pliku nie jest możliwe</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="734"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="735"/>
         <source>Resharing this folder is not allowed</source>
         <translation>Udostępnianie tego folderu jest niedozwolone</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="809"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="810"/>
         <source>Open in %1</source>
         <translation>Otwórz w %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="820"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="821"/>
         <source>Show file versions in web browser</source>
         <translation>Pokaż wersje pliku w przeglądarce internetowej</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="842"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="843"/>
         <source>Rename…</source>
         <translation>Przemianować…</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="845"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="846"/>
         <source>Rename and upload…</source>
         <translation>Zmień nazwę i prześlij…</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="850"/>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="854"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="851"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="855"/>
         <source>Move and rename…</source>
         <translation>Przenieś i zmień nazwę…</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="857"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="858"/>
         <source>Move, rename and upload…</source>
         <translation>Przenieś, zmień nazwę i prześlij…</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="865"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="866"/>
         <source>Move and upload…</source>
         <translation>Przenieś i prześlij…</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="860"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="861"/>
         <source>Delete local changes</source>
         <translation>Usuń lokalne zmiany</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="866"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="867"/>
         <source>Delete</source>
         <translation>Usuń</translation>
     </message>
@@ -3006,7 +3006,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::Theme</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="209"/>
+        <location filename="../src/libsync/theme.cpp" line="193"/>
         <source>&lt;p&gt;Version %1. For more information visit &lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;For known issues and help, please visit: &lt;a href=&quot;https://central.owncloud.com/c/desktop-client&quot;&gt;https://central.owncloud.com&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;small&gt;By Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz,  Jan-Christoph Borchardt, Thomas Müller,&lt;br&gt;Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller and others.&lt;/small&gt;&lt;/p&gt;&lt;p&gt;Copyright ownCloud GmbH (A Kiteworks Company)&lt;/p&gt;&lt;p&gt;Distributed by %4 and licensed under the GNU General Public License (GPL) Version 2.0.&lt;br/&gt;%5 and the %5 logo are registered trademarks of %4 in the United States, other countries, or both.&lt;/p&gt;&lt;p&gt;&lt;small&gt;%6&lt;/small&gt;&lt;/p&gt;</source>
         <translation>&lt;p&gt;Wersja %1. Aby uzyskać więcej informacji, odwiedź stronę &lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt;&lt;/p&gt;. &lt;p&gt;Aby zapoznać się ze znanymi problemami i uzyskać pomoc, odwiedź stronę: &lt;a href=&quot;https://central.owncloud.com/c/desktop-client&quot;&gt;https://central.owncloud.com&lt;/a&gt;&lt;/p&gt;. &lt;p&gt;&lt;small&gt;Autorzy: Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz, Jan-Christoph Borchardt, Thomas Müller,&lt;br&gt; Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller i inni. &lt;/small&gt;&lt;/p&gt;&lt;p&gt;Prawa autorskie: ownCloud GmbH (firma Kiteworks).&lt;/p&gt; &lt;p&gt;Dystrybuowane przez %4 na licencji GNU General Public License (GPL) w wersji 2.0.&lt;br/&gt;%5 i logo %5 są zastrzeżonymi znakami towarowymi %4 w Stanach Zjednoczonych i/lub innych krajach.&lt;/p&gt;&lt;p&gt;&lt;small&gt;%6&lt;/small&gt;&lt;/p&gt;</translation>
     </message>
@@ -3057,17 +3057,17 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <translation> Pokaż %1 </translation>
     </message>
     <message>
-        <location filename="../src/gui/traymenucontroller.cpp" line="188"/>
+        <location filename="../src/gui/traymenucontroller.cpp" line="189"/>
         <source>Help</source>
         <translation>Pomoc</translation>
     </message>
     <message>
-        <location filename="../src/gui/traymenucontroller.cpp" line="192"/>
+        <location filename="../src/gui/traymenucontroller.cpp" line="193"/>
         <source>About %1</source>
         <translation>O %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/traymenucontroller.cpp" line="195"/>
+        <location filename="../src/gui/traymenucontroller.cpp" line="196"/>
         <source>Quit %1</source>
         <translation>Wyjdź %1</translation>
     </message>
@@ -3075,12 +3075,12 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::UpdateDownloadedWidget</name>
     <message>
-        <location filename="../src/gui/updater/updatedownloadedwidget.cpp" line="38"/>
+        <location filename="../src/gui/updater/updatedownloadedwidget.cpp" line="39"/>
         <source>Restart later</source>
         <translation>Restartuj później</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/updatedownloadedwidget.cpp" line="40"/>
+        <location filename="../src/gui/updater/updatedownloadedwidget.cpp" line="41"/>
         <source>Restart now</source>
         <translation>Restartuj teraz</translation>
     </message>
@@ -3096,52 +3096,52 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="54"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="55"/>
         <source>Your web browser will be opened to complete sign in.</source>
         <translation>Przeglądarka internetowa zostanie otwarta w celu dokończenia logowania.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="69"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="70"/>
         <source>%1 logo</source>
         <translation>%1 logo</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="71"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="72"/>
         <source>Welcome to %1</source>
         <translation>Witaj w %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="79"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="80"/>
         <source>Enter your server address to get started. Your web browser will be opened to complete sign in.</source>
         <translation>Wprowadź adres serwera, aby rozpocząć. Twoja przeglądarka internetowa zostanie otwarta, aby dokończyć logowanie.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="95"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="96"/>
         <source>Server address field</source>
         <translation>Pole adresu serwera</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="96"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="97"/>
         <source>Enter your server address here</source>
         <translation>Wpisz tutaj adres swojego serwera</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="117"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="118"/>
         <source>Additional logo defined by the organization</source>
         <translation>Dodatkowe logo zdefiniowane przez organizację</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="210"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="211"/>
         <source>Invalid server URL: %1</source>
         <translation>Nieprawidłowy adres URL serwera: %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="214"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="215"/>
         <source>Invalid URL scheme. Only https is accepted.</source>
         <translation>Nieprawidłowy schemat adresu URL. Akceptowany jest tylko protokół https.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="242"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="243"/>
         <source>The requested URL failed with query value: %1</source>
         <translation>Żądany adres URL nie powiódł się, a wartość zapytania wynosi: %1</translation>
     </message>
@@ -3328,7 +3328,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <translation><numerusform>%n minute temu</numerusform><numerusform>%n minut temu</numerusform><numerusform>%n minut temu</numerusform><numerusform>%n minut temu</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncresult.cpp" line="153"/>
+        <location filename="../src/libsync/syncresult.cpp" line="152"/>
         <source>%1: %2</source>
         <extracomment>this displays an error string (%2) for a file %1</extracomment>
         <translation>%1: %2</translation>
@@ -3468,7 +3468,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <translation>%1 %2</translation>
     </message>
     <message>
-        <location filename="../src/libsync/platform_win.cpp" line="116"/>
+        <location filename="../src/libsync/platform_win.cpp" line="122"/>
         <source>Shutting down %1</source>
         <translation>Zamykanie %1</translation>
     </message>
@@ -3476,12 +3476,12 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>account loading</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="433"/>
+        <location filename="../src/gui/main.cpp" line="434"/>
         <source>Error accessing the configuration file</source>
         <translation>Błąd przy dostępie do pliku konfiguracji</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="434"/>
+        <location filename="../src/gui/main.cpp" line="435"/>
         <source>There was an error while accessing the configuration file at %1.</source>
         <translation>Wystąpił błąd podczas próby dostępu do pliku konfiguracyjnego %1.</translation>
     </message>
@@ -3489,7 +3489,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>ownCloudTheme::aboutVersions()</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="190"/>
+        <location filename="../src/libsync/theme.cpp" line="174"/>
         <source>%1 %2%7%8Libraries Qt %3, %4%7Using virtual files plugin: %5%7%6</source>
         <translation>%1 %2%7%8Biblioteki Qt %3, %4%7Korzystanie z wtyczki plików wirtualnych: %5%7%6</translation>
     </message>
@@ -3497,7 +3497,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>ownCloudTheme::qtVer</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="172"/>
+        <location filename="../src/libsync/theme.cpp" line="156"/>
         <source>%1 (Built against Qt %2)</source>
         <translation>%1 (Zbudowano na podstawie Qt %2)</translation>
     </message>
@@ -3505,7 +3505,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>ownCloudTheme::versionWithSha</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="178"/>
+        <location filename="../src/libsync/theme.cpp" line="162"/>
         <source>%1 %2</source>
         <translation>%1 %2</translation>
     </message>
@@ -3668,7 +3668,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>version check</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="171"/>
+        <location filename="../src/gui/main.cpp" line="172"/>
         <source>Some settings were configured in newer versions of this client and use features that are not available in this version</source>
         <translation>Niektóre ustawienia zostały skonfigurowane w nowszych wersjach tego klienta i używają funkcji, które nie są dostępne w tej wersji</translation>
     </message>
