@@ -31,55 +31,55 @@
 <context>
     <name>CommandLine</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="97"/>
+        <location filename="../src/gui/main.cpp" line="98"/>
         <source>%1 version %2<byte value="xd"/>
 File synchronization desktop utility.</source>
         <translation>%1 version %2&lt;byte value=&quot;xd&quot;/&gt;
 Skrivbordsverktyg för filsynkronisering.</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="105"/>
+        <location filename="../src/gui/main.cpp" line="106"/>
         <source>For more information, see %1</source>
         <comment>link to homepage</comment>
         <translation>För mer information, läs %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="124"/>
+        <location filename="../src/gui/main.cpp" line="125"/>
         <source>Start with the main window visible, or if it is already running, bring it to the front. By default, the client launches in the background.</source>
         <translation>Starta med huvudfönstret synligt, eller om det redan körs, ta fram det. Klienten startar i bakgrunden som standard.</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="126"/>
+        <location filename="../src/gui/main.cpp" line="127"/>
         <source>Quit the running instance.</source>
         <translation>Avsluta instansen som körs.</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="128"/>
+        <location filename="../src/gui/main.cpp" line="129"/>
         <source>Write log to file (use - to write to stdout).</source>
         <translation>Skriv logg till fil (använd - för att skriva till stdout).</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="130"/>
+        <location filename="../src/gui/main.cpp" line="131"/>
         <source>Write each sync log output in a new file in folder.</source>
         <translation>Skriv varje synkroniseringslogg i en ny fil i mappen.</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="131"/>
+        <location filename="../src/gui/main.cpp" line="132"/>
         <source>Flush the log file after every write.</source>
         <translation>Töm loggfilens buffert efter varje skrivning.</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="132"/>
+        <location filename="../src/gui/main.cpp" line="133"/>
         <source>Output debug-level messages in the log.</source>
         <translation>Skriv felsökningsmeddelanden på debuggnivå i loggen.</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="133"/>
+        <location filename="../src/gui/main.cpp" line="134"/>
         <source>Enable debug mode.</source>
         <translation>Aktivera felsökningsläge.</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="149"/>
+        <location filename="../src/gui/main.cpp" line="150"/>
         <source>--logfile and --logdir are mutually exclusive</source>
         <translation>--logfile och --logdir utesluter varandra</translation>
     </message>
@@ -217,7 +217,7 @@ Skrivbordsverktyg för filsynkronisering.</translation>
         <translation>, ⬆️ %1/s</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="210"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="211"/>
         <source>%1, sync status: %2</source>
         <extracomment>Accessible text, read out by a screen reader.</extracomment>
         <translation>%1, synkroniseringsstatus: %2</translation>
@@ -514,7 +514,7 @@ Den enda fördelen med att inaktivera stödet för virtuella filer är att funkt
         <translation>Navigera i listan %1 med upp- och nedpilarna</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="250"/>
+        <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="248"/>
         <source>%1 out of %2 %3 are synchronized</source>
         <translation>%1 av %2 %3 är synkroniserade</translation>
     </message>
@@ -530,12 +530,12 @@ Den enda fördelen med att inaktivera stödet för virtuella filer är att funkt
 <context>
     <name>OCC::AccountPlaceholderWidget</name>
     <message>
-        <location filename="../src/gui/accountsgui/accountplaceholderwidget.cpp" line="34"/>
+        <location filename="../src/gui/accountsgui/accountplaceholderwidget.cpp" line="35"/>
         <source>%1 logo</source>
         <translation>%1-logotyp</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsgui/accountplaceholderwidget.cpp" line="37"/>
+        <location filename="../src/gui/accountsgui/accountplaceholderwidget.cpp" line="38"/>
         <source>You don't have any connected accounts yet.
 
 Please create an account by selecting the &quot;Add account...&quot; option on the More button menu.</source>
@@ -544,7 +544,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
 Skapa ett konto genom att välja alternativet &quot;Lägg till konto...&quot; i menyn på knappen Mer.</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountsgui/accountplaceholderwidget.cpp" line="48"/>
+        <location filename="../src/gui/accountsgui/accountplaceholderwidget.cpp" line="49"/>
         <source>Additional logo defined by the organization</source>
         <translation>Ytterligare logotyp definierad av organisationen</translation>
     </message>
@@ -552,17 +552,17 @@ Skapa ett konto genom att välja alternativet &quot;Lägg till konto...&quot; i 
 <context>
     <name>OCC::AccountState</name>
     <message>
-        <location filename="../src/gui/accountstate.cpp" line="232"/>
+        <location filename="../src/gui/accountstate.cpp" line="234"/>
         <source>The server is not supported by this client.</source>
         <translation>Servern stöds inte av den här klienten.</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountstate.cpp" line="239"/>
+        <location filename="../src/gui/accountstate.cpp" line="241"/>
         <source>Retrieving user settings and server capabilities timed out.</source>
         <translation>Tidsgränsen för att hämta användarinställningar och serverfunktioner överskreds.</translation>
     </message>
     <message>
-        <location filename="../src/gui/accountstate.cpp" line="246"/>
+        <location filename="../src/gui/accountstate.cpp" line="248"/>
         <source>Unable to retrieve user settings and server capabilities.</source>
         <translation>Kan inte hämta användarinställningar och serverfunktioner.</translation>
     </message>
@@ -854,7 +854,7 @@ Uppdateringen utförs i bakgrunden och skriver över den aktuella AppImage-filen
 <context>
     <name>OCC::Application</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="174"/>
+        <location filename="../src/gui/main.cpp" line="175"/>
         <source>Quit</source>
         <translation>Avsluta</translation>
     </message>
@@ -862,17 +862,17 @@ Uppdateringen utförs i bakgrunden och skriver över den aktuella AppImage-filen
 <context>
     <name>OCC::AuthSuccessPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/authsuccesspagecontroller.cpp" line="45"/>
+        <location filename="../src/gui/newaccountwizard/authsuccesspagecontroller.cpp" line="46"/>
         <source>Application Name Logo %1</source>
         <translation>Programlogotyp %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/authsuccesspagecontroller.cpp" line="47"/>
+        <location filename="../src/gui/newaccountwizard/authsuccesspagecontroller.cpp" line="48"/>
         <source>You&apos;re all set! Open %1 and get started.</source>
         <translation>Allt är klart! Öppna %1 och kom igång.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/authsuccesspagecontroller.cpp" line="64"/>
+        <location filename="../src/gui/newaccountwizard/authsuccesspagecontroller.cpp" line="65"/>
         <source>Additional logo defined by the organization</source>
         <translation>Ytterligare logotyp definierad av organisationen</translation>
     </message>
@@ -880,12 +880,12 @@ Uppdateringen utförs i bakgrunden och skriver över den aktuella AppImage-filen
 <context>
     <name>OCC::ButtonDelegate</name>
     <message>
-        <location filename="../src/gui/FoldersGui/buttondelegate.cpp" line="41"/>
+        <location filename="../src/gui/FoldersGui/buttondelegate.cpp" line="57"/>
         <source>%1 options button</source>
         <translation>Knapp för alternativ för %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/buttondelegate.cpp" line="42"/>
+        <location filename="../src/gui/FoldersGui/buttondelegate.cpp" line="58"/>
         <source>Menu button with %1 options. Use the space key to show the menu</source>
         <translation>Menyknapp med %1 alternativ. Använd mellanslagstangenten för att visa menyn</translation>
     </message>
@@ -929,17 +929,17 @@ Uppdateringen utförs i bakgrunden och skriver över den aktuella AppImage-filen
 <context>
     <name>OCC::DetermineAuthTypeAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="63"/>
+        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="62"/>
         <source>Server does not support OAuth</source>
         <translation>Servern stöder inte OAuth</translation>
     </message>
     <message>
-        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="71"/>
+        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="70"/>
         <source>Server did not ask for authorization</source>
         <translation>Servern begärde inte auktorisering</translation>
     </message>
     <message>
-        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="73"/>
+        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="72"/>
         <source>Failed to determine authentication type: %1</source>
         <translation>Det gick inte att avgöra autentiseringstyp: %1</translation>
     </message>
@@ -1322,27 +1322,27 @@ Det innebär att synkroniseringsklienten kanske inte laddar upp lokala ändringa
 <context>
     <name>OCC::GETFileJob</name>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="102"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="99"/>
         <source>Connection Timeout</source>
         <translation>Anslutningen avbröts på grund av timeout</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="180"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="177"/>
         <source>No E-Tag received from server, check Proxy/Gateway</source>
         <translation>Ingen E-Tag mottogs från servern, kontrollera proxy/gateway</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="187"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="184"/>
         <source>We received a different E-Tag for resuming. Retrying next time.</source>
         <translation>Vi mottog en helt annan e-tag för att återuppta. Försök igen nästa gång.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="198"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="195"/>
         <source>We received an unexpected download Content-Length.</source>
         <translation>Ett oväntat Content-Length-värde mottogs vid nedladdning.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="226"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="223"/>
         <source>Server returned wrong content-range</source>
         <translation>Servern returnerade felaktig content-range</translation>
     </message>
@@ -1531,23 +1531,23 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::MainWindow</name>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindow.cpp" line="53"/>
+        <location filename="../src/gui/mainwindow/mainwindow.cpp" line="55"/>
         <source>Hide</source>
         <translation>Göm</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindow.cpp" line="91"/>
+        <location filename="../src/gui/mainwindow/mainwindow.cpp" line="93"/>
         <source>Main toolbar for the application</source>
         <translation>Programmets huvudverktygsfält</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindow.cpp" line="92"/>
+        <location filename="../src/gui/mainwindow/mainwindow.cpp" line="94"/>
         <source>Main toolbar</source>
         <translation>Huvudverktygsfält</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindow.cpp" line="105"/>
-        <location filename="../src/gui/mainwindow/mainwindow.cpp" line="108"/>
+        <location filename="../src/gui/mainwindow/mainwindow.cpp" line="107"/>
+        <location filename="../src/gui/mainwindow/mainwindow.cpp" line="110"/>
         <source>More</source>
         <translation>Mer</translation>
     </message>
@@ -1555,48 +1555,48 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::MainWindowController</name>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="84"/>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="83"/>
         <source>Add account...</source>
         <translation>Lägg till konto...</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="89"/>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="88"/>
         <source>Settings...</source>
         <translation>Inställningar...</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="94"/>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="93"/>
         <source>About...</source>
         <translation>Om...</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="101"/>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="100"/>
         <source>Help</source>
         <translation>Hjälp</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="112"/>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="111"/>
         <source>Quit</source>
         <translation>Avsluta</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="121"/>
-        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="127"/>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="120"/>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="126"/>
         <source>Errors: %1</source>
         <translation>Fel: %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="135"/>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="134"/>
         <source>Activity</source>
         <translation>Aktivitet</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="168"/>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="167"/>
         <source>Quit %1</source>
         <translation>Avsluta %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="169"/>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="168"/>
         <source>Are you sure you want to quit %1?</source>
         <translation>Är du säker på att du vill avsluta %1?</translation>
     </message>
@@ -1785,17 +1785,17 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::NewVersionAvailableWidget</name>
     <message>
-        <location filename="../src/gui/updater/newversionavailablewidget.cpp" line="33"/>
+        <location filename="../src/gui/updater/newversionavailablewidget.cpp" line="34"/>
         <source>Skip this version</source>
         <translation>Hoppa över denna version</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/newversionavailablewidget.cpp" line="34"/>
+        <location filename="../src/gui/updater/newversionavailablewidget.cpp" line="35"/>
         <source>Get update</source>
         <translation>Hämta uppdatering</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/newversionavailablewidget.cpp" line="35"/>
+        <location filename="../src/gui/updater/newversionavailablewidget.cpp" line="36"/>
         <source>Skip this time</source>
         <translation>Hoppa över denna gång</translation>
     </message>
@@ -1803,60 +1803,60 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="155"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="156"/>
         <source>Successfully signed in</source>
         <translation>Inloggningen lyckades</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="156"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="157"/>
         <source>Now, explore %1 on desktop.</source>
         <translation>Utforska nu %1 på skrivbordet.</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="267"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="268"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Fel returnerat från server: &lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="269"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="270"/>
         <source>There was an error accessing the &apos;token&apos; endpoint: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Det uppstod ett fel vid åtkomst till slutpunkten ”token”: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="271"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="272"/>
         <source>Could not parse the JSON returned from the server: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Kunde inte para JSON som returnerades från servern: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="273"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="274"/>
         <source>Unsupported token type: %1</source>
         <translation>Token-typen stöds inte: %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="275"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="276"/>
         <source>The reply from the server did not contain all expected fields
 :%1</source>
         <translation>Svaret från servern innehöll inte alla förväntade fält
 :%1</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="277"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="278"/>
         <source>Unknown Error</source>
         <translation>Okänt fel</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="280"/>
-        <location filename="../src/gui/creds/oauth.cpp" line="303"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="281"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="304"/>
         <source>Login Error</source>
         <translation>Login fel</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="309"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="310"/>
         <source>You logged-in with user &lt;em&gt;%1&lt;/em&gt;, but must login with user &lt;em&gt;%2&lt;/em&gt;.&lt;br&gt;Please return to the %3 client and restart the authentication.</source>
         <translation>Du loggade in som användaren &lt;em&gt;%1&lt;/em&gt;, men måste logga in som användaren &lt;em&gt;%2&lt;/em&gt;.&lt;br&gt;Gå tillbaka till %3-klienten och starta om autentiseringen.</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="312"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="313"/>
         <source>Wrong user</source>
         <translation>Fel användare</translation>
     </message>
@@ -1864,92 +1864,92 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::OAuthPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="60"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="62"/>
         <source>Application Name Logo %1</source>
         <translation>Programlogotyp %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="63"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="65"/>
         <source>Leave this screen open. A sign in prompt will appear in your web browser to connect you to the following address.</source>
         <translation>Låt den här skärmen vara öppen. En inloggningsuppmaning visas i webbläsaren för att ansluta till följande adress.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="75"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="77"/>
         <source>Sign in URL</source>
         <translation>Inloggnings-URL</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="76"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="78"/>
         <source>To copy the sign in URL to the clipboard, use the copy button</source>
         <translation>Använd kopieringsknappen för att kopiera inloggnings-URL:en till urklipp.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="83"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="85"/>
         <source>Copy URL to sign in</source>
         <translation>Kopiera URL för inloggning</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="103"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="105"/>
         <source>Additional logo defined by the organization</source>
         <translation>Ytterligare logotyp definierad av organisationen</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="180"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="182"/>
         <source>URL copied</source>
         <translation>URL kopierad</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="182"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="184"/>
         <source>Copy URL</source>
         <translation>Kopiera URL</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="228"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="230"/>
         <source>Unable to connect to the login service. If the problem continues, please contact support.</source>
         <translation>Det gick inte att ansluta till inloggningstjänsten. Kontakta supporten om problemet kvarstår.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="244"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="246"/>
         <source>Please copy the authentication URL using the button above, and provide this information to support.</source>
         <translation>Kopiera autentiserings-URL:en med knappen ovan och lämna informationen till supporten.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="258"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="260"/>
         <source>Failed to look up WebFinger instances: %1</source>
         <translation>Det gick inte att slå upp WebFinger-instanser: %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="275"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="277"/>
         <source>You are already connected to an account with these credentials.</source>
         <translation>Du är redan ansluten till ett konto med dessa inloggningsuppgifter.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="293"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="295"/>
         <source>Unable to retrieve capabilities from server.</source>
         <translation>Det gick inte att hämta funktioner från servern.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="297"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="299"/>
         <source>The server is not supported by this client.</source>
         <translation>Servern stöds inte av den här klienten.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="307"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="309"/>
         <source>Error while trying to log in to OAuth2-enabled server. %1</source>
         <translation>Fel vid inloggning på en OAuth2-aktiverad server. %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="314"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="316"/>
         <source>Unable to open browser with provided URL. %1</source>
         <translation>Det gick inte att öppna webbläsaren med angiven URL. %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="318"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="320"/>
         <source>OAuth2 authentication requires a secured connection. %1</source>
         <translation>OAuth2-autentisering kräver en säker anslutning. %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="322"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="324"/>
         <source>Authorization server unreachable. %1</source>
         <translation>Auktoriseringsservern kan inte nås. %1</translation>
     </message>
@@ -2023,141 +2023,141 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::ProcessDirectoryJob</name>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="181"/>
+        <location filename="../src/libsync/discovery.cpp" line="178"/>
         <source>Symbolic links are not supported in syncing.</source>
         <translation>Symboliska länkar stöds ej i synkningen.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="190"/>
+        <location filename="../src/libsync/discovery.cpp" line="187"/>
         <source>File is listed on the ignore list.</source>
         <translation>Filen är listad i ignorerings listan.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="195"/>
+        <location filename="../src/libsync/discovery.cpp" line="192"/>
         <source>File names ending with a period are not supported on this file system.</source>
         <translation>Filnamn som slutar med punkt stöds inte i det här filsystemet.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="208"/>
+        <location filename="../src/libsync/discovery.cpp" line="205"/>
         <source>File names containing the character &apos;%1&apos; are not supported on this file system.</source>
         <translation>Filnamn som innehåller tecknet &apos;%1&apos; stöds inte i det här filsystemet.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="211"/>
+        <location filename="../src/libsync/discovery.cpp" line="208"/>
         <source>File name contains at least one invalid character</source>
         <translation>Filnamnet innehåller minst ett ogiltigt tecken</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="213"/>
+        <location filename="../src/libsync/discovery.cpp" line="210"/>
         <source>The file name is a reserved name on this file system.</source>
         <translation>Filnamnet är ett reserverat namn i detta filsystemet.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="222"/>
+        <location filename="../src/libsync/discovery.cpp" line="219"/>
         <source>Filename contains trailing spaces.</source>
         <translation>Filnamn innehåller mellanslag i slutet.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="225"/>
+        <location filename="../src/libsync/discovery.cpp" line="222"/>
         <source>Filename is too long.</source>
         <translation>Filnamnet är för långt.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="228"/>
+        <location filename="../src/libsync/discovery.cpp" line="225"/>
         <source>File/Folder is ignored because it&apos;s hidden.</source>
         <translation>Filen/Mappen är ignorerad för att den är dold.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="232"/>
+        <location filename="../src/libsync/discovery.cpp" line="229"/>
         <source>Stat failed.</source>
         <translation>Stat misslyckades.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="235"/>
+        <location filename="../src/libsync/discovery.cpp" line="232"/>
         <source>Conflict: Server version downloaded, local copy renamed and not uploaded.</source>
         <translation>Konflikt: Serverversion nedladdad, lokal kopia omdöpt och ej uppladdad.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="239"/>
+        <location filename="../src/libsync/discovery.cpp" line="236"/>
         <source>The filename cannot be encoded on your file system.</source>
         <translation>Filnamnet kan inte kodas i ditt filsystem.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="242"/>
+        <location filename="../src/libsync/discovery.cpp" line="239"/>
         <source>The filename is blacklisted on the server.</source>
         <translation>Filnamnet är svartlistat på servern.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="343"/>
-        <location filename="../src/libsync/discovery.cpp" line="665"/>
-        <location filename="../src/libsync/discovery.cpp" line="1375"/>
-        <location filename="../src/libsync/discovery.cpp" line="1432"/>
+        <location filename="../src/libsync/discovery.cpp" line="340"/>
+        <location filename="../src/libsync/discovery.cpp" line="662"/>
+        <location filename="../src/libsync/discovery.cpp" line="1372"/>
+        <location filename="../src/libsync/discovery.cpp" line="1429"/>
         <source>the VFS instance is missing. Unable to continue.</source>
         <translation>VFS-instansen saknas. Det går inte att fortsätta.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="373"/>
+        <location filename="../src/libsync/discovery.cpp" line="370"/>
         <source>server reported no %1</source>
         <translation>servern rapporterade inget %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="552"/>
-        <location filename="../src/libsync/discovery.cpp" line="954"/>
+        <location filename="../src/libsync/discovery.cpp" line="549"/>
+        <location filename="../src/libsync/discovery.cpp" line="951"/>
         <source>account was deleted. Unable to continue</source>
         <translation>kontot har tagits bort. Det går inte att fortsätta</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1113"/>
+        <location filename="../src/libsync/discovery.cpp" line="1110"/>
         <source>SelectiveSync: Ignored because its path is deselected</source>
         <translation>Selektiv synkronisering: ignorerades eftersom sökvägen inte är vald</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1187"/>
+        <location filename="../src/libsync/discovery.cpp" line="1184"/>
         <source>Moved to invalid target, restoring</source>
         <translation>Flyttad till ogiltigt mål, återställer</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1200"/>
+        <location filename="../src/libsync/discovery.cpp" line="1197"/>
         <source>Not allowed to remove, restoring</source>
         <translation>Inte behörig att radera, återställer</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1310"/>
+        <location filename="../src/libsync/discovery.cpp" line="1307"/>
         <source>Error while reading the database.</source>
         <translation>Fel vid läsning av databasen.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1316"/>
+        <location filename="../src/libsync/discovery.cpp" line="1313"/>
         <source>account was deleted. Unable to continue.</source>
         <translation>kontot har tagits bort. Det går inte att fortsätta.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1146"/>
+        <location filename="../src/libsync/discovery.cpp" line="1143"/>
         <source>Not allowed because you don&apos;t have permission to add subfolders to that folder</source>
         <translation>Otillåtet eftersom du inte har rättigheter att lägga till undermappar i den mappen.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="577"/>
+        <location filename="../src/libsync/discovery.cpp" line="574"/>
         <source>Error while doing a rename, unhandled status code: %1</source>
         <translation>Fel vid namnbyte, ohanterad statuskod: %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1151"/>
+        <location filename="../src/libsync/discovery.cpp" line="1148"/>
         <source>Not allowed because you don&apos;t have permission to add files in that folder</source>
         <translation>Otillåtet eftersom du inte har rättigheter att lägga till filer i den mappen.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1164"/>
+        <location filename="../src/libsync/discovery.cpp" line="1161"/>
         <source>Not allowed to upload this file because it is read-only on the server, restoring</source>
         <translation>Inte behörig att ladda upp denna fil då den är skrivskyddad på servern, återställer </translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1342"/>
+        <location filename="../src/libsync/discovery.cpp" line="1339"/>
         <source>This Space is currently unavailable</source>
         <translation>Det här utrymmet är inte tillgängligt för närvarande</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discovery.cpp" line="1363"/>
+        <location filename="../src/libsync/discovery.cpp" line="1360"/>
         <source>Server replied with an error while reading directory &apos;%1&apos; : %2</source>
         <translation>Servern svarade med ett fel vid läsning av katalogen &apos;%1&apos;: %2</translation>
     </message>
@@ -2178,67 +2178,67 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::PropagateDownloadFile</name>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="309"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="306"/>
         <source>Failed to free up space, the file %1 is currently in use</source>
         <translation>Det gick inte att frigöra utrymme, filen %1 används för närvarande</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="334"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="415"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="331"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="412"/>
         <source>File %1 can not be downloaded because of a local file name clash with %2!</source>
         <translation>Filen %1 kan inte hämtas på grund av en lokal filnamnskonflikt med %2!</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="473"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="470"/>
         <source>The download would reduce free local disk space below the limit</source>
         <translation>Nedladdningen skulle reducera det fria diskutrymmet under gränsen</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="477"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="474"/>
         <source>Free space on disk is less than %1</source>
         <translation>Ledigt utrymme är under %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="598"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="595"/>
         <source>File was deleted from server</source>
         <translation>Filen har tagits bort från servern</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="657"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="654"/>
         <source>Broken webserver returned empty content length for non-empty file on resume</source>
         <translation>En felaktig webbserver returnerade tomt Content-Length för en icke-tom fil vid återupptagning</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="664"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="661"/>
         <source>The file could not be downloaded completely.</source>
         <translation>Filen kunde inte laddas ner fullständigt.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="671"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="668"/>
         <source>The downloaded file is empty despite the server announced it should have been %1.</source>
         <translation>Den nedladdade filen är tom men servern sa att den skulle vara %1.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="778"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="775"/>
         <source>File %1 cannot be saved because of a local file name clash with %2!</source>
         <translation>Filen %1 kan inte sparas på grund av en lokal filnamnskonflikt med %2!</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="866"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="863"/>
         <source>Error updating metadata: %1</source>
         <translation>Fel vid uppdatering av metadata: %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="423"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="802"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="834"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="869"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="420"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="799"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="831"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="866"/>
         <source>The file %1 is currently in use</source>
         <translation>Filen %1 används för närvarande</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagatedownload.cpp" line="304"/>
-        <location filename="../src/libsync/propagatedownload.cpp" line="826"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="301"/>
+        <location filename="../src/libsync/propagatedownload.cpp" line="823"/>
         <source>File has changed since discovery</source>
         <translation>Filen har ändrats sedan upptäckten</translation>
     </message>
@@ -2406,39 +2406,39 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::PropagateUploadCommon</name>
     <message>
-        <location filename="../src/libsync/propagateuploadcommon.cpp" line="63"/>
+        <location filename="../src/libsync/propagateuploadcommon.cpp" line="61"/>
         <source>Local file changed during sync. It will be resumed.</source>
         <translation>Den lokala filen ändrades under synkroniseringen. Den återupptas.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateuploadcommon.cpp" line="80"/>
+        <location filename="../src/libsync/propagateuploadcommon.cpp" line="78"/>
         <source>File %1 cannot be uploaded because another file with the same name, differing only in case, exists</source>
         <translation>Filen %1 kan inte laddas upp eftersom det redan finns en annan fil med samma namn, som bara skiljer sig åt i versaler och gemener</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateuploadcommon.cpp" line="91"/>
-        <location filename="../src/libsync/propagateuploadcommon.cpp" line="278"/>
+        <location filename="../src/libsync/propagateuploadcommon.cpp" line="89"/>
+        <location filename="../src/libsync/propagateuploadcommon.cpp" line="276"/>
         <source>Upload of %1 exceeds the quota for the folder</source>
         <translation>Uppladdningen av %1 överstiger kvoten för mappen</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateuploadcommon.cpp" line="131"/>
-        <location filename="../src/libsync/propagateuploadcommon.cpp" line="162"/>
+        <location filename="../src/libsync/propagateuploadcommon.cpp" line="129"/>
+        <location filename="../src/libsync/propagateuploadcommon.cpp" line="160"/>
         <source>%1 the file is currently in use</source>
         <translation>%1 filen används för närvarande</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateuploadcommon.cpp" line="197"/>
+        <location filename="../src/libsync/propagateuploadcommon.cpp" line="195"/>
         <source>File Removed</source>
         <translation>Filen Raderad</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateuploadcommon.cpp" line="372"/>
+        <location filename="../src/libsync/propagateuploadcommon.cpp" line="370"/>
         <source>The server did not provide the file permissions</source>
         <translation>Servern angav inte filbehörigheterna</translation>
     </message>
     <message>
-        <location filename="../src/libsync/propagateuploadcommon.cpp" line="380"/>
+        <location filename="../src/libsync/propagateuploadcommon.cpp" line="378"/>
         <source>Error updating metadata: %1</source>
         <translation>Fel vid uppdatering av metadata: %1</translation>
     </message>
@@ -2548,57 +2548,57 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::RequestAuthenticationWidget</name>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="42"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="45"/>
         <source>Application Name Logo %1</source>
         <translation>Programlogotyp %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="44"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="47"/>
         <source>Sign in required</source>
         <translation>Inloggning krävs</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="52"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="55"/>
         <source>You may have been automatically disconnected due to a server issue or time out. Please sign in again.</source>
         <translation>Du kan ha kopplats från automatiskt på grund av ett serverproblem eller en tidsgräns. Logga in igen.</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="63"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="66"/>
         <source>Sign in URL</source>
         <translation>Inloggnings-URL</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="64"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="67"/>
         <source>To copy the sign in URL to the clipboard, use the copy button</source>
         <translation>Använd kopieringsknappen för att kopiera inloggnings-URL:en till urklipp.</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="70"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="73"/>
         <source>Copy URL to sign in</source>
         <translation>Kopiera URL för inloggning</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="91"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="94"/>
         <source>Additional logo defined by the organization</source>
         <translation>Ytterligare logotyp definierad av organisationen</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="94"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="97"/>
         <source>Stay logged out</source>
         <translation>Fortsätt vara utloggad</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="96"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="99"/>
         <source>Sign in</source>
         <translation>Logga in</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="180"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="183"/>
         <source>URL copied</source>
         <translation>URL kopierad</translation>
     </message>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="182"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="185"/>
         <source>Copy URL</source>
         <translation>Kopiera URL</translation>
     </message>
@@ -2761,33 +2761,33 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::SocketApi</name>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="470"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="471"/>
         <source>Share with %1</source>
         <comment>parameter is the application name</comment>
         <translation>Dela med %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="575"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="576"/>
         <source>Confirm deletion</source>
         <translation>Bekräfta radering</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="577"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="578"/>
         <source>Do you want to delete the directory &lt;i&gt;%1&lt;/i&gt; and all its contents permanently?</source>
         <translation>Vill du radera katalogen &lt;i&gt;%1&lt;/i&gt; och allt dess innehåll permanent?</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="578"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="579"/>
         <source>Do you want to delete the file &lt;i&gt;%1&lt;/i&gt; permanently?</source>
         <translation>Vill du radera filen &lt;i&gt;%1&lt;/i&gt; permanent?</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="630"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="631"/>
         <source>Error</source>
         <translation>Fel</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="631"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="632"/>
         <source>Moving file failed:
 
 %1</source>
@@ -2796,80 +2796,80 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="694"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="695"/>
         <source>I shared something with you</source>
         <translation>Jag delade något med dig</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="620"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="621"/>
         <source>Select new location…</source>
         <translation>Välj ny plats…</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="707"/>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="736"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="708"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="737"/>
         <source>Share…</source>
         <translation>Dela…</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="709"/>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="740"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="710"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="741"/>
         <source>Copy private link to clipboard</source>
         <translation>Kopiera privat länk till urklipp</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="734"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="735"/>
         <source>Resharing this file is not allowed</source>
         <translation>Vidaredelning av den här filen är inte tillåten</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="734"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="735"/>
         <source>Resharing this folder is not allowed</source>
         <translation>Vidaredelning av den här mappen är inte tillåten</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="809"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="810"/>
         <source>Open in %1</source>
         <translation>Öppna i %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="820"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="821"/>
         <source>Show file versions in web browser</source>
         <translation>Visa filversioner i webbläsaren</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="842"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="843"/>
         <source>Rename…</source>
         <translation>Byt namn…</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="845"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="846"/>
         <source>Rename and upload…</source>
         <translation>Byt namn och ladda upp…</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="850"/>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="854"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="851"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="855"/>
         <source>Move and rename…</source>
         <translation>Flytta och byt namn…</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="857"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="858"/>
         <source>Move, rename and upload…</source>
         <translation>Flytta, byt namn och ladda upp…</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="865"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="866"/>
         <source>Move and upload…</source>
         <translation>Flytta och ladda upp…</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="860"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="861"/>
         <source>Delete local changes</source>
         <translation>Radera lokala ändringar</translation>
     </message>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="866"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="867"/>
         <source>Delete</source>
         <translation>Ta bort</translation>
     </message>
@@ -3009,7 +3009,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::Theme</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="209"/>
+        <location filename="../src/libsync/theme.cpp" line="193"/>
         <source>&lt;p&gt;Version %1. For more information visit &lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;For known issues and help, please visit: &lt;a href=&quot;https://central.owncloud.com/c/desktop-client&quot;&gt;https://central.owncloud.com&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;small&gt;By Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz,  Jan-Christoph Borchardt, Thomas Müller,&lt;br&gt;Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller and others.&lt;/small&gt;&lt;/p&gt;&lt;p&gt;Copyright ownCloud GmbH (A Kiteworks Company)&lt;/p&gt;&lt;p&gt;Distributed by %4 and licensed under the GNU General Public License (GPL) Version 2.0.&lt;br/&gt;%5 and the %5 logo are registered trademarks of %4 in the United States, other countries, or both.&lt;/p&gt;&lt;p&gt;&lt;small&gt;%6&lt;/small&gt;&lt;/p&gt;</source>
         <translation>&lt;p&gt;Version %1. Mer information finns på &lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;För kända problem och hjälp, besök: &lt;a href=&quot;https://central.owncloud.com/c/desktop-client&quot;&gt;https://central.owncloud.com&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;small&gt;Av Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz, Jan-Christoph Borchardt, Thomas Müller,&lt;br&gt;Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller och andra.&lt;/small&gt;&lt;/p&gt;&lt;p&gt;Copyright ownCloud GmbH (ett Kiteworks-företag)&lt;/p&gt;&lt;p&gt;Distribueras av %4 och licensieras under GNU General Public License (GPL) version 2.0.&lt;br/&gt;%5 och %5-logotypen är registrerade varumärken för %4 i USA, andra länder eller båda.&lt;/p&gt;&lt;p&gt;&lt;small&gt;%6&lt;/small&gt;&lt;/p&gt;</translation>
     </message>
@@ -3060,17 +3060,17 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation>Visa %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/traymenucontroller.cpp" line="188"/>
+        <location filename="../src/gui/traymenucontroller.cpp" line="189"/>
         <source>Help</source>
         <translation>Hjälp</translation>
     </message>
     <message>
-        <location filename="../src/gui/traymenucontroller.cpp" line="192"/>
+        <location filename="../src/gui/traymenucontroller.cpp" line="193"/>
         <source>About %1</source>
         <translation>Om %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/traymenucontroller.cpp" line="195"/>
+        <location filename="../src/gui/traymenucontroller.cpp" line="196"/>
         <source>Quit %1</source>
         <translation>Avsluta %1</translation>
     </message>
@@ -3078,12 +3078,12 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::UpdateDownloadedWidget</name>
     <message>
-        <location filename="../src/gui/updater/updatedownloadedwidget.cpp" line="38"/>
+        <location filename="../src/gui/updater/updatedownloadedwidget.cpp" line="39"/>
         <source>Restart later</source>
         <translation>Starta om senare</translation>
     </message>
     <message>
-        <location filename="../src/gui/updater/updatedownloadedwidget.cpp" line="40"/>
+        <location filename="../src/gui/updater/updatedownloadedwidget.cpp" line="41"/>
         <source>Restart now</source>
         <translation>Starta om nu</translation>
     </message>
@@ -3099,52 +3099,52 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="54"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="55"/>
         <source>Your web browser will be opened to complete sign in.</source>
         <translation>Webbläsaren öppnas för att slutföra inloggningen.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="69"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="70"/>
         <source>%1 logo</source>
         <translation>%1-logotyp</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="71"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="72"/>
         <source>Welcome to %1</source>
         <translation>Välkommen till %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="79"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="80"/>
         <source>Enter your server address to get started. Your web browser will be opened to complete sign in.</source>
         <translation>Ange serveradressen för att komma igång. Webbläsaren öppnas för att slutföra inloggningen.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="95"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="96"/>
         <source>Server address field</source>
         <translation>Fält för serveradress</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="96"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="97"/>
         <source>Enter your server address here</source>
         <translation>Ange serveradressen här</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="117"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="118"/>
         <source>Additional logo defined by the organization</source>
         <translation>Ytterligare logotyp definierad av organisationen</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="210"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="211"/>
         <source>Invalid server URL: %1</source>
         <translation>Ogiltig server-URL: %1</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="214"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="215"/>
         <source>Invalid URL scheme. Only https is accepted.</source>
         <translation>Ogiltigt URL-schema. Endast https accepteras.</translation>
     </message>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="242"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="243"/>
         <source>The requested URL failed with query value: %1</source>
         <translation>Den begärda URL:en misslyckades med frågevärdet: %1</translation>
     </message>
@@ -3331,7 +3331,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation><numerusform>%n minut sedan</numerusform><numerusform>%n minuter sedan</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncresult.cpp" line="153"/>
+        <location filename="../src/libsync/syncresult.cpp" line="152"/>
         <source>%1: %2</source>
         <extracomment>this displays an error string (%2) for a file %1</extracomment>
         <translation>%1: %2</translation>
@@ -3471,7 +3471,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation>%1 %2</translation>
     </message>
     <message>
-        <location filename="../src/libsync/platform_win.cpp" line="116"/>
+        <location filename="../src/libsync/platform_win.cpp" line="122"/>
         <source>Shutting down %1</source>
         <translation>Avslutar %1</translation>
     </message>
@@ -3479,12 +3479,12 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>account loading</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="433"/>
+        <location filename="../src/gui/main.cpp" line="434"/>
         <source>Error accessing the configuration file</source>
         <translation>Kunde inte komma åt konfigurationsfilen</translation>
     </message>
     <message>
-        <location filename="../src/gui/main.cpp" line="434"/>
+        <location filename="../src/gui/main.cpp" line="435"/>
         <source>There was an error while accessing the configuration file at %1.</source>
         <translation>Ett fel uppstod vid läsning av konfigurationsfil vid %1.</translation>
     </message>
@@ -3492,7 +3492,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>ownCloudTheme::aboutVersions()</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="190"/>
+        <location filename="../src/libsync/theme.cpp" line="174"/>
         <source>%1 %2%7%8Libraries Qt %3, %4%7Using virtual files plugin: %5%7%6</source>
         <translation>%1 %2%7%8Qt-bibliotek %3, %4%7Använder insticksprogram för virtuella filer: %5%7%6</translation>
     </message>
@@ -3500,7 +3500,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>ownCloudTheme::qtVer</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="172"/>
+        <location filename="../src/libsync/theme.cpp" line="156"/>
         <source>%1 (Built against Qt %2)</source>
         <translation>%1 (byggd med Qt %2)</translation>
     </message>
@@ -3508,7 +3508,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>ownCloudTheme::versionWithSha</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="178"/>
+        <location filename="../src/libsync/theme.cpp" line="162"/>
         <source>%1 %2</source>
         <translation>%1 %2</translation>
     </message>
@@ -3671,7 +3671,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>version check</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="171"/>
+        <location filename="../src/gui/main.cpp" line="172"/>
         <source>Some settings were configured in newer versions of this client and use features that are not available in this version</source>
         <translation>Vissa inställningar konfigurerades i nyare versioner av klienten och använder funktioner som inte är tillgängliga i denna version</translation>
     </message>
