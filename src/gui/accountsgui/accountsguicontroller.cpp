@@ -94,7 +94,7 @@ void AccountsGuiController::onAccountAdded(AccountState *state)
     // it's really dumb to have "long" text on any toolbar component in the first place. We hope to fix this someday
     // by allowing the user to set an account alias which will show as the account name but that needs a major release
     // to support the config change
-    accountAction->setText(account->hostName());
+    accountAction->setText(account->accountAlias());
 
     accountAction->setToolTip(QString("%1\n%2").arg(account->davDisplayName(), account->url().toDisplayString()));
     accountAction->setData(QVariant::fromValue(accountView));
