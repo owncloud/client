@@ -86,7 +86,9 @@ void MainWindow::buildWindow()
     // which makes the button "edge" clear. Anyway without this fix, the  ... button looked really weird
     // looked like it was pushed too far to the right with a larger gap on the left side vs the right
     // this change helped a lot.
-    _toolbar->setStyleSheet("QToolBar::Separator { width: 1px; height: 1px; }");
+    // leaving this here as we are currently just hiding the separator, if we want to show it again this needs
+    // to be uncommented too.
+    // _toolbar->setStyleSheet("QToolBar::Separator { width: 1px; height: 1px; }");
     _toolbar->setIconSize(iconsSize);
     _toolbar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     _toolbar->setMovable(false);
@@ -103,15 +105,21 @@ void MainWindow::buildWindow()
 
     // need to stash the separator action so we can insert other actions before it, ie after the stretch section
     _separatorAction = _toolbar->addSeparator();
+    // I'm hiding the separator as it is too difficult to make the more button look normal as the toolbar widget spacing is used
+    // on either side of the separator, and this makes the more button look weird/out of place/too far to the right in a subtle way.
+    // if we want to turn it back on, at minimum the tooblar::separator style sheet above should be uncommented else it's *really* bad.
+    _separatorAction->setVisible(false);
 
     QAction *moreAction = new QAction(tr("More"), this);
     moreAction->setObjectName("moreAction");
     moreAction->setIcon(IconResources::getCoreIcon("more"));
-    moreAction->setToolTip(tr("More"));
     _toolbar->addAction(moreAction);
     _moreButton = qobject_cast<QToolButton *>(_toolbar->widgetForAction(moreAction));
-    _moreButton->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
     _moreButton->setFocusPolicy(Qt::StrongFocus);
+    QSize minsize = _moreButton->minimumSizeHint();
+    // golden ratio is too wide, this is silver ratio and looks pretty good.
+    _moreButton->setMinimumWidth(minsize.height() * 1.414);
+    _moreButton->setPopupMode(QToolButton::InstantPopup);
     if (Utility::isMac()) {
         // does not work for QToolButton:
         // button->setAttribute(Qt::WA_MacShowFocusRect, true);
@@ -121,13 +129,6 @@ void MainWindow::buildWindow()
     } else {
         _moreButton->setStyleSheet("QToolButton::menu-indicator { image: none; }");
     }
-
-    _moreButton->setPopupMode(QToolButton::InstantPopup);
-    // QToolButtons have default fixed size, shaped to their content (watch out if it's text only, especially!).
-    // In this toolbar all action buttons have icon+text which makes them effectively "taller" than the more button so there is
-    // dead space which doesn't accept clicks above and below the more icon
-    // So, make the more button expand vertically so you can click anywhere in the area, just like all the others.
-    _moreButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
 
     _widgetStack = new QStackedWidget(this);
     setCentralWidget(_widgetStack);
@@ -201,16 +202,17 @@ void MainWindow::configureAction(QAction *action)
     if (widget) {
         QWidget *button = _toolbar->widgetForAction(action);
         Q_ASSERT(button);
-        // todo: this does not seem to be working on the account buttons?! It only sets focus on click
-        // when the button is already selected. for the error and activity buttons, it sets focus on first
-        // click along with selecting the button. I do not get it.
         button->setFocusPolicy(Qt::StrongFocus);
         if (Utility::isMac()) {
             // does not work for QToolButton:
             // button->setAttribute(Qt::WA_MacShowFocusRect, true);
             button->setStyleSheet("QToolButton:focus { border: 2px solid palette(highlight); }");
         }
-
+        // toolbutton size hint seems to be ignored in the toolbar layout. Eg if I have a short alias the button
+        // is super narrow and looks bad.
+        // golden ratio is too wide, this is silver ratio and looks pretty good.
+        QSize minsize = button->minimumSizeHint();
+        button->setMinimumWidth(minsize.height() * 1.414);
         connect(action, &QAction::toggled, this, &MainWindow::onViewActionTriggered);
         _actionGroup->addAction(action);
         _widgetStack->addWidget(widget);

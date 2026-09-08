@@ -155,6 +155,27 @@ bool Account::hasAvatar() const
     return !_avatarImg.isNull();
 }
 
+QString Account::accountAlias() const
+{
+    return _alias;
+}
+
+void Account::setAccountAlias(const QString &newAlias)
+{
+    if (_alias != newAlias) {
+        _alias = newAlias;
+        emit accountAliasChanged(_alias);
+        // eh, may as well save it to settings right away
+        emit wantsAccountSaved(this);
+    }
+}
+
+QString Account::calculateAlias() const
+{
+    QString first = davDisplayName().section(QRegularExpression("\\s"), 0, 0, QString::SectionSkipEmpty);
+    return first;
+}
+
 QString Account::displayNameWithHost() const
 {
     QString user = davDisplayName();
@@ -175,11 +196,6 @@ QString Account::initials() const
     return out;
 }
 
-QGradient::Preset Account::avatarGradient() const
-{
-    return static_cast<QGradient::Preset>(qHash(displayNameWithHost()) % QGradient::NumPresets + 1);
-}
-
 QString Account::davDisplayName() const
 {
     if (_displayName.isEmpty()) {
@@ -194,6 +210,12 @@ void Account::setDavDisplayName(const QString &newDisplayName)
         _displayName = newDisplayName;
         Q_EMIT displayNameChanged();
     }
+}
+
+void Account::setGroupIndex(const QString &index)
+{
+    if (index != _groupIndex)
+        _groupIndex = index;
 }
 
 QString Account::groupIndex() const
