@@ -59,17 +59,6 @@ class ResourcesCache;
 class OWNCLOUDSYNC_EXPORT Account : public QObject
 {
     Q_OBJECT
-    /*   Q_PROPERTY(QUuid uid READ uuid CONSTANT)
-       Q_PROPERTY(QString davUser READ davUser CONSTANT)
-       Q_PROPERTY(QString davDisplayName READ davDisplayName NOTIFY displayNameChanged)
-       Q_PROPERTY(QString displayNameWithHost READ displayNameWithHost NOTIFY displayNameChanged)
-       Q_PROPERTY(QString initials READ initials NOTIFY displayNameChanged)
-       Q_PROPERTY(QString hostName READ hostName CONSTANT)
-       Q_PROPERTY(bool hasAvatar READ hasAvatar NOTIFY avatarChanged)
-       Q_PROPERTY(QGradient::Preset avatarGradient READ avatarGradient NOTIFY displayNameChanged)
-       Q_PROPERTY(QUrl url READ url CONSTANT)
-       QML_ELEMENT
-       QML_UNCREATABLE("Only created in the C++ code")*/
 
 public:
     /**
@@ -279,7 +268,6 @@ private:
     AppProvider _appProvider;
 
     GraphApi::SpacesManager *_spacesManager = nullptr;
-    //  friend class AccountManager;
 };
 }
 
