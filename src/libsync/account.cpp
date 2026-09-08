@@ -165,6 +165,8 @@ void Account::setAccountAlias(const QString &newAlias)
     if (_alias != newAlias) {
         _alias = newAlias;
         emit accountAliasChanged(_alias);
+        // eh, may as well save it to settings right away
+        emit wantsAccountSaved(this);
     }
 }
 

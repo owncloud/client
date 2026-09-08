@@ -49,6 +49,7 @@ protected:
     void onDeleteAccount();
     void onOpenAccountInBrowser();
     void onToggleSignInState();
+    void onChangeAlias();
 
     void onFolderWizardAccepted();
 
@@ -62,6 +63,7 @@ private:
     QAction *_reconnect = nullptr;
     QAction *_showInBrowser = nullptr;
     QAction *_remove = nullptr;
+    QAction *_rename = nullptr;
 
     void buildManageAccountMenu();
     void refreshAccountActions();

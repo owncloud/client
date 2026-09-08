@@ -86,9 +86,8 @@ void MainWindow::buildWindow()
     // which makes the button "edge" clear. Anyway without this fix, the  ... button looked really weird
     // looked like it was pushed too far to the right with a larger gap on the left side vs the right
     // this change helped a lot.
-    // note setting the margin does nothing because it's not actually in play - the extra gap around the separator
-    // is due to the widget spacing in the toolbar itself. I think if we want to get rid of this we have to completely hide
-    // the separator, but leave it in place to allow placing other widgets before or after it.
+    // leaving this here as we are currently just hiding the separator, if we want to show it again this needs
+    // to be uncommented too.
     // _toolbar->setStyleSheet("QToolBar::Separator { width: 1px; height: 1px; }");
     _toolbar->setIconSize(iconsSize);
     _toolbar->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
@@ -108,7 +107,7 @@ void MainWindow::buildWindow()
     _separatorAction = _toolbar->addSeparator();
     // I'm hiding the separator as it is too difficult to make the more button look normal as the toolbar widget spacing is used
     // on either side of the separator, and this makes the more button look weird/out of place/too far to the right in a subtle way.
-    // if we want to turn it back on, at minimum the style sheet above should be uncommented else it's *really* bad.
+    // if we want to turn it back on, at minimum the tooblar::separator style sheet above should be uncommented else it's *really* bad.
     _separatorAction->setVisible(false);
 
     QAction *moreAction = new QAction(tr("More"), this);

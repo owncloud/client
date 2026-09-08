@@ -26,6 +26,7 @@
 #include "libsync/theme.h"
 
 #include <QDesktopServices>
+#include <QInputDialog>
 #include <QMenu>
 #include <QMessageBox>
 #include <QPushButton>
@@ -110,6 +111,11 @@ void AccountViewController::buildManageAccountMenu()
     connect(_remove, &QAction::triggered, this, &AccountViewController::onDeleteAccount);
     actions.push_back(_remove);
 
+    _rename = new QAction(tr("Change alias..."));
+    _rename->setObjectName("changeAliasAction");
+    connect(_rename, &QAction::triggered, this, &AccountViewController::onChangeAlias);
+    actions.push_back(_rename);
+
     _view->setAccountMenuActions(actions);
 }
 
@@ -123,6 +129,7 @@ void AccountViewController::refreshAccountActions()
         _reconnect->setEnabled(false);
         _showInBrowser->setEnabled(false);
         _remove->setEnabled(false);
+        _rename->setEnabled(false);
         return;
     }
 
@@ -187,6 +194,28 @@ void AccountViewController::onDeleteAccount()
     messageBox->open();
 }
 
+void AccountViewController::onChangeAlias()
+{
+    if (!_accountState || !_accountState->account())
+        return;
+
+
+    // naturally this thing is STUPIDLY TINY by default so using the convenience method is out:
+    // QString newAlias = QInputDialog::getText(_view, tr("Change alias"), tr("Account alias:"), QLineEdit::Normal, _accountState->account()->accountAlias());
+
+    QInputDialog dialog(_view);
+    dialog.setWindowTitle(tr("Change alias"));
+    dialog.setInputMode(QInputDialog::TextInput);
+    dialog.setLabelText(tr("Account alias:"));
+    dialog.setTextValue(_accountState->account()->accountAlias());
+    QSize minHint = dialog.minimumSizeHint(); // width is 192?
+    dialog.resize(minHint.width() * 2, minHint.height());
+
+    int res = dialog.exec();
+    if (res == QDialog::Accepted && !dialog.textValue().isEmpty())
+        _accountState->account()->setAccountAlias(dialog.textValue());
+}
+
 QIcon AccountViewController::lookupStatusIcon(StatusIcon status)
 {
     QIcon icon;
@@ -208,6 +237,7 @@ QIcon AccountViewController::lookupStatusIcon(StatusIcon status)
     }
     return icon;
 }
+
 void AccountViewController::onAccountStateChanged(AccountState::State state)
 {
     if (!_accountState || !_accountState->account() || !_view) {
