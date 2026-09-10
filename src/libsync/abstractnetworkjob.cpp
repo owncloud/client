@@ -55,6 +55,9 @@ AbstractNetworkJob::AbstractNetworkJob(Account *account, const QUrl &baseUrl, co
     // Since we hold a QSharedPointer to the account, this makes no sense. (issue #6893)
     Q_ASSERT(account != parent);
     Q_ASSERT(baseUrl.isValid());
+
+    _timer.setSingleShot(true);
+    connect(&_timer, &QTimer::timeout, this, &AbstractNetworkJob::slotTimeout);
 }
 
 QUrl AbstractNetworkJob::url() const
@@ -71,6 +74,12 @@ void AbstractNetworkJob::setQuery(const QUrlQuery &query)
 void AbstractNetworkJob::setTimeout(const std::chrono::seconds sec)
 {
     _timeout = sec;
+    // If the timer is already running, restart it with the new interval so a
+    // late setTimeout() (e.g. PropagateUploadCommon::adjustLastJobTimeout) takes
+    // effect immediately.
+    if (_timer.isActive()) {
+        resetTimeout();
+    }
 }
 
 void AbstractNetworkJob::setForceIgnoreCredentialFailure(bool ignore)
@@ -149,11 +158,9 @@ void AbstractNetworkJob::sendRequest(const QByteArray &verb,
     _requestBody = requestBody;
 
     Q_ASSERT(_request.url().isEmpty() || _request.url() == url());
-    Q_ASSERT(_request.transferTimeout() == 0 || _request.transferTimeout() == duration_cast<milliseconds>(_timeout).count());
 
     _request.setUrl(url());
     _request.setPriority(_priority);
-    _request.setTransferTimeout(duration_cast<milliseconds>(_timeout).count());
 
     if (!_isAuthenticationJob && _account->jobQueue()->enqueue(this)) {
         return;
@@ -181,11 +188,23 @@ void AbstractNetworkJob::adoptRequest(QPointer<QNetworkReply> reply)
 
     connect(_reply, &QNetworkReply::finished, this, &AbstractNetworkJob::slotFinished);
 
+    // Reset the idle-timeout timer on every bit of network activity so that a long
+    // but progressing transfer is not aborted; only a stalled connection times out.
+    // This mirrors Qt's own setTransferTimeout re-arm-on-progress behavior, but with
+    // the timer owned by the job (not the reply) so no queued timeout can outlive the
+    // reply - see #12600.
+    connect(_reply, &QNetworkReply::downloadProgress, this, &AbstractNetworkJob::resetTimeout);
+    connect(_reply, &QNetworkReply::uploadProgress, this, &AbstractNetworkJob::resetTimeout);
+
+    // A fresh reply is now driving this job: (re)arm the timeout timer.
+    resetTimeout();
+
     newReplyHook(_reply);
 }
 
 void AbstractNetworkJob::slotFinished()
-{        
+{
+    _timer.stop();
     _finished = true;
 
     if (!_reply || !_account) {
@@ -232,6 +251,27 @@ void AbstractNetworkJob::slotFinished()
     Q_EMIT finishedSignal(AbstractNetworkJob::QPrivateSignal());
     qCDebug(lcNetworkJob) << "Network job finished" << this;
     deleteLater();
+}
+
+void AbstractNetworkJob::resetTimeout()
+{
+    // Single-shot idle timeout: (re)start on every call so an active transfer
+    // keeps pushing the deadline out. std::chrono::seconds converts to the
+    // milliseconds QTimer expects without narrowing.
+    _timer.start(_timeout);
+}
+
+void AbstractNetworkJob::slotTimeout()
+{
+    if (!_reply) {
+        return;
+    }
+    qCWarning(lcNetworkJob) << "Network job timeout" << this << url();
+    // Mark as timed out and abort the reply directly. We deliberately do not go
+    // through abort(), which sets _aborted and would make slotFinished treat this
+    // as a user cancel rather than a timeout (see the _timedout inference there).
+    _timedout = true;
+    _reply->abort();
 }
 
 QByteArray AbstractNetworkJob::responseTimestamp() const
@@ -378,6 +418,7 @@ void AbstractNetworkJob::retry()
 
 void AbstractNetworkJob::abort()
 {
+    _timer.stop();
     if (_reply) {
         // calling abort will trigger the execution of finished()
         // with _reply->error() == QNetworkReply::OperationCanceledError
