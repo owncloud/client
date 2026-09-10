@@ -14,6 +14,7 @@
  */
 
 #include <QAuthenticator>
+#include <QCoreApplication>
 #include <QNetworkRequest>
 
 #include "common/asserts.h"
@@ -30,6 +31,25 @@ using namespace std::chrono_literals;
 
 namespace {
 constexpr int MaxRetryCount = 5;
+
+// Tear down a reply we are abandoning.
+//
+// reply->abort() also stops the reply's internal transfer-timeout QTimer, but a
+// _q_transferTimedOut metacall that this timer already posted (it is connected
+// via a Qt::QueuedConnection with the reply as the *receiver*, a role the plain
+// reply->disconnect() does not cover) would survive deleteLater() and be
+// delivered to freed memory - the wake-from-sleep use-after-free (#12600).
+// removePostedEvents() drains any such pending call before we schedule deletion.
+void severAndDeleteReply(QNetworkReply *reply)
+{
+    if (!reply) {
+        return;
+    }
+    reply->disconnect();
+    reply->abort();
+    QCoreApplication::removePostedEvents(reply);
+    reply->deleteLater();
+}
 }
 
 
@@ -172,9 +192,7 @@ void AbstractNetworkJob::adoptRequest(QPointer<QNetworkReply> reply)
 {
     std::swap(_reply, reply);
     if (reply) {
-        reply->disconnect();
-        reply->abort();
-        reply->deleteLater();
+        severAndDeleteReply(reply.data());
     }
 
     _request = _reply->request();
@@ -289,9 +307,7 @@ AbstractNetworkJob::~AbstractNetworkJob()
         qCCritical(lcNetworkJob) << "Deleting running job" << this;
     }
     if (_reply) {
-        _reply->disconnect();
-        _reply->abort();
-        _reply->deleteLater();
+        severAndDeleteReply(_reply.data());
         _reply.clear();
     }
 }
