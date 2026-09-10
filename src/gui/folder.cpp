@@ -164,11 +164,14 @@ Folder::Folder(const FolderDefinition &definition, AccountState *accountState, S
 Folder::~Folder()
 {
     // If wipeForRemoval() was called vfs has already shut down, and the journal has been closed.
-    // any sync the engine was running should have been paused/aborted in folderman as prep to remove the folder.
+    // any sync the engine that was running should have been paused/aborted in folderman as prep to remove the folder.
     // this feels very sketchy to me and I'm not really sure we should outsource all of that responsibility!
     // I think the main question is whether the child cleanup routines can finish in time before the pointers are deleted.
-    // this is especially true for sync engine (if it's running on dtr) but any of them could get humg up, in theory
-    // discuss with cohorts.
+
+    // Update: the assert below was being triggered on shutdown, as folderman was not aborting running syncs before deleting the folder!
+    // added sync abort + wait loop to ensure there is really no activity at the point we delete the folder. I think this is now
+    // fairly stable but in principle it substantiates my concern above.
+    // final eval needs to be a future todo.
     if (_vfs)
         _vfs->stop();
     if (_engine)
@@ -733,17 +736,17 @@ void Folder::slotTerminateSync(const QString &reason)
 
 void Folder::wipeForRemoval()
 {
-    // note we don't have to abort any running sync here as the folderman pauses the folder before this function is ever called.
-    Q_ASSERT(!isSyncRunning());
-
-    // I don't understand this logic so I'm removing it for now
-    // the setupError condition is related to failure to start vfs as far as I can tell.
-    // that doesn't mean the members don't exist, to the contrary! they are likely instantiated so let's
-    // let the wipe proceed.
-    // we can't acces those variables
-    // if (hasSetupError()) {
-    //   return;
-    // }
+    // note we don't have to abort any running sync here as the folderman aborts and pauses the folder before this function is ever called.
+    // however, using an assert I identified that at this stage the sync may still be running as it has not finished aborting yet.
+    // key to the delayed finish seems to be the OwncloudPropagator which runs it's abort async and has potentially many child jobs already in flight.
+    // replacing the old assert with waitLoop to let it really finish before proceeding with teardown.
+    // ensuring the aborts are really finished is required when we are permantently deleting the folder (either remove folder sync or delete account)
+    // so it's appropriate to add it here.
+    if (_engine && _engine->isSyncRunning()) {
+        QEventLoop waitLoop;
+        QObject::connect(_engine, &SyncEngine::finished, &waitLoop, &QEventLoop::quit);
+        waitLoop.exec();
+    }
 
     // prevent interaction with the db etc
     _vfsIsReady = false;
@@ -758,11 +761,7 @@ void Folder::wipeForRemoval()
     _journal->close(); // close the sync journal
 
     // Remove db and temporaries
-    // what is this? the engine's journal IS THE SAME as the folder member journal!!!!
-    // const QString stateDbFile = _engine->journal()->databaseFilePath();
     const QString stateDbFile = _journal->databaseFilePath();
-
-
     QFile file(stateDbFile);
     if (file.exists()) {
         if (!file.remove()) {
