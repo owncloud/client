@@ -54,6 +54,7 @@ ownCloud admins and users.
 
 * Change - Eliminated excessive server checks: [#12619](https://github.com/owncloud/client/pull/12619)
 * Change - We ended support for OWNCLOUD_FORCE_DARK_MODE environment variable: [#12625](https://github.com/owncloud/client/pull/12625)
+* Change - Introduce a user editable account alias: [#12639](https://github.com/owncloud/client/pull/12639)
 
 ## Details
 
@@ -71,6 +72,23 @@ ownCloud admins and users.
    if dark mode should be used.
 
    https://github.com/owncloud/client/pull/12625
+
+* Change - Introduce a user editable account alias: [#12639](https://github.com/owncloud/client/pull/12639)
+
+   The identifying text on account button has been very unsatisfying because there
+   is no straightforward way to identify an account using short-ish text that is
+   unique, and which the user can identify with.
+
+   Our new approach is to use an account alias as text on the account buttons which
+   the user can customize to their liking.
+
+   The default alias value is derived from the first word that appears in the
+   display name (usually the user's first name)
+
+   The user can change this alias any time by going to the "Manage account" menu
+   and selecting "Change alias..." which will pop a simple input dialog.
+
+   https://github.com/owncloud/client/pull/12639
 
 # Changelog for ownCloud Desktop Client [7.1.1] (2026-08-27)
 
