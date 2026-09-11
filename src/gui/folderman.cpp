@@ -126,7 +126,12 @@ FolderMan *FolderMan::instance()
 
 FolderMan::~FolderMan()
 {
-    unloadAndDeleteAllFolders();
+    // note we used to call shutdown here, but imo this is risky because it does quite a lot, and actually happens
+    // "too late" for it to be effective anyway. Instead we must ensure shutdown is called by the app when quit is
+    // underway.
+    // hopefully pointless reality check that shutdown was called before destruction:
+    Q_ASSERT(_folders.isEmpty());
+
     _instance = nullptr;
 }
 
@@ -147,10 +152,13 @@ QList<Folder *> FolderMan::foldersForAccount(const QUuid &accountId)
     return {};
 }
 
-void FolderMan::unloadAndDeleteAllFolders()
+void FolderMan::shutdown()
 {
     if (_folders.isEmpty())
         return;
+
+    // ensure no new syncs are started from this point on
+    setSyncEnabled(false);
 
     // notify interested parties *before* the folders are actually deleted - this is important in eg etagwatcher and the activity
     // tabs because they need the original folder pointers to update themselves. todo: review the use of the folder pointers in these
@@ -165,6 +173,13 @@ void FolderMan::unloadAndDeleteAllFolders()
     QList<QUuid> accountIds = _folders.keys();
     for (auto id : std::as_const(accountIds)) {
         for (Folder *folder : std::as_const(_folders[id])) {
+            // kill any running sync and wait for abort to finish
+            if (folder->isSyncRunning()) {
+                folder->slotTerminateSync(tr("Application shutting down"));
+                QEventLoop waitLoop;
+                QObject::connect(folder, &Folder::syncFinished, &waitLoop, &QEventLoop::quit);
+                waitLoop.exec();
+            }
             saveFolder(folder, settings);
             _socketApi->slotUnregisterPath(folder);
             folder->deleteLater();
@@ -193,8 +208,7 @@ std::optional<qsizetype> FolderMan::setupFoldersFromConfig()
 {
     setSyncEnabled(false);
 
-    // todo: #9
-    unloadAndDeleteAllFolders();
+    Q_ASSERT(_folders.isEmpty());
 
     auto settings = ConfigFile::makeQSettings();
     settings.beginGroup("Accounts");
@@ -931,7 +945,7 @@ void FolderMan::deleteFolderSync(Folder *f)
         f->slotTerminateSync(tr("Folder is about to be removed"));
     }
 
-    // this aborts any running sync so the sync engine should be idle 
+    // this prevents any new sync from starting
     f->setSyncPaused(true);
 
     // this function includes the stuff to remove the database files.
