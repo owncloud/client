@@ -253,12 +253,18 @@ public:
     /// This slot will tell all sync engines to reload the sync options.
     void updateMoveToTrash(bool trashIt);
 
-    /** Simple save and remove all folders on shut down
+    /** Shut down routine
      *
-     *  emits folderListChanged
+     *  first disable syncs
+     *
+     *  emits folderListChanged to empty set
+     *
+     *  Then save and remove all folders.
+     *
+     *  Includes routine to abort any running sync and waits for the abort to finish, for safety.
      *
      */
-    void unloadAndDeleteAllFolders();
+    void shutdown();
 
     /**
      * If enabled is set to false, no new folders will start to sync.
