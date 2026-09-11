@@ -1,5 +1,5 @@
 /*
- * Copyright (C) by Klaas Freitag <freitag@owncloud.com>
+ * Copyright (C) Lisa Reese <lisa.reese@kiteworks.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,30 +14,29 @@
 
 #pragma once
 
-#include <QWidget>
+#include <QHash>
+#include <QObject>
+#include <QStyleHints>
 
-class QTabWidget;
+class QAction;
 
 namespace OCC {
 
-/**
- * @brief The ActivitySettings class
- * @ingroup gui
- *
- * Implements a tab for the settings dialog, displaying lists of local activities and sync issues
- */
-class ActivitySettings : public QWidget
+class ColorManager : public QObject
 {
     Q_OBJECT
+
 public:
-    explicit ActivitySettings(QWidget *parent = nullptr);
-    ~ActivitySettings() override;
+    explicit ColorManager(QObject *parent);
 
-private Q_SLOTS:
-    void slotShowIssueItemCount(int cnt);
+    void addActionIcon(QAction *action, const QString &iconName);
+    void refresh();
 
-private:
-    QTabWidget *_tab = nullptr;
-    int _syncErrorTabId = -1;
+signals:
+    void refreshCoreIcons();
+
+protected:
+    void updateColorScheme(Qt::ColorScheme colorScheme);
 };
+
 }

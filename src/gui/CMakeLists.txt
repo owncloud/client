@@ -32,7 +32,6 @@ set(client_SRCS
     localactivitywidget.cpp
     protocolitem.cpp
     syncerrorwidget.cpp
-    activitysettings.cpp
     selectivesyncwidget.cpp
     tlserrordialog.cpp
     syncrunfilelog.cpp

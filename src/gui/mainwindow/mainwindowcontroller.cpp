@@ -16,8 +16,9 @@
 
 #include "aboutview.h"
 #include "application.h"
-#include "iconresources.h"
+#include "colormanager.h"
 #include "guiutility.h"
+#include "iconresources.h"
 #include "localactivitywidget.h"
 #include "mainwindow.h"
 #include "modalwrapperwidget.h"
@@ -35,7 +36,10 @@ MainWindowController::MainWindowController(MainWindow *window, QObject *parent)
     : QObject{parent}
     , _window(window)
 {
+    // this is going to move so it can be passed around by injection or connected externally, but starting with it here:
+    _colorManager = new ColorManager(this);
     setup();
+    _colorManager->refresh();
 }
 
 void MainWindowController::setup()
@@ -118,7 +122,9 @@ void MainWindowController::buildMenuActions()
 void MainWindowController::createSyncErrorsAction()
 {
     QAction *syncErrorsAction = new QAction(tr("Errors: %1").arg(0), this);
-    syncErrorsAction->setIcon(IconResources::getCoreIcon("states/error"));
+    //  syncErrorsAction->setIcon(IconResources::getCoreIcon("states/error"));
+    _colorManager->addActionIcon(syncErrorsAction, "states/error");
+
     syncErrorsAction->setObjectName("syncErrorsAction");
     syncErrorsAction->setCheckable(true);
     auto syncErrorWidget = new SyncErrorWidget(_window);
@@ -132,7 +138,8 @@ void MainWindowController::createSyncErrorsAction()
 void MainWindowController::createActivityAction()
 {
     QAction *activityAction = new QAction(tr("Activity"), this);
-    activityAction->setIcon(IconResources::getCoreIcon("states/sync"));
+    // activityAction->setIcon(IconResources::getCoreIcon("states/sync"));
+    _colorManager->addActionIcon(activityAction, "states/sync");
     activityAction->setObjectName("activityAction");
     activityAction->setCheckable(true);
     auto localActivityWidget = new LocalActivityWidget(_window);

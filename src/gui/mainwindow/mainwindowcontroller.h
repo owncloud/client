@@ -22,6 +22,7 @@ namespace OCC {
 
 class MainWindow;
 class AccountsGuiController;
+class ColorManager;
 
 class MainWindowController : public QObject
 {
@@ -48,5 +49,6 @@ private:
     void onQuit();
 
     MainWindow *_window = nullptr;
+    ColorManager *_colorManager = nullptr;
 };
 }
