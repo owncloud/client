@@ -36,7 +36,7 @@ MainWindowController::MainWindowController(MainWindow *window, QObject *parent)
     : QObject{parent}
     , _window(window)
 {
-    // this is going to move so it can be passed around by injected or connected externally, but starting with it here:
+    // this is going to move so it can be passed around by injection or connected externally, but starting with it here:
     _colorManager = new ColorManager(this);
     setup();
     _colorManager->refresh();
