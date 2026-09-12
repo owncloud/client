@@ -1031,111 +1031,111 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::Folder</name>
     <message>
-        <location filename="../src/gui/folder.cpp" line="375"/>
+        <location filename="../src/gui/folder.cpp" line="378"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 ຖືກລຶບອອກແລ້ວ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="389"/>
+        <location filename="../src/gui/folder.cpp" line="392"/>
         <source>%1 has been updated.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 ຖືກອັບເດດແລ້ວ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="396"/>
+        <location filename="../src/gui/folder.cpp" line="399"/>
         <source>%1 has been renamed to %2.</source>
         <comment>%1 and %2 name files.</comment>
         <translation>%1 ຖືກປ່ຽນຊື່ເປັນ %2.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="403"/>
+        <location filename="../src/gui/folder.cpp" line="406"/>
         <source>%1 has been moved to %2.</source>
         <translation>%1 ຖືກຍ້າຍໄປທີ່ %2.</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="373"/>
+        <location filename="../src/gui/folder.cpp" line="376"/>
         <source>%1 and %n other file(s) have been removed.</source>
         <translation><numerusform>%1 ແລະ ໄຟລ໌ອື່ນໆອີກ %n ໄຟລ໌ຖືກລຶບອອກແລ້ວ.</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="306"/>
+        <location filename="../src/gui/folder.cpp" line="309"/>
         <source>The folder has been disabled or removed from the server</source>
         <translation>ໂຟນເດີຖືກປິດໃຊ້ງານ ຫຼື ຖືກລຶບອອກຈາກເຊີບເວີແລ້ວ</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="380"/>
+        <location filename="../src/gui/folder.cpp" line="383"/>
         <source>%1 and %n other file(s) have been added.</source>
         <translation><numerusform>%1 ແລະ ໄຟລ໌ອື່ນໆອີກ %n ໄຟລ໌ຖືກເພີ່ມເຂົ້າມາແລ້ວ.</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="382"/>
+        <location filename="../src/gui/folder.cpp" line="385"/>
         <source>%1 has been added.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 ຖືກເພີ່ມເຂົ້າມາແລ້ວ.</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="387"/>
+        <location filename="../src/gui/folder.cpp" line="390"/>
         <source>%1 and %n other file(s) have been updated.</source>
         <translation><numerusform>%1 ແລະ ໄຟລ໌ອື່ນໆອີກ %n ໄຟລ໌ຖືກອັບເດດແລ້ວ.</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="394"/>
+        <location filename="../src/gui/folder.cpp" line="397"/>
         <source>%1 has been renamed to %2 and %n other file(s) have been renamed.</source>
         <translation><numerusform>%1 ຖືກປ່ຽນຊື່ເປັນ %2 ແລະ ໄຟລ໌ອື່ນໆອີກ %n ໄຟລ໌ຖືກປ່ຽນຊື່ແລ້ວ.</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="401"/>
+        <location filename="../src/gui/folder.cpp" line="404"/>
         <source>%1 has been moved to %2 and %n other file(s) have been moved.</source>
         <translation><numerusform>%1 ຖືກຍ້າຍໄປທີ່ %2 ແລະ ໄຟລ໌ອື່ນໆອີກ %n ໄຟລ໌ຖືກຍ້າຍແລ້ວ.</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="408"/>
+        <location filename="../src/gui/folder.cpp" line="411"/>
         <source>%1 and %n other file(s) have sync conflicts.</source>
         <translation><numerusform>%1 ແລະ ໄຟລ໌ອື່ນໆອີກ %n ໄຟລ໌ມີບັນຫາການຊິງຂັດກັນ.</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="410"/>
+        <location filename="../src/gui/folder.cpp" line="413"/>
         <source>%1 has a sync conflict. Please check the conflict file!</source>
         <translation>%1 ມີບັນຫາການຊິງຂັດກັນ. ກະລຸນາກວດສອບໄຟລ໌ທີ່ຂັດກັນ!</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="415"/>
+        <location filename="../src/gui/folder.cpp" line="418"/>
         <source>%1 and %n other file(s) could not be synced due to errors. See the log for details.</source>
         <translation><numerusform>%1 ແລະ ໄຟລ໌ອື່ນໆອີກ %n ໄຟລ໌ບໍ່ສາມາດຊິງໄດ້ເນື່ອງຈາກຄວາມຜິດພາດ. ເບິ່ງລາຍລະອຽດໃນລັອກ.</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="417"/>
+        <location filename="../src/gui/folder.cpp" line="420"/>
         <source>%1 could not be synced due to an error. See the log for details.</source>
         <translation>%1 ບໍ່ສາມາດຊິງໄດ້ເນື່ອງຈາກຄວາມຜິດພາດ. ເບິ່ງລາຍລະອຽດໃນລັອກ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="423"/>
+        <location filename="../src/gui/folder.cpp" line="426"/>
         <source>Sync Activity</source>
         <translation>ກິດຈະກຳການຊິງ</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="625"/>
+        <location filename="../src/gui/folder.cpp" line="628"/>
         <source>Switching VFS mode on folder &apos;%1&apos;</source>
         <translation>ກຳລັງປ່ຽນໂໝດ VFS ໃນໂຟນເດີ &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="827"/>
+        <location filename="../src/gui/folder.cpp" line="826"/>
         <source>Could not read system exclude file</source>
         <translation>ບໍ່ສາມາດອ່ານໄຟລ໌ຍົກເວັ້ນຂອງລະບົບ</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1022"/>
+        <location filename="../src/gui/folder.cpp" line="1021"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translation>ໂຟນເດີ %1 ຖືກສ້າງຂຶ້ນແລ້ວ ແຕ່ຖືກຍົກເວັ້ນຈາກການຊິງໂຄໄນກ່ອນໜ້ານີ້. ຂໍ້ມູນພາຍໃນຈະບໍ່ຖືກຊິງໂຄໄນ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1025"/>
+        <location filename="../src/gui/folder.cpp" line="1024"/>
         <source>The file %1 was created but was excluded from synchronization previously. It will not be synchronized.</source>
         <translation>ໄຟລ໌ %1 ຖືກສ້າງຂຶ້ນແລ້ວ ແຕ່ຖືກຍົກເວັ້ນຈາກການຊິງໂຄໄນກ່ອນໜ້ານີ້. ມັນຈະບໍ່ຖືກຊິງໂຄໄນ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1037"/>
+        <location filename="../src/gui/folder.cpp" line="1036"/>
         <source>Changes in synchronized folders could not be tracked reliably.
 
 This means that the synchronization client might not upload local changes immediately and will instead only scan for local changes and upload them occasionally (every two hours by default).
@@ -1164,97 +1164,102 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderMan</name>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="500"/>
+        <location filename="../src/gui/folderman.cpp" line="514"/>
         <source>Could not reset folder state</source>
         <translation>ບໍ່ສາມາດຣີເຊັດສະຖານະໂຟນເດີໄດ້</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="501"/>
+        <location filename="../src/gui/folderman.cpp" line="515"/>
         <source>An old sync journal &apos;%1&apos; was found, but could not be removed. Please make sure that no application is currently using it.</source>
         <translation>ພົບເຫັນບັນທຶກການຊິງເກົ່າ &apos;%1&apos;, ແຕ່ບໍ່ສາມາດລຶບອອກໄດ້. ກະລຸນາກວດສອບໃຫ້ແນ່ໃຈວ່າບໍ່ມີໂປຣແກຣມໃດກຳລັງນຳໃຊ້ມັນຢູ່.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="518"/>
+        <location filename="../src/gui/folderman.cpp" line="532"/>
         <source>Unsupported filesystem</source>
         <translation>ລະບົບໄຟລ໌ບໍ່ຮອງຮັບ</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="612"/>
+        <location filename="../src/gui/folderman.cpp" line="626"/>
         <source>Account disconnected or paused</source>
         <translation>ບັນຊີຖືກຕັດການເຊື່ອມຕໍ່ ຫຼື ຢຸດຊົ່ວຄາວ</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="900"/>
+        <location filename="../src/gui/folderman.cpp" line="914"/>
         <source>User triggered force sync</source>
         <translation>ຜູ້ໃຊ້ສັ່ງບັງຄັບຊິງ</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="931"/>
+        <location filename="../src/gui/folderman.cpp" line="945"/>
         <source>Folder is about to be removed</source>
         <translation>ໂຟນເດີກຳລັງຈະຖືກລຶບ</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="955"/>
+        <location filename="../src/gui/folderman.cpp" line="969"/>
         <source> (backup)</source>
         <translation> (ສຳຮອງ)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="960"/>
+        <location filename="../src/gui/folderman.cpp" line="974"/>
         <source> (backup %1)</source>
         <translation> (ສຳຮອງ %1)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1006"/>
+        <location filename="../src/gui/folderman.cpp" line="1020"/>
         <source>The selected path is not a folder.</source>
         <translation>ເສັ້ນທາງທີ່ເລືອກບໍ່ແມ່ນໂຟນເດີ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1010"/>
+        <location filename="../src/gui/folderman.cpp" line="1024"/>
         <source>The folder %1 is used in a folder sync connection.</source>
         <translation>ໂຟນເດີ %1 ຖືກໃຊ້ໃນການເຊື່ອມຕໍ່ການຊິງໂຟນເດີ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1018"/>
+        <location filename="../src/gui/folderman.cpp" line="1032"/>
         <source>Folder &apos;%1&apos; is already in use by application %2.</source>
         <translation>ໂຟນເດີ &apos;%1&apos; ຖືກນຳໃຊ້ໂດຍແອັບພລິເຄຊັນ %2 ຢູ່ແລ້ວ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1065"/>
+        <location filename="../src/gui/folderman.cpp" line="1079"/>
         <source>There is already a sync from the server to this local folder.</source>
         <translation>ມີການຊິງຈາກເຊີບເວີມາຍັງໂຟນເດີໃນເຄື່ອງນີ້ຢູ່ແລ້ວ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1068"/>
+        <location filename="../src/gui/folderman.cpp" line="1082"/>
         <source>The local folder %1 already contains a folder used in a folder sync connection.</source>
         <translation>ໂຟນເດີໃນເຄື່ອງ %1 ມີໂຟນເດີທີ່ຖືກໃຊ້ໃນການເຊື່ອມຕໍ່ການຊິງໂຟນເດີຢູ່ແລ້ວ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1073"/>
+        <location filename="../src/gui/folderman.cpp" line="1087"/>
         <source>The local folder %1 is already contained in a folder used in a folder sync connection.</source>
         <translation>ໂຟນເດີໃນເຄື່ອງ %1 ຢູ່ໃນໂຟນເດີທີ່ຖືກໃຊ້ໃນການເຊື່ອມຕໍ່ການຊິງໂຟນເດີຢູ່ແລ້ວ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1085"/>
+        <location filename="../src/gui/folderman.cpp" line="1099"/>
         <source>No valid folder selected.</source>
         <translation>ບໍ່ມີໂຟນເດີທີ່ຖືກຕ້ອງຖືກເລືອກ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1104"/>
+        <location filename="../src/gui/folderman.cpp" line="1118"/>
         <source>The selected path does not exist.</source>
         <translation>ເສັ້ນທາງທີ່ເລືອກບໍ່ມີຢູ່.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1110"/>
+        <location filename="../src/gui/folderman.cpp" line="1124"/>
         <source>You have no permission to write to the selected folder.</source>
         <translation>ທ່ານບໍ່ມີສິດໃນການຂຽນລົງໃນໂຟນເດີທີ່ເລືອກ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1031"/>
+        <location filename="../src/gui/folderman.cpp" line="1045"/>
         <source>Folder &apos;%1&apos; is already in use by another account.</source>
         <translation>ໂຟນເດີ &apos;%1&apos; ຖືກນຳໃຊ້ໂດຍບັນຊີອື່ນຢູ່ແລ້ວ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="518"/>
+        <location filename="../src/gui/folderman.cpp" line="178"/>
+        <source>Application shutting down</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/folderman.cpp" line="532"/>
         <source>On macOS, only the Apple File System is supported.</source>
         <translation>ໃນ macOS, ຮອງຮັບສະເພາະ Apple File System ເທົ່ານັ້ນ.</translation>
     </message>
