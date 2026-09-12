@@ -1030,111 +1030,111 @@ De update wordt uitgevoerd op de achtergrond en zal het bestaande AppImage besta
 <context>
     <name>OCC::Folder</name>
     <message>
-        <location filename="../src/gui/folder.cpp" line="375"/>
+        <location filename="../src/gui/folder.cpp" line="378"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 is verwijderd.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="389"/>
+        <location filename="../src/gui/folder.cpp" line="392"/>
         <source>%1 has been updated.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 is bijgewerkt.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="396"/>
+        <location filename="../src/gui/folder.cpp" line="399"/>
         <source>%1 has been renamed to %2.</source>
         <comment>%1 and %2 name files.</comment>
         <translation>%1 is hernoemd naar %2.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="403"/>
+        <location filename="../src/gui/folder.cpp" line="406"/>
         <source>%1 has been moved to %2.</source>
         <translation>%1 is verplaatst naar %2.</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="373"/>
+        <location filename="../src/gui/folder.cpp" line="376"/>
         <source>%1 and %n other file(s) have been removed.</source>
         <translation><numerusform>%1 en één ander bestand zijn verwijderd.</numerusform><numerusform>%1 en %n andere bestanden zijn verwijderd.</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="306"/>
+        <location filename="../src/gui/folder.cpp" line="309"/>
         <source>The folder has been disabled or removed from the server</source>
         <translation>De folder is uitgeschakeld of verwijderd van de server</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="380"/>
+        <location filename="../src/gui/folder.cpp" line="383"/>
         <source>%1 and %n other file(s) have been added.</source>
         <translation><numerusform>%1 en één ander bestand is toegevoegd.</numerusform><numerusform>%1 en %n andere bestanden zijn toegevoegd.</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="382"/>
+        <location filename="../src/gui/folder.cpp" line="385"/>
         <source>%1 has been added.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 is toegevoegd.</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="387"/>
+        <location filename="../src/gui/folder.cpp" line="390"/>
         <source>%1 and %n other file(s) have been updated.</source>
         <translation><numerusform>%1 en één ander bestand zijn bijgewerkt.</numerusform><numerusform>%1 en %2 andere bestanden zijn bijgewerkt.</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="394"/>
+        <location filename="../src/gui/folder.cpp" line="397"/>
         <source>%1 has been renamed to %2 and %n other file(s) have been renamed.</source>
         <translation><numerusform>%1 is hernoemd naar %2 en één ander bestand zijn ook hernoemd.</numerusform><numerusform>%1 is hernoemd naar %2 en %n andere bestanden zijn ook hernoemd.</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="401"/>
+        <location filename="../src/gui/folder.cpp" line="404"/>
         <source>%1 has been moved to %2 and %n other file(s) have been moved.</source>
         <translation><numerusform>%1 is verplaatst naar %2 en één ander bestand zijn ook verplaatst.</numerusform><numerusform>%1 is verplaatst naar %2 en %n andere bestanden zijn ook verplaatst.</numerusform></translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="408"/>
+        <location filename="../src/gui/folder.cpp" line="411"/>
         <source>%1 and %n other file(s) have sync conflicts.</source>
         <translation><numerusform>%1 en één ander bestand hebben synchronisatie conflicten.</numerusform><numerusform>%1 en %n andere bestanden hebben synchronisatie conflicten.</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="410"/>
+        <location filename="../src/gui/folder.cpp" line="413"/>
         <source>%1 has a sync conflict. Please check the conflict file!</source>
         <translation>%1 heeft een sync conflict. Controleer het conflict bestand!</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/gui/folder.cpp" line="415"/>
+        <location filename="../src/gui/folder.cpp" line="418"/>
         <source>%1 and %n other file(s) could not be synced due to errors. See the log for details.</source>
         <translation><numerusform>%1 en één ander bestand konden niet worden gesynchroniseerd door fouten. Bekijk het log voor details.</numerusform><numerusform>%1 en %n andere bestanden konden niet worden gesynchroniseerd door fouten. Bekijk het log voor details.</numerusform></translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="417"/>
+        <location filename="../src/gui/folder.cpp" line="420"/>
         <source>%1 could not be synced due to an error. See the log for details.</source>
         <translation>%1 kon niet worden gesynchroniseerd door een fout. Bekijk het log voor details.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="423"/>
+        <location filename="../src/gui/folder.cpp" line="426"/>
         <source>Sync Activity</source>
         <translation>Synchronisatie-activiteit</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="625"/>
+        <location filename="../src/gui/folder.cpp" line="628"/>
         <source>Switching VFS mode on folder &apos;%1&apos;</source>
         <translation>VFS-modus inschakelen in map &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="827"/>
+        <location filename="../src/gui/folder.cpp" line="826"/>
         <source>Could not read system exclude file</source>
         <translation>Kon het systeem-uitsluitingsbestand niet lezen</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1022"/>
+        <location filename="../src/gui/folder.cpp" line="1021"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translation>De map %1 werd aangemaakt maar eerder ook uitgesloten van synchronisatie. Data erin zullen niet worden gesynchroniseerd.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1025"/>
+        <location filename="../src/gui/folder.cpp" line="1024"/>
         <source>The file %1 was created but was excluded from synchronization previously. It will not be synchronized.</source>
         <translation>Het bestand %1 is aangemaakt maar was eerder uitgesloten van synchronisatie. Dit bestand zal niet gesynchroniseerd worden.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1037"/>
+        <location filename="../src/gui/folder.cpp" line="1036"/>
         <source>Changes in synchronized folders could not be tracked reliably.
 
 This means that the synchronization client might not upload local changes immediately and will instead only scan for local changes and upload them occasionally (every two hours by default).
@@ -1163,97 +1163,102 @@ Dit betekent dat de synchronisatie-applicatie lokale wijzigingen mogelijk niet d
 <context>
     <name>OCC::FolderMan</name>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="500"/>
+        <location filename="../src/gui/folderman.cpp" line="514"/>
         <source>Could not reset folder state</source>
         <translation>Kan de beginstaat van de map niet terugzetten</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="501"/>
+        <location filename="../src/gui/folderman.cpp" line="515"/>
         <source>An old sync journal &apos;%1&apos; was found, but could not be removed. Please make sure that no application is currently using it.</source>
         <translation>Een oud synchronisatieverslag  &apos;%1&apos; is gevonden maar kan niet worden verwijderd. Zorg ervoor dat geen applicatie dit bestand gebruikt.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="518"/>
+        <location filename="../src/gui/folderman.cpp" line="532"/>
         <source>Unsupported filesystem</source>
         <translation>Niet ondersteund bestandssysteem</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="612"/>
+        <location filename="../src/gui/folderman.cpp" line="626"/>
         <source>Account disconnected or paused</source>
         <translation>Account losgekoppeld of gepauzeerd</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="900"/>
+        <location filename="../src/gui/folderman.cpp" line="914"/>
         <source>User triggered force sync</source>
         <translation>Door de gebruiker geactiveerde geforceerde synchronisatie</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="931"/>
+        <location filename="../src/gui/folderman.cpp" line="945"/>
         <source>Folder is about to be removed</source>
         <translation>Map wordt zometeen verwijderd</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="955"/>
+        <location filename="../src/gui/folderman.cpp" line="969"/>
         <source> (backup)</source>
         <translation>(backup)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="960"/>
+        <location filename="../src/gui/folderman.cpp" line="974"/>
         <source> (backup %1)</source>
         <translation>(backup %1)</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1006"/>
+        <location filename="../src/gui/folderman.cpp" line="1020"/>
         <source>The selected path is not a folder.</source>
         <translation>Het geselecteerde pad is geen folder.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1010"/>
+        <location filename="../src/gui/folderman.cpp" line="1024"/>
         <source>The folder %1 is used in a folder sync connection.</source>
         <translation>Map %1 wordt al gebruikt voor synchronisatie.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1018"/>
+        <location filename="../src/gui/folderman.cpp" line="1032"/>
         <source>Folder &apos;%1&apos; is already in use by application %2.</source>
         <translation>Folder &apos;%1&apos; is al in gebruik door toepassing %2.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1065"/>
+        <location filename="../src/gui/folderman.cpp" line="1079"/>
         <source>There is already a sync from the server to this local folder.</source>
         <translation>Er wordt vanaf de server al naar deze lokale map gesynchroniseerd.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1068"/>
+        <location filename="../src/gui/folderman.cpp" line="1082"/>
         <source>The local folder %1 already contains a folder used in a folder sync connection.</source>
         <translation>Lokale map %1 bevat al een map die wordt gebruikt voor een map-synchronisatie verbinding.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1073"/>
+        <location filename="../src/gui/folderman.cpp" line="1087"/>
         <source>The local folder %1 is already contained in a folder used in a folder sync connection.</source>
         <translation>Lokale map %1 zit al in een map die wordt gebruikt voor een map-synchronisatie verbinding.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1085"/>
+        <location filename="../src/gui/folderman.cpp" line="1099"/>
         <source>No valid folder selected.</source>
         <translation>Geen geldige map geselecteerd.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1104"/>
+        <location filename="../src/gui/folderman.cpp" line="1118"/>
         <source>The selected path does not exist.</source>
         <translation>Het geselecteerde pad bestaat niet.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1110"/>
+        <location filename="../src/gui/folderman.cpp" line="1124"/>
         <source>You have no permission to write to the selected folder.</source>
         <translation>U heeft geen permissie om te schrijven naar de geselecteerde map.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="1031"/>
+        <location filename="../src/gui/folderman.cpp" line="1045"/>
         <source>Folder &apos;%1&apos; is already in use by another account.</source>
         <translation>Folder &apos;%1&apos; is al in gebruik door een ander account.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="518"/>
+        <location filename="../src/gui/folderman.cpp" line="178"/>
+        <source>Application shutting down</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/gui/folderman.cpp" line="532"/>
         <source>On macOS, only the Apple File System is supported.</source>
         <translation>Op macOS wordt alleen het Apple File System ondersteund.</translation>
     </message>
