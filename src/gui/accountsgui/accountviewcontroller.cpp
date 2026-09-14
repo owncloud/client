@@ -15,6 +15,7 @@
 #include "accountviewcontroller.h"
 
 #include "FoldersGui/accountfolderscontroller.h"
+#include "FoldersGui/accountfoldersview.h"
 #include "accountmanager.h"
 #include "accountmodalwidget.h"
 #include "accountview.h"
@@ -24,6 +25,7 @@
 #include "folderwizard.h"
 #include "iconresources.h"
 #include "libsync/theme.h"
+#include "mainwindow/colormanager.h"
 
 #include <QDesktopServices>
 #include <QInputDialog>
@@ -35,7 +37,7 @@ namespace OCC {
 
 Q_LOGGING_CATEGORY(lcAccountViewController, "gui.account.viewcontroller", QtInfoMsg)
 
-AccountViewController::AccountViewController(AccountView *view, AccountState *state, QObject *parent)
+AccountViewController::AccountViewController(AccountView *view, AccountState *state, ColorManager *colorManager, QObject *parent)
     : QObject{parent}
     , _view(view)
     , _accountState(state)
@@ -44,6 +46,10 @@ AccountViewController::AccountViewController(AccountView *view, AccountState *st
         return;
 
     connect(_view, &AccountView::requestMenuActionUpdate, this, &AccountViewController::refreshAccountActions);
+    connect(colorManager, &ColorManager::appColorsChanged, _view->foldersView(), &AccountFoldersView::updatePalette);
+    connect(colorManager, &ColorManager::coreIconsChanged, _view->foldersView(), &AccountFoldersView::updateCoreIcons);
+
+    connect(colorManager, &ColorManager::coreIconsChanged, this, &AccountViewController::refreshStateIcon);
 
     AccountFoldersController *foldersController = new AccountFoldersController(_accountState, _view->foldersView(), this);
     connect(foldersController, &AccountFoldersController::requestAddFolder, this, &AccountViewController::runFolderWizard);
@@ -245,70 +251,102 @@ void AccountViewController::onAccountStateChanged(AccountState::State state)
     }
 
     Account *account = _accountState->account();
-    qCDebug(lcAccountViewController()) << "Account state changed to" << state << "for account" << account;
 
     QStringList errors;
     QString text;
-    StatusIcon icon;
 
     switch (state) {
     case AccountState::Connected: {
-        icon = StatusIcon::Connected;
         if (account->serverSupportLevel() != Account::ServerSupportLevel::Supported) {
             errors << tr("The server version %1 is unsupported! Proceed at your own risk.").arg(account->capabilities().status().versionString());
-            icon = StatusIcon::Warning;
         }
         text = tr("Connected");
         break;
     }
     case AccountState::ServiceUnavailable:
         text = tr("Server is temporarily unavailable.");
-        icon = StatusIcon::Disconnected;
         break;
     case AccountState::MaintenanceMode:
         text = tr("Server is currently in maintenance mode.");
-        icon = StatusIcon::Disconnected;
         break;
     case AccountState::SignedOut:
         text = tr("Signed out");
-        icon = StatusIcon::Disconnected;
         break;
     case AccountState::AskingCredentials:
         text = tr("Updating credentials…");
-        icon = StatusIcon::Info;
         break;
     case AccountState::Connecting:
         if (NetworkInformation::instance()->isBehindCaptivePortal()) {
             text = tr("Captive portal prevents connections to the server.");
-            icon = StatusIcon::Disconnected;
         } else if (NetworkInformation::instance()->isMetered() && ConfigFile().pauseSyncWhenMetered()) {
             text = tr("Sync is paused due to metered internet connection.");
-            icon = StatusIcon::Disconnected;
         } else {
             text = tr("Connecting…");
-            icon = StatusIcon::Info;
         }
         break;
     case AccountState::ConfigurationError:
         text = tr("Server configuration error");
-        icon = StatusIcon::Warning;
         errors = _accountState->connectionErrors();
         break;
     case AccountState::NetworkError:
         text = tr("Server is temporarily unavailable");
-        icon = StatusIcon::Disconnected;
         errors = _accountState->connectionErrors();
         break;
     case AccountState::Disconnected:
         text = tr("Disconnected");
-        icon = StatusIcon::Disconnected;
         break;
     default:
         text = tr("Invalid connection status");
-        icon = StatusIcon::None;
     }
+    _view->setConnectionLabel(text, errors);
 
-    _view->setConnectionLabel(text, lookupStatusIcon(icon), errors);
+    _view->setConnectionIcon(iconForState(state));
+}
+
+QIcon AccountViewController::iconForState(AccountState::State state)
+{
+    if (!_accountState || !_accountState->account())
+        return {};
+
+    Account *account = _accountState->account();
+
+    switch (state) {
+    case AccountState::Connected:
+        if (account->serverSupportLevel() != Account::ServerSupportLevel::Supported) {
+            return IconResources::getCoreIcon("states/warning");
+        }
+        return IconResources::getCoreIcon("states/ok");
+
+    case AccountState::ServiceUnavailable:
+    case AccountState::MaintenanceMode:
+    case AccountState::SignedOut:
+    case AccountState::NetworkError:
+    case AccountState::Disconnected:
+        return IconResources::getCoreIcon("states/offline");
+
+    case AccountState::AskingCredentials:
+        return IconResources::getCoreIcon("states/information");
+
+    case AccountState::Connecting:
+        if (NetworkInformation::instance()->isBehindCaptivePortal() || (NetworkInformation::instance()->isMetered() && ConfigFile().pauseSyncWhenMetered())) {
+            return IconResources::getCoreIcon("states/offline");
+        }
+        return IconResources::getCoreIcon("states/information");
+
+    case AccountState::ConfigurationError:
+        return IconResources::getCoreIcon("states/warning");
+
+    default:
+        return {};
+    }
+}
+
+void AccountViewController::refreshStateIcon()
+{
+    if (!_accountState)
+        return;
+
+    _view->setConnectionIcon(iconForState(_accountState->state()));
 }
 
 void AccountViewController::runFolderWizard()

@@ -108,22 +108,14 @@ void AccountFoldersView::buildView()
     _treeView->header()->setSectionsMovable(false);
     _treeView->setHeaderHidden(true);
 
-    // this method of correcting the row selection color to match the app button highlight does not work when user has changed system settings (the color sticks
-    // with the color that matched the system settings on creation of the view, which is bad. this color correction has been moved to the item delegates for now
-    // because we can always grab the true current color on paint.
-    // TODO: #60 - if we really need to implement full palettes for both light and dark mode, my rec would be to use a QStyle sub but will
-    // make a decision when the time comes.
-    QStyleOptionButton buttonStyle;
-    QPalette treePalette = _treeView->palette();
-    treePalette.setColor(QPalette::Highlight, buttonStyle.palette.color(QPalette::Highlight));
-    _treeView->setPalette(treePalette);
-
-
     FolderItemDelegate *delegate = new FolderItemDelegate(_treeView->indentation(), _treeView);
     _treeView->setItemDelegateForColumn(0, delegate);
-    ButtonDelegate *buttonDel = new ButtonDelegate(_treeView);
-    buttonDel->setMenu(_itemMenu);
-    _treeView->setItemDelegateForColumn(1, buttonDel);
+    _buttonDel = new ButtonDelegate(_treeView);
+    _buttonDel->setMenu(_itemMenu);
+
+    // updatePalette();
+
+    _treeView->setItemDelegateForColumn(1, _buttonDel);
 
     _treeView->setEditTriggers(QAbstractItemView::CurrentChanged | QAbstractItemView::EditKeyPressed | QAbstractItemView::SelectedClicked);
 
@@ -138,6 +130,25 @@ void AccountFoldersView::buildView()
     mainLayout->addWidget(_syncedFolderCountLabel, 0, Qt::AlignLeft);
 
     setLayout(mainLayout);
+}
+
+void AccountFoldersView::updatePalette()
+{
+    // this method of correcting the row selection color to match the app button highlight does not work when user has changed system settings (the color sticks
+    // with the color that matched the system settings on creation of the view, which is bad. this color correction has been moved to the item delegates for now
+    // because we can always grab the true current color on paint.
+    // TODO: #60 - if we really need to implement full palettes for both light and dark mode, my rec would be to use a QStyle sub but will
+    // make a decision when the time comes.
+    QStyleOptionButton buttonStyle;
+    QPalette treePalette = _treeView->palette();
+    treePalette.setColor(QPalette::Highlight, buttonStyle.palette.color(QPalette::Highlight));
+    _treeView->setPalette(treePalette);
+    _treeView->repaint();
+}
+
+void AccountFoldersView::updateCoreIcons()
+{
+    _buttonDel->refreshIcon();
 }
 
 bool AccountFoldersView::performBizarreSetupOnTreeView()

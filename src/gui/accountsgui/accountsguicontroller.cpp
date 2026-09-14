@@ -28,6 +28,7 @@
 #include "creds/abstractcredentials.h"
 #include "folderman.h"
 #include "iconresources.h"
+#include "mainwindow/colormanager.h"
 #include "mainwindow/mainwindow.h"
 #include "newaccountwizard/newaccountbuilder.h"
 #include "newaccountwizard/newaccountwizard.h"
@@ -35,10 +36,11 @@
 
 namespace OCC {
 
-AccountsGuiController::AccountsGuiController(AccountManager *accountMgr, MainWindow *window, QObject *parent)
+AccountsGuiController::AccountsGuiController(AccountManager *accountMgr, MainWindow *window, ColorManager *colorManager, QObject *parent)
     : QObject(parent)
     , _accountMgr(accountMgr)
     , _window(window)
+    , _colorManager(colorManager)
 {
     Q_ASSERT(_accountMgr && _window);
     // load any existing accounts from the manager.
@@ -76,7 +78,7 @@ void AccountsGuiController::onAccountAdded(AccountState *state)
     // to support squish test object identification
     accountView->setObjectName(QString("accountView_%1").arg(accountId.toString()));
 
-    AccountViewController *viewController = new AccountViewController(accountView, state, this);
+    AccountViewController *viewController = new AccountViewController(accountView, state, _colorManager, this);
     _viewControllerForAccount.insert(accountId, viewController);
 
     connect(account->credentials(), &AbstractCredentials::requestAccountModal, viewController, &AccountViewController::addAccountModalWidget);

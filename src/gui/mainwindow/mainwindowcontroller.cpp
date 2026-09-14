@@ -32,14 +32,12 @@
 
 namespace OCC {
 
-MainWindowController::MainWindowController(MainWindow *window, QObject *parent)
+MainWindowController::MainWindowController(MainWindow *window, ColorManager *colorManager, QObject *parent)
     : QObject{parent}
     , _window(window)
+    , _colorManager(colorManager)
 {
-    // this is going to move so it can be passed around by injection or connected externally, but starting with it here:
-    _colorManager = new ColorManager(this);
     setup();
-    _colorManager->refresh();
 }
 
 void MainWindowController::setup()

@@ -40,6 +40,7 @@ class MainWindow;
 class MainWindowController;
 class AccountsGuiController;
 class ModalWrapperWidget;
+class ColorManager;
 
 
 /**
@@ -102,6 +103,7 @@ private:
     MainWindowController *_mainController = nullptr;
     AccountsGuiController *_accountsGuiController = nullptr;
     TrayMenuController *_trayController = nullptr;
+    ColorManager *_colorManager = nullptr;
 
     const bool _debugMode = false;
     QString _displayLanguage;

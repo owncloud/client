@@ -52,6 +52,7 @@ LogBrowser::LogBrowser(QWidget *parent)
         ConfigFile().configureHttpLogging(std::make_optional(enable));
     });
 
+
     ui->spinBox_numberOflogsToKeep->setValue(ConfigFile().automaticDeleteOldLogs());
     connect(ui->spinBox_numberOflogsToKeep, qOverload<int>(&QSpinBox::valueChanged), this, [](int i) {
         ConfigFile().setAutomaticDeleteOldLogs(i);

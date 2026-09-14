@@ -33,10 +33,11 @@ public:
     void refresh();
 
 signals:
-    void refreshCoreIcons();
+    void coreIconsChanged();
+    void appColorsChanged();
 
 protected:
     void updateColorScheme(Qt::ColorScheme colorScheme);
+    bool eventFilter(QObject *object, QEvent *event) override;
 };
-
 }

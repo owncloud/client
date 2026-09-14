@@ -37,6 +37,8 @@ public:
     bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) override;
     void setMenu(QMenu *menu);
 
+    void refreshIcon();
+
 private:
     QPushButton *_button = nullptr;
     bool _clickThrough = false;

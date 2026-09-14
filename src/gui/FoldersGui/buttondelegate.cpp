@@ -40,6 +40,17 @@ ButtonDelegate::ButtonDelegate(QAbstractItemView *parent)
     if (Utility::isMac())
         _button->setFlat(true);
 
+    _button->setObjectName("buttonDelegateButton");
+    _button->setFocusPolicy(Qt::StrongFocus);
+    _button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    _button->setStyleSheet("QPushButton::menu-indicator{width:0px;}");
+
+    _button->setAccessibleName(tr("%1 options button").arg(CommonStrings::capSpace()));
+    _button->setAccessibleDescription(tr("Menu button with %1 options. Use the space key to show the menu").arg(CommonStrings::space()));
+}
+
+void ButtonDelegate::refreshIcon()
+{
     // this is so shady: if I set the icon to 24x24 it still comes out at around 18x18
     // note the button height is actually 32 so I don't understand what the issue is if it's 24x24.
     // the target size could only be identified by trial and error so far.
@@ -49,13 +60,6 @@ ButtonDelegate::ButtonDelegate(QAbstractItemView *parent)
     // so far this impl works on both win and mac so I'm leaving it with the "hack" for now.
     QIcon elipsesIcon = IconResources::getCoreIcon("more").pixmap(_targetIconSize, _targetIconSize);
     _button->setIcon(elipsesIcon);
-    _button->setObjectName("buttonDelegateButton");
-    _button->setFocusPolicy(Qt::StrongFocus);
-    _button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    _button->setStyleSheet("QPushButton::menu-indicator{width:0px;}");
-
-    _button->setAccessibleName(tr("%1 options button").arg(CommonStrings::capSpace()));
-    _button->setAccessibleDescription(tr("Menu button with %1 options. Use the space key to show the menu").arg(CommonStrings::space()));
 }
 
 void ButtonDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const

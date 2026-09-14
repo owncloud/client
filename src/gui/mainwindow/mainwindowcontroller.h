@@ -28,7 +28,7 @@ class MainWindowController : public QObject
 {
     Q_OBJECT
 public:
-    explicit MainWindowController(MainWindow *window, QObject *parent = nullptr);
+    explicit MainWindowController(MainWindow *window, ColorManager *colorManager, QObject *parent = nullptr);
 
     // public for now
     void setup();

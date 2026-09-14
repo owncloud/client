@@ -90,7 +90,7 @@ void AccountView::showEvent(QShowEvent *ev)
     _ui->manageAccountButton->setFocus();
 }
 
-void AccountView::setConnectionLabel(const QString &message, const QIcon &icon, QStringList errors)
+void AccountView::setConnectionIcon(const QIcon &icon)
 {
     // I really see no point in these but they existed previously...eval usefulness later
     // oh wait...the "warning label" is actually the name of the STATUS ICON?!?!
@@ -99,6 +99,10 @@ void AccountView::setConnectionLabel(const QString &message, const QIcon &icon, 
     if (!icon.isNull()) {
         _ui->warningLabel->setPixmap(icon.pixmap(_ui->warningLabel->size()));
     }
+}
+
+void AccountView::setConnectionLabel(const QString &message, QStringList errors)
+{
 
     _ui->accountStatus->setVisible(!message.isEmpty());
 

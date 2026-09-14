@@ -24,6 +24,7 @@ namespace OCC {
 
 class AccountView;
 class AccountModalWidget;
+class ColorManager;
 
 enum class StatusIcon { None, Connected, Disconnected, Info, Warning };
 
@@ -31,7 +32,7 @@ class AccountViewController : public QObject
 {
     Q_OBJECT
 public:
-    explicit AccountViewController(AccountView *view, AccountState *state, QObject *parent);
+    explicit AccountViewController(AccountView *view, AccountState *state, ColorManager *colorManager, QObject *parent);
 
     void addAccountModalWidget(AccountModalWidget *widget);
     void runFolderWizard();
@@ -46,6 +47,8 @@ signals:
 
 protected:
     void onAccountStateChanged(OCC::AccountState::State state);
+    QIcon iconForState(AccountState::State state);
+
     void onDeleteAccount();
     void onOpenAccountInBrowser();
     void onToggleSignInState();
@@ -54,6 +57,8 @@ protected:
     void onFolderWizardAccepted();
 
     void finishAccountModalWidget(AccountModalWidget *widget);
+
+    void refreshStateIcon();
 
 private:
     QPointer<AccountView> _view = nullptr;
