@@ -19,6 +19,7 @@
 
 #include <QButtonGroup>
 #include <QFileDialog>
+#include <QGuiApplication>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
@@ -71,52 +72,31 @@ void AdvancedSettingsPageController::buildPage()
     layout->addSpacing(8);
     layout->addWidget(syncOptionsLabel, Qt::AlignLeft);
 
-    QRadioButton *vfsButton = new QRadioButton(tr("Sync and download files as you use them (saves hard drive space)"), _page);
-    vfsButton->setFocusPolicy(Qt::StrongFocus);
-    _buttonGroup->addButton(vfsButton, NewAccount::SyncType::USE_VFS);
-    layout->addWidget(vfsButton, Qt::AlignLeft);
+    _vfsButton = new QRadioButton(tr("Sync and download files as you use them (saves hard drive space)"), _page);
+    _vfsButton->setFocusPolicy(Qt::StrongFocus);
+    _buttonGroup->addButton(_vfsButton, NewAccount::SyncType::USE_VFS);
+    layout->addWidget(_vfsButton, Qt::AlignLeft);
 
-    QRadioButton *syncAllButton = new QRadioButton(tr("Automatically sync and download folders and files"), _page);
-    syncAllButton->setObjectName("SyncAllRadioButton");
-    syncAllButton->setFocusPolicy(Qt::StrongFocus);
-    _buttonGroup->addButton(syncAllButton, NewAccount::SyncType::SYNC_ALL);
-    layout->addWidget(syncAllButton, Qt::AlignLeft);
+    _syncAllButton = new QRadioButton(tr("Automatically sync and download folders and files"), _page);
+    _syncAllButton->setObjectName("SyncAllRadioButton");
+    _syncAllButton->setFocusPolicy(Qt::StrongFocus);
+    _buttonGroup->addButton(_syncAllButton, NewAccount::SyncType::SYNC_ALL);
+    layout->addWidget(_syncAllButton, Qt::AlignLeft);
 
-    QRadioButton *selectiveSyncButton = new QRadioButton(tr("Sync and download folders manually"), _page);
-    selectiveSyncButton->setObjectName("SelectiveSyncRadioButton");
-    selectiveSyncButton->setFocusPolicy(Qt::StrongFocus);
-    _buttonGroup->addButton(selectiveSyncButton, NewAccount::SyncType::SELECTIVE_SYNC);
-    layout->addWidget(selectiveSyncButton, Qt::AlignLeft);
+    _selectiveSyncButton = new QRadioButton(tr("Sync and download folders manually"), _page);
+    _selectiveSyncButton->setObjectName("SelectiveSyncRadioButton");
+    _selectiveSyncButton->setFocusPolicy(Qt::StrongFocus);
+    _buttonGroup->addButton(_selectiveSyncButton, NewAccount::SyncType::SELECTIVE_SYNC);
+    layout->addWidget(_selectiveSyncButton, Qt::AlignLeft);
 
     connect(_buttonGroup, &QButtonGroup::idClicked, this, &AdvancedSettingsPageController::syncTypeChanged);
 
-    // if the branding does not specify a background color for the wizard we should just let the normal system colors
-    // rule. If not:
-    QPalette radioPalette = vfsButton->palette();
-    QColor textColor = _page->palette().color(QPalette::Text);
-    if (Theme::instance()->wizardHeaderBackgroundColor().isValid()) {
-        QColor disabledColor(textColor);
-        // eh - I don't know if this will really work in all possible cases but I think it is the simplest way for now
-        disabledColor.setAlpha(128);
-        // unexpected, but these are the only ones that work to change the text color and the circle colors of the radio button
-        // on windows - need to test other platforms for sure
-        radioPalette.setColor(QPalette::WindowText, textColor);
-        radioPalette.setColor(QPalette::Window, textColor);
-        radioPalette.setColor(QPalette::Disabled, QPalette::Window, disabledColor);
-    }
-    // for this use case we want the text to remain "normal" regardless of branding. the only time we disable a button is when there
-    // is only one choice
-    radioPalette.setColor(QPalette::Disabled, QPalette::WindowText, textColor);
-    vfsButton->setPalette(radioPalette);
-    syncAllButton->setPalette(radioPalette);
-    selectiveSyncButton->setPalette(radioPalette);
-
     if (!_vfsIsAvailable) {
-        vfsButton->setVisible(false);
+        _vfsButton->setVisible(false);
     } else if (_forceVfs) {
-        vfsButton->setEnabled(false);
-        selectiveSyncButton->setVisible(false);
-        syncAllButton->setVisible(false);
+        _vfsButton->setEnabled(false);
+        _selectiveSyncButton->setVisible(false);
+        _syncAllButton->setVisible(false);
     }
 
     Q_ASSERT(_buttonGroup->button(_defaultSyncType));
@@ -124,10 +104,6 @@ void AdvancedSettingsPageController::buildPage()
 
     _rootDirEdit = new QLineEdit(_page);
     _rootDirEdit->setText(_defaultSyncRoot);
-    QPalette dirPalette = _rootDirEdit->palette();
-    dirPalette.setColor(QPalette::Base, dirPalette.color(QPalette::Button));
-    dirPalette.setColor(QPalette::Text, dirPalette.color(QPalette::ButtonText));
-    _rootDirEdit->setPalette(dirPalette);
     _rootDirEdit->setFocusPolicy(Qt::StrongFocus);
     _rootDirEdit->setAccessibleName(tr("Download location on the local machine"));
     // just clear the error if the user starts typing in the text edit
@@ -163,6 +139,39 @@ void AdvancedSettingsPageController::buildPage()
 
     layout->addStretch(1);
     _page->setLayout(layout);
+
+    updateColors();
+}
+
+void AdvancedSettingsPageController::updateColors()
+{
+    QPalette appPalette = qGuiApp->palette();
+
+    QPalette dirPalette = _rootDirEdit->palette();
+    dirPalette.setColor(QPalette::Base, appPalette.color(QPalette::Button));
+    dirPalette.setColor(QPalette::Text, appPalette.color(QPalette::ButtonText));
+    _rootDirEdit->setPalette(dirPalette);
+
+    // if the branding does not specify a background color for the wizard we should just let the normal system colors
+    // rule. If not:
+    QPalette radioPalette = _vfsButton->palette();
+    QColor textColor = appPalette.color(QPalette::Text);
+    if (Theme::instance()->wizardHeaderBackgroundColor().isValid()) {
+        QColor disabledColor(textColor);
+        // eh - I don't know if this will really work in all possible cases but I think it is the simplest way for now
+        disabledColor.setAlpha(128);
+        // unexpected, but these are the only ones that work to change the text color and the circle colors of the radio button
+        // on windows - need to test other platforms for sure
+        radioPalette.setColor(QPalette::WindowText, textColor);
+        radioPalette.setColor(QPalette::Window, textColor);
+        radioPalette.setColor(QPalette::Disabled, QPalette::Window, disabledColor);
+    }
+    // for this use case we want the text to remain "normal" regardless of branding. the only time we disable a button is when there
+    // is only one choice
+    radioPalette.setColor(QPalette::Disabled, QPalette::WindowText, textColor);
+    _vfsButton->setPalette(radioPalette);
+    _syncAllButton->setPalette(radioPalette);
+    _selectiveSyncButton->setPalette(radioPalette);
 }
 
 void AdvancedSettingsPageController::gatherSyncInfo()

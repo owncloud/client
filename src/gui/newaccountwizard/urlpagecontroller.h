@@ -77,6 +77,8 @@ public:
     // the wizard will enable the next button. The url evaluation may still fail but "next" should not be enabled on an
     // obviously bogus url. this is future as a final polishing step.
 
+    void updateColorsAndIcons();
+
 Q_SIGNALS:
 
     /**
@@ -95,6 +97,7 @@ private:
     QPointer<QWizardPage> _page;
     QPointer<AccessManager> _accessManager;
 
+    QLabel *_logoLabel = nullptr;
     QLabel *_instructionLabel = nullptr;
     QLineEdit *_urlField = nullptr;
     QLabel *_errorField = nullptr;

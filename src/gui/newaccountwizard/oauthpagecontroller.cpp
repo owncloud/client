@@ -55,11 +55,10 @@ void OAuthPageController::buildPage()
 
     QString appName = Theme::instance()->appNameGUI();
 
-    QLabel *logoLabel = new QLabel({}, _page);
-    logoLabel->setPixmap(IconResources::getBrandingIcon(Theme::instance()->wizardHeaderLogoName()).pixmap(200, 100));
-    logoLabel->setAlignment(Qt::AlignCenter);
-    logoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    logoLabel->setAccessibleName(tr("Application Name Logo %1").arg(appName));
+    _logoLabel = new QLabel(_page);
+    _logoLabel->setAlignment(Qt::AlignCenter);
+    _logoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    _logoLabel->setAccessibleName(tr("Application Name Logo %1").arg(appName));
 
     QLabel *instructionLabel =
         new QLabel(tr("Leave this screen open. A sign in prompt will appear in your web browser to connect you to the following address."), _page);
@@ -77,7 +76,7 @@ void OAuthPageController::buildPage()
     _urlField->setAccessibleName(tr("Sign in URL")); // Prevent screen readers from reading the full URL!!!
     _urlField->setAccessibleDescription(tr("To copy the sign in URL to the clipboard, use the copy button"));
 
-    _copyButton = new QPushButton(copyIcon(), QString(), _page);
+    _copyButton = new QPushButton(_page);
     _copyButton->setObjectName("CopyUrlToClipboardButton");
     _copyButton->setFlat(true);
     _copyButton->setContentsMargins(0, 0, 0, 0);
@@ -109,7 +108,7 @@ void OAuthPageController::buildPage()
     layout->setContentsMargins(50, 0, 50, 0);
     layout->setSpacing(12);
     layout->addStretch(1);
-    layout->addWidget(logoLabel, Qt::AlignCenter);
+    layout->addWidget(_logoLabel, Qt::AlignCenter);
     layout->addSpacing(16);
     layout->addWidget(instructionLabel, Qt::AlignCenter);
 
@@ -127,8 +126,15 @@ void OAuthPageController::buildPage()
     layout->addStretch(1);
     _page->setLayout(layout);
 
+    updateIcons();
     // seed the copy button tooltip for the first go
     clipboardChanged();
+}
+
+void OAuthPageController::updateIcons()
+{
+    _logoLabel->setPixmap(IconResources::getBrandingIcon(Theme::instance()->wizardHeaderLogoName()).pixmap(200, 100));
+    _copyButton->setIcon(copyIcon());
 }
 
 void OAuthPageController::handleError(const QString &error)
@@ -144,7 +150,7 @@ QIcon OAuthPageController::copyIcon()
     // color that "fits" based on the current
     // normally we would want to cache this but for this very special one off case I don't think it makes sense
     const QString iconPath = QStringLiteral(":/client/resources/core/copy.svg");
-    QPalette pagePalette = _page->palette();
+    QPalette pagePalette = qGuiApp->palette();
     const QString color = pagePalette.color(QPalette::Text).name();
     QByteArray data = Resources::Template::renderTemplateFromFile(iconPath, {{QStringLiteral("color"), color}}).toUtf8();
     QBuffer buffer(&data);

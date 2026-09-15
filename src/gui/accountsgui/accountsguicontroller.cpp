@@ -155,7 +155,7 @@ void AccountsGuiController::runAccountWizard()
         return;
     NewAccountWizard wizard(_window);
     NewAccountModel model(nullptr);
-    NewAccountWizardController wizardController(&model, &wizard, nullptr);
+    NewAccountWizardController wizardController(&model, &wizard, _colorManager, nullptr);
     _window->ensureVisible();
     int result = wizard.exec();
     if (result == QDialog::Accepted) {

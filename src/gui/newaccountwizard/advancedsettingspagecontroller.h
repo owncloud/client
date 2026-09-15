@@ -23,6 +23,7 @@ class QButtonGroup;
 class QLineEdit;
 class QLabel;
 class QPushButton;
+class QRadioButton;
 
 namespace OCC {
 
@@ -40,6 +41,7 @@ public:
     explicit AdvancedSettingsPageController(QWizardPage *page, QObject *parent);
     bool validate() override;
     AdvancedSettingsResult defaultResult();
+    void updateColors();
 
 Q_SIGNALS:
     void success(const OCC::AdvancedSettingsResult &result);
@@ -63,8 +65,11 @@ private:
     QWizardPage *_page = nullptr;
     QButtonGroup *_buttonGroup = nullptr;
     QLineEdit *_rootDirEdit = nullptr;
-    QPushButton *_folderButton;
-    QLabel *_errorField;
+    QPushButton *_folderButton = nullptr;
+    QLabel *_errorField = nullptr;
+    QRadioButton *_vfsButton = nullptr;
+    QRadioButton *_selectiveSyncButton = nullptr;
+    QRadioButton *_syncAllButton = nullptr;
 };
 }
 Q_DECLARE_METATYPE(OCC::AdvancedSettingsResult)
