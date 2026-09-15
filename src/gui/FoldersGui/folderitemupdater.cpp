@@ -14,8 +14,8 @@
 #include "folderitemupdater.h"
 
 #include "folder.h"
+#include "foldererroritem.h"
 #include "folderitem.h"
-#include "iconresources.h"
 #include "space.h"
 
 namespace OCC {
@@ -94,8 +94,7 @@ void FolderItemUpdater::onSyncStateChanged()
             errors.append(tr("There are unresolved conflicts."));
 
         for (const QString &error : std::as_const(errors)) {
-            QIcon errorIcon = IconResources::getCoreIcon("states/warning");
-            QStandardItem *errorItem = new QStandardItem(errorIcon, error);
+            FolderErrorItem *errorItem = new FolderErrorItem(_item);
             errorItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
             // just for testing to replace the normal error with something really long - will remove before merge
@@ -104,6 +103,7 @@ void FolderItemUpdater::onSyncStateChanged()
                we " "can't update a known total size using these progress values becausethey are never negative, to indicate a removal"; QStandardItem
                *errorItem = new QStandardItem(errorIcon, longError);
             */
+            errorItem->setData(error, Qt::DisplayRole);
             QString accessibleError = tr("Sync error: %1").arg(error);
             errorItem->setData(accessibleError, Qt::AccessibleTextRole);
 

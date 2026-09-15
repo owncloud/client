@@ -28,7 +28,9 @@ class FolderItem;
  */
 class FolderErrorItem : public QStandardItem
 {
+public:
     FolderErrorItem(FolderItem *parent);
+    QVariant data(int role) const override;
 
 private:
     FolderItem *_parent;
