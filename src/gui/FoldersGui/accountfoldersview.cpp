@@ -129,10 +129,10 @@ void AccountFoldersView::buildView()
 
     setLayout(mainLayout);
 
-    updatePaletteAndIcons();
+    updatePalette();
 }
 
-void AccountFoldersView::updatePaletteAndIcons()
+void AccountFoldersView::updatePalette()
 {
     // this method of correcting the row selection color to match the app button highlight does not work when user has changed system settings (the color sticks
     // with the color that matched the system settings on creation of the view, which is bad. this color correction has been moved to the item delegates for now
@@ -144,7 +144,11 @@ void AccountFoldersView::updatePaletteAndIcons()
     treePalette.setColor(QPalette::Highlight, buttonStyle.palette.color(QPalette::Highlight));
     _treeView->setPalette(treePalette);
     _treeView->repaint();
+}
 
+void AccountFoldersView::updatePaletteAndIcons()
+{
+    updatePalette();
     _buttonDel->refreshIcon();
 }
 

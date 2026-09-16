@@ -38,7 +38,6 @@ public:
     void enableAddFolder(bool enableAdd);
     void setMenuActions(QList<QAction *> actions);
     void updatePaletteAndIcons();
-    void updateCoreIcons();
 
 signals:
     void addFolderTriggered();
@@ -46,6 +45,8 @@ signals:
 
 protected:
     bool eventFilter(QObject *obj, QEvent *ev) override;
+
+    void updatePalette();
 
 private:
     void buildView();

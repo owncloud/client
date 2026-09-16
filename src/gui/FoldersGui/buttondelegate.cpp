@@ -35,11 +35,10 @@ ButtonDelegate::ButtonDelegate(QAbstractItemView *parent)
     // note we update the widget parent in the first call to createEditor as that passes the correct parent
     // Not a leak!
     _button = new QPushButton();
-
+    refreshIcon();
     // on mac set the button to flat to get rid of crazy attempt to make it look "3d" or something
     if (Utility::isMac())
         _button->setFlat(true);
-
     _button->setObjectName("buttonDelegateButton");
     _button->setFocusPolicy(Qt::StrongFocus);
     _button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
