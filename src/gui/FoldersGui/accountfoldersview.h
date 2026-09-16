@@ -37,7 +37,7 @@ public:
     void setSyncedFolderCount(int synced, int total);
     void enableAddFolder(bool enableAdd);
     void setMenuActions(QList<QAction *> actions);
-    void updatePalette();
+    void updatePaletteAndIcons();
     void updateCoreIcons();
 
 signals:

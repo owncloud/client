@@ -46,8 +46,7 @@ AccountViewController::AccountViewController(AccountView *view, AccountState *st
         return;
 
     connect(_view, &AccountView::requestMenuActionUpdate, this, &AccountViewController::refreshAccountActions);
-    connect(colorManager, &ColorManager::appColorsChanged, _view->foldersView(), &AccountFoldersView::updatePalette);
-    connect(colorManager, &ColorManager::appColorsChanged, _view->foldersView(), &AccountFoldersView::updateCoreIcons);
+    connect(colorManager, &ColorManager::appColorsChanged, _view->foldersView(), &AccountFoldersView::updatePaletteAndIcons);
 
     connect(colorManager, &ColorManager::appColorsChanged, this, &AccountViewController::refreshStateIcon);
 

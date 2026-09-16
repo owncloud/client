@@ -113,8 +113,6 @@ void AccountFoldersView::buildView()
     _buttonDel = new ButtonDelegate(_treeView);
     _buttonDel->setMenu(_itemMenu);
 
-    // updatePalette();
-
     _treeView->setItemDelegateForColumn(1, _buttonDel);
 
     _treeView->setEditTriggers(QAbstractItemView::CurrentChanged | QAbstractItemView::EditKeyPressed | QAbstractItemView::SelectedClicked);
@@ -130,9 +128,11 @@ void AccountFoldersView::buildView()
     mainLayout->addWidget(_syncedFolderCountLabel, 0, Qt::AlignLeft);
 
     setLayout(mainLayout);
+
+    updatePaletteAndIcons();
 }
 
-void AccountFoldersView::updatePalette()
+void AccountFoldersView::updatePaletteAndIcons()
 {
     // this method of correcting the row selection color to match the app button highlight does not work when user has changed system settings (the color sticks
     // with the color that matched the system settings on creation of the view, which is bad. this color correction has been moved to the item delegates for now
@@ -144,10 +144,7 @@ void AccountFoldersView::updatePalette()
     treePalette.setColor(QPalette::Highlight, buttonStyle.palette.color(QPalette::Highlight));
     _treeView->setPalette(treePalette);
     _treeView->repaint();
-}
 
-void AccountFoldersView::updateCoreIcons()
-{
     _buttonDel->refreshIcon();
 }
 
