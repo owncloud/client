@@ -28,6 +28,7 @@
 
 #include <QAction>
 #include <QDesktopServices>
+#include <QMenu>
 #include <QMessageBox>
 
 namespace OCC {
@@ -44,7 +45,7 @@ void MainWindowController::setup()
 {
     createSyncErrorsAction();
     createActivityAction();
-    buildMenuActions();
+    createMoreAction();
 }
 
 QList<QAction *> MainWindowController::buildUrlActions()
@@ -76,7 +77,7 @@ QList<QAction *> MainWindowController::buildUrlActions()
     return actions;
 }
 
-void MainWindowController::buildMenuActions()
+QList<QAction *> MainWindowController::buildMenuActions()
 {
     QList<QAction *> menuActions;
 
@@ -106,7 +107,7 @@ void MainWindowController::buildMenuActions()
     }
 
     QAction *separator = new QAction(this);
-    separator->setObjectName("sparatorAction");
+    separator->setObjectName("separatorAction");
     separator->setSeparator(true);
     menuActions.push_back(separator);
 
@@ -114,14 +115,34 @@ void MainWindowController::buildMenuActions()
     quitAction->setObjectName("quitAction");
     connect(quitAction, &QAction::triggered, this, &MainWindowController::onQuit);
     menuActions.push_back(quitAction);
-    _window->setMoreMenuActions(menuActions);
+
+    return menuActions;
+}
+
+void MainWindowController::addActionToIconUpdates(QAction *action, const QString &iconName)
+{
+    connect(_colorManager, &ColorManager::appColorsChanged, action, [action, iconName]() { action->setIcon(IconResources::getCoreIcon(iconName)); });
+}
+
+void MainWindowController::createMoreAction()
+{
+    QAction *moreAction = new QAction(tr("More"), this);
+    moreAction->setObjectName("moreAction");
+    moreAction->setIcon(IconResources::getCoreIcon("more"));
+    addActionToIconUpdates(moreAction, "more");
+
+    _window->addMoreAction(moreAction);
+    // yes I considered adding the menu to the more action here, but we can't reliably parent it since there is no
+    // button yet.
+    QList<QAction *> moreActions = buildMenuActions();
+    _window->setMoreMenuActions(moreActions);
 }
 
 void MainWindowController::createSyncErrorsAction()
 {
     QAction *syncErrorsAction = new QAction(tr("Errors: %1").arg(0), this);
-    //  syncErrorsAction->setIcon(IconResources::getCoreIcon("states/error"));
-    _colorManager->addActionIcon(syncErrorsAction, "states/error");
+    syncErrorsAction->setIcon(IconResources::getCoreIcon("states/error"));
+    addActionToIconUpdates(syncErrorsAction, "states/error");
 
     syncErrorsAction->setObjectName("syncErrorsAction");
     syncErrorsAction->setCheckable(true);
@@ -136,8 +157,9 @@ void MainWindowController::createSyncErrorsAction()
 void MainWindowController::createActivityAction()
 {
     QAction *activityAction = new QAction(tr("Activity"), this);
-    // activityAction->setIcon(IconResources::getCoreIcon("states/sync"));
-    _colorManager->addActionIcon(activityAction, "states/sync");
+    activityAction->setIcon(IconResources::getCoreIcon("states/sync"));
+    addActionToIconUpdates(activityAction, "states/sync");
+
     activityAction->setObjectName("activityAction");
     activityAction->setCheckable(true);
     auto localActivityWidget = new LocalActivityWidget(_window);
@@ -147,7 +169,7 @@ void MainWindowController::createActivityAction()
 
 void MainWindowController::onSettings()
 {
-    SettingsView *settings = new SettingsView(_window);
+    SettingsView *settings = new SettingsView(_colorManager, _window);
     ModalWrapperWidget *wrapper = new ModalWrapperWidget(settings, _window);
     _window->showModalWidget(wrapper);
 }

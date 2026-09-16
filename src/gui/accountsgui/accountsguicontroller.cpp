@@ -90,8 +90,9 @@ void AccountsGuiController::onAccountAdded(AccountState *state)
     accountAction->setObjectName(QString("accountAction_%1").arg(accountId.toString()));
     _actionForAccount.insert(accountId, accountAction);
 
-    accountAction->setIcon(account->avatar());
 
+    accountAction->setIcon(account->avatar());
+    connect(_colorManager, &ColorManager::appColorsChanged, accountAction, [accountAction, account] { accountAction->setIcon(account->avatar()); });
     accountAction->setText(account->accountAlias());
     connect(account, &Account::accountAliasChanged, accountAction, [accountAction](const QString &newAlias) { accountAction->setText(newAlias); });
 
@@ -194,9 +195,13 @@ void AccountsGuiController::setupAccountPlaceholder()
         placeholderAccountAction->setObjectName("placeholderAccountAction");
         placeholderAccountAction->setCheckable(true);
         placeholderAccountAction->setIcon(IconResources::getCoreIcon("warning"));
+        connect(_colorManager, &ColorManager::appColorsChanged, placeholderAccountAction,
+            [placeholderAccountAction]() { placeholderAccountAction->setIcon(IconResources::getCoreIcon("warning")); });
+
         // use null uuid for placeholder action since there IS no account for it
         _actionForAccount.insert(QUuid(), placeholderAccountAction);
         auto placeholderWidget = new AccountPlaceholderWidget(_window);
+        connect(_colorManager, &ColorManager::appColorsChanged, placeholderWidget, &AccountPlaceholderWidget::updateIcons);
         placeholderAccountAction->setData(QVariant::fromValue(placeholderWidget));
         _window->addAccountAction(placeholderAccountAction);
     }

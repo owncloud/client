@@ -20,6 +20,7 @@
 #include "libsync/configfile.h"
 #include "libsync/theme.h"
 #include "logbrowser.h"
+#include "mainwindow/colormanager.h"
 #include "resources/iconresources.h"
 #include "translations.h"
 
@@ -29,10 +30,11 @@
 
 namespace OCC {
 
-SettingsView::SettingsView(QWidget *parent)
+SettingsView::SettingsView(ColorManager *colorManager, QWidget *parent)
     : QWidget(parent)
     , _ui(new Ui::SettingsView)
     , _currentlyLoading(false)
+    , _colorManager(colorManager)
 {
     _ui->setupUi(this);
 
@@ -191,6 +193,7 @@ void SettingsView::loadLanguageNamesIntoDropdown()
 void SettingsView::slotShowLogSettings()
 {
     auto logBrowser = new LogBrowser(ocApp()->mainWindow());
+    connect(_colorManager, &ColorManager::appColorsChanged, logBrowser, &LogBrowser::updateIcons);
     logBrowser->setAttribute(Qt::WA_DeleteOnClose);
     ocApp()->ensureVisible();
     logBrowser->open();

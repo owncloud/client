@@ -24,35 +24,15 @@ namespace OCC {
 ColorManager::ColorManager(QObject *parent)
     : QObject{parent}
 {
-    connect(qGuiApp->styleHints(), &QStyleHints::colorSchemeChanged, this, &ColorManager::updateColorScheme);
     qGuiApp->installEventFilter(this);
-}
-
-void ColorManager::addActionIcon(QAction *action, const QString &iconName)
-{
-    connect(this, &ColorManager::coreIconsChanged, action, [action, iconName]() { action->setIcon(IconResources::getCoreIcon(iconName)); });
 }
 
 bool ColorManager::eventFilter(QObject *object, QEvent *event)
 {
     if (object == qGuiApp && event->type() == QEvent::ApplicationPaletteChange) {
+        IconResources::handleSystemStyleChanged();
         emit appColorsChanged();
     }
     return false;
-}
-
-void ColorManager::refresh()
-{
-    updateColorScheme(qGuiApp->styleHints()->colorScheme());
-    emit appColorsChanged();
-}
-
-void ColorManager::updateColorScheme(Qt::ColorScheme colorScheme)
-{
-    Q_UNUSED(colorScheme);
-
-    IconResources::handleSystemStyleChanged();
-
-    emit coreIconsChanged();
 }
 }

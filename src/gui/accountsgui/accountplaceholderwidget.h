@@ -16,6 +16,8 @@
 
 #include <QWidget>
 
+class QLabel;
+
 namespace OCC {
 class AccountPlaceholderWidget : public QWidget
 {
@@ -23,5 +25,9 @@ class AccountPlaceholderWidget : public QWidget
 public:
     explicit AccountPlaceholderWidget(QWidget *parent = nullptr);
 
+    void updateIcons();
+
+private:
+    QLabel *_logoLabel = nullptr;
 };
 }

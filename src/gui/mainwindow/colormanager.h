@@ -29,15 +29,10 @@ class ColorManager : public QObject
 public:
     explicit ColorManager(QObject *parent);
 
-    void addActionIcon(QAction *action, const QString &iconName);
-    void refresh();
-
 signals:
-    void coreIconsChanged();
     void appColorsChanged();
 
 protected:
-    void updateColorScheme(Qt::ColorScheme colorScheme);
     bool eventFilter(QObject *object, QEvent *event) override;
 };
 }

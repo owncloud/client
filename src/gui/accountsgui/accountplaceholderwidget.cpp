@@ -28,11 +28,10 @@ AccountPlaceholderWidget::AccountPlaceholderWidget(QWidget *parent)
     setObjectName("accountPlaceholderWidget");
     QString appName = Theme::instance()->appNameGUI();
 
-    QLabel *logoLabel = new QLabel({}, this);
-    logoLabel->setPixmap(IconResources::getBrandingIcon(Theme::instance()->wizardHeaderLogoName()).pixmap(200, 100));
-    logoLabel->setAlignment(Qt::AlignCenter);
-    logoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    logoLabel->setAccessibleName(tr("%1 logo").arg(appName));
+    _logoLabel = new QLabel({}, this);
+    _logoLabel->setAlignment(Qt::AlignCenter);
+    _logoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    _logoLabel->setAccessibleName(tr("%1 logo").arg(appName));
 
     QLabel *instructionLabel = new QLabel(
         tr("You don't have any connected accounts yet.\n\nPlease create an account by selecting the \"Add account...\" option on the More button menu."), this);
@@ -53,13 +52,19 @@ AccountPlaceholderWidget::AccountPlaceholderWidget(QWidget *parent)
     layout->setContentsMargins(50, 0, 50, 0);
     layout->setSpacing(12);
     layout->addStretch(1);
-    layout->addWidget(logoLabel, Qt::AlignCenter);
+    layout->addWidget(_logoLabel, Qt::AlignCenter);
     layout->addSpacing(16);
     layout->addWidget(instructionLabel, Qt::AlignCenter);
     if (footerLogoLabel)
         layout->addWidget(footerLogoLabel, Qt::AlignCenter);
     layout->addStretch(1);
     setLayout(layout);
+
+    updateIcons();
 }
 
+void AccountPlaceholderWidget::updateIcons()
+{
+    _logoLabel->setPixmap(IconResources::getBrandingIcon(Theme::instance()->wizardHeaderLogoName()).pixmap(200, 100));
+}
 }

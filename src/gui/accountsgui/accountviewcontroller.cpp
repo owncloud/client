@@ -47,9 +47,9 @@ AccountViewController::AccountViewController(AccountView *view, AccountState *st
 
     connect(_view, &AccountView::requestMenuActionUpdate, this, &AccountViewController::refreshAccountActions);
     connect(colorManager, &ColorManager::appColorsChanged, _view->foldersView(), &AccountFoldersView::updatePalette);
-    connect(colorManager, &ColorManager::coreIconsChanged, _view->foldersView(), &AccountFoldersView::updateCoreIcons);
+    connect(colorManager, &ColorManager::appColorsChanged, _view->foldersView(), &AccountFoldersView::updateCoreIcons);
 
-    connect(colorManager, &ColorManager::coreIconsChanged, this, &AccountViewController::refreshStateIcon);
+    connect(colorManager, &ColorManager::appColorsChanged, this, &AccountViewController::refreshStateIcon);
 
     AccountFoldersController *foldersController = new AccountFoldersController(_accountState, _view->foldersView(), this);
     connect(foldersController, &AccountFoldersController::requestAddFolder, this, &AccountViewController::runFolderWizard);

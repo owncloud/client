@@ -41,7 +41,6 @@ LogBrowser::LogBrowser(QWidget *parent)
 {
     ui->setupUi(this);
 
-    ui->warningIcon->setPixmap(IconResources::getCoreIcon(QStringLiteral("warning")).pixmap(ui->warningIcon->size()));
     ui->locationLabel->setText(Logger::instance()->temporaryFolderLogDirPath());
 
     ui->enableLoggingButton->setChecked(ConfigFile().automaticLogDir());
@@ -67,12 +66,19 @@ LogBrowser::LogBrowser(QWidget *parent)
     });
     connect(ui->buttonBox->button(QDialogButtonBox::Close), &QPushButton::clicked, this, &QWidget::close);
 
+    updateIcons();
+
     ConfigFile cfg;
     cfg.restoreGeometry(this);
 }
 
 LogBrowser::~LogBrowser()
 {
+}
+
+void LogBrowser::updateIcons()
+{
+    ui->warningIcon->setPixmap(IconResources::getCoreIcon(QStringLiteral("warning")).pixmap(ui->warningIcon->size()));
 }
 
 void LogBrowser::setupLoggingFromConfig()

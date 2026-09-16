@@ -89,7 +89,7 @@ void NewAccountWizardController::buildPages()
 
     QWizardPage *authSuccessPage = new QWizardPage(_wizard);
     AuthSuccessPageController *authSuccessController = new AuthSuccessPageController(authSuccessPage, this);
-    connect(_colorManager, &ColorManager::coreIconsChanged, authSuccessController, &AuthSuccessPageController::updateIcons);
+    connect(_colorManager, &ColorManager::appColorsChanged, authSuccessController, &AuthSuccessPageController::updateIcons);
     _authSuccessPageIndex = _wizard->addPage(authSuccessPage, authSuccessController);
     authSuccessPage->setFinalPage(true);
 

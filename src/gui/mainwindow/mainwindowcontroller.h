@@ -39,9 +39,13 @@ public:
 signals:
     void requestAccountWizard();
 
+protected:
+    void addActionToIconUpdates(QAction *action, const QString &iconName);
+
 private:
     QList<QAction *> buildUrlActions();
-    void buildMenuActions();
+    QList<QAction *> buildMenuActions();
+    void createMoreAction();
     void createSyncErrorsAction();
     void createActivityAction();
 

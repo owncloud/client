@@ -118,7 +118,6 @@ public:
 
     QIcon avatar();
     void setAvatar(const QIcon &img);
-    bool hasAvatar() const;
 
     // alias for the account which appears in the toolbar button text.
     // the user can edit to make each account easily identifiable.

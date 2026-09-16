@@ -47,6 +47,7 @@ public:
     void removeAction(QAction *action);
 
     void addViewAction(QAction *action);
+    void addMoreAction(QAction *action);
 
 private slots:
     void endModalWidget();
