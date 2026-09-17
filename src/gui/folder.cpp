@@ -265,6 +265,12 @@ bool Folder::isSyncRunning() const
     return !hasSetupError() && _engine->isSyncRunning();
 }
 
+void Folder::updateSelectiveSync(const QSet<QString> &blacklist)
+{
+    _journal->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, blacklist);
+    _journal->forceRemoteDiscoveryNextSync();
+}
+
 bool Folder::canSync() const
 {
     if (!_engine || !_accountState || !_accountState->account() || !_folderWatcher)

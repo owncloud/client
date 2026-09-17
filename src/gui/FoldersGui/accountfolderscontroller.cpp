@@ -345,7 +345,7 @@ void AccountFoldersController::onChooseSync()
     connect(modalWidget, &AccountModalWidget::accepted, this, [selectiveSync, this] {
         if (!_currentFolder)
             return;
-        _currentFolder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, selectiveSync->createBlackList());
+        _currentFolder->updateSelectiveSync(selectiveSync->createBlackList());
         FolderMan::instance()->forceFolderSync(_currentFolder);
     });
 
