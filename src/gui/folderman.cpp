@@ -1272,7 +1272,9 @@ void FolderMan::addFolderFromGui(AccountState *accountState, const SyncConnectio
             emit unsyncedSpaceCountChanged(accountId, _unsyncedSpaces[accountId].count(), accountState->account()->spacesManager()->spacesCount());
         }
 
-        f->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, description.selectiveSyncBlackList);
+      //  f->updateSelectiveSync(description.selectiveSyncBlackList);
+        // as far as I can tell the whitelist serves no purpose anymore, meaning it's never updated to contain anything useful - only
+        // set to "/" here, and cleared by Folder 
         f->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList, {QLatin1String("/")});
 
         _scheduler->enqueueFolder(f, SyncScheduler::Priority::High);

@@ -308,6 +308,25 @@ public:
 
     // TODO: don't expose
     SyncJournalDb *journalDb() { return _journal; }
+
+    // replacements for journalDb() Getter:
+
+    /**
+     * @brief selectiveSyncBlacklist
+     * @return the list of excluded items for selective sync
+     */
+    QSet<QString> selectiveSyncBlacklist();
+
+    /**
+     * @brief getFileRecord retrieves the file record for the given file name
+     * @param filename for record to be retrieved
+     * @param record - the record which will be updated with the actual data.
+     *
+     * @return false if the operation can't be completed, true if it succeeded.
+     */
+    bool getFileRecord(const QString &filename, SyncJournalFileRecord &record) { return _journal->getFileRecord(filename, record); }
+
+
     // TODO: don't expose
     SyncEngine *syncEngine() { return _engine; }
 

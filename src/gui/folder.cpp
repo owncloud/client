@@ -551,7 +551,7 @@ void Folder::slotWatchedPathsChanged(const QSet<QString> &paths, ChangeReason re
         _localDiscoveryTracker->addTouchedPath(relativePath);
 
         SyncJournalFileRecord record;
-        _journal->getFileRecord(relativePath.toUtf8(), &record);
+        _journal->getFileRecord(relativePath.toUtf8(), record);
         if (reason != ChangeReason::UnLock) {
             // Check that the mtime/size actually changed or there was
             // an attribute change (pin state) that caused the notification
@@ -588,7 +588,7 @@ void Folder::implicitlyHydrateFile(const QString &relativepath)
 
     // Set in the database that we should download the file
     SyncJournalFileRecord record;
-    _journal->getFileRecord(relativepath.toUtf8(), &record);
+    _journal->getFileRecord(relativepath.toUtf8(), record);
     if (!record.isValid()) {
         qCInfo(lcFolder) << "Did not find file in db";
         return;
@@ -860,6 +860,15 @@ void Folder::startSync()
 void Folder::setMoveToTrash(bool trashIt)
 {
     _engine->setMoveToTrash(trashIt);
+}
+
+QSet<QString> Folder::selectiveSyncBlacklist()
+{
+    bool success = false;
+    QSet<QString> blacklist = _journal->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, success);
+    if (success)
+        return blacklist;
+    return {};
 }
 
 void Folder::slotSyncError(const QString &message, ErrorCategory category)
