@@ -131,7 +131,7 @@ void PropagateRemoteMove::finalize()
     // The db is only queried to transfer the content checksum from the old
     // to the new record. It is not a problem to skip it here.
     SyncJournalFileRecord oldRecord;
-    propagator()->_journal->getFileRecord(_item->_originalFile, &oldRecord);
+    propagator()->_journal->getFileRecord(_item->_originalFile, oldRecord);
     Vfs *vfs = propagator()->syncOptions().vfs();
     auto pinState = vfs->pinState(_item->_originalFile);
 

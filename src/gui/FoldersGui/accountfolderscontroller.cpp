@@ -329,8 +329,8 @@ void AccountFoldersController::onChooseSync()
     }
 
     bool ok;
-    QSet<QString> selectiveSyncList = _currentFolder->journalDb()->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, ok);
-    if (!ok)
+    QSet<QString> selectiveSyncList = _currentFolder->selectiveSyncBlacklist();
+    if (selectiveSyncList.isEmpty())
         return;
 
     // this widget gets reparented to the layout in the AccountModalWidget so should be cleaned up there

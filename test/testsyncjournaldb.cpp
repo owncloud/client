@@ -46,7 +46,7 @@ private Q_SLOTS:
     void testFileRecord()
     {
         SyncJournalFileRecord record;
-        QVERIFY(_db.getFileRecord(QByteArrayLiteral("nonexistant"), &record));
+        QVERIFY(_db.getFileRecord(QByteArrayLiteral("nonexistant"), record));
         QVERIFY(!record.isValid());
 
         record._path = "foo";
@@ -63,13 +63,13 @@ private Q_SLOTS:
         QVERIFY(_db.setFileRecord(record));
 
         SyncJournalFileRecord storedRecord;
-        QVERIFY(_db.getFileRecord(QByteArrayLiteral("foo"), &storedRecord));
+        QVERIFY(_db.getFileRecord(QByteArrayLiteral("foo"), storedRecord));
         QVERIFY(storedRecord == record);
 
         // Update checksum
         record._checksumHeader = "ADLER32:newchecksum";
         _db.updateFileRecordChecksum(QStringLiteral("foo"), "newchecksum", CheckSums::fromByteArray("Adler32"));
-        QVERIFY(_db.getFileRecord(QByteArrayLiteral("foo"), &storedRecord));
+        QVERIFY(_db.getFileRecord(QByteArrayLiteral("foo"), storedRecord));
         QVERIFY(storedRecord == record);
 
         // Update metadata
@@ -82,11 +82,11 @@ private Q_SLOTS:
         record._remotePerm = RemotePermissions::fromDbValue("NV");
         record._fileSize = 289055;
         _db.setFileRecord(record);
-        QVERIFY(_db.getFileRecord(QByteArrayLiteral("foo"), &storedRecord));
+        QVERIFY(_db.getFileRecord(QByteArrayLiteral("foo"), storedRecord));
         QVERIFY(storedRecord == record);
 
         QVERIFY(_db.deleteFileRecord(QStringLiteral("foo")));
-        QVERIFY(_db.getFileRecord(QByteArrayLiteral("foo"), &record));
+        QVERIFY(_db.getFileRecord(QByteArrayLiteral("foo"), record));
         QVERIFY(!record.isValid());
     }
 
@@ -102,7 +102,7 @@ private Q_SLOTS:
             QVERIFY(_db.setFileRecord(record));
 
             SyncJournalFileRecord storedRecord;
-            QVERIFY(_db.getFileRecord(QByteArrayLiteral("foo-checksum"), &storedRecord));
+            QVERIFY(_db.getFileRecord(QByteArrayLiteral("foo-checksum"), storedRecord));
             QCOMPARE(storedRecord._path, record._path);
             QCOMPARE(storedRecord._remotePerm, record._remotePerm);
             QCOMPARE(storedRecord._checksumHeader, record._checksumHeader);
@@ -123,7 +123,7 @@ private Q_SLOTS:
             QVERIFY(_db.setFileRecord(record));
 
             SyncJournalFileRecord storedRecord;
-            QVERIFY(_db.getFileRecord(QByteArrayLiteral("foo-nochecksum"), &storedRecord));
+            QVERIFY(_db.getFileRecord(QByteArrayLiteral("foo-nochecksum"), storedRecord));
             QVERIFY(storedRecord == record);
         }
     }
@@ -206,7 +206,7 @@ private Q_SLOTS:
         };
         auto getEtag = [&](const QByteArray &path) {
             SyncJournalFileRecord record;
-            _db.getFileRecord(path, &record);
+            _db.getFileRecord(path, record);
             return record._etag;
         };
 
@@ -288,7 +288,7 @@ private Q_SLOTS:
             bool ok = true;
             for (const auto &elem : std::as_const(elements)) {
                 SyncJournalFileRecord record;
-                _db.getFileRecord(elem, &record);
+                _db.getFileRecord(elem, record);
                 if (!record.isValid()) {
                     qWarning() << "Missing record: " << elem;
                     ok = false;
