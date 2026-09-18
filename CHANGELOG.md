@@ -52,11 +52,24 @@ ownCloud admins and users.
 
 ## Summary
 
+* Bugfix - Ensure changes to selective sync always triggers remote discovery: [#12645](https://github.com/owncloud/client/pull/12645)
 * Change - Eliminated excessive server checks: [#12619](https://github.com/owncloud/client/pull/12619)
 * Change - We ended support for OWNCLOUD_FORCE_DARK_MODE environment variable: [#12625](https://github.com/owncloud/client/pull/12625)
 * Change - Introduce a user editable account alias: [#12639](https://github.com/owncloud/client/pull/12639)
 
 ## Details
+
+* Bugfix - Ensure changes to selective sync always triggers remote discovery: [#12645](https://github.com/owncloud/client/pull/12645)
+
+   The symptom of the bug: user edits the collection of subfolders to sync in the
+   selective sync gui. After completing the operation, the folder reports sync was
+   successful, though sometimes remote content has not been downloaded.
+
+   The fix forces remote discovery every time the selective sync definition has
+   changed. This ensures all remote content in the most recently selected
+   subfolders will be downloaded, as expected.
+
+   https://github.com/owncloud/client/pull/12645
 
 * Change - Eliminated excessive server checks: [#12619](https://github.com/owncloud/client/pull/12619)
 
