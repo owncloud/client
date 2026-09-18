@@ -12,27 +12,27 @@
  * for more details.
  */
 
-#pragma once
+#include "colormanager.h"
 
-#include <QStandardItem>
+#include <QAction>
+#include <QGuiApplication>
+
+#include "resources/iconresources.h"
 
 namespace OCC {
 
-class FolderItem;
-
-/**
- * @brief The FolderErrorItem class will present any errors that arise on sync
- *
- * the error items will be children of the related FolderItem
- *
- */
-class FolderErrorItem : public QStandardItem
+ColorManager::ColorManager(QObject *parent)
+    : QObject{parent}
 {
-public:
-    FolderErrorItem(FolderItem *parent);
-    QVariant data(int role) const override;
+    qGuiApp->installEventFilter(this);
+}
 
-private:
-    FolderItem *_parent;
-};
+bool ColorManager::eventFilter(QObject *object, QEvent *event)
+{
+    if (object == qGuiApp && event->type() == QEvent::ApplicationPaletteChange) {
+        IconResources::handleSystemStyleChanged();
+        emit appColorsChanged();
+    }
+    return false;
+}
 }

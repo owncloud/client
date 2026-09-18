@@ -223,7 +223,11 @@ void AccountState::fetchServerSettings()
 
 void AccountState::slotFetchServerSettingsResult(FetchServerSettingsRunner::Result result)
 {
-    Q_ASSERT(_state == Connected);
+    if (_state != Connected) {
+        // kill the last runner as something clearly went wrong
+        _fetchServerSettingsRunner->deleteLater();
+        return;
+    }
 
     _connectionErrors.clear();
 

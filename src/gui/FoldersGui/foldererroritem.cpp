@@ -15,6 +15,8 @@
 #include "foldererroritem.h"
 #include "folderitem.h"
 
+#include "resources/iconresources.h"
+
 namespace OCC {
 
 FolderErrorItem::FolderErrorItem(FolderItem *parent)
@@ -23,4 +25,12 @@ FolderErrorItem::FolderErrorItem(FolderItem *parent)
 {
 }
 
+QVariant FolderErrorItem::data(int role) const
+{
+    switch (role) {
+    case Qt::DecorationRole:
+        return IconResources::getCoreIcon("states/warning");
+    }
+    return QStandardItem::data(role);
+}
 }

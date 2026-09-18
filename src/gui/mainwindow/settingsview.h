@@ -21,6 +21,7 @@
 namespace OCC {
 class IgnoreListEditor;
 class SyncLogDialog;
+class ColorManager;
 
 namespace Ui {
     class SettingsView;
@@ -35,7 +36,7 @@ class SettingsView : public QWidget
     Q_OBJECT
 
 public:
-    explicit SettingsView(QWidget *parent = nullptr);
+    explicit SettingsView(ColorManager *colorManager, QWidget *parent = nullptr);
     ~SettingsView() override;
 
 Q_SIGNALS:
@@ -59,6 +60,7 @@ private:
     Ui::SettingsView *_ui;
     QPointer<IgnoreListEditor> _ignoreEditor;
     bool _currentlyLoading;
+    ColorManager *_colorManager;
 };
 
 

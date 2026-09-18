@@ -29,6 +29,7 @@ class AccountFoldersView;
 class AccountState;
 class FolderModelController;
 class AccountModalWidget;
+class ColorManager;
 
 class AccountFoldersController : public QObject
 {

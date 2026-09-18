@@ -83,6 +83,8 @@ public:
 
     void setLookupWebfingerUrls(bool lookup);
 
+    void updateIcons();
+
 Q_SIGNALS:
     /**
      * @brief success notifies interested parties that the validation routine succeeded
@@ -97,6 +99,7 @@ Q_SIGNALS:
      * progressed before it failed
      */
     void failure(const OCC::OAuthPageResults &results);
+
 
 protected Q_SLOTS:
     /**
@@ -118,9 +121,10 @@ private:
     OAuth *_oauth;
     bool _lookupWebfingerUrls = false;
 
-    QLabel *_urlField;
-    QLabel *_errorField;
-    QPushButton *_copyButton;
+    QLabel *_logoLabel = nullptr;
+    QLabel *_urlField = nullptr;
+    QLabel *_errorField = nullptr;
+    QPushButton *_copyButton = nullptr;
 
     bool _oauthCompleted = false;
     OAuthPageResults _results;

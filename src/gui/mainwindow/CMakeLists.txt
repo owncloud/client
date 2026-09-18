@@ -11,5 +11,7 @@ target_sources(owncloudGui PRIVATE
     settingsview.cpp
     settingsview.h
     settingsview.ui
+    colormanager.h 
+    colormanager.cpp
 )
 
