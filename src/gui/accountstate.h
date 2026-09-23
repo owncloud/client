@@ -220,6 +220,8 @@ private:
 
     QPointer<FetchServerSettingsRunner> _fetchServerSettingsRunner;
     bool _needsServerSettingsRefresh = false;
+    // default to 60 minutes
+    int _fetchServerSettingsInterval = 3600000;
 };
 }
 
