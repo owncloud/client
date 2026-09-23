@@ -157,10 +157,10 @@ public:
     /// Triggers a ping to the server to update state, connection status and errors.
     /// blockJobs determines if we block the job queue while the connection is checked
     void checkConnectivity(bool blockJobs = false);
+    void fetchServerSettings();
 
 private:
     void setState(State state);
-    void fetchServerSettings();
 
 Q_SIGNALS:
     void stateChanged(State state);

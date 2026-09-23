@@ -290,7 +290,7 @@ void AccountState::slotFetchServerSettingsResult(FetchServerSettingsRunner::Resu
 
     _needsServerSettingsRefresh = false;
     // trying to keep this simple: just run it again in an hour (or whatever the _fetchServerSettingsInterval turns out to be)
-    QTimer::singleShot(_fetchServerSettingsInterval, &AccountState::fetchServerSettings);
+    QTimer::singleShot(_fetchServerSettingsInterval, this, &AccountState::fetchServerSettings);
     _queueGuard.unblock();
     // ehhhhhhh - this is only needed to trigger readyForSync is called again by whoever, as it should now pass. Not a fan.
     emit isConnectedChanged();
