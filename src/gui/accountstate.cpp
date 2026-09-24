@@ -628,7 +628,6 @@ void AccountState::slotInvalidCredentials()
     qCInfo(lcAccountState) << "refreshing oauth failed";
     qCInfo(lcAccountState) << "asking user";
 
-    _needsServerSettingsRefresh = true;
     creds->askFromUser();
     setState(AskingCredentials);
 }
@@ -641,6 +640,8 @@ void AccountState::slotCredentialsFetched()
     qCInfo(lcAccountState) << "Fetched credentials for" << _account->url().toString()
                            << "attempting to connect";
     _waitingForNewCredentials = false;
+    // refresh the creds/avatar/app providers/etc any time the user re-auths
+    _needsServerSettingsRefresh = true;
     checkConnectivity();
 }
 
