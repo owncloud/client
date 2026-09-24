@@ -219,8 +219,16 @@ private:
     QuotaInfo *_quotaInfo = nullptr;
 
     QPointer<FetchServerSettingsRunner> _fetchServerSettingsRunner;
+
+    // this flag is used to trigger fetchServerSettings after the next successful reconnect
+    // reasons the flag is set to true:
+    //      we just started the app
+    //      account was just created
+    //      user re-authenticated (by choice or by server demand)
+    //      last attempt to fetch the settings was somehow interrupted - since the attempt was underway, re-run it next opportunity
     bool _needsServerSettingsRefresh = false;
-    // default to 60 minutes
+
+    // interval to run fetchServerSettings on a timer: default to 60 minutes
     int _fetchServerSettingsInterval = 3600000;
 };
 }
