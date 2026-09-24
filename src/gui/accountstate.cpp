@@ -214,6 +214,13 @@ void AccountState::setState(State state)
 
 void AccountState::fetchServerSettings()
 {
+    // basically if we're not connected, be sure it's run next time the connection is recovered
+    // this is only needed to support polling
+    if (_state != Connected) {
+        _needsServerSettingsRefresh = true;
+        return;
+    }
+
     Q_ASSERT(_fetchServerSettingsRunner == nullptr);
     _fetchServerSettingsRunner = new FetchServerSettingsRunner(_account, this);
 
@@ -226,6 +233,7 @@ void AccountState::slotFetchServerSettingsResult(FetchServerSettingsRunner::Resu
     if (_state != Connected) {
         // kill the last runner as something clearly went wrong
         _fetchServerSettingsRunner->deleteLater();
+        _needsServerSettingsRefresh = true;
         return;
     }
 
@@ -281,7 +289,10 @@ void AccountState::slotFetchServerSettingsResult(FetchServerSettingsRunner::Resu
     }
 
     _needsServerSettingsRefresh = false;
+    // trying to keep this simple: just run it again in an hour (or whatever the _fetchServerSettingsInterval turns out to be)
+    QTimer::singleShot(_fetchServerSettingsInterval, this, &AccountState::fetchServerSettings);
     _queueGuard.unblock();
+    // ehhhhhhh - this is only needed to trigger readyForSync is called again by whoever, as it should now pass. Not a fan.
     emit isConnectedChanged();
 }
 
@@ -617,7 +628,6 @@ void AccountState::slotInvalidCredentials()
     qCInfo(lcAccountState) << "refreshing oauth failed";
     qCInfo(lcAccountState) << "asking user";
 
-    _needsServerSettingsRefresh = true;
     creds->askFromUser();
     setState(AskingCredentials);
 }
@@ -630,6 +640,8 @@ void AccountState::slotCredentialsFetched()
     qCInfo(lcAccountState) << "Fetched credentials for" << _account->url().toString()
                            << "attempting to connect";
     _waitingForNewCredentials = false;
+    // refresh the creds/avatar/app providers/etc any time the user re-auths
+    _needsServerSettingsRefresh = true;
     checkConnectivity();
 }
 
