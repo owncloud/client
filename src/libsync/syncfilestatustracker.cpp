@@ -129,7 +129,7 @@ SyncFileStatus SyncFileStatusTracker::fileStatus(const QString &relativePath)
 
     // First look it up in the database to know if it's shared
     SyncJournalFileRecord rec;
-    if (_journal && _journal->getFileRecord(relativePath, &rec) && rec.isValid()) {
+    if (_journal && _journal->getFileRecord(relativePath, rec) && rec.isValid()) {
         return resolveSyncAndErrorStatus(relativePath, rec._remotePerm.hasPermission(RemotePermissions::IsShared) ? Shared : NotShared);
     }
 

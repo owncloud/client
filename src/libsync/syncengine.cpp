@@ -235,7 +235,7 @@ void SyncEngine::conflictRecordMaintenance()
 
             // Determine fileid of target file
             SyncJournalFileRecord baseRecord;
-            if (_journal->getFileRecord(basePath, &baseRecord) && baseRecord.isValid()) {
+            if (_journal->getFileRecord(basePath, baseRecord) && baseRecord.isValid()) {
                 record.baseFileId = baseRecord._fileId;
             }
 
