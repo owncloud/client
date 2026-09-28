@@ -982,20 +982,6 @@ bool SyncJournalDb::getFileRecord(const QByteArray &filename, SyncJournalFileRec
             return false;
         }
         if (next.hasData) {
-            // query is not a pointer?! the function takes a ref - why are we dereferencing it here?
-            // also that function should take a const ref as query is declared const, above?
-            // ah yes, of course the * operator is overridden in the PreparedSqlQuery class, which is apparently
-            // a wrapper for SqlQuery + a bool which indicates if it's "ok" or not. Note the flag that allows queries to be not
-            // ok seems to be effectively == false, always.
-            // The * impl Q_ASSERTs on the _ok member (so in debug we can a crash in what should be a simple scenario)
-            // then returns the internal SqlQuery.
-            // Propose replacing this with a "getQuery" and replacing the mysterious "bool()" with something normal like isValid
-            // the idea is to make all of this less bizarre as we should not be digging around in an impl to figure out what a
-            // very strange/very possibly misleading part of the interface does.
-            // oh! also the * is not always used, I found at least one instance where this same
-            // function is called by passing the instance directly.
-            // THIS imo is an example of why c/c++ are referred to as giving the devs plenty of rope...
-            // enough rope to hang themselves with.
             fillFileRecordFromGetQuery(rec, *query);
         }
     }
