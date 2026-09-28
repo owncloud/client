@@ -21,6 +21,7 @@
 #include "networkadapters/resolveurladapter.h"
 #include "theme.h"
 
+#include <QGuiApplication>
 #include <QLabel>
 #include <QLineEdit>
 #include <QSignalBlocker>
@@ -63,11 +64,11 @@ void UrlPageController::buildPage()
 
     QString appName = Theme::instance()->appNameGUI();
 
-    QLabel *logoLabel = new QLabel({}, _page);
-    logoLabel->setPixmap(IconResources::getBrandingIcon(Theme::instance()->wizardHeaderLogoName()).pixmap(200, 100));
-    logoLabel->setAlignment(Qt::AlignCenter);
-    logoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    logoLabel->setAccessibleName(tr("%1 logo").arg(appName));
+    _logoLabel = new QLabel({}, _page);
+    // logoLabel->setPixmap(IconResources::getBrandingIcon(Theme::instance()->wizardHeaderLogoName()).pixmap(200, 100));
+    _logoLabel->setAlignment(Qt::AlignCenter);
+    _logoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    _logoLabel->setAccessibleName(tr("%1 logo").arg(appName));
 
     QLabel *welcomeLabel = new QLabel(tr("Welcome to %1").arg(appName), _page);
     QFont welcomeFont = welcomeLabel->font();
@@ -86,10 +87,6 @@ void UrlPageController::buildPage()
     _instructionLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     _urlField = new QLineEdit(_page);
-    QPalette urlFieldPalette = _urlField->palette();
-    urlFieldPalette.setColor(QPalette::Base, urlFieldPalette.color(QPalette::Button));
-    urlFieldPalette.setColor(QPalette::Text, urlFieldPalette.color(QPalette::ButtonText));
-    _urlField->setPalette(urlFieldPalette);
     _urlField->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     _urlField->setPlaceholderText(Theme::instance()->wizardUrlPlaceholder());
     _urlField->setFocusPolicy(Qt::StrongFocus);
@@ -122,7 +119,7 @@ void UrlPageController::buildPage()
     layout->setContentsMargins(50, 0, 50, 0);
     layout->setSpacing(12);
     layout->addStretch(1);
-    layout->addWidget(logoLabel, Qt::AlignCenter);
+    layout->addWidget(_logoLabel, Qt::AlignCenter);
     layout->addSpacing(16);
     layout->addWidget(welcomeLabel, Qt::AlignCenter);
     layout->addWidget(_instructionLabel, Qt::AlignCenter);
@@ -133,7 +130,20 @@ void UrlPageController::buildPage()
     layout->addStretch(1);
     _page->setLayout(layout);
 
+    updateColorsAndIcons();
+
     _urlField->setFocus(Qt::OtherFocusReason);
+}
+
+void UrlPageController::updateColorsAndIcons()
+{
+    QPalette appPalette = qGuiApp->palette();
+    QPalette urlFieldPalette = _urlField->palette();
+    urlFieldPalette.setColor(QPalette::Base, appPalette.color(QPalette::Button));
+    urlFieldPalette.setColor(QPalette::Text, appPalette.color(QPalette::ButtonText));
+    _urlField->setPalette(urlFieldPalette);
+
+    _logoLabel->setPixmap(IconResources::getBrandingIcon(Theme::instance()->wizardHeaderLogoName()).pixmap(200, 100));
 }
 
 void UrlPageController::setUrl(const QString &urlText)

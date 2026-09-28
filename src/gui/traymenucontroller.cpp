@@ -149,6 +149,11 @@ void TrayMenuController::slotComputeOverallSyncStatus()
     _tray->setIcon(statusIcon);
 }
 
+void TrayMenuController::updateTrayIcon()
+{
+    slotComputeOverallSyncStatus();
+}
+
 void TrayMenuController::setupTrayContextMenu()
 {
     // using the main window as parent for memory management

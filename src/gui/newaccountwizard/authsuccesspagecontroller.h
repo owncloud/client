@@ -18,6 +18,7 @@
 #include "wizardpagevalidator.h"
 
 class QWizardPage;
+class QLabel;
 
 namespace OCC {
 class AuthSuccessPageController : public QObject, public WizardPageValidator
@@ -27,9 +28,12 @@ public:
     explicit AuthSuccessPageController(QWizardPage *page, QObject *parent);
     bool validate() override;
 
+    void updateIcons();
+
 private:
     void buildPage();
 
     QWizardPage *_page = nullptr;
+    QLabel *_logoLabel = nullptr;
 };
 }

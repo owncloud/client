@@ -22,12 +22,13 @@ namespace OCC {
 
 class MainWindow;
 class AccountsGuiController;
+class ColorManager;
 
 class MainWindowController : public QObject
 {
     Q_OBJECT
 public:
-    explicit MainWindowController(MainWindow *window, QObject *parent = nullptr);
+    explicit MainWindowController(MainWindow *window, ColorManager *colorManager, QObject *parent = nullptr);
 
     // public for now
     void setup();
@@ -38,9 +39,13 @@ public:
 signals:
     void requestAccountWizard();
 
+protected:
+    void addActionToIconUpdates(QAction *action, const QString &iconName);
+
 private:
     QList<QAction *> buildUrlActions();
-    void buildMenuActions();
+    QList<QAction *> buildMenuActions();
+    void createMoreAction();
     void createSyncErrorsAction();
     void createActivityAction();
 
@@ -48,5 +53,6 @@ private:
     void onQuit();
 
     MainWindow *_window = nullptr;
+    ColorManager *_colorManager = nullptr;
 };
 }

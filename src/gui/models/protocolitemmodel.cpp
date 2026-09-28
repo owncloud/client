@@ -80,12 +80,12 @@ QVariant ProtocolItemModel::data(const QModelIndex &index, int role) const
                 || status == SyncFileItem::FatalError
                 || status == SyncFileItem::DetailError
                 || status == SyncFileItem::BlacklistedError) {
-                return IconResources::getCoreIcon(QStringLiteral("states/error"));
+                return IconResources::getCoreIcon("states/error");
                 ;
             } else if (Progress::isWarningKind(status) || status == SyncFileItem::Excluded) {
-                return IconResources::getCoreIcon(QStringLiteral("states/information"));
+                return IconResources::getCoreIcon("states/information");
             } else {
-                return IconResources::getCoreIcon(QStringLiteral("states/ok"));
+                return IconResources::getCoreIcon("states/ok");
             }
         }
         break;

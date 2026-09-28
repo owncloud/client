@@ -44,7 +44,6 @@ public:
     ~AccountView() override;
 
     void setAccountMenuActions(QList<QAction *> actions);
-    void setConnectionLabel(const QString &message, const QIcon &icon, QStringList errors = QStringList());
 
     // this is primarily used to run an account "modal" widget
     void setTopStackWidget(QWidget *widget);
@@ -57,6 +56,8 @@ public:
     AccountFoldersView *foldersView();
     void accountSettingUpChanged(bool settingUp);
 
+    void setConnectionIcon(const QIcon &icon);
+    void setConnectionLabel(const QString &message, QStringList errors = QStringList());
 
 signals:
     void requestMenuActionUpdate();
