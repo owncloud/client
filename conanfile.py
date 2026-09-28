@@ -6,25 +6,25 @@ class ClientRecipe(ConanFile):
     generators = "CMakeToolchain", "CMakeDeps"
     options = {"shared": [True, False]}
     default_options = {
-        "shared": True,
         "*:fPIC": True,
-        'qt/*:shared': True,
-        'qt/*:qtdeclarative': True,
-        'qt/*:qtquickcontrols2': True,
-        'qt/*:qtshadertools': True,
-        'qt/*:qtsvg': True,
-        'qt/*:qtimageformats': True,
-        'qt/*:qttools': True,
-        'qt/*:qttranslations': True,
-        'qt/*:gui': True,
-        'qt/*:widgets': True,
-        'qt/*:with_egl': True,
-        'qt/*:with_libjpeg': 'libjpeg',
+        "qt/*:gui": True,
+        "qt/*:qtdeclarative": True,
+        "qt/*:qtimageformats": True,
+        "qt/*:qtquickcontrols2": True,
+        "qt/*:qtshadertools": True,
+        "qt/*:qtsvg": True,
+        "qt/*:qttools": True,
+        "qt/*:qttranslations": True,
+        "qt/*:shared": True,
+        "qt/*:widgets": True,
+        "qt/*:with_egl": True,
+        "qt/*:with_libjpeg": "libjpeg",
+        "qt/*:with_odbc": False,
+        "qt/*:with_pq": False,
+        "shared": True,
     }
 
     def configure(self):
-        self.options['qt/*'].with_pq = False
-        self.options['qt/*'].with_odbc = False
         if self.settings.os == "Linux":
             self.options['qt/*'].with_dbus = True
             self.options['qt/*'].qtwayland = True
