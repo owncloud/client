@@ -293,13 +293,6 @@ public:
     SyncResult syncResult() const { return _syncResult; }
 
     /**
-     * @brief updateSelectiveSync takes necessary steps to update the excluded subfolders list and triggers remote discovery on next
-     * sync
-     * @param blacklist contains the collection of folders to exclude from the sync
-     */
-    void updateSelectiveSync(const QSet<QString> &blacklist);
-
-    /**
       * This is called when the sync folder definition is removed. Do cleanups here.
       *
       * It removes the database, among other things.
@@ -323,6 +316,13 @@ public:
      * @return the list of excluded items for selective sync
      */
     QSet<QString> selectiveSyncBlacklist();
+
+    /**
+     * @brief updateSelectiveSync takes necessary steps to update the excluded subfolders list and triggers remote discovery on next
+     * sync
+     * @param blacklist contains the collection of folders to exclude from the sync
+     */
+    void updateSelectiveSync(const QSet<QString> &blacklist);
 
     /**
      * @brief getFileRecord retrieves the file record for the given file name
