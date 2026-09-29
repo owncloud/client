@@ -39,11 +39,10 @@ void AuthSuccessPageController::buildPage()
 
     QString appName = Theme::instance()->appNameGUI();
 
-    QLabel *logoLabel = new QLabel({}, _page);
-    logoLabel->setPixmap(IconResources::getBrandingIcon(Theme::instance()->wizardHeaderLogoName()).pixmap(200, 100));
-    logoLabel->setAlignment(Qt::AlignCenter);
-    logoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    logoLabel->setAccessibleName(tr("Application Name Logo %1").arg(appName));
+    _logoLabel = new QLabel(_page);
+    _logoLabel->setAlignment(Qt::AlignCenter);
+    _logoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    _logoLabel->setAccessibleName(tr("Application Name Logo %1").arg(appName));
 
     QLabel *instructionLabel = new QLabel(tr("You're all set! Open %1 and get started.").arg(appName), _page);
     QFont font = instructionLabel->font();
@@ -69,7 +68,7 @@ void AuthSuccessPageController::buildPage()
     layout->setContentsMargins(50, 0, 50, 0);
     layout->setSpacing(12);
     layout->addStretch(1);
-    layout->addWidget(logoLabel, Qt::AlignCenter);
+    layout->addWidget(_logoLabel, Qt::AlignCenter);
     layout->addSpacing(16);
     layout->addWidget(instructionLabel, Qt::AlignCenter);
 
@@ -77,6 +76,13 @@ void AuthSuccessPageController::buildPage()
         layout->addWidget(footerLogoLabel, Qt::AlignCenter);
     layout->addStretch(1);
     _page->setLayout(layout);
+
+    updateIcons();
+}
+
+void AuthSuccessPageController::updateIcons()
+{
+    _logoLabel->setPixmap(IconResources::getBrandingIcon(Theme::instance()->wizardHeaderLogoName()).pixmap(200, 100));
 }
 
 bool AuthSuccessPageController::validate()

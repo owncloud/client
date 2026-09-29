@@ -24,6 +24,8 @@ class QMenu;
 
 namespace OCC {
 
+class ButtonDelegate;
+
 class AccountFoldersView : public QWidget
 {
     Q_OBJECT
@@ -35,6 +37,7 @@ public:
     void setSyncedFolderCount(int synced, int total);
     void enableAddFolder(bool enableAdd);
     void setMenuActions(QList<QAction *> actions);
+    void updatePaletteAndIcons();
 
 signals:
     void addFolderTriggered();
@@ -43,6 +46,8 @@ signals:
 protected:
     bool eventFilter(QObject *obj, QEvent *ev) override;
 
+    void updatePalette();
+
 private:
     void buildView();
     void popItemMenu(const QPoint &pos);
@@ -50,6 +55,7 @@ private:
     bool performBizarreSetupOnTreeView();
 
     QTreeView *_treeView = nullptr;
+    ButtonDelegate *_buttonDel = nullptr;
     QLabel *_syncedFolderCountLabel = nullptr;
     QPushButton *_addFolderButton = nullptr;
     QMenu *_itemMenu = nullptr;

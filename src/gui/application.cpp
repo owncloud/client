@@ -25,6 +25,7 @@
 #include "configfile.h"
 #include "folder.h"
 #include "folderman.h"
+#include "mainwindow/colormanager.h"
 #include "mainwindow/mainwindow.h"
 #include "mainwindow/mainwindowcontroller.h"
 #include "socketapi/socketapi.h"
@@ -174,15 +175,21 @@ bool Application::debugMode()
 void Application::buildAppGuis()
 {
     Q_ASSERT(!_mainWin && !_trayController);
-    _mainWin = new MainWindow();
-    _mainController = new MainWindowController(_mainWin, this);
+    _colorManager = new ColorManager(this);
 
-    _accountsGuiController = new AccountsGuiController(AccountManager::instance(), _mainWin, _mainController);
+    _mainWin = new MainWindow();
+    _mainController = new MainWindowController(_mainWin, _colorManager, this);
+
+    // hmmm...should the main controller really parent the accounts gui controller or should it be this?
+    // I'm torn. will leave it this way for now - honestly they all go "down" together so I don't think it matters much
+    // either way but always prefer to parent things to "the creator".
+    _accountsGuiController = new AccountsGuiController(AccountManager::instance(), _mainWin, _colorManager, _mainController);
     connect(_mainController, &MainWindowController::requestAccountWizard, _accountsGuiController, &AccountsGuiController::runAccountWizard);
 
     // Setting up the gui class will allow tray notifications for the
     // setup that follows, like folder setup
     _trayController = new TrayMenuController(this);
+    connect(_colorManager, &ColorManager::appColorsChanged, _trayController, &TrayMenuController::updateTrayIcon);
     connect(_trayController, &TrayMenuController::requestShowAbout, _mainController, &MainWindowController::onAbout);
     connect(_trayController, &TrayMenuController::requestShowHelp, _mainController, &MainWindowController::onHelp);
 

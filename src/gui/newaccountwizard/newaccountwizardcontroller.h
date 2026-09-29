@@ -28,6 +28,7 @@ namespace OCC {
 class NewAccountModel;
 class NewAccountWizard;
 class AccessManager;
+class ColorManager;
 
 
 /**
@@ -46,7 +47,7 @@ public:
      * @param parent normally this will be a pointer to whatever instantiated the controller, eg a manager or another controller, but since the
      * triad is short lived, we may also manage the controller by instantiating it on the stack with no parent.
      */
-    explicit NewAccountWizardController(NewAccountModel *model, NewAccountWizard *view, QObject *parent);
+    explicit NewAccountWizardController(NewAccountModel *model, NewAccountWizard *view, ColorManager *colorManager, QObject *parent);
 
 
 protected Q_SLOTS:
@@ -88,6 +89,8 @@ private:
 
     /** this controller owns the access manager that will be used by the page controllers to run various network requests */
     AccessManager *_accessManager = nullptr;
+
+    ColorManager *_colorManager = nullptr;
 
     // using QPointer for the injected dependencies. For an impl like this it's more of a "best practice" formality as the whole
     // bundle of stuff has a shared lifetime.

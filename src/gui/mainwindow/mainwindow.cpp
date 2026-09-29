@@ -96,7 +96,6 @@ void MainWindow::buildWindow()
     _toolbar->setAccessibleName(tr("Main toolbar"));
     addToolBar(Qt::TopToolBarArea, _toolbar);
 
-
     QWidget *toolbarStretch = new QWidget(this);
     toolbarStretch->setFocusPolicy(Qt::NoFocus);
     // who knows, maybe someday we use the toolbar vertically
@@ -109,26 +108,6 @@ void MainWindow::buildWindow()
     // on either side of the separator, and this makes the more button look weird/out of place/too far to the right in a subtle way.
     // if we want to turn it back on, at minimum the tooblar::separator style sheet above should be uncommented else it's *really* bad.
     _separatorAction->setVisible(false);
-
-    QAction *moreAction = new QAction(tr("More"), this);
-    moreAction->setObjectName("moreAction");
-    moreAction->setIcon(IconResources::getCoreIcon("more"));
-    _toolbar->addAction(moreAction);
-    _moreButton = qobject_cast<QToolButton *>(_toolbar->widgetForAction(moreAction));
-    _moreButton->setFocusPolicy(Qt::StrongFocus);
-    QSize minsize = _moreButton->minimumSizeHint();
-    // golden ratio is too wide, this is silver ratio and looks pretty good.
-    _moreButton->setMinimumWidth(minsize.height() * 1.414);
-    _moreButton->setPopupMode(QToolButton::InstantPopup);
-    if (Utility::isMac()) {
-        // does not work for QToolButton:
-        // button->setAttribute(Qt::WA_MacShowFocusRect, true);
-        // so add it to the style sheet
-        _moreButton->setStyleSheet("QToolButton:focus { border: 2px solid palette(highlight); }"
-                                   "QToolButton::menu-indicator { image: none; }");
-    } else {
-        _moreButton->setStyleSheet("QToolButton::menu-indicator { image: none; }");
-    }
 
     _widgetStack = new QStackedWidget(this);
     setCentralWidget(_widgetStack);
@@ -180,6 +159,25 @@ void MainWindow::endModalWidget()
     stopModal();
     // ensure the current stack widget matches the currently "checked" action in the toolbar
     _actionGroup->checkedAction()->toggled(true);
+}
+
+void MainWindow::addMoreAction(QAction *action)
+{
+    _toolbar->addAction(action);
+    _moreButton = qobject_cast<QToolButton *>(_toolbar->widgetForAction(action));
+    QSize minsize = _moreButton->minimumSizeHint();
+    _moreButton->setMinimumWidth(minsize.height() * 1.414);
+    _moreButton->setPopupMode(QToolButton::InstantPopup);
+    _moreButton->setFocusPolicy(Qt::StrongFocus);
+    if (Utility::isMac()) {
+        // does not work for QToolButton:
+        // button->setAttribute(Qt::WA_MacShowFocusRect, true);
+        // so add it to the style sheet
+        _moreButton->setStyleSheet("QToolButton:focus { border: 2px solid palette(highlight); }"
+                                   "QToolButton::menu-indicator { image: none; }");
+    } else {
+        _moreButton->setStyleSheet("QToolButton::menu-indicator { image: none; }");
+    }
 }
 
 void MainWindow::addViewAction(QAction *action)

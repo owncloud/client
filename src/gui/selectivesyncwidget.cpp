@@ -49,6 +49,14 @@ public:
     {
     }
 
+    QVariant data(int column, int role) const override
+    {
+        if (column == 0 && role == Qt::DecorationRole)
+            return IconResources::getCoreIcon("folder-sync");
+
+        return QTreeWidgetItem::data(column, role);
+    }
+
 private:
     bool operator<(const QTreeWidgetItem &other) const override
     {
@@ -190,7 +198,6 @@ void SelectiveSyncWidget::recursiveInsert(QTreeWidgetItem *parent, QStringList p
             } else if (parent->checkState(0) == Qt::Unchecked) {
                 item->setCheckState(0, Qt::Unchecked);
             }
-            item->setIcon(0, IconResources::getCoreIcon(QStringLiteral("folder-sync")));
             item->setText(0, pathTrail.first());
             if (size >= 0) {
                 item->setText(1, Utility::octetsToString(size));

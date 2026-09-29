@@ -41,6 +41,7 @@ public:
      * Will only enable logging if it isn't enabled already.
      */
     static void setupLoggingFromConfig();
+    void updateIcons();
 
 protected Q_SLOTS:
     void togglePermanentLogging(bool enabled);

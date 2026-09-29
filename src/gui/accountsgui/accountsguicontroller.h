@@ -31,13 +31,14 @@ class AccountManager;
 class Account;
 class MainWindow;
 class AccountViewController;
+class ColorManager;
 
 class AccountsGuiController : public QObject
 {
     Q_OBJECT
 
 public:
-    AccountsGuiController(AccountManager *accountMgr, MainWindow *window, QObject *parent);
+    AccountsGuiController(AccountManager *accountMgr, MainWindow *window, ColorManager *colorManager, QObject *parent);
     void runAccountWizard();
 
 
@@ -46,6 +47,7 @@ private:
     QPointer<MainWindow> _window;
     QHash<QUuid, QAction *> _actionForAccount;
     QHash<QUuid, AccountViewController *> _viewControllerForAccount;
+    ColorManager *_colorManager;
 
     void onAccountAdded(AccountState *state);
     void onAccountRemoved(AccountState *state);

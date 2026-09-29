@@ -20,6 +20,7 @@
 #include "commonstrings.h"
 #include "configfile.h"
 #include "foldermodelcontroller.h"
+#include "mainwindow/colormanager.h"
 #include "selectivesyncwidget.h"
 
 #include "guiutility.h"

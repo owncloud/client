@@ -28,6 +28,7 @@
 #include "creds/abstractcredentials.h"
 #include "folderman.h"
 #include "iconresources.h"
+#include "mainwindow/colormanager.h"
 #include "mainwindow/mainwindow.h"
 #include "newaccountwizard/newaccountbuilder.h"
 #include "newaccountwizard/newaccountwizard.h"
@@ -35,10 +36,11 @@
 
 namespace OCC {
 
-AccountsGuiController::AccountsGuiController(AccountManager *accountMgr, MainWindow *window, QObject *parent)
+AccountsGuiController::AccountsGuiController(AccountManager *accountMgr, MainWindow *window, ColorManager *colorManager, QObject *parent)
     : QObject(parent)
     , _accountMgr(accountMgr)
     , _window(window)
+    , _colorManager(colorManager)
 {
     Q_ASSERT(_accountMgr && _window);
     // load any existing accounts from the manager.
@@ -76,7 +78,7 @@ void AccountsGuiController::onAccountAdded(AccountState *state)
     // to support squish test object identification
     accountView->setObjectName(QString("accountView_%1").arg(accountId.toString()));
 
-    AccountViewController *viewController = new AccountViewController(accountView, state, this);
+    AccountViewController *viewController = new AccountViewController(accountView, state, _colorManager, this);
     _viewControllerForAccount.insert(accountId, viewController);
 
     connect(account->credentials(), &AbstractCredentials::requestAccountModal, viewController, &AccountViewController::addAccountModalWidget);
@@ -88,8 +90,9 @@ void AccountsGuiController::onAccountAdded(AccountState *state)
     accountAction->setObjectName(QString("accountAction_%1").arg(accountId.toString()));
     _actionForAccount.insert(accountId, accountAction);
 
-    accountAction->setIcon(account->avatar());
 
+    accountAction->setIcon(account->avatar());
+    connect(_colorManager, &ColorManager::appColorsChanged, accountAction, [accountAction, account] { accountAction->setIcon(account->avatar()); });
     accountAction->setText(account->accountAlias());
     connect(account, &Account::accountAliasChanged, accountAction, [accountAction](const QString &newAlias) { accountAction->setText(newAlias); });
 
@@ -153,7 +156,7 @@ void AccountsGuiController::runAccountWizard()
         return;
     NewAccountWizard wizard(_window);
     NewAccountModel model(nullptr);
-    NewAccountWizardController wizardController(&model, &wizard, nullptr);
+    NewAccountWizardController wizardController(&model, &wizard, _colorManager, nullptr);
     _window->ensureVisible();
     int result = wizard.exec();
     if (result == QDialog::Accepted) {
@@ -192,9 +195,13 @@ void AccountsGuiController::setupAccountPlaceholder()
         placeholderAccountAction->setObjectName("placeholderAccountAction");
         placeholderAccountAction->setCheckable(true);
         placeholderAccountAction->setIcon(IconResources::getCoreIcon("warning"));
+        connect(_colorManager, &ColorManager::appColorsChanged, placeholderAccountAction,
+            [placeholderAccountAction]() { placeholderAccountAction->setIcon(IconResources::getCoreIcon("warning")); });
+
         // use null uuid for placeholder action since there IS no account for it
         _actionForAccount.insert(QUuid(), placeholderAccountAction);
         auto placeholderWidget = new AccountPlaceholderWidget(_window);
+        connect(_colorManager, &ColorManager::appColorsChanged, placeholderWidget, &AccountPlaceholderWidget::updateIcons);
         placeholderAccountAction->setData(QVariant::fromValue(placeholderWidget));
         _window->addAccountAction(placeholderAccountAction);
     }

@@ -40,6 +40,7 @@ public:
     ~TrayMenuController() override;
 
     void useMonoIconsChanged(bool useMono);
+    void updateTrayIcon();
 
 Q_SIGNALS:
     void requestShowAbout();
