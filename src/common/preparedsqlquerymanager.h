@@ -18,13 +18,13 @@
 
 #pragma once
 
+#include "common/asserts.h"
 #include "ocsynclib.h"
 #include "ownsql.h"
-#include "common/asserts.h"
 
 namespace OCC {
 
-// todo: this needs deeper review.
+// todo #62: this needs deeper review.
 // it appears this wrapper goes to alot of trouble to make itself look like a pointer in use, when in fact, it never is.
 // essentially it's a wrapper for SqlQuery* + a bool which indicates if it's "ok" or not.
 // the bool() operator fakes a something != nullptr check which is too often shortened to !something (where something is a pointer, obvs)
