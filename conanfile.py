@@ -28,6 +28,8 @@ class ClientRecipe(ConanFile):
         if self.settings.os == "Linux":
             self.options['qt/*'].with_dbus = True
             self.options['qt/*'].qtwayland = True
+        if self.settings.os == "Macos":
+            self.options['harfbuzz/*'].with_glib = False
 
     def requirements(self):
         self.requires("extra-cmake-modules/6.8.0")
