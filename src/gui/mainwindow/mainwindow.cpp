@@ -72,6 +72,7 @@ void MainWindow::buildWindow()
     // this is part of the reason we have tidy turned off - it's a bit too touchy.
     // question is, why is tidy butting in if we have it turned off? Figure this out later.
     setMinimumSize(minimumSizeHint());
+
     QSize iconsSize(24, 24);
 
     _actionGroup = new QActionGroup(this);
@@ -80,6 +81,12 @@ void MainWindow::buildWindow()
 
     _toolbar = new QToolBar(this);
     _toolbar->setObjectName("mainWindowToolbar");
+    // this only disables the very dumb right click menu that appears on the toolbar with a checkmark and no text
+    // setting context menu policy Qt::NoContextMenu doesn't work either - you have to set this on the main window which may cause
+    // future confusion, OR use PreventContextMenu on the toolbar.
+    _toolbar->toggleViewAction()->setEnabled(false);
+    _toolbar->setContextMenuPolicy(Qt::PreventContextMenu);
+
     // the height is in play if the toolbar is vertically oriented
     // not sure what the default separator width is, but without setting this style sheet
     // the space "around" the separator line itself was visibly "extra" if you eg select the activity button
