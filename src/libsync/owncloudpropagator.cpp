@@ -787,7 +787,7 @@ bool OwncloudPropagator::createConflict(const SyncFileItemPtr &item, QString *er
     conflictRecord.initialBasePath = item->_file.toUtf8();
 
     SyncJournalFileRecord baseRecord;
-    if (_journal->getFileRecord(item->_originalFile, &baseRecord) && baseRecord.isValid()) {
+    if (_journal->getFileRecord(item->_originalFile, baseRecord) && baseRecord.isValid()) {
         conflictRecord.baseEtag = baseRecord._etag;
         conflictRecord.baseFileId = baseRecord._fileId;
     } else {
@@ -1293,8 +1293,7 @@ void OCC::PropagateUpdateMetaDataJob::start()
     const QString filePath = propagator()->fullLocalPath(_item->destination());
     if (_item->_direction == SyncFileItem::Down) {
         SyncJournalFileRecord prev;
-        if (propagator()->_journal->getFileRecord(_item->_file, &prev)
-            && prev.isValid()) {
+        if (propagator()->_journal->getFileRecord(_item->_file, prev) && prev.isValid()) {
             if (_item->_checksumHeader.isEmpty()) {
                 _item->_checksumHeader = prev._checksumHeader;
             }

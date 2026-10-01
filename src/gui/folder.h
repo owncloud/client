@@ -293,13 +293,6 @@ public:
     SyncResult syncResult() const { return _syncResult; }
 
     /**
-     * @brief updateSelectiveSync takes necessary steps to update the excluded subfolders list and triggers remote discovery on next
-     * sync
-     * @param blacklist contains the collection of folders to exclude from the sync
-     */
-    void updateSelectiveSync(const QSet<QString> &blacklist);
-
-    /**
       * This is called when the sync folder definition is removed. Do cleanups here.
       *
       * It removes the database, among other things.
@@ -315,6 +308,32 @@ public:
 
     // TODO: don't expose
     SyncJournalDb *journalDb() { return _journal; }
+
+    // replacements for journalDb() Getter:
+
+    /**
+     * @brief selectiveSyncBlacklist
+     * @return the list of excluded items for selective sync
+     */
+    QSet<QString> selectiveSyncBlacklist();
+
+    /**
+     * @brief updateSelectiveSync takes necessary steps to update the excluded subfolders list and triggers remote discovery on next
+     * sync
+     * @param blacklist contains the collection of folders to exclude from the sync
+     */
+    void updateSelectiveSync(const QSet<QString> &blacklist);
+
+    /**
+     * @brief getFileRecord retrieves the file record for the given file name
+     * @param filename for record to be retrieved
+     * @param record - the record which will be updated with the actual data.
+     *
+     * @return false if the operation can't be completed, true if it succeeded.
+     */
+    bool getFileRecord(const QString &filename, SyncJournalFileRecord &record) { return _journal->getFileRecord(filename, record); }
+
+
     // TODO: don't expose
     SyncEngine *syncEngine() { return _engine; }
 

@@ -532,7 +532,7 @@ void Folder::slotWatchedPathsChanged(const QSet<QString> &paths, ChangeReason re
             continue;
         const QString relativePath = path.mid(this->path().size());
         if (reason == ChangeReason::UnLock) {
-            journalDb()->wipeErrorBlacklistEntry(relativePath, SyncJournalErrorBlacklistRecord::Category::LocalSoftError);
+            _journal->wipeErrorBlacklistEntry(relativePath, SyncJournalErrorBlacklistRecord::Category::LocalSoftError);
 
             {
                 // horrible hack to compensate that we don't handle folder deletes on a per-file basis
@@ -543,7 +543,7 @@ void Folder::slotWatchedPathsChanged(const QSet<QString> &paths, ChangeReason re
                     const auto rec = journalDb()->errorBlacklistEntry(p);
                     if (rec.isValid()) {
                         if (rec._errorCategory == SyncJournalErrorBlacklistRecord::Category::LocalSoftError) {
-                            journalDb()->wipeErrorBlacklistEntry(p);
+                            _journal->wipeErrorBlacklistEntry(p);
                         }
                     }
                 }
@@ -557,7 +557,7 @@ void Folder::slotWatchedPathsChanged(const QSet<QString> &paths, ChangeReason re
         _localDiscoveryTracker->addTouchedPath(relativePath);
 
         SyncJournalFileRecord record;
-        _journal->getFileRecord(relativePath.toUtf8(), &record);
+        _journal->getFileRecord(relativePath.toUtf8(), record);
         if (reason != ChangeReason::UnLock) {
             // Check that the mtime/size actually changed or there was
             // an attribute change (pin state) that caused the notification
@@ -594,7 +594,7 @@ void Folder::implicitlyHydrateFile(const QString &relativepath)
 
     // Set in the database that we should download the file
     SyncJournalFileRecord record;
-    _journal->getFileRecord(relativepath.toUtf8(), &record);
+    _journal->getFileRecord(relativepath.toUtf8(), record);
     if (!record.isValid()) {
         qCInfo(lcFolder) << "Did not find file in db";
         return;
@@ -663,14 +663,14 @@ void Folder::changeVfsMode(Vfs::Mode newMode)
 
     // stash the previous blacklist
     bool ok;
-    const auto oldBlacklist = journalDb()->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, ok);
+    const auto oldBlacklist = _journal->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, ok);
 
     if (!ok) {
         qCWarning(lcFolder) << "Unable to retrieve previous selective sync blacklist for folder: " << _definition.localPath();
         return;
     }
     // clear previous blacklist
-    journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, {});
+    _journal->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, {});
 
 
     // Wipe the dehydrated files from the DB, they will get downloaded on the next sync. We need to do this, otherwise the files
@@ -696,7 +696,7 @@ void Folder::changeVfsMode(Vfs::Mode newMode)
         // schedule blacklisted folders for rediscovery
         connect(_vfs, &Vfs::started, this, [oldBlacklist, this] {
             for (const auto &entry : oldBlacklist) {
-                journalDb()->schedulePathForRemoteDiscovery(entry);
+                _journal->schedulePathForRemoteDiscovery(entry);
                 // Refactoring todo: from what I can see, in 98% of cases the return val of setPinState is ignored
                 // do we actually need that return value?! if so why aren't we using it?
                 std::ignore = vfs().setPinState(entry, PinState::OnlineOnly);
@@ -868,6 +868,15 @@ void Folder::setMoveToTrash(bool trashIt)
     _engine->setMoveToTrash(trashIt);
 }
 
+QSet<QString> Folder::selectiveSyncBlacklist()
+{
+    bool success = false;
+    QSet<QString> blacklist = _journal->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, success);
+    if (success)
+        return blacklist;
+    return {};
+}
+
 void Folder::slotSyncError(const QString &message, ErrorCategory category)
 {
     _syncResult.appendErrorString(message);
@@ -924,7 +933,7 @@ void Folder::slotSyncFinished(bool success)
 
     if (syncStatus == SyncResult::Success && success) {
         // Clear the white list as all the folders that should be on that list are sync-ed
-        journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList, {});
+        _journal->setSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList, {});
     }
 
     if ((syncStatus == SyncResult::Success || syncStatus == SyncResult::Problem) && success) {

@@ -161,7 +161,7 @@ private Q_SLOTS:
 
         auto getDbChecksum = [&](const QString &path) {
             SyncJournalFileRecord record;
-            fakeFolder.syncJournal()->getFileRecord(path, &record);
+            fakeFolder.syncJournal()->getFileRecord(path, record);
             return record._checksumHeader;
         };
 
@@ -221,7 +221,7 @@ private Q_SLOTS:
         fakeFolder.syncJournal()->schedulePathForRemoteDiscovery(QByteArrayLiteral("parentFolder/subFolderA/"));
         auto getEtag = [&](const QByteArray &file) {
             SyncJournalFileRecord rec;
-            fakeFolder.syncJournal()->getFileRecord(file, &rec);
+            fakeFolder.syncJournal()->getFileRecord(file, rec);
             return rec._etag;
         };
         QVERIFY(getEtag("parentFolder") == "_invalid_");
@@ -297,7 +297,7 @@ private Q_SLOTS:
         }
 
         SyncJournalFileRecord rec;
-        fakeFolder.syncJournal()->getFileRecord(QByteArrayLiteral("NewFolder"), &rec);
+        fakeFolder.syncJournal()->getFileRecord(QByteArrayLiteral("NewFolder"), rec);
         QVERIFY(rec.isValid());
         if (filesAreDehydrated) {
             // No error, failure occurs only with a GET, so etag should be valid (i.e. NOT invalid):
@@ -439,7 +439,7 @@ private Q_SLOTS:
         // check that mtime in journal and filesystem agree
         QString a1path = fakeFolder.localPath() + QStringLiteral("A/a1");
         SyncJournalFileRecord a1record;
-        fakeFolder.syncJournal()->getFileRecord(QByteArray("A/a1"), &a1record);
+        fakeFolder.syncJournal()->getFileRecord(QByteArray("A/a1"), a1record);
         QCOMPARE(a1record._modtime, (qint64)FileSystem::getModTime(a1path));
 
         // Extra sync reads from db, no difference

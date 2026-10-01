@@ -54,7 +54,7 @@ const auto getFileRecordQueryC = QByteArrayLiteral("SELECT path, inode, modtime,
                                                    " LEFT JOIN checksumtype as contentchecksumtype ON metadata.contentChecksumTypeId == contentchecksumtype.id ");
 
 
-void fillFileRecordFromGetQuery(OCC::SyncJournalFileRecord &rec, OCC::SqlQuery &query)
+void fillFileRecordFromGetQuery(OCC::SyncJournalFileRecord &rec, const OCC::SqlQuery &query)
 {
     rec._path = query.baValue(0);
     rec._inode = query.int64Value(1);
@@ -947,14 +947,13 @@ bool SyncJournalDb::deleteFileRecord(const QString &filename, bool recursively)
 }
 
 
-bool SyncJournalDb::getFileRecord(const QByteArray &filename, SyncJournalFileRecord *rec)
+bool SyncJournalDb::getFileRecord(const QByteArray &filename, SyncJournalFileRecord &rec)
 {
     QMutexLocker locker(&_mutex);
 
     // Reset the output var in case the caller is reusing it.
-    Q_ASSERT(rec);
-    rec->_path.clear();
-    Q_ASSERT(!rec->isValid());
+    rec._path.clear();
+    Q_ASSERT(!rec.isValid());
 
     if (_metadataTableIsEmpty)
         return true; // no error, yet nothing found (rec->isValid() == false)
@@ -983,20 +982,19 @@ bool SyncJournalDb::getFileRecord(const QByteArray &filename, SyncJournalFileRec
             return false;
         }
         if (next.hasData) {
-            fillFileRecordFromGetQuery(*rec, *query);
+            fillFileRecordFromGetQuery(rec, *query);
         }
     }
     return true;
 }
 
-bool SyncJournalDb::getFileRecordByInode(quint64 inode, SyncJournalFileRecord *rec)
+bool SyncJournalDb::getFileRecordByInode(quint64 inode, SyncJournalFileRecord &rec)
 {
     QMutexLocker locker(&_mutex);
 
     // Reset the output var in case the caller is reusing it.
-    Q_ASSERT(rec);
-    rec->_path.clear();
-    Q_ASSERT(!rec->isValid());
+    rec._path.clear();
+    Q_ASSERT(!rec.isValid());
 
     if (!inode || _metadataTableIsEmpty)
         return true; // no error, yet nothing found (rec->isValid() == false)
@@ -1016,7 +1014,7 @@ bool SyncJournalDb::getFileRecordByInode(quint64 inode, SyncJournalFileRecord *r
     if (!next.ok)
         return false;
     if (next.hasData)
-        fillFileRecordFromGetQuery(*rec, *query);
+        fillFileRecordFromGetQuery(rec, *query);
 
     return true;
 }

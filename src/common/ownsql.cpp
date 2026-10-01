@@ -30,7 +30,7 @@
 
 #include <sqlite3.h>
 
-#include <thread>
+// #include <thread>
 
 using namespace std::chrono_literals;
 
@@ -310,12 +310,12 @@ static bool startsWithInsensitive(const QByteArray &a, const QByteArray &b)
     return a.size() >= b.size() && qstrnicmp(a.constData(), b.constData(), b.size()) == 0;
 }
 
-bool SqlQuery::isSelect()
+bool SqlQuery::isSelect() const
 {
     return startsWithInsensitive(_sql, QByteArrayLiteral("SELECT"));
 }
 
-bool SqlQuery::isPragma()
+bool SqlQuery::isPragma() const
 {
     return startsWithInsensitive(_sql, QByteArrayLiteral("PRAGMA"));
 }
@@ -462,27 +462,27 @@ void SqlQuery::bindValueInternal(int pos, const QVariant &value)
     OC_ASSERT(res == SQLITE_OK);
 }
 
-bool SqlQuery::nullValue(int index)
+bool SqlQuery::nullValue(int index) const
 {
     return sqlite3_column_type(_stmt, index) == SQLITE_NULL;
 }
 
-QString SqlQuery::stringValue(int index)
+QString SqlQuery::stringValue(int index) const
 {
     return QString::fromUtf16(static_cast<const char16_t *>(sqlite3_column_text16(_stmt, index)));
 }
 
-int SqlQuery::intValue(int index)
+int SqlQuery::intValue(int index) const
 {
     return sqlite3_column_int(_stmt, index);
 }
 
-quint64 SqlQuery::int64Value(int index)
+quint64 SqlQuery::int64Value(int index) const
 {
     return sqlite3_column_int64(_stmt, index);
 }
 
-QByteArray SqlQuery::baValue(int index)
+QByteArray SqlQuery::baValue(int index) const
 {
     return QByteArray(static_cast<const char *>(sqlite3_column_blob(_stmt, index)),
         sqlite3_column_bytes(_stmt, index));

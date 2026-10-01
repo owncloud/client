@@ -776,7 +776,7 @@ SyncJournalFileRecord SocketApi::FileData::journalRecord() const
     SyncJournalFileRecord record;
     if (!folder)
         return record;
-    folder->journalDb()->getFileRecord(folderRelativePath, &record);
+    folder->getFileRecord(folderRelativePath, record);
     return record;
 }
 
