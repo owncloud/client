@@ -88,7 +88,7 @@ void LocalActivityWidget::onFolderListChanged(const QUuid &accountId, const QLis
 void LocalActivityWidget::onFolderRemoved(const QUuid &accountId, Folder *f)
 {
     Q_UNUSED(accountId);
-    _model->remove_if([f](const ProtocolItem &item) { return item.folder() == f; });
+    _model->remove_if([f](const ProtocolItem &item) { return item.folder() == nullptr || item.folder() == f; });
 }
 /**
  * @brief Show a filter menu for the given model.
@@ -127,6 +127,9 @@ void LocalActivityWidget::showContextMenu(QWidget *parent, QTableView *table, Mo
 
     if (items.size() == 1) {
         const auto &data = itemModel->protocolItem(items.first());
+
+        if (!data.folder())
+            return;
 
         // Show in file browser action
         const QString localPath = data.folder()->path() + data.path();

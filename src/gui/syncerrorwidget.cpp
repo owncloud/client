@@ -277,7 +277,7 @@ void SyncErrorWidget::onFolderListChanged(const QUuid &accountId, const QList<Fo
 void SyncErrorWidget::onFolderRemoved(const QUuid &accountId, Folder *f)
 {
     Q_UNUSED(accountId);
-    _model->remove_if([f](const ProtocolItem &item) { return item.folder() == f; });
+    _model->remove_if([f](const ProtocolItem &item) { return item.folder() == nullptr || item.folder() == f; });
 }
 
 QMenu *SyncErrorWidget::showFilterMenu(QWidget *parent)
