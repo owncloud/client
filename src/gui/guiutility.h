@@ -50,7 +50,7 @@ namespace Utility {
 
     void startShellIntegration();
 
-    QString socketApiSocketPath();
+    OWNCLOUDGUI_EXPORT QString socketApiSocketPath();
 
     OWNCLOUDGUI_EXPORT void markDirectoryAsSyncRoot(const QString &path, const QUuid &accountUuid);
     std::pair<QString, QUuid> getDirectorySyncRootMarkings(const QString &path);
