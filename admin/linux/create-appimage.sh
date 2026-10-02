@@ -121,6 +121,14 @@ if [ -z "${QMAKE:-}" ]; then
 fi
 export QMAKE
 
+QT_PREFIX="$("$QMAKE" -query QT_INSTALL_PREFIX 2>/dev/null || true)"
+if [ -n "$QT_PREFIX" ]; then
+    echo "Qt prefix: $QT_PREFIX"
+    export QT_PLUGIN_PATH="${QT_PREFIX}/plugins:${QT_PLUGIN_PATH:-}"
+    export QML2_IMPORT_PATH="${QT_PREFIX}/qml:${QML2_IMPORT_PATH:-}"
+    export LD_LIBRARY_PATH="${QT_PREFIX}/lib:${LD_LIBRARY_PATH}"
+fi
+
 echo "==> Running linuxdeploy"
 "$LINUXDEPLOY" \
     --appdir "$APPDIR" \
