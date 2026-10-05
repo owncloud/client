@@ -51,7 +51,7 @@ QVariant ProtocolItemModel::data(const QModelIndex &index, int role) const
 
     const auto column = static_cast<ProtocolItemRole>(index.column());
     const auto &item = protocolItem(index);
-    if (item.folder() == nullptr)
+    if (!item.folder() || !item.folder()->accountState() || !item.folder()->accountState()->account())
         return {};
 
     switch (role) {
