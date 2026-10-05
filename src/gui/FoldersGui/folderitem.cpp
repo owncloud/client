@@ -194,6 +194,8 @@ void FolderItem::updateImage()
 
     // sure I would like to see if they are equal before the set, but apparently there are no available ==/!= operators.
     _image = spaceIcon;
+    // ensure repaint!
+    emitDataChanged();
 }
 
 QVariant FolderItem::data(int role) const
