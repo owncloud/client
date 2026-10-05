@@ -51,6 +51,7 @@ void FolderItemUpdater::onSpaceChanged()
     // that makes no sense anymore as we don't HAVE a folder until after it's constructed and added to folderman.
     // I think this can go but needs more testing
     // specifically with ocis where I can actually change the space image
+    // I *never* see a breakpoint for this routine hit - I think this can go but leaving it for now since we are trying to release
     if (!_imageChangeConnection && _item->folder()->space()) {
         _imageChangeConnection = connect(_item->folder()->space(), &GraphApi::Space::imageChanged, this, &FolderItemUpdater::onImageChanged);
         onImageChanged();
@@ -68,15 +69,7 @@ void FolderItemUpdater::onConnectedChanged(AccountState::State newState)
     // after connection.
     if (newState == AccountState::Connected && !_imageChangeConnection && _item->folder()->space()) {
         _imageChangeConnection = connect(_item->folder()->space(), &GraphApi::Space::imageChanged, this, &FolderItemUpdater::onImageChanged);
-    } /*else {
-        // yes we need to drop this connection if the account is disconnected to ensure we fetch the "current" image on next connect
-        // in case it changed while the spaces/drives could not be updated
-        // yes this is super weird! the issue is that because the image is fetched "at some time" we can't rely on connected == image is available.
-        // and if it was already fetched before *we* were notified of connection change, we won't get any update.
-        // ergo this horrid business with disconnecting it when connection is lost as...reasons.
-        disconnect(_imageChangeConnection);
-    } */
-
+    }
     if (newState == AccountState::Connected)
         onImageChanged();
     _item->refresh();
