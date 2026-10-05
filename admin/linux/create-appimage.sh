@@ -115,7 +115,6 @@ fi
 export ARCH="${ARCH:-x86_64}"
 export LD_LIBRARY_PATH="$APPDIR/usr/lib:$APPDIR/usr/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH:-}"
 export LINUXDEPLOY_OUTPUT_VERSION="$VERSION"
-export NO_STRIP=1
 if [ -z "${QMAKE:-}" ]; then
     QMAKE=$(command -v qmake6 2>/dev/null || command -v qmake 2>/dev/null || find ~/.conan2 -name qmake6 -path '*/bin/*' 2>/dev/null | head -1 || echo qmake)
 fi
