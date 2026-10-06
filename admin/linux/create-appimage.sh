@@ -181,6 +181,11 @@ rm -rf usr/lib/gettext usr/share/gettext
 rm -rf usr/share/pkgconfig
 find . -name 'mkspecs' -type d -exec rm -rf {} + 2>/dev/null || true
 
+# Strip debug symbols from shared libraries and executables
+echo "==> Stripping binaries"
+find . -type f \( -name '*.so' -o -name '*.so.*' \) -exec strip --strip-debug {} + 2>/dev/null || true
+find . -type f -executable -exec sh -c 'file "$1" | grep -q "ELF" && strip --strip-debug "$1"' _ {} \; 2>/dev/null || true
+
 # Remove empty directories
 find . -type d -empty -delete 2>/dev/null || true
 
