@@ -180,6 +180,16 @@ rm -rf usr/qml/QtQuick/VectorImage
 rm -rf usr/qml/Qt/test
 find . -path '*/objects-RelWithDebInfo/*' -delete
 
+# X11 widget/extension libs pulled in from -devel packages.
+# Review this list when upgrading Qt — new versions may need additional X11 libs.
+rm -f usr/lib/libXt.so* usr/lib/libXaw.so* usr/lib/libXmu.so* usr/lib/libXmuu.so*
+rm -f usr/lib/libXpm.so* usr/lib/libfontenc.so* usr/lib/libxkbfile.so*
+rm -f usr/lib/libXRes.so* usr/lib/libXss.so* usr/lib/libXv.so* usr/lib/libXxf86vm.so*
+rm -f usr/lib/libXinerama.so* usr/lib/libXdamage.so* usr/lib/libXcomposite.so*
+rm -f usr/lib/libxcb-composite.so* usr/lib/libxcb-xinerama.so*
+rm -f usr/lib/libxcb-res.so* usr/lib/libxcb-present.so* usr/lib/libxcb-ewmh.so*
+rm -f usr/lib/libxcb-cursor.so*
+
 # Translations for Qt tools we don't ship
 rm -f usr/translations/assistant_* usr/translations/designer_*
 rm -f usr/translations/linguist_* usr/translations/qt_help_*
