@@ -136,8 +136,19 @@ echo "==> Running linuxdeploy"
 "$LINUXDEPLOY" \
     --appdir "$APPDIR" \
     --desktop-file "$DESKTOP_FILE" \
-    --output=appimage \
     --plugin=qt
+
+echo "==> AppDir contents:"
+find "$APPDIR" -type f -printf '%10s %p\n' | sort -rn
+echo "==> AppDir directory sizes:"
+du -sh "$APPDIR"/usr/*
+echo "==> AppDir total size:"
+du -sh "$APPDIR"
+
+echo "==> Creating AppImage"
+"$LINUXDEPLOY" \
+    --appdir "$APPDIR" \
+    --output=appimage
 
 # linuxdeploy creates the AppImage in the current directory
 # Move it to the output directory with the desired name
