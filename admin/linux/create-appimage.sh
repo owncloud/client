@@ -158,10 +158,22 @@ rm -rf usr/include usr/lib/cmake usr/lib/metatypes usr/lib/objects-*
 rm -f usr/lib/libQt6Designer* usr/lib/libQt6Help* usr/lib/libQt6UiTools*
 rm -f usr/lib/libQt6Test* usr/lib/libQt6QuickTest*
 rm -f usr/lib/libQt6WaylandCompositor* usr/lib/libQt6WaylandEgl*
+rm -f usr/lib/libQt6ShaderTools*
+rm -f usr/lib/libQt6QuickControls2FluentWinUI3StyleImpl*
+rm -f usr/lib/libQt6QuickControls2ImagineStyleImpl*
+rm -f usr/lib/libQt6QuickParticles*
+rm -f usr/lib/libQt6QuickVectorImage*
 
 # Qt plugins not needed at runtime
 rm -rf usr/plugins/designer usr/plugins/qmllint usr/plugins/qmltooling
 rm -f usr/plugins/sqldrivers/libqsqlmysql*
+
+# QML styles and modules not needed on Linux
+rm -rf usr/qml/QtQuick/Controls/FluentWinUI3
+rm -rf usr/qml/QtQuick/Controls/Imagine
+rm -rf usr/qml/QtQuick/NativeStyle
+rm -rf usr/qml/QtQuick/Particles
+rm -rf usr/qml/QtQuick/VectorImage
 
 # QML dev files and test modules
 rm -rf usr/qml/Qt/test
@@ -173,6 +185,7 @@ rm -f usr/translations/linguist_* usr/translations/qt_help_*
 rm -f usr/translations/qtconnectivity_* usr/translations/qtlocation_*
 rm -f usr/translations/qtmultimedia_* usr/translations/qtscript_*
 rm -f usr/translations/qtserialport_*
+rm -f usr/translations/qtdeclarative_* usr/translations/qtquickcontrols_*
 
 # Misc build/doc leftovers
 rm -rf usr/share/man usr/share/doc usr/share/gtk-doc usr/share/gdb
