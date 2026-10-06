@@ -268,7 +268,7 @@ bool Folder::isSyncRunning() const
 void Folder::updateSelectiveSync(const QSet<QString> &blacklist)
 {
     _journal->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, blacklist);
-    _journal->forceRemoteDiscoveryNextSync();
+    nextSyncForceFullRemoteDiscovery();
 }
 
 bool Folder::canSync() const
@@ -497,7 +497,7 @@ void Folder::startVfs()
         _vfsIsReady = false;
     });
 
-    slotNextSyncFullLocalDiscovery();
+    nextSyncForceFullLocalDiscovery();
     _vfs->start(vfsParams);
 }
 
@@ -514,9 +514,19 @@ void Folder::slotDiscardDownloadProgress()
     }
 }
 
-int Folder::slotWipeErrorBlacklist()
+int Folder::wipeErrorBlacklist()
 {
     return _journal->wipeErrorBlacklist();
+}
+
+void Folder::wipeErrorBlacklistForEntry(const QString &relativePath)
+{
+    _journal->wipeErrorBlacklistEntry(relativePath);
+}
+
+QString Folder::conflictFileBaseName(const QString &conflictFile)
+{
+    return QString::fromUtf8(_journal->conflictFileBaseName(conflictFile.toUtf8()));
 }
 
 void Folder::slotWatchedPathsChanged(const QSet<QString> &paths, ChangeReason reason)
@@ -540,7 +550,7 @@ void Folder::slotWatchedPathsChanged(const QSet<QString> &paths, ChangeReason re
                 QString p = relativePath;
                 while ((index = p.lastIndexOf(QLatin1Char('/'))) != -1) {
                     p = p.left(index);
-                    const auto rec = journalDb()->errorBlacklistEntry(p);
+                    const auto rec = _journal->errorBlacklistEntry(p);
                     if (rec.isValid()) {
                         if (rec._errorCategory == SyncJournalErrorBlacklistRecord::Category::LocalSoftError) {
                             _journal->wipeErrorBlacklistEntry(p);
@@ -990,9 +1000,14 @@ void Folder::slotLogPropagationStart()
     _fileLog->logLap(QStringLiteral("Propagation starts"));
 }
 
-void Folder::slotNextSyncFullLocalDiscovery()
+void Folder::nextSyncForceFullLocalDiscovery()
 {
     _timeSinceLastFullLocalDiscovery.invalidate();
+}
+
+void Folder::nextSyncForceFullRemoteDiscovery()
+{
+    _journal->forceRemoteDiscoveryNextSync();
 }
 
 void Folder::schedulePathForLocalDiscovery(const QString &relativePath)
@@ -1072,7 +1087,7 @@ void Folder::registerFolderWatcher()
     _folderWatcher = new FolderWatcher(this);
     connect(
         _folderWatcher, &FolderWatcher::pathChanged, this, [this](const QSet<QString> &paths) { slotWatchedPathsChanged(paths, Folder::ChangeReason::Other); });
-    connect(_folderWatcher, &FolderWatcher::lostChanges, this, &Folder::slotNextSyncFullLocalDiscovery);
+    connect(_folderWatcher, &FolderWatcher::lostChanges, this, &Folder::nextSyncForceFullLocalDiscovery);
     connect(_folderWatcher, &FolderWatcher::becameUnreliable, this, &Folder::slotWatcherUnreliable);
     _folderWatcher->init(path());
     _folderWatcher->startNotificatonTest(path() + QLatin1String(".owncloudsync.log"));

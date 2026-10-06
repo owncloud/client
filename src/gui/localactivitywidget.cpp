@@ -188,7 +188,7 @@ void LocalActivityWidget::showContextMenu(QWidget *parent, QTableView *table, Mo
             menu->addSeparator();
             menu->addAction(tr("Retry sync"), parent, [data, folder = QPointer<Folder>(data.folder())] {
                 if (folder) {
-                    folder->journalDb()->wipeErrorBlacklistEntry(data.path());
+                    folder->wipeErrorBlacklistForEntry(data.path());
                     FolderMan::instance()->scheduler()->enqueueFolder(folder, SyncScheduler::Priority::Medium);
                 }
             });

@@ -119,9 +119,9 @@ void IgnoreListEditor::slotUpdateLocalIgnoreList()
     // ignored (because the remote etag did not change)   (issue #3172)
     for (auto *folder : folderMan->folders()) {
         if (folder->isReady()) {
-            folder->journalDb()->forceRemoteDiscoveryNextSync();
+            folder->nextSyncForceFullRemoteDiscovery();
             folder->reloadExcludes();
-            folder->slotNextSyncFullLocalDiscovery();
+            folder->nextSyncForceFullLocalDiscovery();
             folderMan->scheduler()->enqueueFolder(folder);
         }
     }

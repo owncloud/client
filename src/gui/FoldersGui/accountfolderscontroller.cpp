@@ -293,7 +293,7 @@ void AccountFoldersController::onTogglePauseSync()
 
     // todo: what is this really for? if we are pausing do we actually need it or only on resume?
     // if we do need it, it should probably move to the setSyncPaused function so it never gets missed
-    _currentFolder->slotNextSyncFullLocalDiscovery(); // ensure we don't forget about local errors
+    _currentFolder->nextSyncForceFullLocalDiscovery(); // ensure we don't forget about local errors
     _currentFolder->setSyncPaused(!currentlyPaused);
 }
 

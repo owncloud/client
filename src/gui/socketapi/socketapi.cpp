@@ -602,7 +602,7 @@ void SocketApi::command_MOVE_ITEM(const QString &localFile, SocketListener *)
 
     // If it's a conflict, we want to save it under the base name by default
     if (Utility::isConflictFile(defaultDirAndName)) {
-        defaultDirAndName = QString::fromUtf8(fileData.folder->journalDb()->conflictFileBaseName(fileData.folderRelativePath.toUtf8()));
+        defaultDirAndName = fileData.folder->conflictFileBaseName(defaultDirAndName);
     }
 
     // If the parent doesn't accept new files, go to the root of the sync folder

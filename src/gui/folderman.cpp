@@ -916,8 +916,8 @@ void FolderMan::forceFolderSync(Folder *f)
         }
     }
 
-    f->slotWipeErrorBlacklist(); // issue #6757
-    f->slotNextSyncFullLocalDiscovery(); // ensure we don't forget about local errors
+    f->wipeErrorBlacklist(); // issue #6757
+    f->nextSyncForceFullLocalDiscovery(); // ensure we don't forget about local errors
 
     // Insert the selected folder at the front of the queue
     // this should not be a direct call, just signal a request. When that time comes move the prio enum to an independent location to avoid
