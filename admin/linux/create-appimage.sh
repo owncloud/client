@@ -163,6 +163,7 @@ rm -f usr/lib/libQt6QuickControls2FluentWinUI3StyleImpl*
 rm -f usr/lib/libQt6QuickControls2ImagineStyleImpl*
 rm -f usr/lib/libQt6QuickParticles*
 rm -f usr/lib/libQt6QuickVectorImage*
+rm -f usr/lib/libQt6PrintSupport*
 
 # Qt plugins not needed at runtime
 rm -rf usr/plugins/designer usr/plugins/qmllint usr/plugins/qmltooling
