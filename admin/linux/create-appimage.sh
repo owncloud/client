@@ -86,7 +86,7 @@ if [ -d "$APPDIR/usr/etc" ]; then
     ln -sfn usr/etc "$APPDIR/etc"
 fi
 
-# Create the runenv hook (replicates Craft's AppImagePackager runenv)
+# Create the runenv hook for runtime environment setup
 mkdir -p "$APPDIR/apprun-hooks"
 cat > "$APPDIR/apprun-hooks/runenv-hook.sh" << 'HOOK'
 XDG_DATA_DIRS="$this_dir/usr/share/:$XDG_DATA_DIRS:/usr/local/share:/usr/share"
@@ -137,6 +137,54 @@ echo "==> Running linuxdeploy"
     --appdir "$APPDIR" \
     --desktop-file "$DESKTOP_FILE" \
     --plugin=qt
+
+echo "==> Cleaning up AppDir"
+cd "$APPDIR"
+
+# Dev files: headers, static libs, cmake, pkgconfig, build artifacts
+find . -name '*.cmake' -delete
+find . -name '*.pc' -delete
+find . -name '*.la' -delete
+find . -name '*.prl' -delete
+find . -name '*.a' -delete
+find . -name '*.h' -delete
+find . -name '*.hpp' -delete
+find . -name '*.cpp' -delete
+find . -name '*.qmltypes' -delete
+find . -name '*-qmlmodule.version' -delete
+rm -rf usr/include usr/lib/cmake usr/lib/metatypes usr/lib/objects-*
+
+# Qt dev tools and unnecessary modules
+rm -f usr/lib/libQt6Designer* usr/lib/libQt6Help* usr/lib/libQt6UiTools*
+rm -f usr/lib/libQt6Test* usr/lib/libQt6QuickTest*
+rm -f usr/lib/libQt6WaylandCompositor* usr/lib/libQt6WaylandEgl*
+
+# Qt plugins not needed at runtime
+rm -rf usr/plugins/designer usr/plugins/qmllint usr/plugins/qmltooling
+rm -f usr/plugins/sqldrivers/libqsqlmysql*
+
+# QML dev files and test modules
+rm -rf usr/qml/Qt/test
+find . -path '*/objects-RelWithDebInfo/*' -delete
+
+# Translations for Qt tools we don't ship
+rm -f usr/translations/assistant_* usr/translations/designer_*
+rm -f usr/translations/linguist_* usr/translations/qt_help_*
+rm -f usr/translations/qtconnectivity_* usr/translations/qtlocation_*
+rm -f usr/translations/qtmultimedia_* usr/translations/qtscript_*
+rm -f usr/translations/qtserialport_*
+
+# Misc build/doc leftovers
+rm -rf usr/share/man usr/share/doc usr/share/gtk-doc usr/share/gdb
+rm -rf usr/share/info usr/share/aclocal usr/share/bash-completion
+rm -rf usr/lib/gettext usr/share/gettext
+rm -rf usr/share/pkgconfig
+find . -name 'mkspecs' -type d -exec rm -rf {} + 2>/dev/null || true
+
+# Remove empty directories
+find . -type d -empty -delete 2>/dev/null || true
+
+cd "$OLDPWD"
 
 echo "==> AppDir contents:"
 find "$APPDIR" -type f -printf '%10s %p\n' | sort -rn
