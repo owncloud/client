@@ -95,6 +95,8 @@ FONTCONFIG_PATH="$(if [ -d /etc/fonts ]; then echo "/etc/fonts"; else echo "$thi
 export FONTCONFIG_PATH
 PATH="$this_dir/usr/bin:$this_dir/usr/lib:$PATH"
 export PATH
+GIO_MODULE_DIR="$this_dir/usr/lib/gio/modules"
+export GIO_MODULE_DIR
 HOOK
 
 # Find the .desktop file
