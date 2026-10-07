@@ -217,7 +217,7 @@ private Q_SLOTS:
         auto expectedServerState = fakeFolder.currentRemoteState();
 
         // Remove subFolderA with selectiveSync:
-        fakeFolder.syncJournal()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, {QStringLiteral("parentFolder/subFolderA/")});
+        fakeFolder.syncJournal()->setSelectiveSyncExclusions({QStringLiteral("parentFolder/subFolderA/")});
         fakeFolder.syncJournal()->schedulePathForRemoteDiscovery(QByteArrayLiteral("parentFolder/subFolderA/"));
         auto getEtag = [&](const QByteArray &file) {
             SyncJournalFileRecord rec;

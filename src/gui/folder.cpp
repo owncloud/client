@@ -265,9 +265,9 @@ bool Folder::isSyncRunning() const
     return !hasSetupError() && _engine->isSyncRunning();
 }
 
-void Folder::updateSelectiveSync(const QSet<QString> &blacklist)
+void Folder::updateSelectiveSyncExclusions(const QSet<QString> &blacklist)
 {
-    _journal->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, blacklist);
+    _journal->setSelectiveSyncExclusions(blacklist);
     nextSyncForceFullRemoteDiscovery();
 }
 
@@ -673,14 +673,14 @@ void Folder::changeVfsMode(Vfs::Mode newMode)
 
     // stash the previous blacklist
     bool ok;
-    const auto oldBlacklist = _journal->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, ok);
+    const auto oldBlacklist = _journal->getSelectiveSyncExclusions(ok);
 
     if (!ok) {
         qCWarning(lcFolder) << "Unable to retrieve previous selective sync blacklist for folder: " << _definition.localPath();
         return;
     }
     // clear previous blacklist
-    _journal->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, {});
+    _journal->setSelectiveSyncExclusions({});
 
 
     // Wipe the dehydrated files from the DB, they will get downloaded on the next sync. We need to do this, otherwise the files
@@ -878,10 +878,10 @@ void Folder::setMoveToTrash(bool trashIt)
     _engine->setMoveToTrash(trashIt);
 }
 
-QSet<QString> Folder::selectiveSyncBlacklist()
+QSet<QString> Folder::selectiveSyncExclusions()
 {
     bool success = false;
-    QSet<QString> blacklist = _journal->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, success);
+    QSet<QString> blacklist = _journal->getSelectiveSyncExclusions(success);
     if (success)
         return blacklist;
     return {};
@@ -939,11 +939,6 @@ void Folder::slotSyncFinished(bool success)
         _consecutiveFailingSyncs++;
         anotherSyncNeeded |= _consecutiveFailingSyncs <= retrySyncLimitC;
         qCInfo(lcFolder) << "the last" << _consecutiveFailingSyncs << "syncs failed";
-    }
-
-    if (syncStatus == SyncResult::Success && success) {
-        // Clear the white list as all the folders that should be on that list are sync-ed
-        _journal->setSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList, {});
     }
 
     if ((syncStatus == SyncResult::Success || syncStatus == SyncResult::Problem) && success) {
@@ -1041,7 +1036,7 @@ void Folder::warnOnNewExcludedItem(const SyncJournalFileRecord &record, QStringV
         return;
 
     bool ok = false;
-    auto blacklist = _journal->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, ok);
+    auto blacklist = _journal->getSelectiveSyncExclusions(ok);
     if (!ok)
         return;
     if (!blacklist.contains(path + QLatin1Char('/')))

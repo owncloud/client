@@ -312,17 +312,17 @@ public:
     // replacements for journalDb() Getter:
 
     /**
-     * @brief selectiveSyncBlacklist
+     * @brief selectiveSyncExclusions
      * @return the list of excluded items for selective sync
      */
-    QSet<QString> selectiveSyncBlacklist();
+    QSet<QString> selectiveSyncExclusions();
 
     /**
-     * @brief updateSelectiveSync takes necessary steps to update the excluded subfolders list and triggers remote discovery on next
+     * @brief updateSelectiveSyncExclusions takes necessary steps to update the excluded subfolders list and triggers remote discovery on next
      * sync
      * @param blacklist contains the collection of folders to exclude from the sync
      */
-    void updateSelectiveSync(const QSet<QString> &blacklist);
+    void updateSelectiveSyncExclusions(const QSet<QString> &blacklist);
 
     /**
      * @brief getFileRecord retrieves the file record for the given file name

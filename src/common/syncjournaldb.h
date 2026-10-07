@@ -154,28 +154,56 @@ public:
     void avoidRenamesOnNextSync(const QString &path) { avoidRenamesOnNextSync(path.toUtf8()); }
     void avoidRenamesOnNextSync(const QByteArray &path);
 
-    enum SelectiveSyncListType {
-        /** The black list is the list of folders that are unselected in the selective sync dialog.
-         * For the sync engine, those folders are considered as if they were not there, so the local
-         * folders will be deleted */
-        SelectiveSyncBlackList = 1,
-        /** When a shared folder has a size bigger than a configured size, it is by default not sync'ed
-         * Unless it is in the white list, in which case the folder is sync'ed and all its children.
-         * If a folder is both on the black and the white list, the black list wins */
-        SelectiveSyncWhiteList = 2,
-        /** List of big sync folders that have not been confirmed by the user yet and that the UI
-         * should notify about */
-        SelectiveSyncUndecidedList = 3
-    };
-    Q_ENUM(SelectiveSyncListType)
+    // TODO: 8.0
+    // As of 7.3 when these changes are introduced: we can't yet remove the type column (which corresponds to former SelectiveSyncListType) from the actual
+    // table yet as it could maybe possibly break existing dbs in an upgrade/downgrade scenario.
+    // Not sure what to do about this yet - most likely we should do a cleanup routine
+    // in next major release to eliminate the useless type column, but need to think it through carefully.
+    // I think the final cleanup routine will be to copy the blacklist entries from old db to new one that does not have a type col
+    // then drop the old table completely.
+    // For now just use a fixed value for former SelectiveSyncBlacklist type for the selectivesync queries
+private:
+    int SelectiveSyncBlacklist = 1;
 
-    /* return the specified list from the database
-     * ok param holds value indicating "success" of the operation. If the sync list cannot be retrieved ok will be false
+public:
+    /* enum SelectiveSyncListType { };
+     *
+     * The black list is the list of folders that are unselected in the selective sync dialog.
+     * For the sync engine, those folders are considered as if they were not there, so the local
+     * folders will be deleted
+            SelectiveSyncBlackList = 1,
+
+     * When a shared folder has a size bigger than a configured size, it is by default not sync'ed
+     * Unless it is in the white list, in which case the folder is sync'ed and all its children.
+     * If a folder is both on the black and the white list, the black list wins
+     * archaelogical note: this was technically used but not meaningfully used - there may be whitelist values
+     * in the db but they are effectively useless!
+     *      SelectiveSyncWhiteList = 2,
+     *
+     * List of big sync folders that have not been confirmed by the user yet and that the UI
+     * should notify about
+     * archaelogical note: as of 7.1 I have never seen this used, in practice. It's completely useless.
+     *     SelectiveSyncUndecidedList = 3
+     *  };
+     *
+     * Q_ENUM(SelectiveSyncListType)
      */
-    QSet<QString> getSelectiveSyncList(SelectiveSyncListType type, bool &ok);
 
-    /* Write the selective sync list (remove all other entries of that list */
-    void setSelectiveSyncList(SelectiveSyncListType type, const QSet<QString> &list);
+    /**
+     * @brief getSelectiveSyncExclusions
+     * @param ok indicates if the exclusions could be retrieved
+     * @return the collection of folder paths that should be excluded for selective sync.
+     *
+     * The returned collection is invalid if ok result is false.
+     *
+     */
+    QSet<QString> getSelectiveSyncExclusions(bool &ok);
+
+    /**
+     * @brief setSelectiveSyncExclusions updates the db with the given list of selective sync exclusions
+     * @param the new list of folder paths that should be excluded during selective sync
+     */
+    void setSelectiveSyncExclusions(const QSet<QString> &list);
 
     /**
      * Make sure that on the next sync fileName and its parents are discovered from the server.

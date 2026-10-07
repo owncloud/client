@@ -330,7 +330,7 @@ void AccountFoldersController::onChooseSync()
     }
 
     bool ok;
-    QSet<QString> selectiveSyncList = _currentFolder->selectiveSyncBlacklist();
+    QSet<QString> selectiveSyncList = _currentFolder->selectiveSyncExclusions();
     if (selectiveSyncList.isEmpty())
         return;
 
@@ -346,7 +346,7 @@ void AccountFoldersController::onChooseSync()
     connect(modalWidget, &AccountModalWidget::accepted, this, [selectiveSync, this] {
         if (!_currentFolder)
             return;
-        _currentFolder->updateSelectiveSync(selectiveSync->createBlackList());
+        _currentFolder->updateSelectiveSyncExclusions(selectiveSync->createBlackList());
         FolderMan::instance()->forceFolderSync(_currentFolder);
     });
 

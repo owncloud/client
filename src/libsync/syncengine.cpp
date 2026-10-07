@@ -368,20 +368,13 @@ void SyncEngine::startDiscovery()
 
 
     bool ok;
-    auto selectiveSyncBlackList = _journal->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, ok);
+    auto selectiveSyncBlackList = _journal->getSelectiveSyncExclusions(ok);
     if (ok) {
         bool usingSelectiveSync = (!selectiveSyncBlackList.isEmpty());
         qCInfo(lcEngine) << (usingSelectiveSync ? "Using Selective Sync" : "NOT Using Selective Sync");
     } else {
         qCWarning(lcEngine) << "Could not retrieve selective sync list from DB";
         Q_EMIT syncError(tr("Unable to read the blacklist from the local database"));
-        finalize(false);
-        return;
-    }
-    auto selectiveSyncWhiteList = _journal->getSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList, ok);
-    if (!ok) {
-        qCWarning(lcEngine) << "Unable to read selective sync list, aborting.";
-        Q_EMIT syncError(tr("Unable to read from the sync journal."));
         finalize(false);
         return;
     }
@@ -398,8 +391,7 @@ void SyncEngine::startDiscovery()
     if (!_discoveryPhase->_remoteFolder.endsWith(QLatin1Char('/')))
         _discoveryPhase->_remoteFolder += QLatin1Char('/');
     _discoveryPhase->_shouldDiscoverLocaly = [this](const QString &s) { return shouldDiscoverLocally(s); };
-    _discoveryPhase->setSelectiveSyncBlackList(selectiveSyncBlackList);
-    _discoveryPhase->setSelectiveSyncWhiteList(selectiveSyncWhiteList);
+    _discoveryPhase->setSelectiveSyncExclusions(selectiveSyncBlackList);
     _discoveryPhase->_serverBlacklistedFiles = _account->capabilities().blacklistedFiles();
     _discoveryPhase->_ignoreHiddenFiles = ignoreHiddenFiles();
 
