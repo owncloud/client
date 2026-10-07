@@ -156,16 +156,16 @@ find . -name '*.qmltypes' -delete
 find . -name '*-qmlmodule.version' -delete
 rm -rf usr/include usr/lib/cmake usr/lib/metatypes usr/lib/objects-*
 
-# Qt dev tools and unnecessary modules
-rm -f usr/lib/libQt6Designer* usr/lib/libQt6Help* usr/lib/libQt6UiTools*
-rm -f usr/lib/libQt6Test* usr/lib/libQt6QuickTest*
-rm -f usr/lib/libQt6WaylandCompositor* usr/lib/libQt6WaylandEgl*
-rm -f usr/lib/libQt6ShaderTools*
+# Qt modules not needed at runtime but kept because the Conan Qt recipe
+# creates transitive link dependencies that pull them into the binary:
+#   Designer, Help, UiTools, QuickTest, ShaderTools, PrintSupport,
+#   WaylandCompositor
+# TODO: fix Conan Qt recipe to not create these transitive deps, then
+# remove these libraries here.
 rm -f usr/lib/libQt6QuickControls2FluentWinUI3StyleImpl*
 rm -f usr/lib/libQt6QuickControls2ImagineStyleImpl*
 rm -f usr/lib/libQt6QuickParticles*
 rm -f usr/lib/libQt6QuickVectorImage*
-rm -f usr/lib/libQt6PrintSupport*
 
 # Qt plugins not needed at runtime
 rm -rf usr/plugins/designer usr/plugins/qmllint usr/plugins/qmltooling
