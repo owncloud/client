@@ -21,6 +21,8 @@ class ClientRecipe(ConanFile):
         "qt/*:with_libjpeg": "libjpeg",
         "qt/*:with_odbc": False,
         "qt/*:with_pq": False,
+        "qt/*:with_md4c": False,
+        "qt/*:disabled_features": "designer assistant",
         "shared": True,
     }
 
