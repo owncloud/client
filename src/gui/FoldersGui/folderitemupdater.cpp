@@ -24,6 +24,10 @@ FolderItemUpdater::FolderItemUpdater(FolderItem *item)
     , _item(item)
 {
     if (_item && _item->folder()) {
+        // this is true on account creation - we are already connected and the folder should have a space (else it could not have been created)
+        // in this case make the connection immediately
+        if (_item->folder()->space())
+            _imageChangeConnection = connect(_item->folder()->space(), &GraphApi::Space::imageChanged, this, &FolderItemUpdater::onImageChanged);
         connect(_item->folder(), &Folder::spaceChanged, this, &FolderItemUpdater::onSpaceChanged);
         connect(_item->folder(), &Folder::syncStateChange, this, &FolderItemUpdater::onSyncStateChanged);
         if (_item->folder()->accountState())
@@ -44,6 +48,10 @@ void FolderItemUpdater::onSpaceChanged()
     // we need to possibly connect here to cover cases where a space/folder is added after start.
     // in this scenario the account is already connected, so we have to use the first spaceChanged trigger
     // which is associated with an emit from the folder constructor.
+    // that makes no sense anymore as we don't HAVE a folder until after it's constructed and added to folderman.
+    // I think this can go but needs more testing
+    // specifically with ocis where I can actually change the space image
+    // I *never* see a breakpoint for this routine hit - I think this can go but leaving it for now since we are trying to release
     if (!_imageChangeConnection && _item->folder()->space()) {
         _imageChangeConnection = connect(_item->folder()->space(), &GraphApi::Space::imageChanged, this, &FolderItemUpdater::onImageChanged);
         onImageChanged();
@@ -57,19 +65,13 @@ void FolderItemUpdater::onConnectedChanged(AccountState::State newState)
         return;
 
     // we may possibly need to connect here as the account may not have been connected during folder construction (eg on loading an account
-    // from config) in which the space is not available (yet). So to cover that case, connect to the space (if not already connected) asap
+    // from config) in which the space was not available (yet). So to cover that case, connect to the space (if not already connected) asap
     // after connection.
     if (newState == AccountState::Connected && !_imageChangeConnection && _item->folder()->space()) {
         _imageChangeConnection = connect(_item->folder()->space(), &GraphApi::Space::imageChanged, this, &FolderItemUpdater::onImageChanged);
-        onImageChanged();
-    } else {
-        // yes we need to drop this connection if the account is disconnected to ensure we fetch the "current" image on next connect
-        // in case it changed while the spaces/drives could not be updated
-        disconnect(_imageChangeConnection);
     }
-
     if (newState == AccountState::Connected)
-        _item->updateImage();
+        onImageChanged();
     _item->refresh();
 }
 void FolderItemUpdater::onSyncStateChanged()

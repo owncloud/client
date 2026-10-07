@@ -16,6 +16,7 @@
 #include "gui/owncloudguilib.h"
 
 #include "gui/folder.h"
+#include <QPointer>
 
 #include "csync/csync.h"
 #include "libsync/syncfileitem.h"
@@ -51,7 +52,7 @@ public:
 
 private:
     QString _path;
-    Folder *_folder;
+    QPointer<Folder> _folder;
     QDateTime _timestamp;
     qint64 _size;
     SyncFileItem::Status _status;
