@@ -6,4 +6,6 @@ compiler.cppstd=17
 compiler.libcxx=libc++
 compiler.version=17
 os=Macos
+# Keep in sync with CMAKE_OSX_DEPLOYMENT_TARGET in CMakeLists.txt
+os.version=13.0
 
