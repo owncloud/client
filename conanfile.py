@@ -47,7 +47,7 @@ class ClientRecipe(ConanFile):
             self.requires("sparkle/2.7.0")
 
     def build_requirements(self):
-        self.tool_requires("cmake/3.30.0")
+        self.tool_requires("cmake/3.31.12")
 
     def layout(self):
         cmake_layout(self)
