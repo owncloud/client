@@ -265,10 +265,10 @@ bool Folder::isSyncRunning() const
     return !hasSetupError() && _engine->isSyncRunning();
 }
 
-void Folder::updateSelectiveSync(const QSet<QString> &blacklist)
+void Folder::updateSelectiveSyncExclusions(const QSet<QString> &blacklist)
 {
-    _journal->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, blacklist);
-    _journal->forceRemoteDiscoveryNextSync();
+    _journal->setSelectiveSyncExclusions(blacklist);
+    nextSyncForceFullRemoteDiscovery();
 }
 
 bool Folder::canSync() const
@@ -497,7 +497,7 @@ void Folder::startVfs()
         _vfsIsReady = false;
     });
 
-    slotNextSyncFullLocalDiscovery();
+    nextSyncForceFullLocalDiscovery();
     _vfs->start(vfsParams);
 }
 
@@ -514,9 +514,19 @@ void Folder::slotDiscardDownloadProgress()
     }
 }
 
-int Folder::slotWipeErrorBlacklist()
+int Folder::wipeErrorBlacklist()
 {
     return _journal->wipeErrorBlacklist();
+}
+
+void Folder::wipeErrorBlacklistForEntry(const QString &relativePath)
+{
+    _journal->wipeErrorBlacklistEntry(relativePath);
+}
+
+QString Folder::conflictFileBaseName(const QString &conflictFile)
+{
+    return QString::fromUtf8(_journal->conflictFileBaseName(conflictFile.toUtf8()));
 }
 
 void Folder::slotWatchedPathsChanged(const QSet<QString> &paths, ChangeReason reason)
@@ -532,7 +542,7 @@ void Folder::slotWatchedPathsChanged(const QSet<QString> &paths, ChangeReason re
             continue;
         const QString relativePath = path.mid(this->path().size());
         if (reason == ChangeReason::UnLock) {
-            journalDb()->wipeErrorBlacklistEntry(relativePath, SyncJournalErrorBlacklistRecord::Category::LocalSoftError);
+            _journal->wipeErrorBlacklistEntry(relativePath, SyncJournalErrorBlacklistRecord::Category::LocalSoftError);
 
             {
                 // horrible hack to compensate that we don't handle folder deletes on a per-file basis
@@ -540,10 +550,10 @@ void Folder::slotWatchedPathsChanged(const QSet<QString> &paths, ChangeReason re
                 QString p = relativePath;
                 while ((index = p.lastIndexOf(QLatin1Char('/'))) != -1) {
                     p = p.left(index);
-                    const auto rec = journalDb()->errorBlacklistEntry(p);
+                    const auto rec = _journal->errorBlacklistEntry(p);
                     if (rec.isValid()) {
                         if (rec._errorCategory == SyncJournalErrorBlacklistRecord::Category::LocalSoftError) {
-                            journalDb()->wipeErrorBlacklistEntry(p);
+                            _journal->wipeErrorBlacklistEntry(p);
                         }
                     }
                 }
@@ -557,7 +567,7 @@ void Folder::slotWatchedPathsChanged(const QSet<QString> &paths, ChangeReason re
         _localDiscoveryTracker->addTouchedPath(relativePath);
 
         SyncJournalFileRecord record;
-        _journal->getFileRecord(relativePath.toUtf8(), &record);
+        _journal->getFileRecord(relativePath.toUtf8(), record);
         if (reason != ChangeReason::UnLock) {
             // Check that the mtime/size actually changed or there was
             // an attribute change (pin state) that caused the notification
@@ -594,7 +604,7 @@ void Folder::implicitlyHydrateFile(const QString &relativepath)
 
     // Set in the database that we should download the file
     SyncJournalFileRecord record;
-    _journal->getFileRecord(relativepath.toUtf8(), &record);
+    _journal->getFileRecord(relativepath.toUtf8(), record);
     if (!record.isValid()) {
         qCInfo(lcFolder) << "Did not find file in db";
         return;
@@ -663,14 +673,14 @@ void Folder::changeVfsMode(Vfs::Mode newMode)
 
     // stash the previous blacklist
     bool ok;
-    const auto oldBlacklist = journalDb()->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, ok);
+    const auto oldBlacklist = _journal->getSelectiveSyncExclusions(ok);
 
     if (!ok) {
         qCWarning(lcFolder) << "Unable to retrieve previous selective sync blacklist for folder: " << _definition.localPath();
         return;
     }
     // clear previous blacklist
-    journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, {});
+    _journal->setSelectiveSyncExclusions({});
 
 
     // Wipe the dehydrated files from the DB, they will get downloaded on the next sync. We need to do this, otherwise the files
@@ -696,7 +706,7 @@ void Folder::changeVfsMode(Vfs::Mode newMode)
         // schedule blacklisted folders for rediscovery
         connect(_vfs, &Vfs::started, this, [oldBlacklist, this] {
             for (const auto &entry : oldBlacklist) {
-                journalDb()->schedulePathForRemoteDiscovery(entry);
+                _journal->schedulePathForRemoteDiscovery(entry);
                 // Refactoring todo: from what I can see, in 98% of cases the return val of setPinState is ignored
                 // do we actually need that return value?! if so why aren't we using it?
                 std::ignore = vfs().setPinState(entry, PinState::OnlineOnly);
@@ -868,6 +878,15 @@ void Folder::setMoveToTrash(bool trashIt)
     _engine->setMoveToTrash(trashIt);
 }
 
+QSet<QString> Folder::selectiveSyncExclusions()
+{
+    bool success = false;
+    QSet<QString> blacklist = _journal->getSelectiveSyncExclusions(success);
+    if (success)
+        return blacklist;
+    return {};
+}
+
 void Folder::slotSyncError(const QString &message, ErrorCategory category)
 {
     _syncResult.appendErrorString(message);
@@ -920,11 +939,6 @@ void Folder::slotSyncFinished(bool success)
         _consecutiveFailingSyncs++;
         anotherSyncNeeded |= _consecutiveFailingSyncs <= retrySyncLimitC;
         qCInfo(lcFolder) << "the last" << _consecutiveFailingSyncs << "syncs failed";
-    }
-
-    if (syncStatus == SyncResult::Success && success) {
-        // Clear the white list as all the folders that should be on that list are sync-ed
-        journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncWhiteList, {});
     }
 
     if ((syncStatus == SyncResult::Success || syncStatus == SyncResult::Problem) && success) {
@@ -981,9 +995,14 @@ void Folder::slotLogPropagationStart()
     _fileLog->logLap(QStringLiteral("Propagation starts"));
 }
 
-void Folder::slotNextSyncFullLocalDiscovery()
+void Folder::nextSyncForceFullLocalDiscovery()
 {
     _timeSinceLastFullLocalDiscovery.invalidate();
+}
+
+void Folder::nextSyncForceFullRemoteDiscovery()
+{
+    _journal->forceRemoteDiscoveryNextSync();
 }
 
 void Folder::schedulePathForLocalDiscovery(const QString &relativePath)
@@ -1017,7 +1036,7 @@ void Folder::warnOnNewExcludedItem(const SyncJournalFileRecord &record, QStringV
         return;
 
     bool ok = false;
-    auto blacklist = _journal->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, ok);
+    auto blacklist = _journal->getSelectiveSyncExclusions(ok);
     if (!ok)
         return;
     if (!blacklist.contains(path + QLatin1Char('/')))
@@ -1063,7 +1082,7 @@ void Folder::registerFolderWatcher()
     _folderWatcher = new FolderWatcher(this);
     connect(
         _folderWatcher, &FolderWatcher::pathChanged, this, [this](const QSet<QString> &paths) { slotWatchedPathsChanged(paths, Folder::ChangeReason::Other); });
-    connect(_folderWatcher, &FolderWatcher::lostChanges, this, &Folder::slotNextSyncFullLocalDiscovery);
+    connect(_folderWatcher, &FolderWatcher::lostChanges, this, &Folder::nextSyncForceFullLocalDiscovery);
     connect(_folderWatcher, &FolderWatcher::becameUnreliable, this, &Folder::slotWatcherUnreliable);
     _folderWatcher->init(path());
     _folderWatcher->startNotificatonTest(path() + QLatin1String(".owncloudsync.log"));
