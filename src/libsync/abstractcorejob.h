@@ -120,7 +120,7 @@ public:
     {
         auto request = QNetworkRequest(params...);
 
-        const auto timeoutMilliseconds = static_cast<int>(std::chrono::duration_cast<std::chrono::milliseconds>(AbstractNetworkJob::httpTimeout).count());
+        const auto timeoutMilliseconds = static_cast<int>(std::chrono::duration_cast<std::chrono::milliseconds>(AbstractNetworkJob::httpTimeout()).count());
         request.setTransferTimeout(timeoutMilliseconds);
 
         return request;

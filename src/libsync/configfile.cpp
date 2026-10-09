@@ -47,7 +47,6 @@ Q_LOGGING_CATEGORY(lcConfigFile, "sync.configfile", QtInfoMsg)
 namespace  {
 const QString logHttpC() { return QStringLiteral("logHttp"); }
 const QString remotePollIntervalC() { return QStringLiteral("remotePollInterval"); }
-const QString forceSyncIntervalC() { return QStringLiteral("forceSyncInterval"); }
 const QString fullLocalDiscoveryIntervalC() { return QStringLiteral("fullLocalDiscoveryInterval"); }
 const QString monoIconsC() { return QStringLiteral("monoIcons"); }
 const QString promptDeleteC() { return QStringLiteral("promptDeleteAllFiles"); }
@@ -294,34 +293,6 @@ QString ConfigFile::defaultConnection() const
     return Theme::instance()->appName();
 }
 
-void ConfigFile::storeData(const QString &group, const QString &key, const QVariant &value)
-{
-    const QString con(group.isEmpty() ? defaultConnection() : group);
-    auto settings = makeQSettings();
-
-    settings.beginGroup(con);
-    settings.setValue(key, value);
-    settings.sync();
-}
-
-void ConfigFile::removeData(const QString &group, const QString &key)
-{
-    const QString con(group.isEmpty() ? defaultConnection() : group);
-    auto settings = makeQSettings();
-
-    settings.beginGroup(con);
-    settings.remove(key);
-}
-
-bool ConfigFile::dataExists(const QString &group, const QString &key) const
-{
-    const QString con(group.isEmpty() ? defaultConnection() : group);
-    auto settings = makeQSettings();
-
-    settings.beginGroup(con);
-    return settings.contains(key);
-}
-
 chrono::milliseconds ConfigFile::remotePollInterval(std::chrono::seconds defaultVal, const QString &connection) const
 {
     QString con(connection);
@@ -347,41 +318,6 @@ chrono::milliseconds ConfigFile::remotePollInterval(std::chrono::seconds default
         qCWarning(lcConfigFile) << "Remote Interval is less than 5 seconds, reverting to" << remoteInterval.count();
     }
     return remoteInterval;
-}
-
-void ConfigFile::setRemotePollInterval(chrono::milliseconds interval, const QString &connection)
-{
-    QString con(connection);
-    if (connection.isEmpty())
-        con = defaultConnection();
-
-    if (interval < chrono::seconds(5)) {
-        qCWarning(lcConfigFile) << "Remote Poll interval of " << interval.count() << " is below five seconds.";
-        return;
-    }
-    auto settings = makeQSettings();
-    settings.beginGroup(con);
-    settings.setValue(remotePollIntervalC(), qlonglong(interval.count()));
-    settings.sync();
-}
-
-chrono::milliseconds ConfigFile::forceSyncInterval(std::chrono::seconds remoteFromCapabilities, const QString &connection) const
-{
-    auto pollInterval = remotePollInterval(remoteFromCapabilities, connection);
-
-    QString con(connection);
-    if (connection.isEmpty())
-        con = defaultConnection();
-    auto settings = makeQSettings();
-    settings.beginGroup(con);
-
-    auto defaultInterval = chrono::hours(2);
-    auto interval = millisecondsValue(settings, forceSyncIntervalC(), defaultInterval);
-    if (interval < pollInterval) {
-        qCWarning(lcConfigFile) << "Force sync interval is less than the remote poll inteval, reverting to" << pollInterval.count();
-        interval = pollInterval;
-    }
-    return interval;
 }
 
 chrono::milliseconds OCC::ConfigFile::fullLocalDiscoveryInterval() const

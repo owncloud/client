@@ -68,17 +68,15 @@ public:
 
     /* Server poll interval in milliseconds */
     std::chrono::milliseconds remotePollInterval(std::chrono::seconds defaultVal, const QString &connection = QString()) const;
-    /* Set poll interval. Value in milliseconds has to be larger than 5000 */
-    void setRemotePollInterval(std::chrono::milliseconds interval, const QString &connection = QString());
-
-    /* Force sync interval, in milliseconds */
-    std::chrono::milliseconds forceSyncInterval(std::chrono::seconds remoteFromCapabilities, const QString &connection = QString()) const;
 
     /**
      * Interval in milliseconds within which full local discovery is required
      *
      * Use -1 to disable regular full local discoveries.
      */
+    // todo: there is no setter for this so it needs to go. the default value returned is 1h so move it somehwere that it makes more sense
+    // note a very suspicious split use of this value in both Folder::startSync AND SyncScheduler::SyncScheduler (where it sets the repeat interval
+    // on a timer)
     std::chrono::milliseconds fullLocalDiscoveryInterval() const;
 
     bool monoIcons() const;
@@ -124,6 +122,8 @@ public:
     void setPauseSyncWhenMetered(bool isChecked);
 
     /// Used for testing, so we do not change the user's config file.
+    // this is *only* used for testing. Try to do something here as generally we should not allow changing the config location
+    // by any rando via a public interface.
     static bool setConfDir(const QString &value);
 
     bool optionalDesktopNotifications() const;
@@ -132,19 +132,25 @@ public:
     std::optional<QStringList> issuesWidgetFilter() const;
     void setIssuesWidgetFilter(const QStringList &checked);
 
+    // no setter, and the default return value is 5 minutes. This already matches the AbstractNetworkJob::DefaultHttpTimeout
+    // it's completely pointless so needs to die!
+    // note the only possible way to change this (currently) is with env var OWNCLOUD_TIMEOUT which should be int value to represent seconds
     std::chrono::seconds timeout() const;
 
+    // todo: could be moved to main window or main window controller
     void saveGeometry(QWidget *w);
     void restoreGeometry(QWidget *w);
 
+    // todo: these could be moved to the header impl (or related controller)
+    void saveGeometryHeader(QHeaderView *header);
+    bool restoreGeometryHeader(QHeaderView *header);
+
     // how often the check about new versions runs
+    // todo: move this. No setter means it's not actually in the config file :/
     std::chrono::milliseconds updateCheckInterval(const QString &connection = QString()) const;
 
     QString uiLanguage() const;
     void setUiLanguage(const QString &uiLanguage);
-
-    void saveGeometryHeader(QHeaderView *header);
-    bool restoreGeometryHeader(QHeaderView *header);
 
     /** The client version that last used this settings file.
         Updated by configVersionMigration() at client startup. */
@@ -152,15 +158,15 @@ public:
     void setClientVersionWithBuildNumberString(const QString &version);
 
     /**  Returns a new settings pre-set in a specific group. */
+    // todo: having a pointer for this is questionable.
+    // having this at all is questionable. Generally, the callers hold the group name they want to use, so it's more
+    // reasonable to have them get the settings then set the group as needed. It's already convenient enough that having a
+    // convenience function is overkill
     static std::unique_ptr<QSettings> settingsWithGroup(const QString &group);
 
     /// Add the system and user exclude file path to the ExcludedFiles instance.
+    // todo: move this - no setter so does not particularly belong in settings.
     static void setupDefaultExcludeFilePaths(ExcludedFiles &excludedFiles);
-
-protected:
-    void storeData(const QString &group, const QString &key, const QVariant &value);
-    void removeData(const QString &group, const QString &key);
-    bool dataExists(const QString &group, const QString &key) const;
 
 private:
     QVariant getValue(const QString &param, const QString &group = QString(),
@@ -168,9 +174,7 @@ private:
     void setValue(const QString &key, const QVariant &value);
 
 private:
-    typedef QSharedPointer<AbstractCredentials> SharedCreds;
-
-    static QString _oCVersion;
+    // static QString _oCVersion;
     static QString _confDir;
 };
 }

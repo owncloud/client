@@ -26,7 +26,7 @@ Q_LOGGING_CATEGORY(lcfetchserversettings, "sync.fetchserversettings", QtInfoMsg)
 namespace {
 auto fetchSettingsTimeout()
 {
-    return std::min(20s, AbstractNetworkJob::httpTimeout);
+    return std::min(20s, AbstractNetworkJob::httpTimeout());
 }
 }
 
