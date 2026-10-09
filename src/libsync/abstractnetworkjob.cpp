@@ -37,7 +37,7 @@ namespace OCC {
 
 Q_LOGGING_CATEGORY(lcNetworkJob, "sync.networkjob", QtInfoMsg)
 
-seconds AbstractNetworkJob::httpTimeout = [] {
+const seconds AbstractNetworkJob::_httpTimeout = [] {
     const auto def = qEnvironmentVariableIntValue("OWNCLOUD_TIMEOUT");
     if (def <= 0) {
         return AbstractNetworkJob::DefaultHttpTimeout;
@@ -53,6 +53,15 @@ AbstractNetworkJob::AbstractNetworkJob(Account *account, const QUrl &baseUrl, co
 {
     Q_ASSERT(account != parent);
     Q_ASSERT(baseUrl.isValid());
+    _timeout = httpTimeout();
+}
+
+seconds AbstractNetworkJob::httpTimeout()
+{
+    if (testingHttpTimeoutOverride.count() > 0) {
+        return testingHttpTimeoutOverride;
+    }
+    return _httpTimeout;
 }
 
 QUrl AbstractNetworkJob::url() const

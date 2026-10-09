@@ -78,7 +78,7 @@ public:
     /* Content of the X-Request-ID header. (Only set after the request is sent) */
     QByteArray requestId();
 
-    auto timeoutSec() const { return _timeout; }
+    std::chrono::seconds timeoutSec() const { return _timeout; }
     bool timedOut() const { return _timedout; }
     bool aborted() const { return _aborted; }
 
@@ -106,15 +106,21 @@ public:
     /** Abort the job due to an error */
     void abort();
 
-    /** static variable the HTTP timeout. If set to 0, the default will be used
+    /**
+     * @brief httpTimeout is the timeout which is generally applied to jobs, in seconds.
+     * @return the timeout for network jobs
+     *
+     * Note this value can be changed on jobs individually by calling setTimeout
+     *
+     * this value has a default of 5 minutes, but it can be explicitly defined by setting environment variable OWNCLOUD_TIMEOUT
      */
-    static std::chrono::seconds httpTimeout;
+    static std::chrono::seconds httpTimeout();
 
     /**
-     * The default 5 minutes timeout if none is specified by the config.
-     * Qt's default would be 30s.
+     * @brief testingHttpTimeoutOverride is not for general use.
+     * It is intended only for testing in very rare circumstances. Pretend you never saw this, please.
      */
-    static constexpr std::chrono::seconds DefaultHttpTimeout { 5 * 60 };
+    static inline std::chrono::seconds testingHttpTimeoutOverride{0};
 
     /** whether or noth this job should be restarted after authentication */
     void  setAuthenticationJob(bool b);
@@ -125,6 +131,10 @@ public:
 
     virtual bool needsRetry() const;
 
+    /**
+     * @brief setTimeout on an idividual job
+     * @param sec the timeout to be observed, in seconds
+     */
     void setTimeout(const std::chrono::seconds sec);
 
     /**
@@ -198,6 +208,13 @@ protected:
     QByteArray _responseTimestamp;
 
 private:
+    static const std::chrono::seconds _httpTimeout;
+    /**
+     * The default 5 minutes timeout if none is specified by the config.
+     * Qt's default would be 30s.
+     */
+    static constexpr std::chrono::seconds DefaultHttpTimeout{5 * 60};
+
     QPointer<Account> _account;
 
     /** Makes this job drive a pre-made QNetworkReply
@@ -211,7 +228,7 @@ private:
     const QUrl _baseUrl;
     const QString _path;
 
-    std::chrono::seconds _timeout = httpTimeout;
+    std::chrono::seconds _timeout;
     bool _timedout = false; // set to true when the timeout slot is received
     bool _aborted = false;
     bool _finished = false;
