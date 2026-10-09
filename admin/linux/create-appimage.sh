@@ -118,8 +118,8 @@ export ARCH="${ARCH:-x86_64}"
 # Extract Conan package lib paths from the binary's RPATH so linuxdeploy
 # bundles Conan-built libraries instead of system ones (e.g. glib).
 CONAN_LIB_PATHS=$(readelf -d "$APPDIR/usr/bin/$APP_EXECUTABLE" 2>/dev/null \
-    | grep -oP 'RPATH.*\[\K[^\]]+' \
-    | tr ':' '\n' | grep conan2 | tr '\n' ':')
+    | grep -oP '(?:RPATH|RUNPATH).*\[\K[^\]]+' \
+    | tr ':' '\n' | grep conan2 | tr '\n' ':' || true)
 export LD_LIBRARY_PATH="${CONAN_LIB_PATHS}$APPDIR/usr/lib:$APPDIR/usr/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH:-}"
 export LINUXDEPLOY_OUTPUT_VERSION="$VERSION"
 if [ -z "${QMAKE:-}" ]; then
