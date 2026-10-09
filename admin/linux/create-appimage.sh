@@ -81,6 +81,21 @@ trap 'rm -rf "$(dirname "$APPDIR")"' EXIT
 echo "==> Installing into AppDir: $APPDIR"
 cmake --install "$BUILD_DIR" --prefix "$APPDIR/usr"
 
+# Copy Conan-built shared libraries into AppDir so linuxdeploy bundles them
+# instead of system libraries from the build container.
+CONAN_LIB_PATHS=$(python3 "$SOURCE_DIR/admin/linux/extract-conan-lib-paths.py" \
+    "$APPDIR/usr/bin/$APP_EXECUTABLE" || true)
+if [ -n "$CONAN_LIB_PATHS" ]; then
+    echo "==> Copying Conan libraries into AppDir"
+    echo "$CONAN_LIB_PATHS" | tr ':' '\n' | while read -r libdir; do
+        [ -d "$libdir" ] || continue
+        for lib in "$libdir"/lib*.so*; do
+            [ -f "$lib" ] || continue
+            cp -n "$lib" "$APPDIR/usr/lib/"
+        done
+    done
+fi
+
 # Symlink etc into the AppDir root (linuxdeploy expects it there)
 if [ -d "$APPDIR/usr/etc" ]; then
     ln -sfn usr/etc "$APPDIR/etc"
@@ -115,12 +130,7 @@ if [ -f /.dockerenv ] || grep -q docker /proc/1/cgroup 2>/dev/null; then
 fi
 
 export ARCH="${ARCH:-x86_64}"
-# Extract Conan package lib paths from the binary's RPATH so linuxdeploy
-# bundles Conan-built libraries instead of system ones (e.g. glib).
-CONAN_LIB_PATHS=$(python3 "$SOURCE_DIR/admin/linux/extract-conan-lib-paths.py" \
-    "$APPDIR/usr/bin/$APP_EXECUTABLE" || true)
-echo "Conan lib paths: $CONAN_LIB_PATHS"
-export LD_LIBRARY_PATH="${CONAN_LIB_PATHS:+${CONAN_LIB_PATHS}:}$APPDIR/usr/lib:$APPDIR/usr/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH:-}"
+export LD_LIBRARY_PATH="$APPDIR/usr/lib:$APPDIR/usr/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH:-}"
 export LINUXDEPLOY_OUTPUT_VERSION="$VERSION"
 if [ -z "${QMAKE:-}" ]; then
     QMAKE=$(command -v qmake6 2>/dev/null || command -v qmake 2>/dev/null || find ~/.conan2 -name qmake6 -path '*/bin/*' 2>/dev/null | head -1 || echo qmake)
