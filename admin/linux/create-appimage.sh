@@ -178,8 +178,9 @@ rm -rf usr/qml/QtQuick/NativeStyle
 rm -rf usr/qml/QtQuick/Particles
 rm -rf usr/qml/QtQuick/VectorImage
 
-# QML dev files and test modules
+# QML dev files, designer support, and test modules
 rm -rf usr/qml/Qt/test
+find . -path '*/designer/*' -delete
 find . -path '*/objects-RelWithDebInfo/*' -delete
 
 # X11 widget/extension libs pulled in from -devel packages.
