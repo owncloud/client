@@ -89,11 +89,22 @@ if [ -n "$CONAN_LIB_PATHS" ]; then
     echo "==> Copying Conan libraries into AppDir"
     echo "$CONAN_LIB_PATHS" | tr ':' '\n' | while read -r libdir; do
         [ -d "$libdir" ] || continue
-        case "$libdir" in */plugins/*) continue ;; esac
-        for lib in "$libdir"/lib*.so*; do
-            [ -f "$lib" ] || continue
-            cp -n "$lib" "$APPDIR/usr/lib/"
-        done
+        case "$libdir" in
+            */plugins/*)
+                pluginsubdir="${libdir##*/plugins/}"
+                mkdir -p "$APPDIR/usr/plugins/$pluginsubdir"
+                for lib in "$libdir"/*.so*; do
+                    [ -f "$lib" ] || continue
+                    cp -n "$lib" "$APPDIR/usr/plugins/$pluginsubdir/"
+                done
+                ;;
+            *)
+                for lib in "$libdir"/lib*.so*; do
+                    [ -f "$lib" ] || continue
+                    cp -n "$lib" "$APPDIR/usr/lib/"
+                done
+                ;;
+        esac
     done
 fi
 
