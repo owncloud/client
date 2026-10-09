@@ -1,0 +1,269 @@
+#!/bin/bash
+set -euo pipefail
+
+usage() {
+    echo "Usage: $0 -b BUILD_DIR [-o OUTPUT_DIR] [-v VERSION]"
+    echo
+    echo "Create an AppImage from an already-built ownCloud client."
+    echo
+    echo "Options:"
+    echo "  -b BUILD_DIR   Path to the CMake build directory (required)"
+    echo "  -o OUTPUT_DIR  Where to place the resulting AppImage (default: .)"
+    echo "  -v VERSION     Version string for the AppImage filename (auto-detected from VERSION.cmake if omitted)"
+    exit 1
+}
+
+BUILD_DIR=""
+OUTPUT_DIR="$(pwd)"
+VERSION=""
+
+while getopts "b:o:v:h" opt; do
+    case "$opt" in
+        b) BUILD_DIR="$OPTARG" ;;
+        o) OUTPUT_DIR="$OPTARG" ;;
+        v) VERSION="$OPTARG" ;;
+        h) usage ;;
+        *) usage ;;
+    esac
+done
+
+if [ -z "$BUILD_DIR" ]; then
+    echo "Error: -b BUILD_DIR is required"
+    usage
+fi
+
+BUILD_DIR="$(cd "$BUILD_DIR" && pwd)"
+OUTPUT_DIR="$(mkdir -p "$OUTPUT_DIR" && cd "$OUTPUT_DIR" && pwd)"
+SOURCE_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
+
+# Auto-detect version from VERSION.cmake if not provided
+if [ -z "$VERSION" ]; then
+    version_file="$SOURCE_DIR/VERSION.cmake"
+    if [ ! -f "$version_file" ]; then
+        echo "Error: VERSION.cmake not found at $version_file and no -v given"
+        exit 1
+    fi
+    MAJOR=$(grep 'MIRALL_VERSION_MAJOR' "$version_file" | sed 's/.*MIRALL_VERSION_MAJOR[[:space:]]*\([0-9]*\).*/\1/')
+    MINOR=$(grep 'MIRALL_VERSION_MINOR' "$version_file" | sed 's/.*MIRALL_VERSION_MINOR[[:space:]]*\([0-9]*\).*/\1/')
+    PATCH=$(grep 'MIRALL_VERSION_PATCH' "$version_file" | sed 's/.*MIRALL_VERSION_PATCH[[:space:]]*\([0-9]*\).*/\1/')
+    VERSION="${MAJOR}.${MINOR}.${PATCH}"
+    echo "Auto-detected version: $VERSION"
+fi
+
+# Read APPLICATION_EXECUTABLE from the branding/OEM.cmake or OWNCLOUD.cmake
+APP_EXECUTABLE=""
+for cmake_file in "$SOURCE_DIR/branding/OEM.cmake" "$SOURCE_DIR/OWNCLOUD.cmake"; do
+    if [ -f "$cmake_file" ]; then
+        APP_EXECUTABLE=$(grep 'APPLICATION_EXECUTABLE' "$cmake_file" | head -1 | sed 's/.*APPLICATION_EXECUTABLE[[:space:]]*"\([^"]*\)".*/\1/')
+        break
+    fi
+done
+if [ -z "$APP_EXECUTABLE" ]; then
+    echo "Error: could not determine APPLICATION_EXECUTABLE"
+    exit 1
+fi
+echo "Application executable: $APP_EXECUTABLE"
+
+# Check that linuxdeploy is available
+LINUXDEPLOY="${LINUXDEPLOY:-linuxdeploy-x86_64.AppImage}"
+if ! command -v "$LINUXDEPLOY" &>/dev/null; then
+    if [ -x "$LINUXDEPLOY" ]; then
+        : # path is usable as-is
+    else
+        echo "Error: linuxdeploy not found. Set LINUXDEPLOY env var or put linuxdeploy-x86_64.AppImage on PATH."
+        exit 1
+    fi
+fi
+
+APPDIR="$(mktemp -d)/AppDir"
+trap 'rm -rf "$(dirname "$APPDIR")"' EXIT
+
+echo "==> Installing into AppDir: $APPDIR"
+cmake --install "$BUILD_DIR" --prefix "$APPDIR/usr"
+
+# Copy Conan-built shared libraries into AppDir so linuxdeploy bundles them
+# instead of system libraries from the build container.
+CONAN_LIB_PATHS=$(python3 "$SOURCE_DIR/admin/linux/extract-conan-lib-paths.py" \
+    "$APPDIR/usr/bin/$APP_EXECUTABLE" || true)
+if [ -n "$CONAN_LIB_PATHS" ]; then
+    echo "==> Copying Conan libraries into AppDir"
+    echo "$CONAN_LIB_PATHS" | tr ':' '\n' | while read -r libdir; do
+        [ -d "$libdir" ] || continue
+        case "$libdir" in
+            */plugins/*)
+                pluginsubdir="${libdir##*/plugins/}"
+                mkdir -p "$APPDIR/usr/plugins/$pluginsubdir"
+                for lib in "$libdir"/*.so*; do
+                    [ -f "$lib" ] || continue
+                    cp -n "$lib" "$APPDIR/usr/plugins/$pluginsubdir/"
+                done
+                ;;
+            *)
+                for lib in "$libdir"/lib*.so*; do
+                    [ -f "$lib" ] || continue
+                    cp -n "$lib" "$APPDIR/usr/lib/"
+                done
+                ;;
+        esac
+    done
+fi
+
+# Symlink etc into the AppDir root (linuxdeploy expects it there)
+if [ -d "$APPDIR/usr/etc" ]; then
+    ln -sfn usr/etc "$APPDIR/etc"
+fi
+
+# Create the runenv hook for runtime environment setup
+mkdir -p "$APPDIR/apprun-hooks"
+cat > "$APPDIR/apprun-hooks/runenv-hook.sh" << 'HOOK'
+XDG_DATA_DIRS="$this_dir/usr/share/:$XDG_DATA_DIRS:/usr/local/share:/usr/share"
+export XDG_DATA_DIRS
+FONTCONFIG_PATH="$(if [ -d /etc/fonts ]; then echo "/etc/fonts"; else echo "$this_dir/etc/fonts"; fi)"
+export FONTCONFIG_PATH
+PATH="$this_dir/usr/bin:$this_dir/usr/lib:$PATH"
+export PATH
+GIO_MODULE_DIR="$this_dir/usr/lib/gio/modules"
+export GIO_MODULE_DIR
+HOOK
+
+# Find the .desktop file
+DESKTOP_FILE=$(find "$APPDIR/usr/share/applications" -name "*.desktop" | head -1)
+if [ -z "$DESKTOP_FILE" ]; then
+    echo "Error: no .desktop file found in $APPDIR/usr/share/applications/"
+    exit 1
+fi
+echo "Using desktop file: $DESKTOP_FILE"
+
+APPIMAGE_NAME="ownCloud-${VERSION}-x86_64.AppImage"
+
+# In Docker, FUSE is typically not available
+if [ -f /.dockerenv ] || grep -q docker /proc/1/cgroup 2>/dev/null; then
+    export APPIMAGE_EXTRACT_AND_RUN=1
+fi
+
+export ARCH="${ARCH:-x86_64}"
+export LD_LIBRARY_PATH="$APPDIR/usr/lib:$APPDIR/usr/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH:-}"
+export LINUXDEPLOY_OUTPUT_VERSION="$VERSION"
+if [ -z "${QMAKE:-}" ]; then
+    QMAKE=$(command -v qmake6 2>/dev/null || command -v qmake 2>/dev/null || find ~/.conan2 -name qmake6 -path '*/bin/*' 2>/dev/null | head -1 || echo qmake)
+fi
+export QMAKE
+
+QT_PREFIX="$("$QMAKE" -query QT_INSTALL_PREFIX 2>/dev/null || true)"
+if [ -n "$QT_PREFIX" ]; then
+    echo "Qt prefix: $QT_PREFIX"
+    export QT_PLUGIN_PATH="${QT_PREFIX}/plugins:${QT_PLUGIN_PATH:-}"
+    export QML2_IMPORT_PATH="${QT_PREFIX}/qml:${QML2_IMPORT_PATH:-}"
+    export LD_LIBRARY_PATH="${QT_PREFIX}/lib:${LD_LIBRARY_PATH}"
+    # linuxdeploy-plugin-qt crashes if expected plugin dirs don't exist
+    for plugdir in printsupport; do
+        mkdir -p "${QT_PREFIX}/plugins/${plugdir}"
+    done
+fi
+
+echo "==> Running linuxdeploy"
+"$LINUXDEPLOY" \
+    --appdir "$APPDIR" \
+    --desktop-file "$DESKTOP_FILE" \
+    --plugin=qt
+
+echo "==> Cleaning up AppDir"
+cd "$APPDIR"
+
+# Dev files: headers, static libs, cmake, pkgconfig, build artifacts
+find . -name '*.cmake' -delete
+find . -name '*.pc' -delete
+find . -name '*.la' -delete
+find . -name '*.prl' -delete
+find . -name '*.a' -delete
+find . -name '*.h' -delete
+find . -name '*.hpp' -delete
+find . -name '*.cpp' -delete
+find . -name '*.qmltypes' -delete
+find . -name '*-qmlmodule.version' -delete
+rm -rf usr/include usr/lib/cmake usr/lib/metatypes usr/lib/objects-*
+
+# Qt modules not needed at runtime but kept because the Conan Qt recipe
+# creates transitive link dependencies that pull them into the binary:
+#   Designer, Help, UiTools, QuickTest, ShaderTools, PrintSupport,
+#   WaylandCompositor
+# TODO: fix Conan Qt recipe to not create these transitive deps, then
+# remove these libraries here.
+rm -f usr/lib/libQt6QuickControls2FluentWinUI3StyleImpl*
+rm -f usr/lib/libQt6QuickControls2ImagineStyleImpl*
+rm -f usr/lib/libQt6QuickParticles*
+rm -f usr/lib/libQt6QuickVectorImage*
+
+# Qt plugins not needed at runtime
+rm -rf usr/plugins/designer usr/plugins/qmllint usr/plugins/qmltooling
+rm -f usr/plugins/sqldrivers/libqsqlmysql*
+
+# QML styles and modules not needed on Linux
+rm -rf usr/qml/QtQuick/Controls/FluentWinUI3
+rm -rf usr/qml/QtQuick/Controls/Imagine
+rm -rf usr/qml/QtQuick/NativeStyle
+rm -rf usr/qml/QtQuick/Particles
+rm -rf usr/qml/QtQuick/VectorImage
+
+# QML dev files, designer support, and test modules
+rm -rf usr/qml/Qt/test
+find . -path '*/designer/*' -delete
+find . -path '*/objects-RelWithDebInfo/*' -delete
+
+# X11 widget/extension libs pulled in from -devel packages.
+# Review this list when upgrading Qt — new versions may need additional X11 libs.
+rm -f usr/lib/libXt.so* usr/lib/libXaw.so* usr/lib/libXmu.so* usr/lib/libXmuu.so*
+rm -f usr/lib/libXpm.so* usr/lib/libfontenc.so* usr/lib/libxkbfile.so*
+rm -f usr/lib/libXRes.so* usr/lib/libXss.so* usr/lib/libXv.so* usr/lib/libXxf86vm.so*
+rm -f usr/lib/libXinerama.so* usr/lib/libXdamage.so* usr/lib/libXcomposite.so*
+rm -f usr/lib/libxcb-composite.so* usr/lib/libxcb-xinerama.so*
+rm -f usr/lib/libxcb-res.so* usr/lib/libxcb-present.so* usr/lib/libxcb-ewmh.so*
+rm -f usr/lib/libxcb-cursor.so*
+
+# Translations for Qt tools we don't ship
+rm -f usr/translations/assistant_* usr/translations/designer_*
+rm -f usr/translations/linguist_* usr/translations/qt_help_*
+rm -f usr/translations/qtconnectivity_* usr/translations/qtlocation_*
+rm -f usr/translations/qtmultimedia_* usr/translations/qtscript_*
+rm -f usr/translations/qtserialport_*
+rm -f usr/translations/qtdeclarative_* usr/translations/qtquickcontrols_*
+
+# Misc build/doc leftovers
+rm -rf usr/share/man usr/share/doc usr/share/gtk-doc usr/share/gdb
+rm -rf usr/share/info usr/share/aclocal usr/share/bash-completion
+rm -rf usr/lib/gettext usr/share/gettext
+rm -rf usr/share/pkgconfig
+find . -name 'mkspecs' -type d -exec rm -rf {} + 2>/dev/null || true
+
+# Strip debug symbols from shared libraries and executables
+echo "==> Stripping binaries"
+find . -type f \( -name '*.so' -o -name '*.so.*' \) -exec strip --strip-debug {} + 2>/dev/null || true
+find . -type f -executable -exec sh -c 'file "$1" | grep -q "ELF" && strip --strip-debug "$1"' _ {} \; 2>/dev/null || true
+
+# Remove empty directories
+find . -type d -empty -delete 2>/dev/null || true
+
+cd "$OLDPWD"
+
+echo "==> AppDir contents:"
+find "$APPDIR" -type f -printf '%10s %p\n' | sort -rn
+echo "==> AppDir directory sizes:"
+du -sh "$APPDIR"/usr/*
+echo "==> AppDir total size:"
+du -sh "$APPDIR"
+
+echo "==> Creating AppImage"
+"$LINUXDEPLOY" \
+    --appdir "$APPDIR" \
+    --output=appimage
+
+# linuxdeploy creates the AppImage in the current directory
+# Move it to the output directory with the desired name
+GENERATED=$(ls -t *.AppImage 2>/dev/null | head -1)
+if [ -n "$GENERATED" ] && [ -f "$GENERATED" ]; then
+    mv "$GENERATED" "$OUTPUT_DIR/$APPIMAGE_NAME"
+    echo "==> AppImage created: $OUTPUT_DIR/$APPIMAGE_NAME"
+else
+    echo "Error: linuxdeploy did not produce an AppImage"
+    exit 1
+fi

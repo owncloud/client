@@ -15,14 +15,14 @@ function(owncloud_add_test test_class)
         ${ARGN}
         TEST_NAME "${OWNCLOUD_TEST_CLASS}Test"
         LINK_LIBRARIES
-        owncloudGui syncenginetestutils testutilsloader Qt::Test
+        owncloudGui syncenginetestutils testutilsloader Qt6::Test
     )
     apply_common_target_settings(${OWNCLOUD_TEST_CLASS}Test)
     target_compile_definitions(${OWNCLOUD_TEST_CLASS}Test PRIVATE SOURCEDIR="${PROJECT_SOURCE_DIR}" QT_FORCE_ASSERTS)
 
     target_include_directories(${OWNCLOUD_TEST_CLASS}Test PRIVATE "${CMAKE_SOURCE_DIR}/test/")
     if (UNIX AND NOT APPLE)
-        set_property(TEST ${OWNCLOUD_TEST_CLASS}Test PROPERTY ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+        set_property(TEST ${OWNCLOUD_TEST_CLASS}Test PROPERTY ENVIRONMENT "QT_QPA_PLATFORM=offscreen;LD_LIBRARY_PATH=$ENV{LD_LIBRARY_PATH}:${qt_LIB_DIRS_RELEASE}")
     endif()
 
     foreach(arg IN LISTS ARGN)
