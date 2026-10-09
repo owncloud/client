@@ -85,7 +85,10 @@ void MainWindow::buildWindow()
     // setting context menu policy Qt::NoContextMenu doesn't work either - you have to set this on the main window which may cause
     // future confusion, OR use PreventContextMenu on the toolbar.
     _toolbar->toggleViewAction()->setEnabled(false);
+    // does not work when showing modal views eg settings so yeah, we have to kill the whole freaking main window context menu.
+    // thanks, Qt!
     _toolbar->setContextMenuPolicy(Qt::PreventContextMenu);
+    setContextMenuPolicy(Qt::NoContextMenu);
 
     // the height is in play if the toolbar is vertically oriented
     // not sure what the default separator width is, but without setting this style sheet
