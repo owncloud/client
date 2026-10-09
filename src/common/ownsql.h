@@ -116,14 +116,14 @@ public:
     int errorId() const;
 
     /// Checks whether the value at the given column index is NULL
-    bool nullValue(int index);
+    bool nullValue(int index) const;
 
-    QString stringValue(int index);
-    int intValue(int index);
-    quint64 int64Value(int index);
-    QByteArray baValue(int index);
-    bool isSelect();
-    bool isPragma();
+    QString stringValue(int index) const;
+    int intValue(int index) const;
+    quint64 int64Value(int index) const;
+    QByteArray baValue(int index) const;
+    bool isSelect() const;
+    bool isPragma() const;
     bool exec();
 
     struct NextResult

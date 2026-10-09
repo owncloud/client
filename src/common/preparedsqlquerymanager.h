@@ -18,12 +18,25 @@
 
 #pragma once
 
+#include "common/asserts.h"
 #include "ocsynclib.h"
 #include "ownsql.h"
-#include "common/asserts.h"
 
 namespace OCC {
 
+// todo #62: this needs deeper review.
+// it appears this wrapper goes to alot of trouble to make itself look like a pointer in use, when in fact, it never is.
+// essentially it's a wrapper for SqlQuery* + a bool which indicates if it's "ok" or not.
+// the bool() operator fakes a something != nullptr check which is too often shortened to !something (where something is a pointer, obvs)
+// The * impl Q_ASSERTs on the _ok member (so in debug we can a crash in what should be a simple scenario)
+// then returns the internal SqlQuery.
+// I don't understand why there is this extra complexity. The simpler solution would be: if SqlQuery::prepare fails, *don't
+// try to store it in the query manager!!!*
+// basically just report the prepare error and move on.
+// if we simply took better care to not keep useless queries hanging around, this class would be obsolete as you can just get
+// the SqlQuery pointer directly, see if it's null or whatever, and use it *like a real pointer because it is a real pointer!*
+// THIS imo is an example of why c/c++ are referred to as giving devs plenty of rope...
+// enough rope to hang themselves with.
 class OCSYNC_EXPORT PreparedSqlQuery
 {
 public:

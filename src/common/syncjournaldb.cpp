@@ -54,7 +54,7 @@ const auto getFileRecordQueryC = QByteArrayLiteral("SELECT path, inode, modtime,
                                                    " LEFT JOIN checksumtype as contentchecksumtype ON metadata.contentChecksumTypeId == contentchecksumtype.id ");
 
 
-void fillFileRecordFromGetQuery(OCC::SyncJournalFileRecord &rec, OCC::SqlQuery &query)
+void fillFileRecordFromGetQuery(OCC::SyncJournalFileRecord &rec, const OCC::SqlQuery &query)
 {
     rec._path = query.baValue(0);
     rec._inode = query.int64Value(1);
@@ -403,6 +403,11 @@ bool SyncJournalDb::checkConnect()
         return sqlFail(QStringLiteral("Create table blacklist"), createQuery);
     }
 
+    // TODO 8.0:
+    // we need to get rid of the type column as we never effectively handle selective sync types
+    // other than SelectiveSyncListType::SelectiveSyncBlackList = 1
+    // I'm removing that enum already and preserving the "type" value in new var named SelectiveSyncBlacklist for some kind of
+    // continuity, but really the type col should go.
     // create the selectivesync table.
     createQuery.prepare("CREATE TABLE IF NOT EXISTS selectivesync ("
                         "path VARCHAR(4096),"
@@ -947,14 +952,13 @@ bool SyncJournalDb::deleteFileRecord(const QString &filename, bool recursively)
 }
 
 
-bool SyncJournalDb::getFileRecord(const QByteArray &filename, SyncJournalFileRecord *rec)
+bool SyncJournalDb::getFileRecord(const QByteArray &filename, SyncJournalFileRecord &rec)
 {
     QMutexLocker locker(&_mutex);
 
     // Reset the output var in case the caller is reusing it.
-    Q_ASSERT(rec);
-    rec->_path.clear();
-    Q_ASSERT(!rec->isValid());
+    rec._path.clear();
+    Q_ASSERT(!rec.isValid());
 
     if (_metadataTableIsEmpty)
         return true; // no error, yet nothing found (rec->isValid() == false)
@@ -983,20 +987,19 @@ bool SyncJournalDb::getFileRecord(const QByteArray &filename, SyncJournalFileRec
             return false;
         }
         if (next.hasData) {
-            fillFileRecordFromGetQuery(*rec, *query);
+            fillFileRecordFromGetQuery(rec, *query);
         }
     }
     return true;
 }
 
-bool SyncJournalDb::getFileRecordByInode(quint64 inode, SyncJournalFileRecord *rec)
+bool SyncJournalDb::getFileRecordByInode(quint64 inode, SyncJournalFileRecord &rec)
 {
     QMutexLocker locker(&_mutex);
 
     // Reset the output var in case the caller is reusing it.
-    Q_ASSERT(rec);
-    rec->_path.clear();
-    Q_ASSERT(!rec->isValid());
+    rec._path.clear();
+    Q_ASSERT(!rec.isValid());
 
     if (!inode || _metadataTableIsEmpty)
         return true; // no error, yet nothing found (rec->isValid() == false)
@@ -1016,7 +1019,7 @@ bool SyncJournalDb::getFileRecordByInode(quint64 inode, SyncJournalFileRecord *r
     if (!next.ok)
         return false;
     if (next.hasData)
-        fillFileRecordFromGetQuery(*rec, *query);
+        fillFileRecordFromGetQuery(rec, *query);
 
     return true;
 }
@@ -1705,7 +1708,7 @@ void SyncJournalDb::setErrorBlacklistEntry(const SyncJournalErrorBlacklistRecord
     query->exec();
 }
 
-QSet<QString> SyncJournalDb::getSelectiveSyncList(SyncJournalDb::SelectiveSyncListType type, bool &ok)
+QSet<QString> SyncJournalDb::getSelectiveSyncExclusions(bool &ok)
 {
     QSet<QString> result;
 
@@ -1721,7 +1724,7 @@ QSet<QString> SyncJournalDb::getSelectiveSyncList(SyncJournalDb::SelectiveSyncLi
         return result;
     }
 
-    query->bindValue(1, int(type));
+    query->bindValue(1, SelectiveSyncBlacklist);
     if (!query->exec()) {
         ok = false;
         return result;
@@ -1746,7 +1749,7 @@ QSet<QString> SyncJournalDb::getSelectiveSyncList(SyncJournalDb::SelectiveSyncLi
     return result;
 }
 
-void SyncJournalDb::setSelectiveSyncList(SyncJournalDb::SelectiveSyncListType type, const QSet<QString> &list)
+void SyncJournalDb::setSelectiveSyncExclusions(const QSet<QString> &list)
 {
     QMutexLocker locker(&_mutex);
     if (!checkConnect()) {
@@ -1757,7 +1760,7 @@ void SyncJournalDb::setSelectiveSyncList(SyncJournalDb::SelectiveSyncListType ty
 
     //first, delete all entries of this type
     SqlQuery delQuery("DELETE FROM selectivesync WHERE type == ?1", _db);
-    delQuery.bindValue(1, int(type));
+    delQuery.bindValue(1, SelectiveSyncBlacklist);
     if (!delQuery.exec()) {
         qCWarning(lcDb) << "SQL error when deleting selective sync list" << list << delQuery.error();
     }
@@ -1766,9 +1769,9 @@ void SyncJournalDb::setSelectiveSyncList(SyncJournalDb::SelectiveSyncListType ty
     for (const auto &path : list) {
         insQuery.reset_and_clear_bindings();
         insQuery.bindValue(1, path);
-        insQuery.bindValue(2, int(type));
+        insQuery.bindValue(2, SelectiveSyncBlacklist);
         if (!insQuery.exec()) {
-            qCWarning(lcDb) << "SQL error when inserting into selective sync" << type << path << delQuery.error();
+            qCWarning(lcDb) << "SQL error when inserting into selective sync" << SelectiveSyncBlacklist << path << delQuery.error();
         }
     }
 

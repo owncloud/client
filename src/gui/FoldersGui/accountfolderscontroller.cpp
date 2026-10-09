@@ -293,7 +293,7 @@ void AccountFoldersController::onTogglePauseSync()
 
     // todo: what is this really for? if we are pausing do we actually need it or only on resume?
     // if we do need it, it should probably move to the setSyncPaused function so it never gets missed
-    _currentFolder->slotNextSyncFullLocalDiscovery(); // ensure we don't forget about local errors
+    _currentFolder->nextSyncForceFullLocalDiscovery(); // ensure we don't forget about local errors
     _currentFolder->setSyncPaused(!currentlyPaused);
 }
 
@@ -330,8 +330,8 @@ void AccountFoldersController::onChooseSync()
     }
 
     bool ok;
-    QSet<QString> selectiveSyncList = _currentFolder->journalDb()->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, ok);
-    if (!ok)
+    QSet<QString> selectiveSyncList = _currentFolder->selectiveSyncExclusions();
+    if (selectiveSyncList.isEmpty())
         return;
 
     // this widget gets reparented to the layout in the AccountModalWidget so should be cleaned up there
@@ -346,7 +346,7 @@ void AccountFoldersController::onChooseSync()
     connect(modalWidget, &AccountModalWidget::accepted, this, [selectiveSync, this] {
         if (!_currentFolder)
             return;
-        _currentFolder->updateSelectiveSync(selectiveSync->createBlackList());
+        _currentFolder->updateSelectiveSyncExclusions(selectiveSync->createBlackList());
         FolderMan::instance()->forceFolderSync(_currentFolder);
     });
 

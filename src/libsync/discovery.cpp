@@ -841,7 +841,7 @@ void ProcessDirectoryJob::processFileAnalyzeLocalInfo(
 
     // Check if it is a move
     SyncJournalFileRecord base;
-    if (!_discoveryData->_statedb->getFileRecordByInode(localEntry.inode, &base)) {
+    if (!_discoveryData->_statedb->getFileRecordByInode(localEntry.inode, base)) {
         dbError();
         return;
     }
