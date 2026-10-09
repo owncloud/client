@@ -115,7 +115,12 @@ if [ -f /.dockerenv ] || grep -q docker /proc/1/cgroup 2>/dev/null; then
 fi
 
 export ARCH="${ARCH:-x86_64}"
-export LD_LIBRARY_PATH="$APPDIR/usr/lib:$APPDIR/usr/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH:-}"
+# Extract Conan package lib paths from the binary's RPATH so linuxdeploy
+# bundles Conan-built libraries instead of system ones (e.g. glib).
+CONAN_LIB_PATHS=$(readelf -d "$APPDIR/usr/bin/$APP_EXECUTABLE" 2>/dev/null \
+    | grep -oP 'RPATH.*\[\K[^\]]+' \
+    | tr ':' '\n' | grep conan2 | tr '\n' ':')
+export LD_LIBRARY_PATH="${CONAN_LIB_PATHS}$APPDIR/usr/lib:$APPDIR/usr/lib/x86_64-linux-gnu:${LD_LIBRARY_PATH:-}"
 export LINUXDEPLOY_OUTPUT_VERSION="$VERSION"
 if [ -z "${QMAKE:-}" ]; then
     QMAKE=$(command -v qmake6 2>/dev/null || command -v qmake 2>/dev/null || find ~/.conan2 -name qmake6 -path '*/bin/*' 2>/dev/null | head -1 || echo qmake)
