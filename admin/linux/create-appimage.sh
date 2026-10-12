@@ -155,13 +155,21 @@ if [ -n "$QT_PREFIX" ]; then
     export QT_PLUGIN_PATH="${QT_PREFIX}/plugins:${QT_PLUGIN_PATH:-}"
     export QML2_IMPORT_PATH="${QT_PREFIX}/qml:${QML2_IMPORT_PATH:-}"
     export LD_LIBRARY_PATH="${QT_PREFIX}/lib:${LD_LIBRARY_PATH}"
-    # Copy all Qt plugin dirs into the AppDir. linuxdeploy-plugin-qt crashes
-    # with a filesystem_error if it encounters a plugin category that exists
-    # in the Qt prefix but not in the AppDir.
+    # Copy Qt plugins into AppDir and create all standard plugin dirs.
+    # linuxdeploy-plugin-qt crashes with a filesystem_error if it tries to
+    # iterate a plugin category directory that doesn't exist in the AppDir.
+    mkdir -p "$APPDIR/usr/plugins"
     if [ -d "${QT_PREFIX}/plugins" ]; then
-        mkdir -p "$APPDIR/usr/plugins"
         cp -r "${QT_PREFIX}/plugins/"* "$APPDIR/usr/plugins/" 2>/dev/null || true
     fi
+    for plugdir in bearer egldeviceintegrations generic iconengines \
+                   imageformats platforminputcontexts platforms \
+                   platformthemes printsupport sqldrivers \
+                   tls wayland-decoration-client wayland-graphics-integration-client \
+                   wayland-graphics-integration-server wayland-shell-integration \
+                   xcbglintegrations; do
+        mkdir -p "$APPDIR/usr/plugins/$plugdir"
+    done
 fi
 
 echo "==> Running linuxdeploy"
