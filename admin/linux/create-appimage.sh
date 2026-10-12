@@ -155,13 +155,24 @@ echo "Qt Conan dir: $QT_CONAN_DIR"
 export LD_LIBRARY_PATH="${QT_CONAN_DIR}/lib:${LD_LIBRARY_PATH}"
 export PATH="${QT_CONAN_DIR}/bin:${QT_CONAN_DIR}/libexec:${PATH}"
 
-# Copy Qt plugins into AppDir. Don't set QT_PLUGIN_PATH — let
-# linuxdeploy-plugin-qt find plugins via qmake -query instead,
-# which avoids crashes on missing plugin subdirectories.
+# Copy Qt plugins into AppDir.
 mkdir -p "$APPDIR/usr/plugins"
 if [ -d "${QT_CONAN_DIR}/plugins" ]; then
     cp -r "${QT_CONAN_DIR}/plugins/"* "$APPDIR/usr/plugins/" 2>/dev/null || true
 fi
+
+# linuxdeploy-plugin-qt iterates plugin dirs reported by qmake -query and
+# crashes if any expected subdirectory doesn't exist. Create all standard
+# plugin dirs in both locations.
+for plugdir in bearer egldeviceintegrations generic iconengines \
+               imageformats platforminputcontexts platforms \
+               platformthemes printsupport sqldrivers \
+               tls wayland-decoration-client wayland-graphics-integration-client \
+               wayland-graphics-integration-server wayland-shell-integration \
+               xcbglintegrations; do
+    mkdir -p "$APPDIR/usr/plugins/$plugdir"
+    mkdir -p "${QT_CONAN_DIR}/plugins/$plugdir"
+done
 
 echo "==> Running linuxdeploy"
 "$LINUXDEPLOY" \
