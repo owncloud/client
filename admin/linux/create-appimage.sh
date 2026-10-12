@@ -155,6 +155,7 @@ if [ -n "$QT_PREFIX" ]; then
     export QT_PLUGIN_PATH="${QT_PREFIX}/plugins:${QT_PLUGIN_PATH:-}"
     export QML2_IMPORT_PATH="${QT_PREFIX}/qml:${QML2_IMPORT_PATH:-}"
     export LD_LIBRARY_PATH="${QT_PREFIX}/lib:${LD_LIBRARY_PATH}"
+    export PATH="${QT_PREFIX}/bin:${QT_PREFIX}/libexec:${PATH}"
     # Copy Qt plugins into AppDir and create all standard plugin dirs.
     # linuxdeploy-plugin-qt crashes with a filesystem_error if it tries to
     # iterate a plugin category directory that doesn't exist in the AppDir.
