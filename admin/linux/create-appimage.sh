@@ -156,13 +156,15 @@ if [ -n "$QT_PREFIX" ]; then
     export QML2_IMPORT_PATH="${QT_PREFIX}/qml:${QML2_IMPORT_PATH:-}"
     export LD_LIBRARY_PATH="${QT_PREFIX}/lib:${LD_LIBRARY_PATH}"
     # linuxdeploy-plugin-qt crashes if expected plugin dirs don't exist
-    for plugdir in printsupport; do
+    for plugdir in printsupport platforminputcontexts; do
         mkdir -p "${QT_PREFIX}/plugins/${plugdir}"
+        mkdir -p "$APPDIR/usr/plugins/${plugdir}"
     done
 fi
 
 echo "==> Running linuxdeploy"
 "$LINUXDEPLOY" \
+    --verbosity=2 \
     --appdir "$APPDIR" \
     --desktop-file "$DESKTOP_FILE" \
     --plugin=qt
