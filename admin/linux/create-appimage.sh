@@ -93,16 +93,10 @@ if [ -n "$CONAN_LIB_PATHS" ]; then
             */plugins/*)
                 pluginsubdir="${libdir##*/plugins/}"
                 mkdir -p "$APPDIR/usr/plugins/$pluginsubdir"
-                for lib in "$libdir"/*.so*; do
-                    [ -f "$lib" ] || continue
-                    cp -n "$lib" "$APPDIR/usr/plugins/$pluginsubdir/"
-                done
+                cp -an "$libdir"/*.so* "$APPDIR/usr/plugins/$pluginsubdir/" 2>/dev/null || true
                 ;;
             *)
-                for lib in "$libdir"/lib*.so*; do
-                    [ -f "$lib" ] || continue
-                    cp -n "$lib" "$APPDIR/usr/lib/"
-                done
+                cp -an "$libdir"/lib*.so* "$APPDIR/usr/lib/" 2>/dev/null || true
                 ;;
         esac
     done
@@ -158,7 +152,7 @@ export PATH="${QT_CONAN_DIR}/bin:${QT_CONAN_DIR}/libexec:${PATH}"
 # Copy Qt plugins into AppDir.
 mkdir -p "$APPDIR/usr/plugins"
 if [ -d "${QT_CONAN_DIR}/plugins" ]; then
-    cp -r "${QT_CONAN_DIR}/plugins/"* "$APPDIR/usr/plugins/" 2>/dev/null || true
+    cp -a "${QT_CONAN_DIR}/plugins/"* "$APPDIR/usr/plugins/" 2>/dev/null || true
 fi
 
 # linuxdeploy-plugin-qt iterates plugin dirs reported by qmake -query and
