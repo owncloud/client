@@ -29,6 +29,7 @@ class ClientRecipe(ConanFile):
     def configure(self):
         if self.settings.os == "Linux":
             self.options['qt/*'].with_dbus = True
+            self.options['qt/*'].with_glib = False
             self.options['qt/*'].qtwayland = True
         if self.settings.os == "Macos":
             self.options['harfbuzz/*'].with_glib = False
