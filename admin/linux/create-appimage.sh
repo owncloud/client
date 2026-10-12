@@ -155,11 +155,12 @@ if [ -n "$QT_PREFIX" ]; then
     export QT_PLUGIN_PATH="${QT_PREFIX}/plugins:${QT_PLUGIN_PATH:-}"
     export QML2_IMPORT_PATH="${QT_PREFIX}/qml:${QML2_IMPORT_PATH:-}"
     export LD_LIBRARY_PATH="${QT_PREFIX}/lib:${LD_LIBRARY_PATH}"
-    # linuxdeploy-plugin-qt crashes if expected plugin dirs don't exist
-    for plugdir in printsupport platforminputcontexts; do
-        mkdir -p "${QT_PREFIX}/plugins/${plugdir}"
-        mkdir -p "$APPDIR/usr/plugins/${plugdir}"
-    done
+    # Copy all Qt plugin dirs into the AppDir. linuxdeploy-plugin-qt crashes
+    # with a filesystem_error if it encounters a plugin category that exists
+    # in the Qt prefix but not in the AppDir.
+    if [ -d "${QT_PREFIX}/plugins" ]; then
+        cp -rn "${QT_PREFIX}/plugins/"* "$APPDIR/usr/plugins/" 2>/dev/null || true
+    fi
 fi
 
 echo "==> Running linuxdeploy"
