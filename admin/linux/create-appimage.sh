@@ -159,7 +159,8 @@ if [ -n "$QT_PREFIX" ]; then
     # with a filesystem_error if it encounters a plugin category that exists
     # in the Qt prefix but not in the AppDir.
     if [ -d "${QT_PREFIX}/plugins" ]; then
-        cp -rn "${QT_PREFIX}/plugins/"* "$APPDIR/usr/plugins/" 2>/dev/null || true
+        mkdir -p "$APPDIR/usr/plugins"
+        cp -r "${QT_PREFIX}/plugins/"* "$APPDIR/usr/plugins/" 2>/dev/null || true
     fi
 fi
 
