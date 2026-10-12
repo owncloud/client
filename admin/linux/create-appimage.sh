@@ -149,19 +149,24 @@ if [ -z "${QMAKE:-}" ]; then
 fi
 export QMAKE
 
-QT_PREFIX="$("$QMAKE" -query QT_INSTALL_PREFIX 2>/dev/null || true)"
+# Derive the Qt Conan prefix from qmake's location, not from qmake -query
+# (which may report the AppDir path if qt.conf is present there).
+QT_CONAN_DIR="$(dirname "$QMAKE")/.."
+QT_CONAN_DIR="$(cd "$QT_CONAN_DIR" && pwd)"
+QT_PREFIX="$("$QMAKE" -query QT_INSTALL_PREFIX 2>/dev/null || echo "$QT_CONAN_DIR")"
 if [ -n "$QT_PREFIX" ]; then
     echo "Qt prefix: $QT_PREFIX"
-    export QT_PLUGIN_PATH="${QT_PREFIX}/plugins:${QT_PLUGIN_PATH:-}"
-    export QML2_IMPORT_PATH="${QT_PREFIX}/qml:${QML2_IMPORT_PATH:-}"
-    export LD_LIBRARY_PATH="${QT_PREFIX}/lib:${LD_LIBRARY_PATH}"
-    export PATH="${QT_PREFIX}/bin:${QT_PREFIX}/libexec:${PATH}"
+    echo "Qt Conan dir: $QT_CONAN_DIR"
+    export QT_PLUGIN_PATH="${QT_CONAN_DIR}/plugins:${QT_PLUGIN_PATH:-}"
+    export QML2_IMPORT_PATH="${QT_CONAN_DIR}/qml:${QML2_IMPORT_PATH:-}"
+    export LD_LIBRARY_PATH="${QT_CONAN_DIR}/lib:${LD_LIBRARY_PATH}"
+    export PATH="${QT_CONAN_DIR}/bin:${QT_CONAN_DIR}/libexec:${PATH}"
     # Copy Qt plugins into AppDir and create all standard plugin dirs.
     # linuxdeploy-plugin-qt crashes with a filesystem_error if it tries to
     # iterate a plugin category directory that doesn't exist in the AppDir.
     mkdir -p "$APPDIR/usr/plugins"
-    if [ -d "${QT_PREFIX}/plugins" ]; then
-        cp -r "${QT_PREFIX}/plugins/"* "$APPDIR/usr/plugins/" 2>/dev/null || true
+    if [ -d "${QT_CONAN_DIR}/plugins" ]; then
+        cp -r "${QT_CONAN_DIR}/plugins/"* "$APPDIR/usr/plugins/" 2>/dev/null || true
     fi
     for plugdir in bearer egldeviceintegrations generic iconengines \
                    imageformats platforminputcontexts platforms \
