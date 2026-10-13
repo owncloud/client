@@ -7,6 +7,7 @@ class ClientRecipe(ConanFile):
     options = {"shared": [True, False]}
     default_options = {
         "*:fPIC": True,
+        "*:shared": True,
         "qt/*:gui": True,
         "qt/*:qtdeclarative": True,
         "qt/*:qtimageformats": True,
