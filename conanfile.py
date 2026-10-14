@@ -32,6 +32,7 @@ class ClientRecipe(ConanFile):
             self.options['qt/*'].with_glib = False
             self.options['qt/*'].qtwayland = True
             self.options['glib/*'].shared = True
+            self.options['glib/*'].with_selinux = False
         if self.settings.os == "Macos":
             self.options['harfbuzz/*'].with_glib = False
 
