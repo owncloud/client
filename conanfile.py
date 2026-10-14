@@ -7,7 +7,6 @@ class ClientRecipe(ConanFile):
     options = {"shared": [True, False]}
     default_options = {
         "*:fPIC": True,
-        "*:shared": True,
         "qt/*:gui": True,
         "qt/*:qtdeclarative": True,
         "qt/*:qtimageformats": True,
@@ -32,6 +31,7 @@ class ClientRecipe(ConanFile):
             self.options['qt/*'].with_dbus = True
             self.options['qt/*'].with_glib = False
             self.options['qt/*'].qtwayland = True
+            self.options['glib/*'].shared = True
         if self.settings.os == "Macos":
             self.options['harfbuzz/*'].with_glib = False
 
