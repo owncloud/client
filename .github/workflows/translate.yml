@@ -71,9 +71,13 @@ jobs:
           token: ${{ secrets.TX_TOKEN }}
           args: pull --force --all --silent
 
+      # The token is not narrowed (zizmor github-app ignored): create-pull-request
+      # rebuilds the PR branch from its base, so its push can carry workflow
+      # changes and need workflows: write, and which permissions the App
+      # installation holds is not visible from this repository.
       - name: Generate GitHub App token
         id: app-token
-        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0 # zizmor: ignore[github-app]
         with:
           app-id: ${{ secrets.TRANSLATION_APP_ID }}
           private-key: ${{ secrets.TRANSLATION_APP_PRIVATE_KEY }}
