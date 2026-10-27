@@ -2,7 +2,7 @@
 set -euo pipefail
 
 usage() {
-    echo "Usage: $0 -b BUILD_DIR [-o OUTPUT_DIR] [-v VERSION]"
+    echo "Usage: $0 -b BUILD_DIR [-o OUTPUT_DIR] [-v VERSION] [-n]"
     echo
     echo "Create an AppImage from an already-built ownCloud client."
     echo
@@ -11,18 +11,23 @@ usage() {
     echo "  -o OUTPUT_DIR  Where to place the resulting AppImage (default: .)"
     echo "  -v VERSION     Version string for the AppImage filename (default: the version the"
     echo "                 client was configured with, from BUILD_DIR/packaging.env)"
+    echo "  -n             Also create native .deb and .rpm packages from the same AppDir"
+    echo "                 (needs linuxdeploy-plugin-native_packages; metadata can be"
+    echo "                 overridden with the LDNP_* environment variables)"
     exit 1
 }
 
 BUILD_DIR=""
 OUTPUT_DIR="$(pwd)"
 VERSION=""
+NATIVE_PACKAGES=0
 
-while getopts "b:o:v:h" opt; do
+while getopts "b:o:v:nh" opt; do
     case "$opt" in
         b) BUILD_DIR="$OPTARG" ;;
         o) OUTPUT_DIR="$OPTARG" ;;
         v) VERSION="$OPTARG" ;;
+        n) NATIVE_PACKAGES=1 ;;
         h) usage ;;
         *) usage ;;
     esac
@@ -246,10 +251,36 @@ du -sh "$APPDIR"/usr/*
 echo "==> AppDir total size:"
 du -sh "$APPDIR"
 
+OUTPUTS=(--output=appimage)
+if [ "$NATIVE_PACKAGES" = 1 ]; then
+    # The .deb/.rpm wrap the same AppDir as the AppImage. Defaults follow the
+    # existing published packages; callers can override any LDNP_* variable.
+    BRAND_PACKAGE="$LINUX_PACKAGE_NAME"
+    export LINUXDEPLOY_OUTPUT_VERSION="$VERSION"
+    export LDNP_BUILD="${LDNP_BUILD:-deb rpm}"
+    export LDNP_META_PACKAGE_NAME="${LDNP_META_PACKAGE_NAME:-$BRAND_PACKAGE}"
+    export LDNP_META_SHORT_DESCRIPTION="${LDNP_META_SHORT_DESCRIPTION:-$APPLICATION_NAME Desktop Client}"
+    export LDNP_META_DEB_ARCHITECTURE="${LDNP_META_DEB_ARCHITECTURE:-amd64}"
+    export LDNP_META_DEB_MAINTAINER="${LDNP_META_DEB_MAINTAINER:-ownCloud Packaging Team <packaging@owncloud.com>}"
+    export LDNP_META_DEB_DEPENDS="${LDNP_META_DEB_DEPENDS:-libgl1, libopengl0, libglx0, libegl1}"
+    export LDNP_META_DEB_SUGGESTS="${LDNP_META_DEB_SUGGESTS:-$BRAND_PACKAGE-dolphin, $BRAND_PACKAGE-nautilus, $BRAND_PACKAGE-nemo, $BRAND_PACKAGE-caja}"
+    # Packages that the old split packaging installed, replaced by this one
+    export LDNP_META_DEB_CONFLICTS="${LDNP_META_DEB_CONFLICTS:-lib${APP_EXECUTABLE}sync0, ${APP_EXECUTABLE}-client-cmd, ${APP_EXECUTABLE}-client-data}"
+    export LDNP_META_DEB_REPLACES="${LDNP_META_DEB_REPLACES:-$LDNP_META_DEB_CONFLICTS}"
+    export LDNP_META_DEB_SECTION="${LDNP_META_DEB_SECTION:-devel}"
+    export LDNP_META_RPM_BUILD_ARCH="${LDNP_META_RPM_BUILD_ARCH:-x86_64}"
+    export LDNP_META_RPM_VENDOR="${LDNP_META_RPM_VENDOR:-ownCloud GmbH <info@owncloud.com>}"
+    export LDNP_META_RPM_REQUIRES="${LDNP_META_RPM_REQUIRES:-libGL.so.1()(64bit) libOpenGL.so.0()(64bit) libGLX.so.0()(64bit)}"
+    export LDNP_META_RPM_GROUP="${LDNP_META_RPM_GROUP:-Productivity/Networking/Other}"
+    export LDNP_META_RPM_LICENSE="${LDNP_META_RPM_LICENSE:-GPL-2.0+}"
+    OUTPUTS+=(--output=native_packages)
+    echo "==> Also creating native packages: $LDNP_META_PACKAGE_NAME ($LDNP_BUILD)"
+fi
+
 echo "==> Creating AppImage"
 "$LINUXDEPLOY" \
     --appdir "$APPDIR" \
-    --output=appimage
+    "${OUTPUTS[@]}"
 
 # linuxdeploy creates the AppImage in the current directory
 # Move it to the output directory with the desired name
@@ -260,4 +291,18 @@ if [ -n "$GENERATED" ] && [ -f "$GENERATED" ]; then
 else
     echo "Error: linuxdeploy did not produce an AppImage"
     exit 1
+fi
+
+if [ "$NATIVE_PACKAGES" = 1 ]; then
+    shopt -s nullglob
+    NATIVE=(*.deb *.rpm)
+    shopt -u nullglob
+    if [ "${#NATIVE[@]}" -eq 0 ]; then
+        echo "Error: linuxdeploy did not produce any native packages"
+        exit 1
+    fi
+    mv "${NATIVE[@]}" "$OUTPUT_DIR/"
+    for f in "${NATIVE[@]}"; do
+        echo "==> Native package created: $OUTPUT_DIR/$f"
+    done
 fi
