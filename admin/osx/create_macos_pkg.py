@@ -289,7 +289,29 @@ def write_qt_conf(resources_dir):
     )
 
 
-def create_pkg(build_dir, app_bundle, output_dir):
+def read_packaging_env(build_dir):
+    """Read the KEY='value' lines THEME.cmake writes to packaging.env."""
+    env_file = build_dir / "packaging.env"
+    if not env_file.exists():
+        sys.exit(f"Error: {env_file} not found; configure the client with a CMake that writes it")
+    values = {}
+    for line in env_file.read_text().splitlines():
+        key, sep, value = line.partition("=")
+        if sep:
+            values[key] = value.strip("'")
+    return values
+
+
+def binary_arch(executable):
+    """Architecture of the built executable, so cross-builds are named correctly."""
+    result = subprocess.run(
+        ["lipo", "-archs", str(executable)], capture_output=True, text=True, check=True
+    )
+    archs = result.stdout.split()
+    return archs[0] if len(archs) == 1 else "universal"
+
+
+def create_pkg(build_dir, app_bundle, output_dir, pkg_name):
     print("=== Creating .pkg installer ===")
     create_mac = build_dir / "admin" / "osx" / "create_mac.sh"
     if not create_mac.exists():
@@ -320,9 +342,10 @@ def create_pkg(build_dir, app_bundle, output_dir):
                 if prefix.is_dir():
                     pkg_search_dirs.append(prefix)
 
+    # Same naming as the existing published builds: <prefix>-<version string>-<arch>.pkg
     for search_dir in pkg_search_dirs:
         for pkg in search_dir.glob("*.pkg"):
-            dest = output_dir / pkg.name
+            dest = output_dir / pkg_name
             shutil.move(pkg, dest)
             print(f"  Package: {dest}")
             return True
@@ -400,7 +423,12 @@ def main():
     write_qt_conf(resources)
 
     # 9. .pkg
-    if not create_pkg(build_dir, app_bundle, output_dir):
+    packaging = read_packaging_env(build_dir)
+    pkg_name = (
+        f"{packaging['ARTIFACT_PREFIX']}-{packaging['VERSION_STRING']}"
+        f"-{binary_arch(executable)}.pkg"
+    )
+    if not create_pkg(build_dir, app_bundle, output_dir, pkg_name):
         print(f"The .app bundle is ready at: {app_bundle}")
 
     print("=== Done ===")
