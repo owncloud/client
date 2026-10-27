@@ -9,7 +9,8 @@ usage() {
     echo "Options:"
     echo "  -b BUILD_DIR   Path to the CMake build directory (required)"
     echo "  -o OUTPUT_DIR  Where to place the resulting AppImage (default: .)"
-    echo "  -v VERSION     Version string for the AppImage filename (auto-detected from VERSION.cmake if omitted)"
+    echo "  -v VERSION     Version string for the AppImage filename (default: the version the"
+    echo "                 client was configured with, from BUILD_DIR/packaging.env)"
     exit 1
 }
 
@@ -36,32 +37,20 @@ BUILD_DIR="$(cd "$BUILD_DIR" && pwd)"
 OUTPUT_DIR="$(mkdir -p "$OUTPUT_DIR" && cd "$OUTPUT_DIR" && pwd)"
 SOURCE_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
 
-# Auto-detect version from VERSION.cmake if not provided
-if [ -z "$VERSION" ]; then
-    version_file="$SOURCE_DIR/VERSION.cmake"
-    if [ ! -f "$version_file" ]; then
-        echo "Error: VERSION.cmake not found at $version_file and no -v given"
-        exit 1
-    fi
-    MAJOR=$(grep 'MIRALL_VERSION_MAJOR' "$version_file" | sed 's/.*MIRALL_VERSION_MAJOR[[:space:]]*\([0-9]*\).*/\1/')
-    MINOR=$(grep 'MIRALL_VERSION_MINOR' "$version_file" | sed 's/.*MIRALL_VERSION_MINOR[[:space:]]*\([0-9]*\).*/\1/')
-    PATCH=$(grep 'MIRALL_VERSION_PATCH' "$version_file" | sed 's/.*MIRALL_VERSION_PATCH[[:space:]]*\([0-9]*\).*/\1/')
-    VERSION="${MAJOR}.${MINOR}.${PATCH}"
-    echo "Auto-detected version: $VERSION"
-fi
-
-# Read APPLICATION_EXECUTABLE from the branding/OEM.cmake or OWNCLOUD.cmake
-APP_EXECUTABLE=""
-for cmake_file in "$SOURCE_DIR/branding/OEM.cmake" "$SOURCE_DIR/OWNCLOUD.cmake"; do
-    if [ -f "$cmake_file" ]; then
-        APP_EXECUTABLE=$(grep 'APPLICATION_EXECUTABLE' "$cmake_file" | head -1 | sed 's/.*APPLICATION_EXECUTABLE[[:space:]]*"\([^"]*\)".*/\1/')
-        break
-    fi
-done
-if [ -z "$APP_EXECUTABLE" ]; then
-    echo "Error: could not determine APPLICATION_EXECUTABLE"
+# Name, version and executable as configured by CMake (see THEME.cmake), so the
+# AppImage name matches the branding and the version the client reports.
+PACKAGING_ENV="$BUILD_DIR/packaging.env"
+if [ ! -f "$PACKAGING_ENV" ]; then
+    echo "Error: $PACKAGING_ENV not found; configure the client with a CMake that writes it"
     exit 1
 fi
+# shellcheck source=/dev/null
+. "$PACKAGING_ENV"
+if [ -z "$VERSION" ]; then
+    VERSION="$VERSION_STRING"
+fi
+APP_EXECUTABLE="$APPLICATION_EXECUTABLE"
+echo "Artifact prefix: $ARTIFACT_PREFIX, version: $VERSION"
 echo "Application executable: $APP_EXECUTABLE"
 
 # Check that linuxdeploy is available
@@ -126,7 +115,7 @@ if [ -z "$DESKTOP_FILE" ]; then
 fi
 echo "Using desktop file: $DESKTOP_FILE"
 
-APPIMAGE_NAME="ownCloud-${VERSION}-x86_64.AppImage"
+APPIMAGE_NAME="${ARTIFACT_PREFIX}-${VERSION}-x86_64.AppImage"
 
 # In Docker, FUSE is typically not available
 if [ -f /.dockerenv ] || grep -q docker /proc/1/cgroup 2>/dev/null; then
