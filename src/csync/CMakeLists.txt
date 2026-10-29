@@ -52,9 +52,9 @@ generate_export_header(csync
 
 target_link_libraries(csync
     PUBLIC
-        Qt::Core
+        Qt6::Core
     PRIVATE
-        Qt::Concurrent
+        Qt6::Concurrent
         SQLite::SQLite3
         ZLIB::ZLIB
 )

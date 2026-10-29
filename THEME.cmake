@@ -61,3 +61,38 @@ endif()
 
 
 include("${CMAKE_CURRENT_LIST_DIR}/VERSION.cmake")
+
+# Name used for packaging artifacts (AppImage, packages, installers). This
+# deliberately does not use APPLICATION_SHORTNAME directly: themes take it from
+# theme.json (desktop_application_short_name_text), which can differ in case,
+# e.g. "kiteworks" vs "Kiteworks". APPLICATION_SHORTNAME is used at runtime
+# (settings dir, keychain), so it must not be changed to match.
+set(ARTIFACT_PREFIX "${APPLICATION_SHORTNAME}")
+if (EXISTS "${OEM_THEME_DIR}/theme.json")
+    if (CMAKE_VERSION VERSION_LESS 3.19)
+        message(WARNING "Branding: CMake ${CMAKE_VERSION} cannot read theme.json, using APPLICATION_SHORTNAME for artifact names")
+    else()
+        file(READ "${OEM_THEME_DIR}/theme.json" _theme_json)
+        string(JSON _theme_short_name ERROR_VARIABLE _theme_json_error GET "${_theme_json}" desktop_application_short_name_text)
+        if (NOT _theme_json_error AND NOT _theme_short_name STREQUAL "")
+            set(ARTIFACT_PREFIX "${_theme_short_name}")
+        endif()
+    endif()
+endif()
+string(TOLOWER "${ARTIFACT_PREFIX}" _linux_package_base)
+string(REPLACE "_" "-" _linux_package_base "${_linux_package_base}")
+set(LINUX_PACKAGE_NAME "${_linux_package_base}-client")
+message(STATUS "Branding: artifact prefix ${ARTIFACT_PREFIX}, Linux package ${LINUX_PACKAGE_NAME}")
+
+# Read by the packaging scripts in admin/ so artifact names match the build.
+file(WRITE "${CMAKE_BINARY_DIR}/packaging.env"
+    "ARTIFACT_PREFIX='${ARTIFACT_PREFIX}'\n"
+    "VERSION_STRING='${MIRALL_VERSION_STRING}'\n"
+    "VERSION_BASE='${MIRALL_VERSION}'\n"
+    "VERSION_SUFFIX='${MIRALL_VERSION_SUFFIX}'\n"
+    "VERSION_BUILD='${MIRALL_VERSION_BUILD}'\n"
+    "APPLICATION_NAME='${APPLICATION_NAME}'\n"
+    "APPLICATION_SHORTNAME='${APPLICATION_SHORTNAME}'\n"
+    "APPLICATION_EXECUTABLE='${APPLICATION_EXECUTABLE}'\n"
+    "LINUX_PACKAGE_NAME='${LINUX_PACKAGE_NAME}'\n"
+)
