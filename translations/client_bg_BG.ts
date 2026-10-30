@@ -4,12 +4,12 @@
     <message>
         <location filename="../src/gui/qml/AccountBar.qml" line="27"/>
         <source>Navigation bar</source>
-        <translation type="unfinished"/>
+        <translation>Навигационна лента</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/AccountBar.qml" line="114"/>
         <source>Add Account</source>
-        <translation type="unfinished"/>
+        <translation>Добавяне на акаунт</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/AccountBar.qml" line="141"/>
@@ -67,7 +67,7 @@
     <message>
         <location filename="../src/gui/newwizard/pages/accountconfiguredwizardpage.ui" line="230"/>
         <source>Restore default value</source>
-        <translation type="unfinished"/>
+        <translation>Възстановяване на стойността по подразбиране</translation>
     </message>
 </context>
 <context>
@@ -91,17 +91,17 @@
     <message>
         <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="30"/>
         <source>Please enter your password to log in.</source>
-        <translation type="unfinished"/>
+        <translation>Моля, въведете паролата си, за да влезете.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="30"/>
         <source>Please enter %1 and password to log in.</source>
-        <translation type="unfinished"/>
+        <translation>Моля, въведете %1 и парола, за да влезете.</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="45"/>
         <source>Enter %1</source>
-        <translation type="unfinished"/>
+        <translation>Въведете %1</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/BasicAuthCredentials.qml" line="59"/>
@@ -150,7 +150,7 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/main.cpp" line="126"/>
         <source>Start with the main window visible, or if it is already running, bring it to the front. By default, the client launches in the background.</source>
-        <translation type="unfinished"/>
+        <translation>Стартирайте с видим главен прозорец или, ако вече работи, го изведете на преден план. По подразбиране клиентът се стартира във фонов режим.</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="128"/>
@@ -185,7 +185,7 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/main.cpp" line="136"/>
         <source>Forward all arguments to the cmd client. This argument must be the first.</source>
-        <translation type="unfinished"/>
+        <translation>Препращане на всички аргументи към cmd клиента. Този аргумент трябва да бъде първи.</translation>
     </message>
     <message>
         <location filename="../src/gui/main.cpp" line="139"/>
@@ -223,7 +223,7 @@ File synchronization desktop utility.</source>
     <message numerus="yes">
         <location filename="../src/gui/commonstrings.cpp" line="48"/>
         <source>%n Filter(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n Филтър</numerusform><numerusform>%n Филтри</numerusform></translation>
     </message>
 </context>
 <context>
@@ -231,19 +231,21 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/qml/credentials/Credentials.qml" line="44"/>
         <source>Stay logged out</source>
-        <translation type="unfinished"/>
+        <translation>Останете излезли от профила</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/Credentials.qml" line="94"/>
         <source>Connecting %1 to:
 %2</source>
-        <translation type="unfinished"/>
+        <translation>Свързване на %1 към:
+%2</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/Credentials.qml" line="94"/>
         <source>Connecting to:
 %1</source>
-        <translation type="unfinished"/>
+        <translation>Свързване към:
+%1</translation>
     </message>
 </context>
 <context>
@@ -311,12 +313,12 @@ File synchronization desktop utility.</source>
     <message numerus="yes">
         <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
         <source>You are synchronizing %1 out of %n folder(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Синхронизирате %1 от %n папка</numerusform><numerusform>Синхронизирате %1 от %n папки</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
         <source>You are synchronizing %1 out of %n space(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Синхронизирате %1 от %n пространство</numerusform><numerusform>Синхронизирате %1 от %n пространства</numerusform></translation>
     </message>
 </context>
 <context>
@@ -324,12 +326,12 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/qml/FolderError.qml" line="58"/>
         <source>Show less</source>
-        <translation type="unfinished"/>
+        <translation>Покажи по-малко</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/FolderError.qml" line="77"/>
         <source>Show more</source>
-        <translation type="unfinished"/>
+        <translation>Покажи повече</translation>
     </message>
 </context>
 <context>
@@ -348,12 +350,12 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="123"/>
         <source>, ⬇️ %1/s</source>
-        <translation type="unfinished"/>
+        <translation>, ⬇️ %1/s</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="126"/>
         <source>, ⬆️ %1/s</source>
-        <translation type="unfinished"/>
+        <translation>, ⬆️ %1/s</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="130"/>
@@ -473,7 +475,7 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/notificationwidget.ui" line="49"/>
         <source>Notification icon</source>
-        <translation type="unfinished"/>
+        <translation>Икона за известия</translation>
     </message>
     <message>
         <location filename="../src/gui/notificationwidget.ui" line="73"/>
@@ -488,7 +490,7 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/notificationwidget.ui" line="113"/>
         <source>Action button group</source>
-        <translation type="unfinished"/>
+        <translation>Група бутони за действия</translation>
     </message>
 </context>
 <context>
@@ -496,32 +498,32 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="32"/>
         <source>Log in with your web browser</source>
-        <translation type="unfinished"/>
+        <translation>Влезте чрез уеб браузъра</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="32"/>
         <source>Login failed, please try it again</source>
-        <translation type="unfinished"/>
+        <translation>Влизането е неуспешно, моля, опитайте отново</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="51"/>
         <source>Reopen web browser</source>
-        <translation type="unfinished"/>
+        <translation>Отворете отново уеб браузъра</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="51"/>
         <source>Open web browser</source>
-        <translation type="unfinished"/>
+        <translation>Отворете уеб браузър</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="100"/>
         <source>Restart authentication</source>
-        <translation type="unfinished"/>
+        <translation>Рестартирайте удостоверяването</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/credentials/OAuthCredentials.qml" line="67"/>
         <source>Copy URL</source>
-        <translation type="unfinished"/>
+        <translation>Копиране на URL</translation>
     </message>
 </context>
 <context>
@@ -586,17 +588,17 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/accountsettings.ui" line="73"/>
         <source>Manage Account</source>
-        <translation type="unfinished"/>
+        <translation>Управление на профила</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.ui" line="109"/>
         <source>Preparing the account</source>
-        <translation type="unfinished"/>
+        <translation>Подготовка на профила</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.ui" line="137"/>
         <source>Sync connections</source>
-        <translation type="unfinished"/>
+        <translation>Синхронизиране на връзките</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="345"/>
@@ -634,7 +636,7 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="99"/>
         <source>Account options menu</source>
-        <translation type="unfinished"/>
+        <translation>Меню с опции за профила</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="101"/>
@@ -644,12 +646,12 @@ File synchronization desktop utility.</source>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="169"/>
         <source>Sync options menu</source>
-        <translation type="unfinished"/>
+        <translation>Меню с опции за синхронизиране</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="175"/>
         <source>Folder is not ready yet</source>
-        <translation type="unfinished"/>
+        <translation>Папката все още не е готова</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="338"/>
@@ -697,32 +699,32 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="250"/>
         <source>Disable virtual file support</source>
-        <translation type="unfinished"/>
+        <translation>Деактивиране на поддръжката за виртуални файлове</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="236"/>
         <source>Enable virtual file support</source>
-        <translation type="unfinished"/>
+        <translation>Активиране на поддръжката за виртуални файлове</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="465"/>
         <source>Sync paused by user</source>
-        <translation type="unfinished"/>
+        <translation>Синхронизирането е спряно от потребителя</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="480"/>
         <source>Internet connection is metered</source>
-        <translation type="unfinished"/>
+        <translation>Интернет връзката е с ограничено потребление</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="481"/>
         <source>Synchronization is paused because the Internet connection is a metered connection&lt;p&gt;Do you really want to force a Synchronization now?</source>
-        <translation type="unfinished"/>
+        <translation>Синхронизирането е спряно, тъй като интернет връзката е с ограничено потребление. Наистина ли искате да принудите синхронизиране сега? Синхронизирането е спряно, тъй като интернет връзката е с ограничено потребление. &lt;p&gt;Наистина ли искате принудително синхронизиране сега?</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="505"/>
         <source>User triggered force sync</source>
-        <translation type="unfinished"/>
+        <translation>Принудително синхронизиране, инициирано от потребителя</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="100"/>
@@ -737,12 +739,12 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="555"/>
         <source>Server is temporarily unavailable</source>
-        <translation type="unfinished"/>
+        <translation>Сървърът временно е недостъпен</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="558"/>
         <source>Server is currently in maintenance mode</source>
-        <translation type="unfinished"/>
+        <translation>Сървърът в момента е в режим на поддръжка</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="561"/>
@@ -752,17 +754,17 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="564"/>
         <source>Updating credentials...</source>
-        <translation type="unfinished"/>
+        <translation>Актуализиране на идентификационните данни...</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="569"/>
         <source>Captive portal prevents connections to the server.</source>
-        <translation type="unfinished"/>
+        <translation>Портал за оторизация пречи на връзката със сървъра.</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="571"/>
         <source>Sync is paused due to metered internet connection</source>
-        <translation type="unfinished"/>
+        <translation>Синхронизирането е спряно поради интернет връзка с ограничено потребление на данни</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="573"/>
@@ -772,7 +774,7 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="577"/>
         <source>Server configuration error</source>
-        <translation type="unfinished"/>
+        <translation>Грешка в конфигурацията на сървъра</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="583"/>
@@ -859,7 +861,7 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location filename="../src/gui/activitywidget.cpp" line="466"/>
         <source>Local Activity</source>
-        <translation type="unfinished"/>
+        <translation>Локална активност</translation>
     </message>
     <message>
         <location filename="../src/gui/activitywidget.cpp" line="515"/>
@@ -878,7 +880,7 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location filename="../src/gui/activitywidget.ui" line="14"/>
         <source>Server activities</source>
-        <translation type="unfinished"/>
+        <translation>Активност на сървъра</translation>
     </message>
     <message>
         <location filename="../src/gui/activitywidget.ui" line="73"/>
@@ -888,7 +890,7 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location filename="../src/gui/activitywidget.ui" line="91"/>
         <source>Server activity table</source>
-        <translation type="unfinished"/>
+        <translation>Таблица за активността на сървъра</translation>
     </message>
     <message>
         <location filename="../src/gui/activitywidget.cpp" line="100"/>
@@ -899,27 +901,27 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location filename="../src/gui/activitywidget.cpp" line="147"/>
         <source>&amp;Server Activities</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Активност на сървъра</translation>
     </message>
     <message>
         <location filename="../src/gui/activitywidget.cpp" line="148"/>
         <source>&amp;Notifications</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Известия</translation>
     </message>
     <message>
         <location filename="../src/gui/activitywidget.cpp" line="153"/>
         <source>&lt;br/&gt;%1 does not provide activities.</source>
-        <translation type="unfinished"/>
+        <translation>&lt;br/&gt;%1 не предоставя информация за активност.</translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/activitywidget.cpp" line="287"/>
         <source>%n notification(s) for %1.</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n известие за %1.</numerusform><numerusform>%n известия за %1.</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/activitywidget.cpp" line="293"/>
         <source>%n notification(s) for %1 and %2.</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n известие за %1 и %2.</numerusform><numerusform>%n известия за %1 и %2.</numerusform></translation>
     </message>
     <message>
         <location filename="../src/gui/activitywidget.cpp" line="295"/>
@@ -934,7 +936,7 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location filename="../src/gui/activitywidget.cpp" line="422"/>
         <source>Activity item menu</source>
-        <translation type="unfinished"/>
+        <translation>Меню за елемент от активността</translation>
     </message>
 </context>
 <context>
@@ -947,7 +949,7 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location filename="../src/gui/updater/appimageupdateavailablewidget.cpp" line="36"/>
         <source>Available update: %1</source>
-        <translation>Налична актуализация: %1</translation>
+        <translation>Налична е актуализация: %1</translation>
     </message>
     <message>
         <location filename="../src/gui/updater/appimageupdateavailablewidget.cpp" line="37"/>
@@ -1027,7 +1029,7 @@ The update will be performed in the background, and overwrite the current AppIma
     <message>
         <location filename="../src/libsync/discoveryphase.cpp" line="212"/>
         <source>Directory not accessible on client, permission denied</source>
-        <translation>Директорията не е достъпна за клиента, отказано е правото на достъп</translation>
+        <translation>Директорията не е достъпна за клиента, няма права за достъп</translation>
     </message>
     <message>
         <location filename="../src/libsync/discoveryphase.cpp" line="216"/>
@@ -1069,29 +1071,29 @@ The update will be performed in the background, and overwrite the current AppIma
         <location filename="../src/gui/folder.cpp" line="502"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
-        <translation>%1 е премахната.</translation>
+        <translation>%1 е премахнат.</translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="516"/>
         <source>%1 has been updated.</source>
         <comment>%1 names a file.</comment>
-        <translation>%1 е актуализирана.</translation>
+        <translation>%1 е актуализиран.</translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="523"/>
         <source>%1 has been renamed to %2.</source>
         <comment>%1 and %2 name files.</comment>
-        <translation>%1 е преименувана на %2.</translation>
+        <translation>%1 е преименуван на %2.</translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="530"/>
         <source>%1 has been moved to %2.</source>
-        <translation>%1 е преместена в %2.</translation>
+        <translation>%1 е преместен в %2.</translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="500"/>
         <source>%1 and %n other file(s) have been removed.</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%1 и още %n файл бяха премахнати.</numerusform><numerusform>%1 и още %n файла са премахнати.</numerusform></translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="186"/>
@@ -1111,33 +1113,33 @@ The update will be performed in the background, and overwrite the current AppIma
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="507"/>
         <source>%1 and %n other file(s) have been added.</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Добавени са %1 и още %n файл.</numerusform><numerusform>%1 и още %n файла са добавени.</numerusform></translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="509"/>
         <source>%1 has been added.</source>
         <comment>%1 names a file.</comment>
-        <translation>%1 е добавена.</translation>
+        <translation>%1 е добавен.</translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="514"/>
         <source>%1 and %n other file(s) have been updated.</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%1 и още %n файл са актуализирани.</numerusform><numerusform>%1 и още %n файла са актуализирани.</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="521"/>
         <source>%1 has been renamed to %2 and %n other file(s) have been renamed.</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%1 е преименуван на %2, а още %n файла са преименувани.</numerusform><numerusform>%1 е преименуван на %2 и още %n файла са преименувани.</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="528"/>
         <source>%1 has been moved to %2 and %n other file(s) have been moved.</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%1 е преместен в %2, а още %n файла са преместени.</numerusform><numerusform>%1 е преместен в %2 и още %n файла са преместени.</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="535"/>
         <source>%1 and %n other file(s) have sync conflicts.</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%1 и още %n файл имат конфликти при синхронизиране.</numerusform><numerusform>%1 и още %n файла имат конфликти при синхронизирането.</numerusform></translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="537"/>
@@ -1147,7 +1149,7 @@ The update will be performed in the background, and overwrite the current AppIma
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="542"/>
         <source>%1 and %n other file(s) could not be synced due to errors. See the log for details.</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%1 и още %n файл не можаха да бъдат синхронизирани поради грешки. Вижте дневника за подробности.</numerusform><numerusform>%1 и още %n файла не можаха да се синхронизират поради грешки. Вижте дневника за подробности.</numerusform></translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="544"/>
@@ -1162,7 +1164,7 @@ The update will be performed in the background, and overwrite the current AppIma
     <message>
         <location filename="../src/gui/folder.cpp" line="787"/>
         <source>Switching VFS mode on folder &apos;%1&apos;</source>
-        <translation type="unfinished"/>
+        <translation>Превключване на режим VFS в папка &quot;%1&quot;</translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="949"/>
@@ -1208,17 +1210,17 @@ This means that the synchronization client might not upload local changes immedi
     <message>
         <location filename="../src/gui/folderman.cpp" line="314"/>
         <source>Unsupported filesystem</source>
-        <translation type="unfinished"/>
+        <translation>Неподдържана файлова система</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="408"/>
         <source>Account disconnected or paused</source>
-        <translation type="unfinished"/>
+        <translation>Акаунтът не е свързан, или е на пауза</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="622"/>
         <source>Folder is about to be removed</source>
-        <translation type="unfinished"/>
+        <translation>Папката предстои да бъде премахната</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="647"/>
@@ -1243,12 +1245,12 @@ This means that the synchronization client might not upload local changes immedi
     <message>
         <location filename="../src/gui/folderman.cpp" line="747"/>
         <source>Folder &apos;%1&apos; is already in use by application %2!</source>
-        <translation type="unfinished"/>
+        <translation>Папката &apos;%1&apos; вече се използва от приложението %2!</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="762"/>
         <source>Folder &apos;%1&apos; is already in use by another account.</source>
-        <translation type="unfinished"/>
+        <translation>Папката &apos;%1&apos; вече се използва от друг акаунт.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="777"/>
@@ -1263,17 +1265,17 @@ This means that the synchronization client might not upload local changes immedi
     <message>
         <location filename="../src/gui/folderman.cpp" line="841"/>
         <source>The local folder %1 already contains a folder used in a folder sync connection. Please pick another local folder!</source>
-        <translation type="unfinished"/>
+        <translation>Локалната папка %1 вече съдържа папка, която се използва във връзка за синхронизиране на папки. Моля, изберете друга локална папка!</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="847"/>
         <source>The local folder %1 is already contained in a folder used in a folder sync connection. Please pick another local folder!</source>
-        <translation type="unfinished"/>
+        <translation>Локалната папка %1 вече се съдържа в папка, използвана във връзка за синхронизиране на папки. Моля, изберете друга локална папка!</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="855"/>
         <source>%1 Please pick another local folder!</source>
-        <translation type="unfinished"/>
+        <translation>%1 Моля, изберете друга локална папка!</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="795"/>
@@ -1283,7 +1285,7 @@ This means that the synchronization client might not upload local changes immedi
     <message>
         <location filename="../src/gui/folderman.cpp" line="314"/>
         <source>On macOS, only the Apple File System is supported.</source>
-        <translation type="unfinished"/>
+        <translation>На macOS се поддържа само Apple File System.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="805"/>
@@ -1315,19 +1317,21 @@ Please consider removing this folder from the account and adding it again.</sour
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="257"/>
         <source>There are unresolved conflicts.</source>
-        <translation type="unfinished"/>
+        <translation>Има неразрешени конфликти.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="261"/>
         <source>The Suffix-VFS plugin is deprecated and will be removed in the 7.0 release.
 Please use the context menu and select &quot;Disable virtual file support&quot; to ensure future access to your synced files.
 You are going to lose access to your sync folder if you do not do so!</source>
-        <translation type="unfinished"/>
+        <translation>Плъгинът Suffix-VFS е остарял и ще бъде премахнат във версия 7.0.
+Моля, използвайте контекстното меню и изберете „Деактивиране на поддръжката за виртуални файлове“, за да си осигурите бъдещ достъп до синхронизираните файлове.
+В противен случай ще загубите достъп до папката си за синхронизация!</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="314"/>
         <source>%1 of %2 used</source>
-        <translation type="unfinished"/>
+        <translation>Използвани са %1 от %2</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="394"/>
@@ -1347,7 +1351,7 @@ You are going to lose access to your sync folder if you do not do so!</source>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="440"/>
         <source>Queued</source>
-        <translation type="unfinished"/>
+        <translation>На опашка</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="275"/>
@@ -1470,7 +1474,7 @@ You are going to lose access to your sync folder if you do not do so!</source>
     <message>
         <location filename="../src/gui/folderwizard/folderwizardselectivesync.cpp" line="45"/>
         <source>Use virtual files instead of downloading content immediately</source>
-        <translation type="unfinished"/>
+        <translation>Използвайте виртуални файлове вместо незабавно изтегляне на съдържанието</translation>
     </message>
 </context>
 <context>
@@ -1516,7 +1520,7 @@ You are going to lose access to your sync folder if you do not do so!</source>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="41"/>
         <source>Use Monochrome Icons in the system tray</source>
-        <translation type="unfinished"/>
+        <translation>Използване на монохромни икони в системната област</translation>
     </message>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="48"/>
@@ -1526,7 +1530,7 @@ You are going to lose access to your sync folder if you do not do so!</source>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="55"/>
         <source>Start on Login</source>
-        <translation type="unfinished"/>
+        <translation>Стартиране при влизане в системата</translation>
     </message>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="73"/>
@@ -1536,7 +1540,7 @@ You are going to lose access to your sync folder if you do not do so!</source>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="89"/>
         <source>Language selector</source>
-        <translation type="unfinished"/>
+        <translation>Избор на език</translation>
     </message>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="112"/>
@@ -1551,7 +1555,7 @@ You are going to lose access to your sync folder if you do not do so!</source>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="132"/>
         <source>Move remotely deleted files to the local trash bin instead of deleting them</source>
-        <translation type="unfinished"/>
+        <translation>Преместване на изтритите от разстояние файлове в локалното кошче, вместо окончателното им изтриване</translation>
     </message>
     <message>
         <location filename="../src/gui/generalsettings.ui" line="141"/>
@@ -1703,7 +1707,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
     <message>
         <location filename="../src/gui/issueswidget.ui" line="40"/>
         <source>Issues table</source>
-        <translation type="unfinished"/>
+        <translation>Таблица със задачи/проблеми</translation>
     </message>
     <message>
         <location filename="../src/gui/issueswidget.ui" line="72"/>
@@ -1733,7 +1737,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
     <message>
         <location filename="../src/gui/issueswidget.cpp" line="273"/>
         <source>Filter menu</source>
-        <translation type="unfinished"/>
+        <translation>Меню за филтриране</translation>
     </message>
     <message>
         <location filename="../src/gui/issueswidget.cpp" line="275"/>
@@ -1751,7 +1755,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
     <message>
         <location filename="../src/gui/logbrowser.ui" line="53"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;The logs contain sensitive information which you should not make publicly available&lt;/b&gt;&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;b&gt;Журналите съдържат чувствителна информация, която не бива да правите публично достъпна&lt;/b&gt;&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/logbrowser.ui" line="71"/>
@@ -1831,7 +1835,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/networksettings.ui" line="20"/>
         <source>Pause synchronization when the Internet connection is metered</source>
-        <translation type="unfinished"/>
+        <translation>Пауза на синхронизирането, когато интернет връзката е с ограничен трафик</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="30"/>
@@ -1856,7 +1860,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/networksettings.ui" line="130"/>
         <source>Proxy Hostname</source>
-        <translation type="unfinished"/>
+        <translation>Име на прокси сървъра</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="140"/>
@@ -1866,7 +1870,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/networksettings.ui" line="153"/>
         <source>Proxy Port Number</source>
-        <translation type="unfinished"/>
+        <translation>Номер на прокси порта</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="174"/>
@@ -1886,7 +1890,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/networksettings.ui" line="407"/>
         <source>Upload bandwidth in kilobytes per second</source>
-        <translation type="unfinished"/>
+        <translation>Скорост на качване в килобайта в секунда</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="338"/>
@@ -1903,17 +1907,17 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/networksettings.ui" line="59"/>
         <source>Specify proxy manually</source>
-        <translation type="unfinished"/>
+        <translation>Ръчно указване на прокси</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="80"/>
         <source>Proxy type</source>
-        <translation type="unfinished"/>
+        <translation>Тип прокси</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="270"/>
         <source>Bandwidth limits are deprecated and will be removed in a future release!</source>
-        <translation type="unfinished"/>
+        <translation>Ограниченията на пропускателната способност са остарели и ще бъдат премахнати в бъдещата версия!</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="303"/>
@@ -1925,12 +1929,12 @@ Note that using any logging command line options will override the settings.</so
         <location filename="../src/gui/networksettings.ui" line="315"/>
         <location filename="../src/gui/networksettings.ui" line="397"/>
         <source>Manual limit</source>
-        <translation type="unfinished"/>
+        <translation>Ръчно зададено ограничение</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="325"/>
         <source>Download bandwidth in kilobytes per second</source>
-        <translation type="unfinished"/>
+        <translation>Скорост на изтегляне в килобайта в секунда</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="369"/>
@@ -2102,12 +2106,12 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="142"/>
         <source>%1 installed successfully. Restart the application to finish installing the update.</source>
-        <translation type="unfinished"/>
+        <translation>%1 е инсталиран успешно. Рестартирайте приложението, за да завършите инсталирането на актуализацията.</translation>
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="144"/>
         <source>%1 available. Restart application to start the update.</source>
-        <translation>%1 е наличен. Рестартирайте приложението за да стартирате актуализацията.</translation>
+        <translation>%1 е наличен. Рестартирайте приложението, за да стартирате актуализацията.</translation>
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="155"/>
@@ -2117,7 +2121,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="158"/>
         <source>New %1 available. Please use the system&apos;s update tool to install it.</source>
-        <translation>Нов %1 е наличен. Моля, използвайте инструмента за актуализиране на системата за да го инсталирате.</translation>
+        <translation>Наличен е нов %1. Моля, използвайте инструмента за актуализиране на системата, за да го инсталирате.</translation>
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="160"/>
@@ -2218,7 +2222,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/libsync/discovery.cpp" line="1184"/>
         <source>SelectiveSync: Ignored because its path is deselected</source>
-        <translation type="unfinished"/>
+        <translation>SelectiveSync: Игнорирано, тъй като пътят му е премахнат от избора</translation>
     </message>
     <message>
         <location filename="../src/libsync/discovery.cpp" line="1258"/>
@@ -2238,7 +2242,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/libsync/discovery.cpp" line="629"/>
         <source>Error while doing a rename, unhandled status code: %1</source>
-        <translation type="unfinished"/>
+        <translation>Грешка при преименуване, необработен код на състоянието: %1</translation>
     </message>
     <message>
         <location filename="../src/libsync/discovery.cpp" line="1222"/>
@@ -2263,7 +2267,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/libsync/discovery.cpp" line="1450"/>
         <source>Server replied with an error while reading directory &apos;%1&apos; : %2</source>
-        <translation>Сървърът отговори с грешка докато чете директорията &apos;%1&apos; : %2</translation>
+        <translation>Сървърът отговори с грешка, докато чете директорията &apos;%1&apos; : %2</translation>
     </message>
 </context>
 <context>
@@ -2360,12 +2364,12 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/libsync/propagatorjobs.cpp" line="163"/>
         <source>could not delete file %1, error: %2</source>
-        <translation>неуспешно изтриване на файл %1, грешка: %2</translation>
+        <translation>неуспешно изтриване на файла %1, грешка: %2</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagatorjobs.cpp" line="178"/>
         <source>Can not create local folder %1 because of a local file name clash with %2</source>
-        <translation>Не може да се създаде локална папка %1 поради конфликт на имената на локалните файлове с %2</translation>
+        <translation>Не може да се създаде локална папка %1 поради конфликт на имената с локалните файлове с %2</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagatorjobs.cpp" line="196"/>
@@ -2393,12 +2397,12 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/libsync/propagatorjobs.cpp" line="107"/>
         <source>Could not remove %1 because of a local file name clash with %2!</source>
-        <translation>Неуспех при премахването на %1 поради конфликт на имената на локалните файлове с %2!</translation>
+        <translation>Неуспех при премахването на %1 поради конфликт с имената на локалните файлове с %2!</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagatorjobs.cpp" line="123"/>
         <source>Could not move &apos;%1&apos; to the trash bin</source>
-        <translation type="unfinished"/>
+        <translation>&apos;%1&apos; не можа да бъде преместен в кошчето</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagatorjobs.cpp" line="87"/>
@@ -2412,7 +2416,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/libsync/propagatorjobs.cpp" line="235"/>
         <source>File %1 can not be renamed to %2 because of a local file name clash</source>
-        <translation>Файл %1 не може да бъде преименуван на %2 поради конфликт с името на локален файл</translation>
+        <translation>Файлът %1 не може да бъде преименуван на %2 поради конфликт с името на локален файл</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagatorjobs.cpp" line="242"/>
@@ -2458,7 +2462,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/libsync/propagateremotemkdir.cpp" line="143"/>
         <source>Error writing metadata to the database: %1</source>
-        <translation>Грешка при запис на метаданни в базата данни: %1</translation>
+        <translation>Грешка при записа на метаданни в базата данни: %1</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateremotemkdir.cpp" line="185"/>
@@ -2538,7 +2542,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/libsync/propagateupload.cpp" line="588"/>
         <source>The server did not provide the file permissions</source>
-        <translation type="unfinished"/>
+        <translation>Сървърът не предостави информация за правата върху файловете</translation>
     </message>
     <message>
         <location filename="../src/libsync/propagateupload.cpp" line="596"/>
@@ -2679,7 +2683,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/protocolwidget.ui" line="44"/>
         <source>Local activity table</source>
-        <translation type="unfinished"/>
+        <translation>Таблица с локалната активност</translation>
     </message>
     <message>
         <location filename="../src/gui/protocolwidget.cpp" line="62"/>
@@ -2690,22 +2694,22 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/protocolwidget.cpp" line="96"/>
         <source>Filter menu</source>
-        <translation type="unfinished"/>
+        <translation>Меню за филтриране</translation>
     </message>
     <message>
         <location filename="../src/gui/protocolwidget.cpp" line="111"/>
         <source>Actions menu</source>
-        <translation type="unfinished"/>
+        <translation>Меню с действия</translation>
     </message>
     <message>
         <location filename="../src/gui/protocolwidget.cpp" line="153"/>
         <source>Sort ascending by %1</source>
-        <translation type="unfinished"/>
+        <translation>Сортиране във възходящ ред по %1</translation>
     </message>
     <message>
         <location filename="../src/gui/protocolwidget.cpp" line="157"/>
         <source>Sort descending by %1</source>
-        <translation type="unfinished"/>
+        <translation>Сортиране в низходящ ред по %1</translation>
     </message>
     <message>
         <location filename="../src/gui/protocolwidget.cpp" line="179"/>
@@ -2739,12 +2743,12 @@ Note that using any logging command line options will override the settings.</so
         <location filename="../src/gui/selectivesyncwidget.cpp" line="108"/>
         <location filename="../src/gui/selectivesyncwidget.cpp" line="244"/>
         <source>Currently there are no subfolders on the server.</source>
-        <translation type="unfinished"/>
+        <translation>В момента на сървъра няма подпапки.</translation>
     </message>
     <message>
         <location filename="../src/gui/selectivesyncwidget.cpp" line="110"/>
         <source>An error occurred while loading the list of subfolders.</source>
-        <translation type="unfinished"/>
+        <translation>Възникна грешка при зареждането на списъка с подпапки.</translation>
     </message>
 </context>
 <context>
@@ -3195,7 +3199,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="918"/>
         <source>Manage public links</source>
-        <translation type="unfinished"/>
+        <translation>Управление на публични връзки</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="1003"/>
@@ -3205,7 +3209,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="1014"/>
         <source>Show file versions in web browser</source>
-        <translation type="unfinished"/>
+        <translation>Показване на версиите на файловете в уеб браузъра</translation>
     </message>
     <message>
         <location filename="../src/gui/socketapi/socketapi.cpp" line="1036"/>
@@ -3249,12 +3253,12 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/folderwizard/spacespage.cpp" line="29"/>
         <source>Select a folder to sync it to your computer.</source>
-        <translation type="unfinished"/>
+        <translation>Изберете папка, за да я синхронизирате с компютъра си.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderwizard/spacespage.cpp" line="29"/>
         <source>Select a Space to sync it to your computer.</source>
-        <translation type="unfinished"/>
+        <translation>Изберете Space, за да го синхронизирате с компютъра си.</translation>
     </message>
 </context>
 <context>
@@ -3278,7 +3282,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/libsync/syncengine.cpp" line="824"/>
         <source>Aborted due to %1</source>
-        <translation type="unfinished"/>
+        <translation>Прекратено поради %1</translation>
     </message>
     <message>
         <location filename="../src/libsync/syncengine.cpp" line="842"/>
@@ -3299,7 +3303,7 @@ Note that using any logging command line options will override the settings.</so
         <location filename="../src/libsync/syncengine.cpp" line="82"/>
         <source>application exit</source>
         <comment>abort reason</comment>
-        <translation type="unfinished"/>
+        <translation>изход от приложението</translation>
     </message>
     <message>
         <location filename="../src/libsync/syncengine.cpp" line="380"/>
@@ -3343,7 +3347,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/libsync/theme.cpp" line="327"/>
         <source>&lt;p&gt;Version %1. For more information visit &lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;For known issues and help, please visit: &lt;a href=&quot;https://central.owncloud.com/c/desktop-client&quot;&gt;https://central.owncloud.com&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;small&gt;By Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz,  Jan-Christoph Borchardt, Thomas Müller,&lt;br&gt;Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller and others.&lt;/small&gt;&lt;/p&gt;&lt;p&gt;Copyright ownCloud GmbH (A Kiteworks Company)&lt;/p&gt;&lt;p&gt;Distributed by %4 and licensed under the GNU General Public License (GPL) Version 2.0.&lt;br/&gt;%5 and the %5 logo are registered trademarks of %4 in the United States, other countries, or both.&lt;/p&gt;&lt;p&gt;&lt;small&gt;%6&lt;/small&gt;&lt;/p&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;p&gt;Версия %1. За повече информация посетете&lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;За известни проблеми и помощ посетете: &lt;a href=&quot;https://central.owncloud.com/c/desktop-client&quot;&gt;https://central.owncloud.com&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;small&gt;От Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz, Jan-Christoph Borchardt, Thomas Müller, &lt;br&gt;Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller и други.&lt;/small&gt;&lt;/p&gt;&lt;p&gt;Авторско право ownCloud GmbH (A Kiteworks Company)&lt;/p&gt;Разпространява се от %4 и е лицензиран под GNU General Public License (GPL) версия 2.0.&lt;br/&gt;%5 и логото на %5 са регистрирани търговски марки на %4 в Съединените щати, други страни или и двете.&lt;/p&gt;&lt;p&gt;&lt;small&gt;%6&lt;/small&gt;&lt;/p&gt;</translation>
     </message>
 </context>
 <context>
@@ -3361,7 +3365,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/tlserrordialog.cpp" line="28"/>
         <source>Cannot connect securely to %1</source>
-        <translation>Не може да се свърже сигурно с %1</translation>
+        <translation>Не може да се свърже защитено с %1</translation>
     </message>
     <message>
         <location filename="../src/gui/tlserrordialog.cpp" line="66"/>
@@ -3379,12 +3383,12 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/updater/updatedownloadedwidget.cpp" line="41"/>
         <source>Restart later</source>
-        <translation type="unfinished"/>
+        <translation>Рестартиране по-късно</translation>
     </message>
     <message>
         <location filename="../src/gui/updater/updatedownloadedwidget.cpp" line="43"/>
         <source>Restart now</source>
-        <translation type="unfinished"/>
+        <translation>Рестартиране сега</translation>
     </message>
 </context>
 <context>
@@ -3392,7 +3396,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="39"/>
         <source>Change URL permanently to %1</source>
-        <translation type="unfinished"/>
+        <translation>Постоянна промяна на URL адреса на %1</translation>
     </message>
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="40"/>
@@ -3407,7 +3411,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/updateurldialog.cpp" line="46"/>
         <source>The URL for %1 changed from %2 to %3, do you want to accept the changed URL?</source>
-        <translation type="unfinished"/>
+        <translation>URL адресът за %1 е променен от %2 на %3, искате ли да приемете променения URL адрес?</translation>
     </message>
 </context>
 <context>
@@ -3472,7 +3476,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="406"/>
         <source>&lt;p&gt;A new version of the %1 Client is available but the updating process failed.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; has been downloaded. The installed version is %3.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Налична е нова версия на клиент %1, но процесът на актуализиране не бе успешен.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; беше изтеглена. Инсталираната версия е %3.&lt;/p&gt;</translation>
+        <translation>&lt;p&gt;Налична е нова версия на клиент %1, но процесът за актуализация не бе успешен.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; беше изтеглена. Инсталираната версия е %3.&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="420"/>
@@ -3585,7 +3589,7 @@ Note that using any logging command line options will override the settings.</so
         <location filename="../src/gui/newwizard/pages/serverurlsetupwizardpage.cpp" line="36"/>
         <source>%1 logo</source>
         <extracomment>This is the accessibility text for the logo in the setup wizard page. The parameter is the name for the (branded) application.</extracomment>
-        <translation type="unfinished"/>
+        <translation>%1 logo</translation>
     </message>
 </context>
 <context>
@@ -3620,7 +3624,7 @@ Are you sure you want to proceed?</source>
     <message>
         <location filename="../src/gui/newwizard/states/serverurlsetupwizardstate.cpp" line="135"/>
         <source>The requested URL failed with query value: %1</source>
-        <translation type="unfinished"/>
+        <translation>Заявката към URL адреса е неуспешна със стойност на параметъра: %1</translation>
     </message>
 </context>
 <context>
@@ -3633,7 +3637,7 @@ Are you sure you want to proceed?</source>
     <message>
         <location filename="../src/gui/newwizard/setupwizardcontroller.cpp" line="194"/>
         <source>Failed to retrieve user information from server</source>
-        <translation type="unfinished"/>
+        <translation>Неуспешно извличане на потребителската информация от сървъра</translation>
     </message>
 </context>
 <context>
@@ -3647,7 +3651,7 @@ Are you sure you want to proceed?</source>
     <message>
         <location filename="../src/gui/newwizard/setupwizardwidget.cpp" line="43"/>
         <source>&lt; &amp;Back</source>
-        <translation type="unfinished"/>
+        <translation>&lt; &amp;Назад</translation>
     </message>
     <message>
         <location filename="../src/gui/newwizard/setupwizardwidget.cpp" line="49"/>
@@ -3668,7 +3672,7 @@ Are you sure you want to proceed?</source>
     <message>
         <location filename="../src/gui/newwizard/setupwizardwidget.cpp" line="107"/>
         <source>&amp;Finish</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Завършване</translation>
     </message>
     <message>
         <location filename="../src/gui/newwizard/setupwizardwidget.cpp" line="108"/>
@@ -3758,7 +3762,7 @@ Are you sure you want to proceed?</source>
     <message>
         <location filename="../src/gui/owncloudgui.cpp" line="611"/>
         <source>Create a new account</source>
-        <translation type="unfinished"/>
+        <translation>Създаване на нов акаунт</translation>
     </message>
     <message>
         <location filename="../src/gui/owncloudgui.cpp" line="734"/>
@@ -3779,7 +3783,7 @@ Are you sure you want to proceed?</source>
         <location filename="../src/gui/owncloudgui.cpp" line="381"/>
         <location filename="../src/gui/owncloudgui.cpp" line="614"/>
         <source>Resume synchronization</source>
-        <translation type="unfinished"/>
+        <translation>Възобновяване на синхронизацията</translation>
     </message>
     <message>
         <location filename="../src/gui/owncloudgui.cpp" line="668"/>
@@ -3889,7 +3893,7 @@ Are you sure you want to proceed?</source>
     <message>
         <location filename="../src/gui/owncloudgui.cpp" line="959"/>
         <source>User paused sync for account &apos;%1&apos;</source>
-        <translation type="unfinished"/>
+        <translation>Потребителят е поставил на пауза синхронизацията за акаунт &apos;%1&apos;</translation>
     </message>
 </context>
 <context>
@@ -3917,7 +3921,7 @@ Are you sure you want to proceed?</source>
     <message>
         <location filename="../src/common/utility.cpp" line="322"/>
         <source>less than a minute ago</source>
-        <translation type="unfinished"/>
+        <translation>преди по-малко от минута</translation>
     </message>
     <message numerus="yes">
         <location filename="../src/common/utility.cpp" line="326"/>
@@ -3946,7 +3950,7 @@ Are you sure you want to proceed?</source>
     <message>
         <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="108"/>
         <source>SSL Error: %1</source>
-        <translation type="unfinished"/>
+        <translation>SSL грешка: %1</translation>
     </message>
     <message>
         <location filename="../src/gui/newwizard/jobs/resolveurljobfactory.cpp" line="124"/>
@@ -4005,12 +4009,12 @@ Are you sure you want to proceed?</source>
     <message>
         <location filename="../src/gui/newwizard/setupwizardwidget.ui" line="101"/>
         <source>&amp;Dismiss</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Затваряне</translation>
     </message>
     <message>
         <location filename="../src/gui/newwizard/setupwizardwidget.ui" line="116"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Отказ</translation>
     </message>
     <message>
         <location filename="../src/gui/newwizard/setupwizardwidget.ui" line="152"/>
@@ -4031,7 +4035,7 @@ Are you sure you want to proceed?</source>
     <message>
         <location filename="../src/gui/folderwizard/spacespage.ui" line="36"/>
         <source>Spaces list</source>
-        <translation type="unfinished"/>
+        <translation>Списък с пространства</translation>
     </message>
 </context>
 <context>
@@ -4039,7 +4043,7 @@ Are you sure you want to proceed?</source>
     <message>
         <location filename="../src/gui/spaces/qml/SpacesView.qml" line="31"/>
         <source>Spaces</source>
-        <translation type="unfinished"/>
+        <translation>Пространства</translation>
     </message>
 </context>
 <context>
@@ -4103,7 +4107,7 @@ Are you sure you want to proceed?</source>
     <message>
         <location filename="../src/libsync/syncfileitem.cpp" line="120"/>
         <source>Filename Reserved</source>
-        <translation type="unfinished"/>
+        <translation>Името на файла е запазено</translation>
     </message>
 </context>
 <context>
@@ -4124,7 +4128,7 @@ Are you sure you want to proceed?</source>
     <message>
         <location filename="../src/gui/updater/updatedownloadedwidget.ui" line="74"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt; font-weight:700;&quot;&gt;Restart required&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt; font-weight:700;&quot;&gt;Необходимо е рестартиране&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
 </context>
 <context>
@@ -4132,12 +4136,12 @@ Are you sure you want to proceed?</source>
     <message numerus="yes">
         <location filename="../src/common/utility.cpp" line="208"/>
         <source>%n year(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n година</numerusform><numerusform>%n години</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/common/utility.cpp" line="209"/>
         <source>%n month(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n месец</numerusform><numerusform>%n месеца</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/common/utility.cpp" line="210"/>
@@ -4157,7 +4161,7 @@ Are you sure you want to proceed?</source>
     <message numerus="yes">
         <location filename="../src/common/utility.cpp" line="213"/>
         <source>%n second(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n секунда</numerusform><numerusform>%n секунди</numerusform></translation>
     </message>
     <message>
         <location filename="../src/common/utility.cpp" line="237"/>
@@ -4188,7 +4192,7 @@ Are you sure you want to proceed?</source>
     <message>
         <location filename="../src/gui/main.cpp" line="478"/>
         <source>There was an error while accessing the configuration file at %1.</source>
-        <translation>Възникна грешка при достъп до конфигурационния файл в %1.</translation>
+        <translation>Възникна грешка при достъпа до конфигурационния файл в %1.</translation>
     </message>
 </context>
 <context>
@@ -4278,7 +4282,7 @@ Are you sure you want to proceed?</source>
     <message>
         <location filename="../src/libsync/progressdispatcher.cpp" line="43"/>
         <source>Server version downloaded, local copy was backed up as conflict file</source>
-        <translation type="unfinished"/>
+        <translation>Версията от сървъра е изтеглена, локалното копие е запазено като конфликтен файл</translation>
     </message>
     <message>
         <location filename="../src/libsync/progressdispatcher.cpp" line="51"/>
@@ -4370,7 +4374,7 @@ Are you sure you want to proceed?</source>
     <message>
         <location filename="../src/gui/main.cpp" line="184"/>
         <source>Some settings were configured in newer versions of this client and use features that are not available in this version</source>
-        <translation type="unfinished"/>
+        <translation>Някои настройки са конфигурирани в по-нови версии на този клиент и използват функции, които не са налични в тази версия</translation>
     </message>
 </context>
 </TS>
