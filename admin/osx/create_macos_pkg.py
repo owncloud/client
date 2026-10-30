@@ -277,9 +277,9 @@ def copy_translations(macdeployqt, resources_dir):
 def write_qt_conf(resources_dir):
     print("=== Writing qt.conf ===")
     qt_conf = resources_dir / "qt.conf"
+    # Relative paths are resolved against Contents/, so no Prefix
     qt_conf.write_text(
         "[Paths]\n"
-        "Prefix=..\n"
         "Binaries=MacOS\n"
         "Libraries=Frameworks\n"
         "Plugins=PlugIns\n"
