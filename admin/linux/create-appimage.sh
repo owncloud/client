@@ -2,7 +2,7 @@
 set -euo pipefail
 
 usage() {
-    echo "Usage: $0 -b BUILD_DIR [-o OUTPUT_DIR] [-v VERSION] [-n]"
+    echo "Usage: $0 -b BUILD_DIR [-o OUTPUT_DIR] [-v VERSION] [-n] [-g]"
     echo
     echo "Create an AppImage from an already-built ownCloud client."
     echo
@@ -14,6 +14,9 @@ usage() {
     echo "  -n             Also create native .deb and .rpm packages from the same AppDir"
     echo "                 (needs linuxdeploy-plugin-native_packages; metadata can be"
     echo "                 overridden with the LDNP_* environment variables)"
+    echo "  -g             Also save the debug symbols of the client's own binaries, before"
+    echo "                 stripping, as a separate archive that unpacks to"
+    echo "                 usr/lib/debug/.build-id (gdb finds them by build ID)"
     exit 1
 }
 
@@ -21,13 +24,15 @@ BUILD_DIR=""
 OUTPUT_DIR="$(pwd)"
 VERSION=""
 NATIVE_PACKAGES=0
+DEBUG_SYMBOLS=0
 
-while getopts "b:o:v:nh" opt; do
+while getopts "b:o:v:ngh" opt; do
     case "$opt" in
         b) BUILD_DIR="$OPTARG" ;;
         o) OUTPUT_DIR="$OPTARG" ;;
         v) VERSION="$OPTARG" ;;
         n) NATIVE_PACKAGES=1 ;;
+        g) DEBUG_SYMBOLS=1 ;;
         h) usage ;;
         *) usage ;;
     esac
@@ -233,6 +238,37 @@ rm -rf usr/share/info usr/share/aclocal usr/share/bash-completion
 rm -rf usr/lib/gettext usr/share/gettext
 rm -rf usr/share/pkgconfig
 find . -name 'mkspecs' -type d -exec rm -rf {} + 2>/dev/null || true
+
+if [ "$DEBUG_SYMBOLS" = 1 ]; then
+    # Keep the debug info that stripping removes, in the layout gdb searches by
+    # build ID: unpack the archive into / (or set debug-file-directory). Only the
+    # client's own binaries (what cmake --install put into the AppDir), not Qt and
+    # the other dependencies.
+    DEBUG_ARCHIVE="$OUTPUT_DIR/${ARTIFACT_PREFIX}-${VERSION}-x86_64-debug.tar.xz"
+    DEBUG_ROOT="$(mktemp -d)"
+    mkdir -p "$DEBUG_ROOT/usr/lib/debug/.build-id"
+    echo "==> Saving debug symbols"
+    saved=0
+    without_id=0
+    # install_manifest.txt has no trailing newline, hence the || [ -n "$f" ]
+    while IFS= read -r f || [ -n "$f" ]; do
+        [ -f "$f" ] && [ ! -L "$f" ] || continue
+        file -b "$f" | grep -q '^ELF' || continue
+        build_id=$(readelf -n "$f" 2>/dev/null | sed -n 's/^ *Build ID: *\([0-9a-f]*\)$/\1/p' | head -1 || true)
+        if [ -z "$build_id" ]; then
+            echo "    no build ID, skipped: $f"
+            without_id=$((without_id + 1))
+            continue
+        fi
+        debug_file="$DEBUG_ROOT/usr/lib/debug/.build-id/${build_id:0:2}/${build_id:2}.debug"
+        mkdir -p "$(dirname "$debug_file")"
+        objcopy --only-keep-debug --compress-debug-sections "$f" "$debug_file"
+        saved=$((saved + 1))
+    done < "$BUILD_DIR/install_manifest.txt"
+    XZ_OPT=-T0 tar -C "$DEBUG_ROOT" -cJf "$DEBUG_ARCHIVE" usr
+    rm -rf "$DEBUG_ROOT"
+    echo "==> Debug symbols of $saved binaries ($without_id without build ID): $DEBUG_ARCHIVE ($(du -h "$DEBUG_ARCHIVE" | cut -f1))"
+fi
 
 # Strip debug symbols from shared libraries and executables
 echo "==> Stripping binaries"
