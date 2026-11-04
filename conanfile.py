@@ -1,9 +1,10 @@
+import os
+
 from conan import ConanFile
-from conan.tools.cmake import cmake_layout, CMake
+from conan.tools.cmake import cmake_layout, CMake, CMakeDeps, CMakeToolchain
 
 class ClientRecipe(ConanFile):
     settings = "os", "compiler", "arch", "build_type"
-    generators = "CMakeToolchain", "CMakeDeps"
     options = {"shared": [True, False]}
     default_options = {
         "*:fPIC": True,
@@ -23,6 +24,7 @@ class ClientRecipe(ConanFile):
         "qt/*:with_pq": False,
         "qt/*:with_md4c": False,
         "qt/*:disabled_features": "designer assistant",
+        "qtkeychain/*:with_translations": True,
         "shared": True,
     }
 
@@ -54,6 +56,16 @@ class ClientRecipe(ConanFile):
 
     def layout(self):
         cmake_layout(self)
+
+    def generate(self):
+        tc = CMakeToolchain(self)
+        # qtkeychain_<lang>.qm, bundled with the client's own translations
+        for resdir in self.dependencies["qtkeychain"].cpp_info.resdirs:
+            translations_dir = os.path.join(resdir, "translations")
+            if os.path.isdir(translations_dir):
+                tc.cache_variables["QTKEYCHAIN_QM_DIR"] = translations_dir.replace("\\", "/")
+        tc.generate()
+        CMakeDeps(self).generate()
 
     def build(self):
         cmake = CMake(self)

@@ -271,8 +271,7 @@ def copy_translations(macdeployqt, resources_dir):
     else:
         print("  WARNING: Qt translations not found")
 
-    # TODO: qtkeychain translations are not included in the Conan package.
-    # Fix the qtkeychain recipe to install them, then copy here.
+    # qtkeychain's translations are compiled into the client's resources
 
 
 def write_qt_conf(resources_dir):

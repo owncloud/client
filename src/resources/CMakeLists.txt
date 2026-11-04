@@ -36,10 +36,14 @@ generate_export_header(owncloudResources
 # Handle Translations, pick all client_* files from trans directory.
 file(GLOB client_translations ${CMAKE_SOURCE_DIR}/translations/client_*.ts)
 qt_add_lrelease(owncloudResources TS_FILES ${client_translations} QM_FILES_OUTPUT_VARIABLE client_compiled_translations)
+# qtkeychain's translations, if the build provides them (e.g. the Conan qtkeychain package)
+if(QTKEYCHAIN_QM_DIR)
+    file(GLOB qtkeychain_translations ${QTKEYCHAIN_QM_DIR}/qtkeychain_*.qm)
+endif()
 add_resources_to_target(
     TARGET owncloudResources
     PREFIX translations
-    FILES "${client_compiled_translations}"
+    FILES "${client_compiled_translations}" ${qtkeychain_translations}
 )
 
 ecm_add_qml_module(owncloudResources
