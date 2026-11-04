@@ -67,11 +67,9 @@ QString Theme::configFileName() const
 
 QString Theme::applicationIconName() const
 {
-    // attention! if APPLICATION_ICON_NAME is not defined, it is auto-set to APPLICATION_SHORTNAME in CMakeLists.txt:131
-    // I STRONGLY prefer to move that "fallback" here, to avoid confusion, as *how many cmake files do we have to navigate to
-    // find these values*?
-    // it's not ok, imo. I quasi understand the "need" for these vars but they are nothing but trouble.
-    return QStringLiteral(APPLICATION_SHORTNAME) + "-icon";
+    // APPLICATION_ICON_NAME defaults to APPLICATION_SHORTNAME (CMakeLists.txt:131), but the in-repo theme sets it to "owncloud".
+    // Do not use APPLICATION_SHORTNAME here: it differs in case ("ownCloud") and resource lookups are case sensitive.
+    return QStringLiteral(APPLICATION_ICON_NAME "-icon");
 }
 
 QString Theme::aboutIconName() const

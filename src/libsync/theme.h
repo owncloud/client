@@ -113,7 +113,7 @@ public:
     /**
      * @brief applicationIconName
      *
-     * @default value of cmake variable APPLICATION_SHORTNAME + "-icon".
+     * @default value of cmake variable APPLICATION_ICON_NAME + "-icon".
      *
      * @return the application icon name.
      */
