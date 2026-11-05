@@ -86,13 +86,13 @@ target_link_libraries(libsync
     PUBLIC
         csync
         owncloudResources
-        Qt::Core
-        Qt::Network
-        Qt::Widgets
-        Qt::QuickControls2
+        Qt6::Core
+        Qt6::Network
+        Qt6::Widgets
+        Qt6::QuickControls2
 
     PRIVATE
-        Qt::Concurrent
+        Qt6::Concurrent
         ZLIB::ZLIB
         Qt6Keychain::Qt6Keychain
 )
@@ -107,7 +107,12 @@ ecm_add_qml_module(libsync
 
 ecm_finalize_qml_module(libsync DESTINATION ${KDE_INSTALL_QMLDIR})
 
-target_link_libraries(libsync PUBLIC $<BUILD_INTERFACE:OpenAPI::LibreGraphAPI>)
+set_source_files_properties(configfile.cpp
+    PROPERTIES
+        COMPILE_DEFINITIONS EXCLUDE_FILE_NAME="${EXCLUDE_FILE_NAME}"
+)
+
+target_link_libraries(libsync PUBLIC OpenAPI::LibreGraphAPI)
 add_subdirectory(graphapi)
 
 if ( APPLE )

@@ -1,0 +1,12 @@
+[settings]
+arch=armv8
+build_type=RelWithDebInfo
+compiler=apple-clang
+compiler.cppstd=17
+compiler.libcxx=libc++
+# Apple clang from Xcode 26.4.1, the Xcode in the macOS CI image; must match the build machine
+compiler.version=21
+os=Macos
+# Keep in sync with CMAKE_OSX_DEPLOYMENT_TARGET in CMakeLists.txt
+os.version=13.0
+

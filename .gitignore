@@ -1,3 +1,4 @@
+CMakeUserPresets.json
 /branding/
 .gitmodules
 *build*/
@@ -180,3 +181,11 @@ test/gui/config.ini
 test/gui/reports
 */**/__pycache__/
 test/gui/users.json
+
+# conan generated files
+#*-config.cmake
+#*-data.cmake
+#*-version.cmake
+#*-release.cmake
+#*Targets.cmake
+#*conan*.sh
