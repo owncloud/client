@@ -1,6 +1,6 @@
 [General]
 version = 2
-blueprintrepositories = https://invent.kde.org/packaging/craft-blueprints-kde.git|master|;https://github.com/owncloud/craft-blueprints-owncloud.git|master|
+blueprintrepositories = https://invent.kde.org/packaging/craft-blueprints-kde.git||945d9fa;https://github.com/owncloud/craft-blueprints-owncloud.git||d28bcaf
 
 [core/cacert]
 version = 2025-09-09
