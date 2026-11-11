@@ -17,38 +17,48 @@
 #                   the recipes offer now; everything else stays locked.
 #   --check         Write nothing; exit 1 if conan.lock is not what this
 #                   script would produce (the CI drift check). It applies the
-#                   two rules described below and reports every violation.
+#                   three rules described below and reports every violation.
 #   --base GIT-REF  With --check: the commit whose conan.lock the change
 #                   starts from, read with `git show GIT-REF:conan.lock`.
 #                   Default: origin/master. CI passes the merge request's
 #                   target branch. No conan.lock at GIT-REF counts as empty.
 #
 # How it works: once per profile it runs
-#   conan lock create . -pr:a <profile> --lockfile=conan.lock --lockfile-clean
+#   conan lock create . -pr:a <profile> --lockfile=conan.lock --lockfile-clean --update
 # starting from the existing conan.lock (if any), so only what changed moves
 # and unused entries are dropped. -pr:a sets the host and the build profile,
 # so the build-context tool_requires are those of the target platform, and all
 # four platforms can be locked on any machine. The four results are merged
 # with `conan lock merge`.
 #
-# The --check rules:
+# --update: without it, Conan resolves a version range from the local cache
+# whenever the cache has a match, and asks the remote only otherwise. The
+# profile runs share one throwaway cache, so an unlocked range could resolve
+# to an older version that an earlier run happened to export. With --update a
+# range always resolves to the newest match in the pinned recipes, which keeps
+# the result deterministic. Locked entries are unaffected: Conan resolves
+# them from the lockfile before it looks at ranges.
+#
+# The --check rules. Entries are compared per kind (requires,
+# build_requires, python_requires, config_requires) by their full
+# name/version#revision, timestamp ignored. A fresh lock is resolved like
+# conan.lock (per profile with --update, then merged) but without any
+# existing lockfile.
 #  1. Fixed point: regenerating from conan.lock as above gives conan.lock
 #     again. This catches missing requirements and unused entries.
-#  2. Provenance: a fresh lock is resolved the same way (per profile, then
-#     merged) but without any existing lockfile, and with --update so that
-#     every version range resolves to the newest match in the pinned recipes
-#     rather than to whatever the cache holds. Every entry (requires,
-#     build_requires, python_requires, config_requires; the full
-#     name/version#revision, timestamp ignored) that is in conan.lock but not
-#     in the base lock must be in the fresh lock. So an entry that a change
-#     adds is what the pinned recipes resolve to today, not a version picked
-#     by hand. Entries inherited from the base are allowed as they are, such
-#     as versions kept after a recipe-commit bump. A bump with PATTERN passes,
-#     because `conan lock upgrade` picks the newest version in range as a
-#     fresh resolution does; so does the first lock, resolved fresh against
-#     an empty base.
-#  Neither rule sees an entry deleted by hand when the package then resolves
-#  to a version that the base lock already has: nothing new appears.
+#  2. Provenance: an entry that is in conan.lock but not in the base lock must
+#     be in the fresh lock. So an entry that a change adds is what the pinned
+#     recipes resolve to today, not a version picked by hand. Entries
+#     inherited from the base are allowed as they are, such as versions kept
+#     after a recipe-commit bump.
+#  3. No hand removals: an entry that is in both the base lock and the fresh
+#     lock must be in conan.lock. This catches an entry deleted by hand when
+#     the package then falls back to another version that is already locked,
+#     which rules 1 and 2 cannot see.
+#  A bump with PATTERN passes: `conan lock upgrade` resolves the bumped
+#  packages to the newest version in range, as the fresh lock does, and the
+#  version it replaces is not in the fresh lock. So does the first lock,
+#  resolved fresh against an empty base.
 #
 # Bumping: verified against Conan 2.34.0 (`conan lock upgrade -h` and
 # conan/cli/commands/lock.py). `conan lock upgrade` (marked experimental)
@@ -164,10 +174,10 @@ for p in "${profiles[@]}"; do
             bump+=("--update-requires=$pat" "--update-build-requires=$pat")
         done
         conan lock upgrade . -pr:a "conan/profiles/$p" ${base[@]+"${base[@]}"} --lockfile-clean \
-            "${bump[@]}" -r "$remote" --lockfile-out="$out" -verror
+            --update "${bump[@]}" -r "$remote" --lockfile-out="$out" -verror
     else
         conan lock create . -pr:a "conan/profiles/$p" ${base[@]+"${base[@]}"} --lockfile-clean \
-            -r "$remote" --lockfile-out="$out" -verror
+            --update -r "$remote" --lockfile-out="$out" -verror
     fi
     merge_args+=("--lockfile=$out")
 done
@@ -177,10 +187,9 @@ conan lock merge "${merge_args[@]}" --lockfile-out="$work/merged.lock" -verror
 sed -E 's/%[0-9]+(\.[0-9]+)?"/"/' "$work/merged.lock" > "$work/conan.lock"
 
 if [ "$check" = 1 ]; then
-    # The fresh lock for rule 2. An empty --lockfile= keeps Conan from using
-    # ./conan.lock on its own. --update is required: without it Conan
-    # resolves a version range from the cache whenever the cache has a match,
-    # and the runs above have just filled the cache with the locked versions.
+    # The fresh lock for rules 2 and 3. An empty --lockfile= keeps Conan from
+    # using ./conan.lock on its own. --update matters even more here: the
+    # runs above have just filled the cache with the locked versions.
     fresh_args=()
     for p in "${profiles[@]}"; do
         out="$work/fresh-$p.lock"
@@ -217,6 +226,7 @@ if normalized(committed) != normalized(regenerated):
     sys.stdout.writelines(line + "\n" for line in difflib.unified_diff(
         normalized(committed), normalized(regenerated),
         "conan.lock (committed)", "conan.lock (regenerated)", lineterm=""))
+    sys.stdout.flush()
     print("update-lock: conan.lock is out of date; run conan/update-lock.sh and commit the result",
           file=sys.stderr)
     failed = True
@@ -230,6 +240,19 @@ if stale:
           % base_ref, file=sys.stderr)
     for kind, ref in stale:
         print("  %s %s" % (kind, ref))
+    sys.stdout.flush()
+    failed = True
+
+# Rule 3: an entry that the base and a fresh resolution both have was not removed by hand.
+removed = [(kind, ref) for kind in KINDS for ref in base.get(kind, [])
+           if ref in fresh.get(kind, []) and ref not in committed.get(kind, [])]
+if removed:
+    print("update-lock: conan.lock lacks entries that the base lock (%s) and a fresh resolution "
+          "both have (removed by hand); run conan/update-lock.sh PATTERN for them and commit the result"
+          % base_ref, file=sys.stderr)
+    for kind, ref in removed:
+        print("  %s %s" % (kind, ref))
+    sys.stdout.flush()
     failed = True
 
 if failed:
