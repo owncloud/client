@@ -67,6 +67,9 @@ void ClientProxy::setupQtProxyFromConfig(const QString &password)
     QNetworkProxy proxy;
 
     // if there is no config file, default to system proxy.
+    // todo: NO. if we have this zany config file impl IT should be defining default values *iff* they don't exist in the
+    // QSettings. It does not matter if the config file exists yet or not - this logic does not belong here (unless we move the
+    // management of proxy settings to this class, which imo we should)
     if (cfg.exists()) {
         proxyType = cfg.proxyType();
         proxy = proxyFromConfig(password, cfg);
