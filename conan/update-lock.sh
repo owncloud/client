@@ -4,7 +4,7 @@
 #
 # Usage:
 #   OC_RECIPES_DIR=<checkout> conan/update-lock.sh [PATTERN...]
-#   OC_RECIPES_DIR=<checkout> conan/update-lock.sh --check
+#   OC_RECIPES_DIR=<checkout> conan/update-lock.sh --check [--base GIT-REF]
 #
 #   OC_RECIPES_DIR  A checkout of https://github.com/owncloud/conan-center-index
 #                   at the commit in conan/recipes-commit, with a clean tree.
@@ -15,8 +15,13 @@
 #                   their build-requires entries) are dropped from the
 #                   existing conan.lock before resolving, so they move to what
 #                   the recipes offer now; everything else stays locked.
-#   --check         Write nothing; exit 1 if the regenerated lockfile differs
-#                   from the committed conan.lock (the CI drift check).
+#   --check         Write nothing; exit 1 if conan.lock is not what this
+#                   script would produce (the CI drift check). It applies the
+#                   two rules described below and reports every violation.
+#   --base GIT-REF  With --check: the commit whose conan.lock the change
+#                   starts from, read with `git show GIT-REF:conan.lock`.
+#                   Default: origin/master. CI passes the merge request's
+#                   target branch. No conan.lock at GIT-REF counts as empty.
 #
 # How it works: once per profile it runs
 #   conan lock create . -pr:a <profile> --lockfile=conan.lock --lockfile-clean
@@ -25,6 +30,25 @@
 # so the build-context tool_requires are those of the target platform, and all
 # four platforms can be locked on any machine. The four results are merged
 # with `conan lock merge`.
+#
+# The --check rules:
+#  1. Fixed point: regenerating from conan.lock as above gives conan.lock
+#     again. This catches missing requirements and unused entries.
+#  2. Provenance: a fresh lock is resolved the same way (per profile, then
+#     merged) but without any existing lockfile, and with --update so that
+#     every version range resolves to the newest match in the pinned recipes
+#     rather than to whatever the cache holds. Every entry (requires,
+#     build_requires, python_requires, config_requires; the full
+#     name/version#revision, timestamp ignored) that is in conan.lock but not
+#     in the base lock must be in the fresh lock. So an entry that a change
+#     adds is what the pinned recipes resolve to today, not a version picked
+#     by hand. Entries inherited from the base are allowed as they are, such
+#     as versions kept after a recipe-commit bump. A bump with PATTERN passes,
+#     because `conan lock upgrade` picks the newest version in range as a
+#     fresh resolution does; so does the first lock, resolved fresh against
+#     an empty base.
+#  Neither rule sees an entry deleted by hand when the package then resolves
+#  to a version that the base lock already has: nothing new appears.
 #
 # Bumping: verified against Conan 2.34.0 (`conan lock upgrade -h` and
 # conan/cli/commands/lock.py). `conan lock upgrade` (marked experimental)
@@ -58,18 +82,26 @@ profiles=(linux-x86_64 windows-x86_64 macos-armv8 macos-x86_64)
 remote=oc-recipes
 
 check=0
+base_ref=
 patterns=()
-for arg in "$@"; do
-    case "$arg" in
+while [ $# -gt 0 ]; do
+    case "$1" in
         --check) check=1 ;;
+        --base) [ $# -ge 2 ] || die "--base needs a git ref"; base_ref="$2"; shift ;;
+        --base=*) base_ref="${1#--base=}" ;;
         -h|--help) sed -n '2,/^$/s/^# \{0,1\}//p' "${BASH_SOURCE[0]}"; exit 0 ;;
-        -*) die "unknown option: $arg" ;;
-        *) patterns+=("$arg") ;;
+        -*) die "unknown option: $1" ;;
+        *) patterns+=("$1") ;;
     esac
+    shift
 done
 if [ "$check" = 1 ] && [ "${#patterns[@]}" -gt 0 ]; then
     die "--check takes no package patterns"
 fi
+if [ "$check" = 0 ] && [ -n "$base_ref" ]; then
+    die "--base is only valid with --check"
+fi
+[ -n "$base_ref" ] || base_ref=origin/master
 
 command -v conan >/dev/null || die "conan not found on PATH"
 command -v git >/dev/null || die "git not found on PATH"
@@ -96,6 +128,16 @@ done
 
 work="$(mktemp -d)"
 trap 'rm -rf "$work"' EXIT
+
+if [ "$check" = 1 ]; then
+    git rev-parse --verify --quiet "$base_ref^{commit}" >/dev/null \
+        || die "--base $base_ref is not a commit in this repository; fetch it or pass another --base"
+    if git cat-file -e "$base_ref:./conan.lock" 2>/dev/null; then
+        git show "$base_ref:./conan.lock" > "$work/base.lock"
+    else
+        echo '{}' > "$work/base.lock"
+    fi
+fi
 export CONAN_HOME="$work/conan-home"
 
 conan remote remove '*' >/dev/null
@@ -135,24 +177,62 @@ conan lock merge "${merge_args[@]}" --lockfile-out="$work/merged.lock" -verror
 sed -E 's/%[0-9]+(\.[0-9]+)?"/"/' "$work/merged.lock" > "$work/conan.lock"
 
 if [ "$check" = 1 ]; then
-    python3 -I - conan.lock "$work/conan.lock" <<'EOF'
+    # The fresh lock for rule 2. An empty --lockfile= keeps Conan from using
+    # ./conan.lock on its own. --update is required: without it Conan
+    # resolves a version range from the cache whenever the cache has a match,
+    # and the runs above have just filled the cache with the locked versions.
+    fresh_args=()
+    for p in "${profiles[@]}"; do
+        out="$work/fresh-$p.lock"
+        echo "update-lock: resolving $p without a lockfile" >&2
+        conan lock create . -pr:a "conan/profiles/$p" --lockfile= --update \
+            -r "$remote" --lockfile-out="$out" -verror
+        fresh_args+=("--lockfile=$out")
+    done
+    conan lock merge "${fresh_args[@]}" --lockfile-out="$work/fresh.lock" -verror
+
+    python3 -I - conan.lock "$work/conan.lock" "$work/base.lock" "$work/fresh.lock" "$base_ref" <<'EOF'
 import difflib, json, re, sys
 
-def normalized(path):
+KINDS = ("requires", "build_requires", "python_requires", "config_requires")
+
+def load(path):
     with open(path, encoding="utf-8") as f:
         data = json.load(f)
     for key, value in data.items():
         if isinstance(value, list):
             data[key] = sorted(re.sub(r"%[0-9.]+$", "", v) if isinstance(v, str) else v
                                for v in value)
+    return data
+
+def normalized(data):
     return json.dumps(data, indent=4, sort_keys=True).splitlines()
 
-committed, regenerated = normalized(sys.argv[1]), normalized(sys.argv[2])
-if committed != regenerated:
+committed, regenerated, base, fresh = (load(p) for p in sys.argv[1:5])
+base_ref = sys.argv[5]
+failed = False
+
+# Rule 1: conan.lock is a fixed point of the script.
+if normalized(committed) != normalized(regenerated):
     sys.stdout.writelines(line + "\n" for line in difflib.unified_diff(
-        committed, regenerated, "conan.lock (committed)", "conan.lock (regenerated)", lineterm=""))
+        normalized(committed), normalized(regenerated),
+        "conan.lock (committed)", "conan.lock (regenerated)", lineterm=""))
     print("update-lock: conan.lock is out of date; run conan/update-lock.sh and commit the result",
           file=sys.stderr)
+    failed = True
+
+# Rule 2: every entry that is new against the base is what a fresh resolution gives.
+stale = [(kind, ref) for kind in KINDS for ref in committed.get(kind, [])
+         if ref not in base.get(kind, []) and ref not in fresh.get(kind, [])]
+if stale:
+    print("update-lock: conan.lock has entries that are neither in the base lock (%s) nor in a "
+          "fresh resolution; run conan/update-lock.sh PATTERN for them and commit the result"
+          % base_ref, file=sys.stderr)
+    for kind, ref in stale:
+        print("  %s %s" % (kind, ref))
+    failed = True
+
+if failed:
     sys.exit(1)
 print("update-lock: conan.lock is up to date", file=sys.stderr)
 EOF
