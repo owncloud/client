@@ -62,5 +62,7 @@ class OwncloudClientConan(ConanFile):
             self.requires("sparkle/2.7.0")
 
     def build_requirements(self):
-        # Must stay below 4: extra-cmake-modules pins cmake/[>=3.16 <4].
+        # The client's own cmake must stay below 4, because extra-cmake-modules
+        # pins cmake/[>=3.16 <4]. conan.lock still holds a cmake 4 entry: that one
+        # is a tool_requires of other dependencies, resolved separately.
         self.tool_requires("cmake/3.31.12")
