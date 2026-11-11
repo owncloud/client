@@ -1,0 +1,13 @@
+Enhancement: Offer to delete the local folder when removing an account or sync connection
+
+Removing an account or a folder sync connection kept the local folder on disk
+without offering any choice. On the next account setup the client therefore
+found the old folder still present and created a numbered duplicate such as
+"ownCloud (2)", "ownCloud (3)" and so on.
+
+The removal confirmations now offer an opt-in checkbox to also delete the local
+folder. It is unchecked by default, so the existing safe behaviour is
+preserved. When checked, the folder is moved to the operating system trash so
+the action stays recoverable.
+
+https://github.com/owncloud/client/issues/12687

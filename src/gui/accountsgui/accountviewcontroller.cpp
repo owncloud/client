@@ -27,7 +27,10 @@
 #include "libsync/theme.h"
 #include "mainwindow/colormanager.h"
 
+#include <QCheckBox>
 #include <QDesktopServices>
+#include <QDir>
+#include <QFileInfo>
 #include <QInputDialog>
 #include <QMenu>
 #include <QMessageBox>
@@ -174,26 +177,44 @@ void AccountViewController::onDeleteAccount()
         return;
     }
 
+    const QString localFolder = _accountState->account()->defaultSyncRoot();
+    const bool localFolderExists = !localFolder.isEmpty() && QFileInfo(localFolder).isDir();
+
     // Deleting the account potentially deletes 'this', so
     // the QMessageBox should be destroyed before that happens.
     // todo: this is an unnecessarily complicated def for the message box and should exec instead of open.
     auto messageBox = new QMessageBox(QMessageBox::Question, tr("Confirm Account Removal"),
-        tr("<p>Do you really want to remove the connection to the account <i>%1</i>?</p>"
-           "<p><b>Note:</b> This will <b>not</b> delete any files.</p>")
-            .arg(_accountState->account()->displayNameWithHost()),
+        localFolderExists ? tr("<p>Do you really want to remove the connection to the account <i>%1</i>?</p>"
+                               "<p><b>Note:</b> By default this will <b>not</b> delete any files.</p>")
+                                .arg(_accountState->account()->displayNameWithHost())
+                          : tr("<p>Do you really want to remove the connection to the account <i>%1</i>?</p>"
+                               "<p><b>Note:</b> This will <b>not</b> delete any files.</p>")
+                                .arg(_accountState->account()->displayNameWithHost()),
         QMessageBox::NoButton, _view);
     messageBox->setObjectName("confirmRemoveAccountDialog");
+
+    if (localFolderExists) {
+        auto *deleteLocalFolderCheckBox = new QCheckBox(tr("Also delete the local folder \"%1\"").arg(QDir::toNativeSeparators(localFolder)));
+        deleteLocalFolderCheckBox->setObjectName("deleteLocalFolderCheckBox");
+        deleteLocalFolderCheckBox->setChecked(false);
+        messageBox->setCheckBox(deleteLocalFolderCheckBox);
+    }
+
     auto yesButton = messageBox->addButton(tr("Remove connection"), QMessageBox::YesRole);
     yesButton->setObjectName("removeAccountButton");
     auto noButton = messageBox->addButton(tr("Cancel"), QMessageBox::NoRole);
     noButton->setObjectName("cancelRemoveAccountButton");
 
     messageBox->setAttribute(Qt::WA_DeleteOnClose);
-    connect(messageBox, &QMessageBox::finished, this, [this, messageBox, yesButton] {
+    connect(messageBox, &QMessageBox::finished, this, [this, messageBox, yesButton, localFolder] {
         if (messageBox->clickedButton() == yesButton) {
+            const bool deleteLocalFolder = messageBox->checkBox() && messageBox->checkBox()->isChecked();
             auto manager = AccountManager::instance();
             manager->deleteAccount(_accountState);
             manager->save();
+            if (deleteLocalFolder) {
+                FolderMan::removeLocalFolder(localFolder);
+            }
         }
     });
     messageBox->open();

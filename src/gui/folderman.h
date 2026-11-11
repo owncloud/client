@@ -233,6 +233,16 @@ public:
     static bool ensureJournalGone(const QString &journalDbFile);
     static bool ensureFilesystemSupported(const FolderDefinition &folderDefinition);
 
+    /**
+     * Deletes a local sync folder from disk after its sync connection is gone.
+     *
+     * Prefers moving the folder to the OS trash so the removal stays
+     * recoverable, and only falls back to a permanent recursive delete when
+     * trashing is not supported. Never touches the user's home directory or a
+     * filesystem root.
+     */
+    static void removeLocalFolder(const QString &path);
+
     SocketApi *socketApi();
 
     /**
