@@ -85,6 +85,12 @@ set -euo pipefail
 
 die() { echo "update-lock: error: $*" >&2; exit 2; }
 
+# A relative OC_RECIPES_DIR means relative to where the script was called from,
+# so make it absolute before changing into the repository root.
+if [ -n "${OC_RECIPES_DIR:-}" ] && [ "${OC_RECIPES_DIR#/}" = "$OC_RECIPES_DIR" ]; then
+    OC_RECIPES_DIR="$PWD/$OC_RECIPES_DIR"
+fi
+
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$root"
 
