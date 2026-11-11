@@ -2,6 +2,9 @@
 # Regenerates conan.lock for all four platforms in conan/profiles/. This is the
 # only supported way to change conan.lock.
 #
+# Needs bash, git, conan (the version pinned in conanfile.py) and, for --check,
+# python3. On Windows, run it from Git Bash or MSYS2 with those on PATH.
+#
 # Usage:
 #   OC_RECIPES_DIR=<checkout> conan/update-lock.sh [PATTERN...]
 #   OC_RECIPES_DIR=<checkout> conan/update-lock.sh --check [--base GIT-REF]
@@ -16,12 +19,13 @@
 #                   existing conan.lock before resolving, so they move to what
 #                   the recipes offer now; everything else stays locked.
 #   --check         Write nothing; exit 1 if conan.lock is not what this
-#                   script would produce (the CI drift check). It applies the
+#                   script would produce (the drift check). It applies the
 #                   three rules described below and reports every violation.
 #   --base GIT-REF  With --check: the commit whose conan.lock the change
 #                   starts from, read with `git show GIT-REF:conan.lock`.
-#                   Default: origin/master. CI passes the merge request's
-#                   target branch. No conan.lock at GIT-REF counts as empty.
+#                   Default: origin/master. A CI job should pass the pull
+#                   request's target branch; that job does not exist yet.
+#                   No conan.lock at GIT-REF counts as empty.
 #
 # How it works: once per profile it runs
 #   conan lock create . -pr:a <profile> --lockfile=conan.lock --lockfile-clean --update
@@ -86,9 +90,12 @@ set -euo pipefail
 die() { echo "update-lock: error: $*" >&2; exit 2; }
 
 # A relative OC_RECIPES_DIR means relative to where the script was called from,
-# so make it absolute before changing into the repository root.
-if [ -n "${OC_RECIPES_DIR:-}" ] && [ "${OC_RECIPES_DIR#/}" = "$OC_RECIPES_DIR" ]; then
-    OC_RECIPES_DIR="$PWD/$OC_RECIPES_DIR"
+# so resolve it before changing into the repository root. Resolving with cd also
+# handles absolute paths, including Windows drive letters under Git Bash.
+if [ -n "${OC_RECIPES_DIR:-}" ]; then
+    given_recipes_dir="$OC_RECIPES_DIR"
+    OC_RECIPES_DIR="$(cd "$given_recipes_dir" 2>/dev/null && pwd)" \
+        || die "OC_RECIPES_DIR=$given_recipes_dir is not a directory"
 fi
 
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
