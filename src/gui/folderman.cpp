@@ -20,6 +20,7 @@
 #include "accountstate.h"
 #include "common/asserts.h"
 #include "configfile.h"
+#include "filesystem.h"
 #include "folder.h"
 #include "foldermanagement/folderbuilder.h"
 #include "foldermanagement/foldermanagementutils.h"
@@ -38,6 +39,7 @@
 #include "common/utility_win.h"
 #endif
 
+#include <QFile>
 #include <QMessageBox>
 #include <QMutableSetIterator>
 #include <QNetworkProxy>
@@ -956,6 +958,46 @@ void FolderMan::deleteFolderSync(Folder *f)
     disconnectFolder(f);
 
     f->deleteLater();
+}
+
+void FolderMan::removeLocalFolder(const QString &path)
+{
+    if (path.isEmpty()) {
+        return;
+    }
+
+    const QFileInfo folderInfo(path);
+    if (!folderInfo.exists()) {
+        return;
+    }
+
+    // Refuse to delete anything that is not a real, removable sync folder:
+    // a filesystem root, or the user's home directory. The home guard also
+    // protects the case where a user pointed a sync at their home.
+    const QString canonical = folderInfo.canonicalFilePath();
+    const QString homePath = QFileInfo(QDir::homePath()).canonicalFilePath();
+    if (canonical.isEmpty() || QDir(canonical).isRoot() || (!homePath.isEmpty() && canonical == homePath)) {
+        qCWarning(lcFolderMan) << "Refusing to delete local folder" << path;
+        return;
+    }
+
+    // Prefer the OS trash so the removal stays recoverable.
+    if (QFile::moveToTrash(canonical)) {
+        qCInfo(lcFolderMan) << "Moved local folder to trash" << canonical;
+        return;
+    }
+
+    // Trashing is not always supported (e.g. some network or FAT filesystems).
+    // Fall back to a permanent delete, but never follow symlinks out of the tree.
+    FileSystem::RemoveEntryList removed;
+    FileSystem::RemoveEntryList locked;
+    FileSystem::RemoveErrorList errors;
+    if (FileSystem::removeRecursively(canonical, &removed, &locked, &errors)) {
+        qCInfo(lcFolderMan) << "Removed local folder" << canonical;
+    } else {
+        qCWarning(lcFolderMan) << "Could not fully remove local folder" << canonical
+                               << "errors:" << errors.size() << "locked:" << locked.size();
+    }
 }
 
 QString FolderMan::getBackupName(QString fullPathName) const

@@ -285,6 +285,37 @@ private Q_SLOTS:
         QVERIFY(folderman->checkPathValidity(dirPath + QStringLiteral("/OurSpacesSyncRoot/OurSpacesFolder"), FolderMan::NewFolderType::SpacesFolder, ourUuid)
                 .isNull());
     }
+
+    void testRemoveLocalFolder()
+    {
+        auto dir = TestUtils::createTempDir();
+        QVERIFY(dir.isValid());
+        QDir dir2(dir.path());
+        QVERIFY(dir2.mkpath(QStringLiteral("toRemove/sub")));
+        {
+            QFile f(dir2.filePath(QStringLiteral("toRemove/file.txt")));
+            QVERIFY(f.open(QFile::WriteOnly));
+            f.write("hello");
+        }
+
+        const QString toRemove = dir2.filePath(QStringLiteral("toRemove"));
+        QVERIFY(QFileInfo(toRemove).isDir());
+        FolderMan::removeLocalFolder(toRemove);
+        // Moved to trash or deleted recursively, either way it is gone.
+        QVERIFY(!QFileInfo::exists(toRemove));
+
+        // A missing folder is a no-op, and must not crash.
+        FolderMan::removeLocalFolder(dir2.filePath(QStringLiteral("does-not-exist")));
+
+        // Guard rails: the home directory and filesystem roots are never removed.
+        const QString home = QDir::homePath();
+        if (!home.isEmpty() && QFileInfo(home).isDir()) {
+            FolderMan::removeLocalFolder(home);
+            QVERIFY(QFileInfo(home).isDir());
+        }
+        FolderMan::removeLocalFolder(QStringLiteral("/"));
+        QVERIFY(QFileInfo(QStringLiteral("/")).isDir());
+    }
 };
 
 QTEST_GUILESS_MAIN(TestFolderMan)

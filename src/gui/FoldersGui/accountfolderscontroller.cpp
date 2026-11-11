@@ -29,6 +29,9 @@
 
 #include "theme.h"
 
+#include <QCheckBox>
+#include <QDir>
+#include <QFileInfo>
 #include <QMessageBox>
 #include <QtWidgets/qabstractbutton.h>
 
@@ -304,12 +307,23 @@ void AccountFoldersController::onRemoveSync()
 
     qCInfo(lcAccountFoldersController) << "Remove Folder " << _currentFolder->path();
     QString shortGuiLocalPath = _currentFolder->shortGuiLocalPath();
+    const QString localPath = _currentFolder->path();
+    const bool localFolderExists = QFileInfo(localPath).isDir();
 
     QMessageBox msgBox(QMessageBox::Question, tr("Confirm Folder Sync Connection Removal"),
-        tr("<p>Do you really want to stop syncing the folder <i>%1</i>?</p>"
-           "<p><b>Note:</b> This will <b>not</b> delete any files.</p>")
-            .arg(shortGuiLocalPath),
+        localFolderExists ? tr("<p>Do you really want to stop syncing the folder <i>%1</i>?</p>"
+                               "<p><b>Note:</b> By default this will <b>not</b> delete any files.</p>")
+                                .arg(shortGuiLocalPath)
+                          : tr("<p>Do you really want to stop syncing the folder <i>%1</i>?</p>"
+                               "<p><b>Note:</b> This will <b>not</b> delete any files.</p>")
+                                .arg(shortGuiLocalPath),
         QMessageBox::Yes | QMessageBox::No, ocApp()->mainWindow());
+    if (localFolderExists) {
+        auto *deleteLocalFolderCheckBox = new QCheckBox(tr("Also delete the local folder \"%1\"").arg(QDir::toNativeSeparators(localPath)));
+        deleteLocalFolderCheckBox->setObjectName("deleteLocalFolderCheckBox");
+        deleteLocalFolderCheckBox->setChecked(false);
+        msgBox.setCheckBox(deleteLocalFolderCheckBox);
+    }
     msgBox.button(QMessageBox::Yes)->setText(tr("Remove Folder Sync Connection"));
     msgBox.button(QMessageBox::No)->setText(tr("Cancel"));
     msgBox.setObjectName("confirmRemoveFolderSyncDialog");
@@ -319,8 +333,13 @@ void AccountFoldersController::onRemoveSync()
     int result = msgBox.exec();
     if (result == QMessageBox::No)
         return;
+
+    const bool deleteLocalFolder = msgBox.checkBox() && msgBox.checkBox()->isChecked();
     // todo: make it a signal
     FolderMan::instance()->removeFolderFromGui(_currentFolder);
+    if (deleteLocalFolder) {
+        FolderMan::removeLocalFolder(localPath);
+    }
 }
 
 void AccountFoldersController::onChooseSync()
