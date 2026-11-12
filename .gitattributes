@@ -10,3 +10,7 @@ conan/profiles/**       text eol=lf
 conan/recipes-commit    text eol=lf
 conanfile.py            text eol=lf
 conan.lock              text eol=lf
+
+# Shell scripts (e.g. conan/update-lock.sh, run from Git Bash on Windows):
+# bash fails on CRLF, so keep LF even with core.autocrlf=true.
+*.sh                    text eol=lf
