@@ -3,3 +3,10 @@
 .gitattributes          export-ignore
 .commit-template        export-ignore
 binary/                 export-ignore
+
+# Conan inputs: the shared CI rejects CR in them, so keep LF even on
+# Windows runners that check out with core.autocrlf=true.
+conan/profiles/**       text eol=lf
+conan/recipes-commit    text eol=lf
+conanfile.py            text eol=lf
+conan.lock              text eol=lf
