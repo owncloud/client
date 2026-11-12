@@ -1,0 +1,60 @@
+name: Build with conan
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: Building ${{ matrix.build_type }} ${{ matrix.profile }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          # Release build type
+          - os: ubuntu-latest
+            profile: ubuntu-latest-x86_64
+            build_type: Release
+          - os: macos-latest
+            profile: macos-latest-armv8
+            build_type: Release
+          #- os: windows-latest
+          #  profile: windows-latest-x86_64
+          #  build_type: Release
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Conan
+        uses: conan-io/setup-conan@v1
+
+      - name: Add artifactory & set conan config
+        run: |
+          conan config install ./.conan/config/global.conf
+          conan remote remove conancenter
+          conan remote add oc https://artifactory.owncloud-demo.com/artifactory/api/conan/conan-local
+          conan remote login oc ${{ secrets.CONAN_USER }} -p ${{ secrets.CONAN_PASSWORD }}
+          conan remote list
+          conan profile show
+
+      - name: Create build directory
+        run: mkdir build
+
+      - name: Install dependencies with conan
+        run: |
+          conan install . --profile=.conan/profiles/${{ matrix.profile }}.conanprofile -s build_type=${{ matrix.build_type }}
+
+      - name: Build the client
+        working-directory: ./build
+        run: |
+          cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          cmake --build .
+
+      - name: Run tests
+        working-directory: ./build
+        run: ctest --output-on-failure

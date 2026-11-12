@@ -1,0 +1,26 @@
+# Intel builds are made on Apple Silicon: use this profile for both host and build
+# context (conan ... --profile:all=<this profile>). Everything, including the tools
+# built along the way (moc, rcc, cmake, ...), is then built for x86_64 and the tools
+# run through Rosetta, so it is a native build and Qt needs no separate host Qt.
+# Needs Rosetta on the build machine (softwareupdate --install-rosetta), which Apple
+# supports up to macOS 27; on later build machines this has to become a cross build.
+[settings]
+arch=x86_64
+build_type=RelWithDebInfo
+compiler=apple-clang
+compiler.cppstd=17
+compiler.libcxx=libc++
+# Apple clang from Xcode 26.4.1, the Xcode in the macOS CI image; must match the build machine
+compiler.version=21
+os=Macos
+# Keep in sync with CMAKE_OSX_DEPLOYMENT_TARGET in CMakeLists.txt
+os.version=13.0
+
+[conf]
+# For what Conan considers a native build, its Autotools toolchain passes no -arch, so
+# Autotools-based recipes (e.g. libjpeg) would build for the machine's own arm64. Make
+# the architecture explicit for all build systems.
+tools.build:cflags=["-arch", "x86_64"]
+tools.build:cxxflags=["-arch", "x86_64"]
+tools.build:sharedlinkflags=["-arch", "x86_64"]
+tools.build:exelinkflags=["-arch", "x86_64"]
