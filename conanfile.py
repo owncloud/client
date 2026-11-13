@@ -24,6 +24,9 @@ class OwncloudClientConan(ConanFile):
     settings = "os", "compiler", "arch", "build_type"
     default_options = {
         "*:fPIC": True,
+        # Qt does not use harfbuzz's glib integration, and with it every
+        # platform got a static glib inside Qt's harfbuzz.
+        "harfbuzz/*:with_glib": False,
         "qt/*:gui": True,
         "qt/*:qtdeclarative": True,
         "qt/*:qtimageformats": True,
@@ -44,9 +47,10 @@ class OwncloudClientConan(ConanFile):
         if self.settings.os == "Linux":
             self.options["qt/*"].with_dbus = True
             self.options["qt/*"].qtwayland = True
-            # qtkeychain's libsecret pulls in glib. Shared, so that the process
-            # has one glib, the bundled one, and not a private static copy
-            # inside libqt6keychain.so next to any other glib that gets loaded.
+            # qtkeychain's libsecret is then the only one that pulls in glib.
+            # Shared, so that the process has one glib, the shipped one, and not
+            # a private static copy inside libqt6keychain.so next to any other
+            # glib that gets loaded. The AppImage has to bundle both libraries.
             self.options["glib/*"].shared = True
             self.options["libsecret/*"].shared = True
 
