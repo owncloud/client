@@ -1,0 +1,12 @@
+[settings]
+arch=armv8
+build_type=Release
+compiler=apple-clang
+compiler.cppstd=17
+compiler.libcxx=libc++
+compiler.version=21
+os=Macos
+os.version=13.0
+
+[conf]
+tools.system.package_manager:mode=check
