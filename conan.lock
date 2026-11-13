@@ -10,7 +10,7 @@
         "wayland/1.22.0#57296ecf74bb3b37e5320c8da64a5700",
         "sqlite3/3.51.3#45e603aeeda3ebd016ed7d8d30d93c6f",
         "sparkle/2.7.0#335ca479adbdf929641cfd301bf0ea01",
-        "qtkeychain/0.15.0#b2c2e8c3be593a5c69269d3ef7139f53",
+        "qtkeychain/0.15.0#23326cdce79fbd276cf21314635034c5",
         "qt/6.10.3#ef3a05f7feb09e407c7fc25639b19478",
         "pcre2/10.42#9274fdc267475c2eb8c8134f1ee55919",
         "openssl/3.4.8#8f6309529e84ac48f2ad62bbf0cf895c",
