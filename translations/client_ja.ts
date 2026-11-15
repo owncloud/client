@@ -217,7 +217,7 @@ File synchronization desktop utility.</source>
         <translation>, ⬆️ %1/秒</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="211"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="213"/>
         <source>%1, sync status: %2</source>
         <extracomment>Accessible text, read out by a screen reader.</extracomment>
         <translation>%1、同期ステータス: %2</translation>
@@ -539,12 +539,14 @@ This action will abort any currently running synchronization.</source>
         <source>You don't have any connected accounts yet.
 
 Please create an account by selecting the &quot;Add account...&quot; option on the More button menu.</source>
-        <translation type="unfinished"/>
+        <translation>まだ接続されたアカウントはありません。
+
+省略ボタンメニューにある「アカウント追加...」オプションを選択して、アカウントを作成してください。</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsgui/accountplaceholderwidget.cpp" line="48"/>
         <source>Additional logo defined by the organization</source>
-        <translation type="unfinished"/>
+        <translation>組織によって定義された追加ロゴ</translation>
     </message>
 </context>
 <context>
@@ -552,17 +554,17 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
     <message>
         <location filename="../src/gui/accountstate.cpp" line="246"/>
         <source>The server is not supported by this client.</source>
-        <translation type="unfinished"/>
+        <translation>このクライアントは、そのサーバーをサポートしていません。</translation>
     </message>
     <message>
         <location filename="../src/gui/accountstate.cpp" line="253"/>
         <source>Retrieving user settings and server capabilities timed out.</source>
-        <translation type="unfinished"/>
+        <translation>ユーザー設定およびサーバー機能の取得がタイムアウトしました。</translation>
     </message>
     <message>
         <location filename="../src/gui/accountstate.cpp" line="260"/>
         <source>Unable to retrieve user settings and server capabilities.</source>
-        <translation type="unfinished"/>
+        <translation>ユーザー設定およびサーバー機能を取得できません。</translation>
     </message>
 </context>
 <context>
@@ -614,7 +616,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
     <message>
         <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="119"/>
         <source>Change alias...</source>
-        <translation type="unfinished"/>
+        <translation>別名の変更...</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="141"/>
@@ -644,12 +646,12 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
     <message>
         <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="212"/>
         <source>Change alias</source>
-        <translation type="unfinished"/>
+        <translation>別名の変更</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="214"/>
         <source>Account alias:</source>
-        <translation type="unfinished"/>
+        <translation>アカウントの別名:</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="260"/>
@@ -664,12 +666,12 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
     <message>
         <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="266"/>
         <source>Server is temporarily unavailable.</source>
-        <translation type="unfinished"/>
+        <translation>サーバーは一時的に利用不可。</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="269"/>
         <source>Server is currently in maintenance mode.</source>
-        <translation type="unfinished"/>
+        <translation>サーバーは現在、メンテナンスモードです。</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="272"/>
@@ -689,7 +691,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
     <message>
         <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="281"/>
         <source>Sync is paused due to metered internet connection.</source>
-        <translation type="unfinished"/>
+        <translation>従量制インターネット接続のため、同期が一時停止されています。</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="283"/>
@@ -714,7 +716,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
     <message>
         <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="298"/>
         <source>Invalid connection status</source>
-        <translation type="unfinished"/>
+        <translation>無効な接続状態</translation>
     </message>
 </context>
 <context>
@@ -723,12 +725,12 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="168"/>
         <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="229"/>
         <source>New account failure</source>
-        <translation type="unfinished"/>
+        <translation>新規アカウント作成失敗</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="168"/>
         <source>The information required to create a new account is incomplete. Please run the wizard again.</source>
-        <translation type="unfinished"/>
+        <translation>新しいアカウントを作成するために必要な情報が不足しています。ウィザードを再度実行してください。</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="194"/>
@@ -740,7 +742,9 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <source>The account could not be created due to an error:
 %1
 Please check the server&apos;s availability then run the wizard again.</source>
-        <translation type="unfinished"/>
+        <translation>エラーが発生したため、アカウントを作成できませんでした:
+%1
+サーバーが利用可能かどうかを確認してから、ウィザードを再度実行してください。</translation>
     </message>
 </context>
 <context>
@@ -866,7 +870,7 @@ AppImage の更新はバックグラウンドプロセスで実行され、現�
     <message>
         <location filename="../src/gui/newaccountwizard/authsuccesspagecontroller.cpp" line="64"/>
         <source>Additional logo defined by the organization</source>
-        <translation type="unfinished"/>
+        <translation>組織によって定義された追加ロゴ</translation>
     </message>
 </context>
 <context>
@@ -947,13 +951,13 @@ AppImage の更新はバックグラウンドプロセスで実行され、現�
 <context>
     <name>OCC::DiscoverySingleDirectoryJob</name>
     <message>
-        <location filename="../src/libsync/discoveryphase.cpp" line="276"/>
+        <location filename="../src/libsync/discoveryphase.cpp" line="271"/>
         <source>The account was deleted before we could start the propfind job</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/libsync/discoveryphase.cpp" line="309"/>
-        <location filename="../src/libsync/discoveryphase.cpp" line="421"/>
+        <location filename="../src/libsync/discoveryphase.cpp" line="304"/>
+        <location filename="../src/libsync/discoveryphase.cpp" line="416"/>
         <source>Server error: PROPFIND reply is not XML formatted!</source>
         <translation>サーバーエラー: PROPFIND の応答が XML フォーマットではありません！</translation>
     </message>
@@ -961,22 +965,22 @@ AppImage の更新はバックグラウンドプロセスで実行され、現�
 <context>
     <name>OCC::DiscoverySingleLocalDirectoryJob</name>
     <message>
-        <location filename="../src/libsync/discoveryphase.cpp" line="208"/>
+        <location filename="../src/libsync/discoveryphase.cpp" line="203"/>
         <source>Error while opening directory %1</source>
         <translation>ディレクトリ %1 を開くときにエラーが発生しました。</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discoveryphase.cpp" line="210"/>
+        <location filename="../src/libsync/discoveryphase.cpp" line="205"/>
         <source>Directory not accessible on client, permission denied</source>
         <translation>クライアントでディレクトリにアクセスできない、パーミッションが拒否されました。</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discoveryphase.cpp" line="214"/>
+        <location filename="../src/libsync/discoveryphase.cpp" line="209"/>
         <source>Directory not found: %1</source>
         <translation>ディレクトリが見つかりません: %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discoveryphase.cpp" line="249"/>
+        <location filename="../src/libsync/discoveryphase.cpp" line="244"/>
         <source>Error while reading directory %1</source>
         <translation>ディレクトリ %1 の読み込み中にエラーが発生しました。</translation>
     </message>
@@ -1094,27 +1098,27 @@ AppImage の更新はバックグラウンドプロセスで実行され、現�
         <translation>同期アクティビティ</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="634"/>
+        <location filename="../src/gui/folder.cpp" line="644"/>
         <source>Switching VFS mode on folder &apos;%1&apos;</source>
         <translation>フォルダー &apos;%1&apos; の VFS モードを切り替えています</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="832"/>
+        <location filename="../src/gui/folder.cpp" line="842"/>
         <source>Could not read system exclude file</source>
         <translation>システム上の除外ファイルを読み込めません</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1027"/>
+        <location filename="../src/gui/folder.cpp" line="1046"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translation>フォルダ %1 は作成されましたが、以前は同期対象から外れていました。フォルダ内のデータは同期されません。</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1030"/>
+        <location filename="../src/gui/folder.cpp" line="1049"/>
         <source>The file %1 was created but was excluded from synchronization previously. It will not be synchronized.</source>
         <translation>ファイル %1 は作成されましたが、以前は同期対象から外れていました。ファイルは同期されません。</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1042"/>
+        <location filename="../src/gui/folder.cpp" line="1061"/>
         <source>Changes in synchronized folders could not be tracked reliably.
 
 This means that the synchronization client might not upload local changes immediately and will instead only scan for local changes and upload them occasionally (every two hours by default).
@@ -1130,12 +1134,12 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderItemUpdater</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitemupdater.cpp" line="94"/>
+        <location filename="../src/gui/FoldersGui/folderitemupdater.cpp" line="96"/>
         <source>There are unresolved conflicts.</source>
         <translation>未解決の競合があります。</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitemupdater.cpp" line="107"/>
+        <location filename="../src/gui/FoldersGui/folderitemupdater.cpp" line="109"/>
         <source>Sync error: %1</source>
         <translation>同期エラー: %1</translation>
     </message>
@@ -1548,7 +1552,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="86"/>
         <source>Add account...</source>
-        <translation type="unfinished"/>
+        <translation>アカウント追加...</translation>
     </message>
     <message>
         <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="91"/>
@@ -1755,7 +1759,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="56"/>
         <source>Add account…</source>
-        <translation type="unfinished"/>
+        <translation>アカウント追加...</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="66"/>
@@ -1887,7 +1891,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="104"/>
         <source>Additional logo defined by the organization</source>
-        <translation type="unfinished"/>
+        <translation>組織によって定義された追加ロゴ</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="188"/>
@@ -1927,7 +1931,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="305"/>
         <source>The server is not supported by this client.</source>
-        <translation type="unfinished"/>
+        <translation>このクライアントは、そのサーバーをサポートしていません。</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="315"/>
@@ -2389,12 +2393,12 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateUpdateMetaDataJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="1306"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="1305"/>
         <source>Could not update file : %1</source>
         <translation>ファイルを更新できませんでした : %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="1309"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="1308"/>
         <source>The file %1 is currently in use</source>
         <translation>ファイル %1 は現在使用中です</translation>
     </message>
@@ -2576,7 +2580,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="94"/>
         <source>Additional logo defined by the organization</source>
-        <translation type="unfinished"/>
+        <translation>組織によって定義された追加ロゴ</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="97"/>
@@ -2908,24 +2912,24 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location filename="../src/libsync/syncengine.cpp" line="359"/>
-        <location filename="../src/libsync/syncengine.cpp" line="441"/>
-        <location filename="../src/libsync/syncengine.cpp" line="472"/>
-        <location filename="../src/libsync/syncengine.cpp" line="537"/>
+        <location filename="../src/libsync/syncengine.cpp" line="433"/>
+        <location filename="../src/libsync/syncengine.cpp" line="464"/>
+        <location filename="../src/libsync/syncengine.cpp" line="529"/>
         <source>Cannot open the sync journal.</source>
         <translation>同期ジャーナルを開けません。</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="621"/>
+        <location filename="../src/libsync/syncengine.cpp" line="613"/>
         <source>Aborted due to %1</source>
         <translation>%1 により中止されました</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="807"/>
+        <location filename="../src/libsync/syncengine.cpp" line="799"/>
         <source>Disk space is low: Downloads that would reduce free space below %1 were skipped.</source>
         <translation>ディスクの空き容量が少なくなっています: 空き領域を %1 以下にするようなダウンロードはスキップされました。</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="814"/>
+        <location filename="../src/libsync/syncengine.cpp" line="806"/>
         <source>There is insufficient space available on the server for some uploads.</source>
         <translation>サーバーの空き容量が不足しているため、一部のアップロードができません。</translation>
     </message>
@@ -2939,11 +2943,6 @@ Note that using any logging command line options will override the settings.</so
         <location filename="../src/libsync/syncengine.cpp" line="377"/>
         <source>Unable to read the blacklist from the local database</source>
         <translation>ローカルデータベースからブラックリストを読み込みできません</translation>
-    </message>
-    <message>
-        <location filename="../src/libsync/syncengine.cpp" line="384"/>
-        <source>Unable to read from the sync journal.</source>
-        <translation>同期ジャーナルから読み込みできません</translation>
     </message>
 </context>
 <context>
@@ -2997,7 +2996,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::SyncJournalDb</name>
     <message>
-        <location filename="../src/common/syncjournaldb.cpp" line="906"/>
+        <location filename="../src/common/syncjournaldb.cpp" line="911"/>
         <source>Failed to connect database.</source>
         <translation>データベースへの接続に失敗しました。</translation>
     </message>
@@ -3127,7 +3126,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="115"/>
         <source>Additional logo defined by the organization</source>
-        <translation type="unfinished"/>
+        <translation>組織によって定義された追加ロゴ</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="221"/>
