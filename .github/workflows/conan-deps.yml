@@ -53,8 +53,6 @@ jobs:
         with:
           profile: linux-x86_64
           python: python3.12
-          oras-asset: linux_amd64
-          oras-sha256: 66fb0ad7206f3f6fa77ed5b552049d364ccf4b50b1684554f731f76302b52ca0
 
   macos:
     name: Install macos-armv8
@@ -82,5 +80,3 @@ jobs:
         with:
           profile: macos-armv8
           python: python3
-          oras-asset: darwin_arm64
-          oras-sha256: e2b25a53234e2471c5fc81936f957fa612065ab559c21834c02d8bfbc2f62b30
