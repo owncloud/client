@@ -1,0 +1,83 @@
+name: Install Conan dependencies from ghcr.io
+description: >-
+  Pulls the archive the GitLab dependency builder published for this commit's
+  Conan inputs and profile, restores it and runs conan install with no remote
+  and --build=never.
+
+inputs:
+  profile:
+    description: A profile in conan/profiles.
+    required: true
+  python:
+    description: The Python to run the fingerprint script and Conan's venv with.
+    required: true
+  oras-asset:
+    description: The oras release asset's platform, e.g. linux_amd64.
+    required: true
+  oras-sha256:
+    description: The SHA-256 of that asset, from the release's checksums file.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Test the fingerprint script
+      shell: bash
+      env:
+        PYTHON: ${{ inputs.python }}
+      run: $PYTHON -m unittest conan/test_fingerprint.py
+
+    - name: Install oras
+      shell: bash
+      env:
+        ORAS_VERSION: 1.3.6
+        ASSET: ${{ inputs.oras-asset }}
+        SHA256: ${{ inputs.oras-sha256 }}
+      run: |
+        mkdir -p "$RUNNER_TEMP/oras"
+        curl -fsSL -o "$RUNNER_TEMP/oras.tar.gz" \
+          "https://github.com/oras-project/oras/releases/download/v${ORAS_VERSION}/oras_${ORAS_VERSION}_${ASSET}.tar.gz"
+        echo "${SHA256}  $RUNNER_TEMP/oras.tar.gz" | sha256sum -c - 2>/dev/null \
+          || echo "${SHA256}  $RUNNER_TEMP/oras.tar.gz" | shasum -a 256 -c -
+        tar -xzf "$RUNNER_TEMP/oras.tar.gz" -C "$RUNNER_TEMP/oras" oras
+
+    - name: Install Conan
+      shell: bash
+      env:
+        PYTHON: ${{ inputs.python }}
+      run: |
+        # The exact pin of conanfile.py's required_conan_version ("=2.x.y").
+        version="$(sed -nE 's/^required_conan_version = "=([0-9]+\.[0-9]+\.[0-9]+)"$/\1/p' conanfile.py)"
+        [ -n "$version" ] || { echo "::error::conanfile.py has no exact required_conan_version"; exit 1; }
+        $PYTHON -m venv "$RUNNER_TEMP/conan"
+        "$RUNNER_TEMP/conan/bin/pip" install --quiet "conan==$version"
+
+    - name: Fetch the dependency archive
+      shell: bash
+      env:
+        PROFILE: ${{ inputs.profile }}
+        PYTHON: ${{ inputs.python }}
+        DEPS_REPOSITORY: ghcr.io/owncloud/client-deps
+      run: |
+        fp="$($PYTHON conan/fingerprint.py --profile "$PROFILE" --root .)"
+        ref="$DEPS_REPOSITORY:$PROFILE-$fp"
+        echo "archive: $ref"
+        mkdir -p "$RUNNER_TEMP/deps"
+        if ! "$RUNNER_TEMP/oras/oras" pull --output "$RUNNER_TEMP/deps" "$ref" 2> "$RUNNER_TEMP/pull.err"; then
+          cat "$RUNNER_TEMP/pull.err" >&2
+          if grep -q ': not found' "$RUNNER_TEMP/pull.err"; then
+            echo "::error::no dependency binaries for this commit's Conan inputs; a maintainer has to label the PR deps:build (fork PRs: have a maintainer carry the change over)"
+          fi
+          exit 1
+        fi
+        test -f "$RUNNER_TEMP/deps/cache.tgz"
+
+    - name: Install the dependencies
+      shell: bash
+      env:
+        PROFILE: ${{ inputs.profile }}
+      run: |
+        conan="$RUNNER_TEMP/conan/bin/conan"
+        "$conan" remote remove "*"
+        "$conan" cache restore "$RUNNER_TEMP/deps/cache.tgz"
+        "$conan" install . --lockfile=conan.lock -pr:a "conan/profiles/$PROFILE" --build=never

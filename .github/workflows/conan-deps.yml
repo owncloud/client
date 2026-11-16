@@ -1,0 +1,82 @@
+name: Conan dependencies
+
+# Installs the locked Conan dependencies from the archives the GitLab dependency
+# builder publishes to ghcr.io, with no credentials and no remote: proves that
+# every built profile's binaries install here. Building the client with them
+# replaces the Craft workflow later.
+
+on:
+  push:
+    branches:
+      - master
+      - '7.2'
+      - '6'
+      - feat/conan-dependencies
+    paths:
+      - conanfile.py
+      - conan.lock
+      - conan/**
+      - .github/workflows/conan-deps.yml
+      - .github/actions/conan-deps/**
+  pull_request:
+    paths:
+      - conanfile.py
+      - conan.lock
+      - conan/**
+      - .github/workflows/conan-deps.yml
+      - .github/actions/conan-deps/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: conan-deps-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  linux:
+    name: Install linux-x86_64
+    runs-on: ubuntu-24.04
+    container:
+      # linux-builder v0.2.0, the image the Linux packages are built in; by digest, never by tag.
+      image: ghcr.io/owncloud/client-linux-builder@sha256:89ca65c063180aa446b9c1c5987abacd6cb4c94e53b2af13fc2437687c78e7db
+      # The image's own user cannot write the workspace GitHub mounts.
+      options: --user root
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/conan-deps
+        with:
+          profile: linux-x86_64
+          python: python3.12
+          oras-asset: linux_amd64
+          oras-sha256: 66fb0ad7206f3f6fa77ed5b552049d364ccf4b50b1684554f731f76302b52ca0
+
+  macos:
+    name: Install macos-armv8
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Select Xcode with apple-clang 21
+        run: |
+          # conan/profiles/macos-armv8 says compiler.version=21.
+          for app in /Applications/Xcode*.app; do
+            major="$(DEVELOPER_DIR="$app/Contents/Developer" xcrun clang --version 2>/dev/null | sed -nE 's/^Apple clang version ([0-9]+).*/\1/p')"
+            if [ "$major" = 21 ]; then
+              sudo xcode-select -s "$app/Contents/Developer"
+              xcrun clang --version | head -n 1
+              exit 0
+            fi
+          done
+          echo "::error::no Xcode with apple-clang 21 on this runner image"
+          exit 1
+      - uses: ./.github/actions/conan-deps
+        with:
+          profile: macos-armv8
+          python: python3
+          oras-asset: darwin_arm64
+          oras-sha256: e2b25a53234e2471c5fc81936f957fa612065ab559c21834c02d8bfbc2f62b30
