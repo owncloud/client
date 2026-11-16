@@ -1,4 +1,4 @@
-"""Run with: python3 -m unittest conan/test_fingerprint.py"""
+"""Run with: python3 conan/test_fingerprint.py"""
 
 import pathlib
 import subprocess
