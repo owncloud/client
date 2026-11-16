@@ -37,22 +37,78 @@ concurrency:
 jobs:
   linux:
     name: Install linux-x86_64
+    # ubuntu-24.04's gcc 13 is the profile's compiler.version=13; the packages themselves were built
+    # in the GitLab builder image (AlmaLinux 8, gcc-toolset-13) and run on its newer glibc.
     runs-on: ubuntu-24.04
-    container:
-      # linux-builder v0.2.0, the image the Linux packages are built in; by digest, never by tag.
-      image: ghcr.io/owncloud/client-linux-builder@sha256:89ca65c063180aa446b9c1c5987abacd6cb4c94e53b2af13fc2437687c78e7db
-      # The image's own user cannot write the workspace GitHub mounts.
-      options: --user root
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # The PR head, not GitHub's merge commit: the dependency builder fingerprints the head.
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
+      - name: Install the system packages Conan checks
+        # The profile has tools.system.package_manager:mode=check: the apt packages of xorg/system,
+        # opengl/system, egl/system and xkeyboard-config/system at conan/recipes-commit must be there.
+        run: |
+          sudo apt-get update -qq
+          # python3-venv: the action creates Conan's venv with python3, which Debian splits it from.
+          sudo apt-get install -y -qq --no-install-recommends \
+            python3-venv \
+            libx11-dev \
+            libx11-xcb-dev \
+            libfontenc-dev \
+            libice-dev \
+            libsm-dev \
+            libxau-dev \
+            libxaw7-dev \
+            libxcomposite-dev \
+            libxcursor-dev \
+            libxdamage-dev \
+            libxdmcp-dev \
+            libxext-dev \
+            libxfixes-dev \
+            libxi-dev \
+            libxinerama-dev \
+            libxkbfile-dev \
+            libxmu-dev \
+            libxmuu-dev \
+            libxpm-dev \
+            libxrandr-dev \
+            libxrender-dev \
+            libxres-dev \
+            libxss-dev \
+            libxt-dev \
+            libxtst-dev \
+            libxv-dev \
+            libxxf86vm-dev \
+            libxcb-glx0-dev \
+            libxcb-render0-dev \
+            libxcb-render-util0-dev \
+            libxcb-xkb-dev \
+            libxcb-icccm4-dev \
+            libxcb-image0-dev \
+            libxcb-keysyms1-dev \
+            libxcb-randr0-dev \
+            libxcb-shape0-dev \
+            libxcb-sync-dev \
+            libxcb-xfixes0-dev \
+            libxcb-xinerama0-dev \
+            libxcb-dri3-dev \
+            uuid-dev \
+            libxcb-cursor-dev \
+            libxcb-dri2-0-dev \
+            libxcb-present-dev \
+            libxcb-composite0-dev \
+            libxcb-ewmh-dev \
+            libxcb-res0-dev \
+            libxcb-util-dev \
+            libgl-dev \
+            libegl-dev \
+            xkb-data
       - uses: ./.github/actions/conan-deps
         with:
           profile: linux-x86_64
-          python: python3.12
+          python: python3
 
   macos:
     name: Install macos-armv8
