@@ -36,8 +36,9 @@ jobs:
     # 8's own; gcc-toolset-13 links its newer libstdc++ parts statically, so it raises neither floor.
     runs-on: ubuntu-24.04
     steps:
-      # GitHub's merge commit, as in main.yml, so a PR is tested with its base. Its Conan inputs are the
-      # PR head's or the base's, which both have archives, unless both changed them.
+      # GitHub's merge commit, as in main.yml, so a PR is tested with its base. Its fingerprint inputs
+      # (see conan/fingerprint.py) match the PR head's or the base's, which both have archives, unless
+      # both changed any of them; then the PR needs a rebase and a new deps:build.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false

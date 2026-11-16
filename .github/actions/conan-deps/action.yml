@@ -66,7 +66,7 @@ runs:
         if ! oras pull --output "$RUNNER_TEMP/deps" "$ref" 2> "$RUNNER_TEMP/pull.err"; then
           cat "$RUNNER_TEMP/pull.err" >&2
           if grep -q ': not found' "$RUNNER_TEMP/pull.err"; then
-            echo "::error::no dependency binaries for this commit's Conan inputs; a maintainer has to label the PR deps:build (fork PRs: have a maintainer carry the change over); if the base branch changed them too, rebase the PR"
+            echo "::error::no dependency binaries for this commit's Conan inputs; a maintainer has to label the PR deps:build (fork PRs: have a maintainer carry the change over); if the base branch changed them too, rebase the PR and label it deps:build again"
           fi
           exit 1
         fi
