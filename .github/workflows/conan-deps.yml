@@ -39,6 +39,8 @@ jobs:
     name: Install linux-x86_64
     # No compiler runs (--build=never), so the runner need not match the GitLab builder image the
     # packages were built in (AlmaLinux 8, gcc-toolset-13); only the system packages below matter.
+    # Once the client is compiled here, the archive's tool binaries (cmake, Qt host tools) run on the
+    # runner: they need a glibc and libstdc++ at least as new as AlmaLinux 8's (2.28).
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
