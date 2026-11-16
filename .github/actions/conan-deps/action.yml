@@ -11,6 +11,13 @@ inputs:
   python:
     description: The Python to run the fingerprint script and Conan's venv with.
     required: true
+  generators-folder:
+    description: >-
+      If set, also generates CMakeDeps and CMakeToolchain (Ninja) there, to build
+      the client against the dependencies. On the command line, not in
+      conanfile.py, which is a fingerprint input.
+    required: false
+    default: ''
 
 runs:
   using: composite
@@ -63,8 +70,14 @@ runs:
       shell: bash
       env:
         PROFILE: ${{ inputs.profile }}
+        GENERATORS_FOLDER: ${{ inputs.generators-folder }}
       run: |
         conan="$RUNNER_TEMP/conan/bin/conan"
+        generators=()
+        if [ -n "$GENERATORS_FOLDER" ]; then
+          generators=(-g CMakeDeps -g CMakeToolchain --output-folder "$GENERATORS_FOLDER"
+            -c tools.cmake.cmaketoolchain:generator=Ninja)
+        fi
         "$conan" remote remove "*"
         "$conan" cache restore "$RUNNER_TEMP/deps/cache.tgz"
-        "$conan" install . --lockfile=conan.lock -pr:a "conan/profiles/$PROFILE" --build=never
+        "$conan" install . --lockfile=conan.lock -pr:a "conan/profiles/$PROFILE" --build=never "${generators[@]}"
