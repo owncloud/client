@@ -20,7 +20,7 @@
 
 #include <QIcon>
 #include <QList>
-#include <QtQmlIntegration>
+#include <QtQmlIntegration/QtQmlIntegration>
 
 namespace OCC {
 namespace GraphApi {
