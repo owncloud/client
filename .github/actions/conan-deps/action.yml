@@ -25,7 +25,9 @@ runs:
       shell: bash
       env:
         PYTHON: ${{ inputs.python }}
-      run: $PYTHON -m unittest conan/test_fingerprint.py
+      # As a script: `-m unittest conan/...` would import it as conan.test_fingerprint, which an
+      # installed Conan package shadows.
+      run: $PYTHON conan/test_fingerprint.py
 
     - name: Install oras
       shell: bash
@@ -37,8 +39,8 @@ runs:
         mkdir -p "$RUNNER_TEMP/oras"
         curl -fsSL -o "$RUNNER_TEMP/oras.tar.gz" \
           "https://github.com/oras-project/oras/releases/download/v${ORAS_VERSION}/oras_${ORAS_VERSION}_${ASSET}.tar.gz"
-        echo "${SHA256}  $RUNNER_TEMP/oras.tar.gz" | sha256sum -c - 2>/dev/null \
-          || echo "${SHA256}  $RUNNER_TEMP/oras.tar.gz" | shasum -a 256 -c -
+        if command -v sha256sum >/dev/null; then sha256=(sha256sum); else sha256=(shasum -a 256); fi
+        echo "${SHA256}  $RUNNER_TEMP/oras.tar.gz" | "${sha256[@]}" -c -
         tar -xzf "$RUNNER_TEMP/oras.tar.gz" -C "$RUNNER_TEMP/oras" oras
 
     - name: Install Conan
