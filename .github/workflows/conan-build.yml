@@ -1,0 +1,125 @@
+name: Conan build
+
+# Builds the client against the locked Conan dependencies from ghcr.io (see
+# conan-deps.yml) and runs its tests. Runs on every change, next to the Craft
+# build in main.yml, which it replaces later; Linux first.
+
+on:
+  push:
+    branches:
+      - master
+      - '7.2'
+      - '6'
+      - feat/conan-dependencies
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: conan-build-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  linux:
+    name: Build and test linux-x86_64
+    # The packages were built in the GitLab builder image (AlmaLinux 8, gcc-toolset-13); the client is
+    # compiled here with the runner's gcc 13, and the archive's tool binaries (cmake, Qt host tools) run
+    # on the runner: they need glibc >= 2.28 and gcc 8's libstdc++ (GLIBCXX_3.4.25) or newer, AlmaLinux
+    # 8's own; gcc-toolset-13 links its newer libstdc++ parts statically, so it raises neither floor.
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # The PR head, not GitHub's merge commit: the dependency builder fingerprints the head.
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install the system packages Conan checks
+        # The profile has tools.system.package_manager:mode=check: the apt packages of xorg/system,
+        # opengl/system, egl/system and xkeyboard-config/system at conan/recipes-commit must be there.
+        run: |
+          sudo apt-get update -qq
+          # python3-venv: the action creates Conan's venv with python3, which Debian splits it from.
+          # pkgconf: the system recipes' package_info() runs pkg-config.
+          # ninja-build: the generator conan-deps sets for CMakeToolchain.
+          sudo apt-get install -y -qq --no-install-recommends \
+            python3-venv \
+            pkgconf \
+            libx11-dev \
+            libx11-xcb-dev \
+            libfontenc-dev \
+            libice-dev \
+            libsm-dev \
+            libxau-dev \
+            libxaw7-dev \
+            libxcomposite-dev \
+            libxcursor-dev \
+            libxdamage-dev \
+            libxdmcp-dev \
+            libxext-dev \
+            libxfixes-dev \
+            libxi-dev \
+            libxinerama-dev \
+            libxkbfile-dev \
+            libxmu-dev \
+            libxmuu-dev \
+            libxpm-dev \
+            libxrandr-dev \
+            libxrender-dev \
+            libxres-dev \
+            libxss-dev \
+            libxt-dev \
+            libxtst-dev \
+            libxv-dev \
+            libxxf86vm-dev \
+            libxcb-glx0-dev \
+            libxcb-render0-dev \
+            libxcb-render-util0-dev \
+            libxcb-xkb-dev \
+            libxcb-icccm4-dev \
+            libxcb-image0-dev \
+            libxcb-keysyms1-dev \
+            libxcb-randr0-dev \
+            libxcb-shape0-dev \
+            libxcb-sync-dev \
+            libxcb-xfixes0-dev \
+            libxcb-xinerama0-dev \
+            libxcb-dri3-dev \
+            uuid-dev \
+            libxcb-cursor-dev \
+            libxcb-dri2-0-dev \
+            libxcb-present-dev \
+            libxcb-composite0-dev \
+            libxcb-ewmh-dev \
+            libxcb-res0-dev \
+            libxcb-util-dev \
+            libgl-dev \
+            libegl-dev \
+            xkb-data \
+            ninja-build
+      - uses: $/.github/actions/conan-deps
+        with:
+          profile: linux-x86_64
+          python: python3
+          generators-folder: build
+      - name: Build
+        run: |
+          # conanbuild.sh puts the locked cmake on PATH; the compiler is the runner's gcc 13,
+          # which conan/profiles/linux-x86_64 names.
+          source build/conanbuild.sh
+          cmake --preset conan-release -DBUILD_TESTING=ON -DFORCE_ASSERTS=ON
+          cmake --build --preset conan-release
+      - name: Test
+        run: |
+          # conanrun.sh: the shared Qt, glib and libsecret from the Conan cache.
+          source build/conanbuild.sh
+          source build/conanrun.sh
+          ctest --preset conan-release --output-on-failure
+      - name: Upload the test log
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: conan-build-linux-x86_64-test-log
+          path: build/Testing/Temporary/LastTest.log
+          if-no-files-found: ignore
