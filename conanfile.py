@@ -60,8 +60,8 @@ class OwncloudClientConan(ConanFile):
         self.requires("kdsingleapplication/1.2.0")
         self.requires("libregraphapi/1.0.4")
         self.requires("nlohmann_json/3.11.3")
-        # The recipes' root conanfile.py still names 3.4.7, which their
-        # openssl recipe no longer offers; 3.4.8 is the 3.4 patch it has.
+        # 3.4.8: the 3.4 patch the pinned openssl recipe offers. (The recipes'
+        # former root conanfile.py named 3.4.7, which the recipe no longer has.)
         self.requires("openssl/3.4.8")
         self.requires("qt/6.10.3")
         self.requires("qtkeychain/0.15.0")
