@@ -1,7 +1,7 @@
 name: Conan build
 
 # Builds the client against the locked Conan dependencies from ghcr.io (see
-# conan-deps.yml) and runs its tests. Runs on every change, next to the Craft
+# conan-deps.yml) and runs its tests. Runs on every code change, next to the Craft
 # build in main.yml, which it replaces later; Linux first.
 
 on:
@@ -11,7 +11,13 @@ on:
       - '7.2'
       - '6'
       - feat/conan-dependencies
+    paths-ignore:
+      - '**.md'
+      - changelog/**
   pull_request:
+    paths-ignore:
+      - '**.md'
+      - changelog/**
   workflow_dispatch:
 
 permissions:
@@ -30,10 +36,10 @@ jobs:
     # 8's own; gcc-toolset-13 links its newer libstdc++ parts statically, so it raises neither floor.
     runs-on: ubuntu-24.04
     steps:
+      # GitHub's merge commit, as in main.yml, so a PR is tested with its base. Its Conan inputs are the
+      # PR head's or the base's, which both have archives, unless both changed them.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          # The PR head, not GitHub's merge commit: the dependency builder fingerprints the head.
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       - name: Install the system packages Conan checks
         # The profile has tools.system.package_manager:mode=check: the apt packages of xorg/system,
@@ -42,7 +48,7 @@ jobs:
           sudo apt-get update -qq
           # python3-venv: the action creates Conan's venv with python3, which Debian splits it from.
           # pkgconf: the system recipes' package_info() runs pkg-config.
-          # ninja-build: the generator conan-deps sets for CMakeToolchain.
+          # ninja-build: the cmake-generator passed to conan-deps below.
           sudo apt-get install -y -qq --no-install-recommends \
             python3-venv \
             pkgconf \
@@ -103,6 +109,7 @@ jobs:
           profile: linux-x86_64
           python: python3
           generators-folder: build
+          cmake-generator: Ninja
       - name: Build
         run: |
           # conanbuild.sh puts the locked cmake on PATH; the compiler is the runner's gcc 13,
