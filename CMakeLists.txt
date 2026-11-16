@@ -27,7 +27,7 @@ find_package(QT 6.8 NAMES Qt6 COMPONENTS Core REQUIRED)
 
 find_package(Qt6 COMPONENTS Core Concurrent Network Widgets Xml Quick QuickWidgets QuickControls2 REQUIRED)
 find_package(Qt6 COMPONENTS LinguistTools REQUIRED)
-get_target_property (QT_QMAKE_EXECUTABLE Qt6::qmake IMPORTED_LOCATION)
+get_target_property (QT_QMAKE_EXECUTABLE Qt6::qmake LOCATION)
 message(STATUS "Using Qt ${QT_VERSION} (${QT_QMAKE_EXECUTABLE})")
 
 if (UNIX AND NOT APPLE)
