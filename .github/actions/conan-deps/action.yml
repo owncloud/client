@@ -41,16 +41,9 @@ runs:
       with:
         version: 1.3.6
 
-    - name: Install Conan
-      shell: bash
-      env:
-        PYTHON: ${{ inputs.python }}
-      run: |
-        # The exact pin of conanfile.py's required_conan_version ("=2.x.y").
-        version="$(sed -nE 's/^required_conan_version = "=([0-9]+\.[0-9]+\.[0-9]+)"$/\1/p' conanfile.py)"
-        [ -n "$version" ] || { echo "::error::conanfile.py has no exact required_conan_version"; exit 1; }
-        $PYTHON -m venv "$RUNNER_TEMP/conan"
-        "$RUNNER_TEMP/conan/bin/pip" install --quiet "conan==$version"
+    - uses: $/.github/actions/setup-conan
+      with:
+        python: ${{ inputs.python }}
 
     - name: Fetch the dependency archive
       shell: bash
