@@ -115,6 +115,7 @@ jobs:
           python-version: '3.12'
           update-environment: false
       - uses: $/.github/actions/conan-deps
+        id: deps
         with:
           profile: linux-x86_64
           python: ${{ steps.python.outputs.python-path }}
@@ -140,6 +141,16 @@ jobs:
           source build/conanbuild.sh
           source build/conanrun.sh
           ctest --preset conan-release --output-on-failure
+      - name: QML format lint
+        # Here rather than in format-lint.yml: qmlformat has to be the one of the Qt the client builds
+        # against, which only conan-deps installs. Runs even if the build or the tests failed.
+        if: ${{ !cancelled() && steps.deps.outcome == 'success' }}
+        run: |
+          # conanrun.sh: the Conan Qt's bin on PATH and its libraries on LD_LIBRARY_PATH.
+          source build/conanrun.sh
+          qmlformat --version
+          git ls-files -z '*.qml' | xargs -0 -r -n1 qmlformat -i
+          git diff --exit-code -- '*.qml'
       - name: Upload the test log
         if: failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

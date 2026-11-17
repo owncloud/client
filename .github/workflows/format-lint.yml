@@ -1,0 +1,43 @@
+name: Format lint
+
+# clang-format on the lines a PR changes, without Craft. The QML format lint runs in the Linux
+# job of conan-build.yml, with the qmlformat of the Qt the client builds against.
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: format-lint-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  clang-format:
+    name: clang-format
+    runs-on: ubuntu-24.04
+    steps:
+      # GitHub's merge commit and its first parent, the base it was merged onto (hence depth 2):
+      # the lines that differ between the two are the PR's.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        id: python
+        with:
+          python-version: '3.12'
+          update-environment: false
+      - name: Install clang-format
+        env:
+          PYTHON: ${{ steps.python.outputs.python-path }}
+        run: |
+          # LLVM 20.1.7, the clang-format of Craft's libs/llvm that main.yml used.
+          "$PYTHON" -m venv "$RUNNER_TEMP/clang-format"
+          "$RUNNER_TEMP/clang-format/bin/pip" install --quiet clang-format==20.1.7
+      - name: Check the format of the changed lines
+        run: |
+          # git-clang-format and clang-format come from the venv; --diff prints what clang-format
+          # would change and exits 1 if that is anything.
+          PATH="$RUNNER_TEMP/clang-format/bin:$PATH" git clang-format --diff HEAD^1
