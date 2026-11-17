@@ -28,7 +28,7 @@
 #                   request's target branch; that job does not exist yet.
 #                   No conan.lock at GIT-REF counts as empty.
 #
-# How it works: once per profile (and for the cross build below) it runs
+# How it works: once per profile it runs
 #   conan lock create . -pr:a <profile> --lockfile=conan.lock --lockfile-clean --update
 # starting from the existing conan.lock (if any), so only what changed moves
 # and unused entries are dropped. -pr:a sets the host and the build profile,
@@ -83,8 +83,6 @@
 # ("name/version#revision"), which Conan accepts in a lockfile; the revision
 # alone identifies the recipe. --check compares the parsed JSON with
 # timestamps stripped and every list sorted.
-#
-# Needs: conan (the version pinned in conanfile.py), git, python3.
 
 set -euo pipefail
 
@@ -183,10 +181,10 @@ conan remote add "$remote" "$recipes_dir" --type=local-recipes-index
 # macos-armv8 is also the build profile of the cross build; its [options] must
 # be the conanfile's default_options, so that the build-context Qt has the
 # modules whose host tools the cross-built Qt needs (see the profile). Options
-# that configure() sets (Linux only today) are not compared; a macOS one there
-# needs adding to the profile by hand.
+# that configure() sets (Linux only today) are not compared, and the profile
+# may hold nothing else: a Qt option macOS needs belongs in default_options.
 # --lockfile= keeps Conan from reading ./conan.lock, which may be mid-merge.
-conan inspect . --lockfile= --format=json > "$work/inspect.json" \
+conan inspect . --lockfile= --format=json -verror > "$work/inspect.json" \
     || die "conan inspect failed on conanfile.py (its error is above)"
 python3 -I - "$work/inspect.json" conan/profiles/macos-armv8 <<'EOF' \
     || die "conan/profiles/macos-armv8 [options] differ from conanfile.py default_options; make them the same"
@@ -210,6 +208,8 @@ EOF
 
 base=()
 if [ -f conan.lock ]; then
+    python3 -I -c 'import json, sys; json.load(open(sys.argv[1], encoding="utf-8"))' conan.lock 2>/dev/null \
+        || die "conan.lock is not valid JSON (an unresolved merge?); resolve it, or take one side, then rerun"
     base=(--lockfile=conan.lock)
 else
     [ "$check" = 0 ] || die "no conan.lock to check"
