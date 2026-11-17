@@ -59,8 +59,7 @@ jobs:
           ref: ${{ steps.recipes.outputs.commit }}
           path: .conan-recipes
           persist-credentials: false
-      # A Python with venv (the pin main.yml uses on Windows); the runner's python3 needs
-      # python3-venv from apt.
+      # The Python for Conan's venv, the same in every Conan job.
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: '3.12'
