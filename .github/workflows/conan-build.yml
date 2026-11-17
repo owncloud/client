@@ -47,13 +47,11 @@ jobs:
         # opengl/system, egl/system and xkeyboard-config/system at conan/recipes-commit must be there.
         run: |
           sudo apt-get update -qq
-          # python3-venv: the action creates Conan's venv with python3, which Debian splits it from.
           # pkgconf: the system recipes' package_info() runs pkg-config.
           # ninja-build: the cmake-generator passed to conan-deps below.
           # libopengl0: libOpenGL.so.0, which the packaged Qt links (built against libglvnd);
           # libgl-dev brings only libGL, and without it every test fails to start.
           sudo apt-get install -y -qq --no-install-recommends \
-            python3-venv \
             pkgconf \
             libx11-dev \
             libx11-xcb-dev \
@@ -108,10 +106,14 @@ jobs:
             xkb-data \
             ninja-build \
             libopengl0
+      # The Python for Conan's venv and the fingerprint script, the same in every Conan job.
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.12'
       - uses: $/.github/actions/conan-deps
         with:
           profile: linux-x86_64
-          python: python3
+          python: python
           generators-folder: build
           cmake-generator: Ninja
       - name: Build
@@ -166,10 +168,14 @@ jobs:
       - name: Install Ninja
         # The cmake-generator passed to conan-deps below.
         run: command -v ninja || brew install ninja
+      # The Python for Conan's venv and the fingerprint script, the same in every Conan job.
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.12'
       - uses: $/.github/actions/conan-deps
         with:
           profile: macos-armv8
-          python: python3
+          python: python
           generators-folder: build
           cmake-generator: Ninja
       - name: Build
