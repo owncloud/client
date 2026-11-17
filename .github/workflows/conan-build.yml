@@ -51,6 +51,7 @@ jobs:
           # ninja-build: the cmake-generator passed to conan-deps below.
           # libopengl0: libOpenGL.so.0, which the packaged Qt links (built against libglvnd);
           # libgl-dev brings only libGL, and without it every test fails to start.
+          # dbus-daemon: dbus-run-session for the tests below.
           sudo apt-get install -y -qq --no-install-recommends \
             python3-venv \
             pkgconf \
@@ -106,7 +107,8 @@ jobs:
             libegl-dev \
             xkb-data \
             ninja-build \
-            libopengl0
+            libopengl0 \
+            dbus-daemon
       - uses: $/.github/actions/conan-deps
         with:
           profile: linux-x86_64
@@ -122,10 +124,18 @@ jobs:
           cmake --build --preset conan-release
       - name: Test
         run: |
-          # conanrun.sh: the shared Qt, glib and libsecret from the Conan cache.
-          source build/conanbuild.sh
-          source build/conanrun.sh
-          ctest --preset conan-release --output-on-failure
+          # AppConfigTest writes the system config /etc/ownCloud/ownCloud.ini; Craft's job runs as root.
+          sudo install -d -o "$(id -u)" -g "$(id -g)" /etc/ownCloud
+          # A session bus, so that the Conan qtkeychain's libsecret falls back to the plaintext store
+          # at once instead of after seconds: CredentialManagerTest gives each job 1 s.
+          echo "DBUS_SESSION_BUS_ADDRESS outside dbus-run-session: ${DBUS_SESSION_BUS_ADDRESS-unset}"
+          # The bus starts before the Conan environment, so the system dbus-daemon never loads
+          # libraries from the Conan cache; conanrun.sh: the shared Qt, glib and libsecret.
+          dbus-run-session -- bash -euo pipefail -c '
+            source build/conanbuild.sh
+            source build/conanrun.sh
+            ctest --preset conan-release --output-on-failure
+          '
       - name: Upload the test log
         if: failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
