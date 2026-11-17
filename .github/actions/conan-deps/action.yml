@@ -71,6 +71,7 @@ runs:
       shell: bash
       env:
         PROFILE: ${{ inputs.profile }}
+        PYTHON: ${{ inputs.python }}
         GENERATORS_FOLDER: ${{ inputs.generators-folder }}
         CMAKE_GENERATOR: ${{ inputs.cmake-generator }}
         CONAN_BIN_DIR: ${{ steps.conan.outputs.bin-dir }}
@@ -90,4 +91,12 @@ runs:
         fi
         "$conan" remote remove "*"
         "$conan" cache restore "$RUNNER_TEMP/deps/cache.tgz"
-        "$conan" install . --lockfile=conan.lock -pr:a "conan/profiles/$PROFILE" --build=never "${generators[@]}"
+        # As the dependency builder built it: a cross-built profile (macos-x86_64) with its build
+        # profile as -pr:b, so the build-context binaries are the archive's.
+        build_profile="$($PYTHON conan/fingerprint.py --profile "$PROFILE" --print-build-profile)"
+        if [ "$build_profile" = "$PROFILE" ]; then
+          profiles=(-pr:a "conan/profiles/$PROFILE")
+        else
+          profiles=(-pr:h "conan/profiles/$PROFILE" -pr:b "conan/profiles/$build_profile")
+        fi
+        "$conan" install . --lockfile=conan.lock "${profiles[@]}" --build=never "${generators[@]}"

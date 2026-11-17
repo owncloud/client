@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
 """Fingerprint of the Conan inputs of one profile: the tag of its dependency archive on ghcr.io.
 
+A cross-built profile (BUILD_PROFILES) also hashes its build profile's file, so a change to
+conan/profiles/macos-armv8 also needs new macos-x86_64 binaries. --print-build-profile prints the
+profile to pass as -pr:b (the profile itself unless it is cross-built).
+
 The archive is ghcr.io/owncloud/client-deps:<profile>-<fingerprint>, published by the GitLab dependency
 builder, which computes the same value (its depbuilder/fingerprint.py; conan/test_fingerprint.py pins
 both to one fixture). Any change to these files needs new dependency binaries.
 
 Usage: python3 conan/fingerprint.py --profile NAME --root .
+       python3 conan/fingerprint.py --profile NAME --print-build-profile
 """
 
 import argparse
@@ -42,9 +47,13 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("--profile", required=True)
     parser.add_argument("--root", type=pathlib.Path, default=pathlib.Path("."))
+    parser.add_argument("--print-build-profile", action="store_true")
     args = parser.parse_args()
     if not PROFILE_RE.fullmatch(args.profile):
         parser.error(f"invalid profile name {args.profile!r}")
+    if args.print_build_profile:
+        print(BUILD_PROFILES.get(args.profile, args.profile))
+        return 0
     paths = input_paths(args.profile)
     try:
         files = {path: (args.root / path).read_bytes() for path in paths}
