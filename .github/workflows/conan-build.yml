@@ -130,6 +130,7 @@ jobs:
           cmake --preset conan-release -DBUILD_TESTING=ON -DFORCE_ASSERTS=ON -DWITH_AUTO_UPDATER=ON
           cmake --build --preset conan-release
       - name: Test
+        id: test
         run: |
           # AppConfigTest writes the system config /etc/ownCloud/ownCloud.ini; Craft's job runs as root.
           sudo install -d -o "$(id -u)" -g "$(id -g)" /etc/ownCloud
@@ -152,7 +153,8 @@ jobs:
           git ls-files -z '*.qml' | xargs -0 -r -n1 qmlformat -i
           git diff --exit-code -- '*.qml'
       - name: Upload the test log
-        if: failure()
+        # Only for failed tests, not for a failed QML format lint.
+        if: ${{ failure() && steps.test.outcome == 'failure' }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: conan-build-linux-x86_64-test-log
