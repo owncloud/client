@@ -174,8 +174,10 @@ jobs:
       - name: Build
         run: |
           # conanbuild.sh puts the locked cmake on PATH; the compiler is the Xcode selected above.
+          # WITH_AUTO_UPDATER: builds the Sparkle updater (src/gui/updater), so the client is
+          # compiled and linked against the Conan Sparkle framework. Craft's macOS job leaves it off.
           source build/conanbuild.sh
-          cmake --preset conan-release -DBUILD_TESTING=ON -DFORCE_ASSERTS=ON
+          cmake --preset conan-release -DBUILD_TESTING=ON -DFORCE_ASSERTS=ON -DWITH_AUTO_UPDATER=ON
           cmake --build --preset conan-release
       - name: Test
         run: |
