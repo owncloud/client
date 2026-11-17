@@ -8,8 +8,7 @@ conan/recipes-commit.
 conan.lock covers all four platforms in conan/profiles/, and macos-x86_64
 cross-built on an arm64 Mac. It is only ever changed with
 conan/update-lock.sh; run it after any change to the requirements or options
-below. default_options are repeated in conan/profiles/macos-armv8, the cross
-build's build profile; update-lock.sh checks the two match.
+below.
 
 The module level must stay free of dynamic code: CI reads the Conan version
 pin below statically, without importing this file.
