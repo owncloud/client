@@ -16,10 +16,19 @@ import sys
 
 INPUT_PATHS = ("conanfile.py", "conan.lock", "conan/recipes-commit")
 PROFILE_RE = re.compile(r"[a-z0-9][a-z0-9_-]*")
+# The build profile (-pr:b) of a cross-built profile, as in the dependency builder's
+# depbuilder/config.py: its file is an input too. Any other profile is its own.
+BUILD_PROFILES = {"macos-x86_64": "macos-armv8"}
+
+
+def input_paths(profile):
+    paths = (*INPUT_PATHS, f"conan/profiles/{profile}")
+    build = BUILD_PROFILES.get(profile, profile)
+    return paths if build == profile else (*paths, f"conan/profiles/{build}")
 
 
 def fingerprint(profile, files):
-    paths = (*INPUT_PATHS, f"conan/profiles/{profile}")
+    paths = input_paths(profile)
     missing = [path for path in paths if path not in files]
     if missing:
         raise KeyError(f"missing fingerprint input: {', '.join(missing)}")
@@ -36,7 +45,7 @@ def main():
     args = parser.parse_args()
     if not PROFILE_RE.fullmatch(args.profile):
         parser.error(f"invalid profile name {args.profile!r}")
-    paths = (*INPUT_PATHS, f"conan/profiles/{args.profile}")
+    paths = input_paths(args.profile)
     try:
         files = {path: (args.root / path).read_bytes() for path in paths}
     except OSError as error:
