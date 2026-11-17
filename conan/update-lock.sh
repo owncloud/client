@@ -24,8 +24,9 @@
 #                   three rules described below and reports every violation.
 #   --base GIT-REF  With --check: the commit whose conan.lock the change
 #                   starts from, read with `git show GIT-REF:conan.lock`.
-#                   Default: origin/master. A CI job should pass the pull
-#                   request's target branch; that job does not exist yet.
+#                   Default: origin/master. CI (.github/workflows/conan-lock.yml)
+#                   passes the pull request's target branch, or the commit a
+#                   push started from.
 #                   No conan.lock at GIT-REF counts as empty.
 #
 # How it works: once per profile it runs

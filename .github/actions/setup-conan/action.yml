@@ -2,7 +2,8 @@ name: Install the pinned Conan
 description: >-
   Installs the exact Conan version that conanfile.py pins with
   required_conan_version into a venv in $RUNNER_TEMP/conan; the conan
-  executable is $RUNNER_TEMP/conan/bin/conan.
+  executable is $RUNNER_TEMP/conan/bin/conan. Linux and macOS runners only: a
+  Windows venv puts pip and conan in Scripts\, not bin/.
 
 inputs:
   python:
