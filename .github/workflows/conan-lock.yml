@@ -1,0 +1,92 @@
+name: Conan lock
+
+# The drift check: conan.lock must be exactly what conan/update-lock.sh produces from
+# conanfile.py, the profiles and the recipes at conan/recipes-commit, for all four
+# platforms. Resolving builds nothing, so one Linux runner checks every platform.
+
+on:
+  push:
+    branches:
+      - master
+      - '7.2'
+      - '6'
+    paths:
+      - conanfile.py
+      - conan.lock
+      - conan/**
+      - .github/workflows/conan-lock.yml
+      - .github/actions/setup-conan/**
+  pull_request:
+    paths:
+      - conanfile.py
+      - conan.lock
+      - conan/**
+      - .github/workflows/conan-lock.yml
+      - .github/actions/setup-conan/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: conan-lock-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  check:
+    name: Lock drift check
+    runs-on: ubuntu-24.04
+    steps:
+      # The PR head, not GitHub's merge commit: the lock under review is the PR's own.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Read the pinned recipes commit
+        id: recipes
+        run: |
+          # It comes from the change under test: accept a full commit SHA only.
+          commit="$(tr -d '[:space:]' < conan/recipes-commit)"
+          [[ "$commit" =~ ^[0-9a-f]{40}$ ]] || { echo "::error::conan/recipes-commit is not a 40-character commit SHA"; exit 1; }
+          echo "commit=$commit" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: owncloud/conan-center-index
+          ref: ${{ steps.recipes.outputs.commit }}
+          path: .conan-recipes
+          persist-credentials: false
+      - name: Install python3-venv
+        # The action below creates Conan's venv with python3, which Debian splits it from.
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends python3-venv
+      - uses: $/.github/actions/setup-conan
+        with:
+          python: python3
+      - name: Fetch the base lock
+        id: base
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE_REF: ${{ github.base_ref }}
+          BEFORE: ${{ github.event.before }}
+        run: |
+          # Rules 2 and 3 of the check compare against the lock the change starts from: the PR's
+          # target branch, or the commit a push started from. A manual run, or the first push of a
+          # branch, has none, so it compares the lock with itself: only rule 1 (regenerating it
+          # changes nothing) can fail then.
+          if [ "$EVENT" = pull_request ]; then
+            git fetch --no-tags --depth=1 origin "refs/heads/$BASE_REF:refs/remotes/origin/$BASE_REF"
+            echo "ref=origin/$BASE_REF" >> "$GITHUB_OUTPUT"
+          elif [ "$EVENT" = push ] && [ -n "$BEFORE" ] && [ "$BEFORE" != 0000000000000000000000000000000000000000 ]; then
+            git fetch --no-tags --depth=1 origin "$BEFORE"
+            echo "ref=$BEFORE" >> "$GITHUB_OUTPUT"
+          else
+            echo "ref=HEAD" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Check conan.lock
+        env:
+          OC_RECIPES_DIR: .conan-recipes
+          BASE: ${{ steps.base.outputs.ref }}
+        run: |
+          # update-lock.sh runs conan from PATH.
+          PATH="$RUNNER_TEMP/conan/bin:$PATH" conan/update-lock.sh --check --base "$BASE"
