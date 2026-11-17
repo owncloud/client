@@ -217,7 +217,7 @@ Utilità desktop per la sincronizzazione dei file.</translation>
         <translation>, ⬆️ %1/s</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="211"/>
+        <location filename="../src/gui/FoldersGui/folderitem.cpp" line="213"/>
         <source>%1, sync status: %2</source>
         <extracomment>Accessible text, read out by a screen reader.</extracomment>
         <translation>%1, stato sincronizzazione: %2</translation>
@@ -951,13 +951,13 @@ L&apos;aggiornamento verrà eseguito in background e sovrascriverà il file AppI
 <context>
     <name>OCC::DiscoverySingleDirectoryJob</name>
     <message>
-        <location filename="../src/libsync/discoveryphase.cpp" line="276"/>
+        <location filename="../src/libsync/discoveryphase.cpp" line="271"/>
         <source>The account was deleted before we could start the propfind job</source>
         <translation>L&apos;account è stato eliminato prima che potessimo avviare il job propfind</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discoveryphase.cpp" line="309"/>
-        <location filename="../src/libsync/discoveryphase.cpp" line="421"/>
+        <location filename="../src/libsync/discoveryphase.cpp" line="304"/>
+        <location filename="../src/libsync/discoveryphase.cpp" line="416"/>
         <source>Server error: PROPFIND reply is not XML formatted!</source>
         <translation>Errore del server: La risposta di PROPFIND non è in formato XML!</translation>
     </message>
@@ -965,22 +965,22 @@ L&apos;aggiornamento verrà eseguito in background e sovrascriverà il file AppI
 <context>
     <name>OCC::DiscoverySingleLocalDirectoryJob</name>
     <message>
-        <location filename="../src/libsync/discoveryphase.cpp" line="208"/>
+        <location filename="../src/libsync/discoveryphase.cpp" line="203"/>
         <source>Error while opening directory %1</source>
         <translation>Errore durante l&apos;apertura della cartella %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discoveryphase.cpp" line="210"/>
+        <location filename="../src/libsync/discoveryphase.cpp" line="205"/>
         <source>Directory not accessible on client, permission denied</source>
         <translation>Directory non accessibile sul client, autorizzazione negata</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discoveryphase.cpp" line="214"/>
+        <location filename="../src/libsync/discoveryphase.cpp" line="209"/>
         <source>Directory not found: %1</source>
         <translation>Cartella non trovata: %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/discoveryphase.cpp" line="249"/>
+        <location filename="../src/libsync/discoveryphase.cpp" line="244"/>
         <source>Error while reading directory %1</source>
         <translation>Errore durante la lettura della cartella %1</translation>
     </message>
@@ -1098,27 +1098,27 @@ L&apos;aggiornamento verrà eseguito in background e sovrascriverà il file AppI
         <translation>Sincronizza attività</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="634"/>
+        <location filename="../src/gui/folder.cpp" line="644"/>
         <source>Switching VFS mode on folder &apos;%1&apos;</source>
         <translation>Cambio della modalità VFS sulla cartella &apos;%1&apos;</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="832"/>
+        <location filename="../src/gui/folder.cpp" line="842"/>
         <source>Could not read system exclude file</source>
         <translation>Impossibile leggere il file di esclusione di sistema</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1027"/>
+        <location filename="../src/gui/folder.cpp" line="1046"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translation>La cattella %1 è stata creata ma esclusa dalla sincronizzazione in prevecedenza. I dati al suo interno non saranno sincronzzati.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1030"/>
+        <location filename="../src/gui/folder.cpp" line="1049"/>
         <source>The file %1 was created but was excluded from synchronization previously. It will not be synchronized.</source>
         <translation>Il file %1 è stato creato ma escluso in precedenza dalla sincronizzazione. Non sarà quindi sincronizzato.</translation>
     </message>
     <message>
-        <location filename="../src/gui/folder.cpp" line="1042"/>
+        <location filename="../src/gui/folder.cpp" line="1061"/>
         <source>Changes in synchronized folders could not be tracked reliably.
 
 This means that the synchronization client might not upload local changes immediately and will instead only scan for local changes and upload them occasionally (every two hours by default).
@@ -1134,12 +1134,12 @@ Ciò significa che il client di sincronizzazione potrebbe non inviare le modific
 <context>
     <name>OCC::FolderItemUpdater</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitemupdater.cpp" line="94"/>
+        <location filename="../src/gui/FoldersGui/folderitemupdater.cpp" line="96"/>
         <source>There are unresolved conflicts.</source>
         <translation>Ci sono dei conflitti irrisolti.</translation>
     </message>
     <message>
-        <location filename="../src/gui/FoldersGui/folderitemupdater.cpp" line="107"/>
+        <location filename="../src/gui/FoldersGui/folderitemupdater.cpp" line="109"/>
         <source>Sync error: %1</source>
         <translation type="unfinished"/>
     </message>
@@ -2393,12 +2393,12 @@ Tieni presente che l&apos;utilizzo di qualsiasi opzione della riga di comando di
 <context>
     <name>OCC::PropagateUpdateMetaDataJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="1306"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="1305"/>
         <source>Could not update file : %1</source>
         <translation>Impossibile aggiornare il file : %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="1309"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="1308"/>
         <source>The file %1 is currently in use</source>
         <translation>Il file %1 è al momento utilizzato</translation>
     </message>
@@ -2912,24 +2912,24 @@ Tieni presente che l&apos;utilizzo di qualsiasi opzione della riga di comando di
     </message>
     <message>
         <location filename="../src/libsync/syncengine.cpp" line="359"/>
-        <location filename="../src/libsync/syncengine.cpp" line="441"/>
-        <location filename="../src/libsync/syncengine.cpp" line="472"/>
-        <location filename="../src/libsync/syncengine.cpp" line="537"/>
+        <location filename="../src/libsync/syncengine.cpp" line="433"/>
+        <location filename="../src/libsync/syncengine.cpp" line="464"/>
+        <location filename="../src/libsync/syncengine.cpp" line="529"/>
         <source>Cannot open the sync journal.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="621"/>
+        <location filename="../src/libsync/syncengine.cpp" line="613"/>
         <source>Aborted due to %1</source>
         <translation>Annullato a causa di %1</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="807"/>
+        <location filename="../src/libsync/syncengine.cpp" line="799"/>
         <source>Disk space is low: Downloads that would reduce free space below %1 were skipped.</source>
         <translation>Lo spazio su disco è scarso: I downloads che ridurranno lo spazio libero al di sotto di %1 verranno saltati.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="814"/>
+        <location filename="../src/libsync/syncengine.cpp" line="806"/>
         <source>There is insufficient space available on the server for some uploads.</source>
         <translation>Non c&apos;è spazio disponibile sul server per effettuare caricamenti.</translation>
     </message>
@@ -2943,11 +2943,6 @@ Tieni presente che l&apos;utilizzo di qualsiasi opzione della riga di comando di
         <location filename="../src/libsync/syncengine.cpp" line="377"/>
         <source>Unable to read the blacklist from the local database</source>
         <translation>Impossibile leggere la lista nera dal database locale</translation>
-    </message>
-    <message>
-        <location filename="../src/libsync/syncengine.cpp" line="384"/>
-        <source>Unable to read from the sync journal.</source>
-        <translation>Impossibile leggere dal registro di sincronizzazione.</translation>
     </message>
 </context>
 <context>
@@ -3001,7 +2996,7 @@ Tieni presente che l&apos;utilizzo di qualsiasi opzione della riga di comando di
 <context>
     <name>OCC::SyncJournalDb</name>
     <message>
-        <location filename="../src/common/syncjournaldb.cpp" line="906"/>
+        <location filename="../src/common/syncjournaldb.cpp" line="911"/>
         <source>Failed to connect database.</source>
         <translation>Impossibile collegarsi al database.</translation>
     </message>
