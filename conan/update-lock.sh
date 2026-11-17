@@ -37,9 +37,8 @@
 # so the build-context tool_requires are those of the target platform, and all
 # four platforms can be locked on any machine. One more run locks the cross
 # build of macos-x86_64 on an arm64 Mac (-pr:h macos-x86_64 -pr:b macos-armv8),
-# which is how dependency-builder builds it: its build context (native tools,
-# and a native Qt for Qt's host tools) is not in any -pr:a graph. The results
-# are merged with `conan lock merge`.
+# which is how dependency-builder builds it: its build context (native tools)
+# is not in any -pr:a graph. The results are merged with `conan lock merge`.
 #
 # --update: without it, Conan resolves a version range from the local cache
 # whenever the cache has a match, and asks the remote only otherwise. The
@@ -179,34 +178,6 @@ conan remote remove '*' >/dev/null
 conan remote add "$remote" "$recipes_dir" --type=local-recipes-index
 [ "$(conan remote list | cut -d: -f1)" = "$remote" ] \
     || die "unexpected Conan remotes in the throwaway CONAN_HOME"
-
-# macos-armv8 is also the build profile of the cross build; its [options] must
-# be the conanfile's default_options, so that the build-context Qt has the
-# modules whose host tools the cross-built Qt needs (see the profile). Options
-# that configure() sets (Linux only today) are not compared, and the profile
-# may hold nothing else: a Qt option macOS needs belongs in default_options.
-# --lockfile= keeps Conan from reading ./conan.lock, which may be mid-merge.
-conan inspect . --lockfile= --format=json -verror > "$work/inspect.json" \
-    || die "conan inspect failed on conanfile.py (its error is above)"
-python3 -I - "$work/inspect.json" conan/profiles/macos-armv8 <<'EOF' \
-    || die "conan/profiles/macos-armv8 [options] differ from conanfile.py default_options; make them the same"
-import json, sys
-
-wanted = {key: str(value) for key, value in json.load(open(sys.argv[1]))["default_options"].items()}
-have, section = {}, None
-for line in open(sys.argv[2], encoding="utf-8"):
-    line = line.strip()
-    if line.startswith("["):
-        section = line
-    elif section == "[options]" and line and not line.startswith("#"):
-        key, _, value = line.partition("=")
-        have[key] = value
-for key in sorted(set(wanted) | set(have)):
-    if wanted.get(key) != have.get(key):
-        print("update-lock: %s: conanfile.py has %s, macos-armv8 has %s"
-              % (key, wanted.get(key, "nothing"), have.get(key, "nothing")), file=sys.stderr)
-sys.exit(0 if wanted == have else 1)
-EOF
 
 base=()
 if [ -f conan.lock ]; then
