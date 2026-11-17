@@ -117,9 +117,10 @@ jobs:
       - name: Build
         run: |
           # conanbuild.sh puts the locked cmake on PATH; the compiler is the runner's gcc 13,
-          # which conan/profiles/linux-x86_64 names.
+          # which conan/profiles/linux-x86_64 names. WITH_AUTO_UPDATER: Craft's Linux job builds
+          # and tests the updater too (enableAutoUpdater).
           source build/conanbuild.sh
-          cmake --preset conan-release -DBUILD_TESTING=ON -DFORCE_ASSERTS=ON
+          cmake --preset conan-release -DBUILD_TESTING=ON -DFORCE_ASSERTS=ON -DWITH_AUTO_UPDATER=ON
           cmake --build --preset conan-release
       - name: Test
         run: |
