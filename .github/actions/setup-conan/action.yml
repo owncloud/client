@@ -1,0 +1,24 @@
+name: Install the pinned Conan
+description: >-
+  Installs the exact Conan version that conanfile.py pins with
+  required_conan_version into a venv in $RUNNER_TEMP/conan; the conan
+  executable is $RUNNER_TEMP/conan/bin/conan.
+
+inputs:
+  python:
+    description: The Python to create Conan's venv with.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Install Conan
+      shell: bash
+      env:
+        PYTHON: ${{ inputs.python }}
+      run: |
+        # The exact pin of conanfile.py's required_conan_version ("=2.x.y").
+        version="$(sed -nE 's/^required_conan_version = "=([0-9]+\.[0-9]+\.[0-9]+)"$/\1/p' conanfile.py)"
+        [ -n "$version" ] || { echo "::error::conanfile.py has no exact required_conan_version"; exit 1; }
+        $PYTHON -m venv "$RUNNER_TEMP/conan"
+        "$RUNNER_TEMP/conan/bin/pip" install --quiet "conan==$version"
