@@ -10,7 +10,6 @@ on:
       - master
       - '7.2'
       - '6'
-      - feat/conan-dependencies
     paths-ignore:
       - '**.md'
       - changelog/**
