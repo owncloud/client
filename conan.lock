@@ -80,6 +80,9 @@
     ],
     "python_requires": [],
     "overrides": {
+        "glib/[>=2.86.5 <3]": [
+            "glib/2.86.5#2886b0810a99a7d54b313db5d214f221"
+        ],
         "glib/2.78.3": [
             "glib/2.86.5"
         ],

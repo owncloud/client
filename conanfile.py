@@ -74,9 +74,10 @@ class OwncloudClientConan(ConanFile):
         self.requires("zlib/1.3.2")
 
         if self.settings.os == "Linux":
-            # The qt recipe pins glib/2.78.3 when with_glib is on (configure());
-            # keep the glib that libsecret already resolved to, for the whole graph.
-            self.requires("glib/2.86.5", override=True)
+            # The qt recipe's requirements() pin glib/2.78.3 once with_glib is on
+            # (configure() above); without this override the whole graph would go
+            # down from 2.86.5. A range, so update-lock.sh 'glib/*' can still bump it.
+            self.requires("glib/[>=2.86.5 <3]", override=True)
 
         if self.settings.os == "Macos":
             self.requires("sparkle/2.7.0")
