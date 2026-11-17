@@ -47,11 +47,16 @@ class OwncloudClientConan(ConanFile):
         if self.settings.os == "Linux":
             self.options["qt/*"].with_dbus = True
             self.options["qt/*"].qtwayland = True
-            # With harfbuzz/*:with_glib off (default_options), qtkeychain's
-            # libsecret is the only one that pulls in glib.
+            # Qt's event loop on glib (QEventDispatcherGlib), as in the Craft
+            # build: qtkeychain's libsecret backend uses libsecret's async API,
+            # whose callbacks only run in a glib main loop. Without it every
+            # keychain job hangs and credentials are never stored or read.
+            self.options["qt/*"].with_glib = True
+            # With harfbuzz/*:with_glib off (default_options), Qt and qtkeychain's
+            # libsecret are the ones that pull in glib.
             # Shared, so that the process has one glib, the shipped one, and not
-            # a private static copy inside libqt6keychain.so next to any other
-            # glib that gets loaded. The AppImage has to bundle both libraries.
+            # private static copies inside Qt and libqt6keychain.so next to any
+            # other glib that gets loaded. The AppImage has to bundle both libraries.
             self.options["glib/*"].shared = True
             self.options["libsecret/*"].shared = True
 
@@ -67,6 +72,11 @@ class OwncloudClientConan(ConanFile):
         self.requires("qtkeychain/0.15.0")
         self.requires("sqlite3/3.51.3")
         self.requires("zlib/1.3.2")
+
+        if self.settings.os == "Linux":
+            # The qt recipe pins glib/2.78.3 when with_glib is on (configure());
+            # keep the glib that libsecret already resolved to, for the whole graph.
+            self.requires("glib/2.86.5", override=True)
 
         if self.settings.os == "Macos":
             self.requires("sparkle/2.7.0")
