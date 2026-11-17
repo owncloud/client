@@ -37,10 +37,11 @@ jobs:
     name: Lock drift check
     runs-on: ubuntu-24.04
     steps:
-      # The PR head, not GitHub's merge commit: the lock under review is the PR's own.
+      # GitHub's merge commit, as in conan-build.yml: the lock that lands, checked against the
+      # target branch's tip it lands on. A PR that is behind its base is judged on what it adds,
+      # and two PRs whose locks only drift once both are merged fail before the second merges.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       - name: Read the pinned recipes commit
         id: recipes
@@ -70,17 +71,20 @@ jobs:
           BASE_REF: ${{ github.base_ref }}
           BEFORE: ${{ github.event.before }}
         run: |
-          # Rules 2 and 3 of the check compare against the lock the change starts from: the PR's
-          # target branch, or the commit a push started from. A manual run, or the first push of a
-          # branch, has none, so it compares the lock with itself: only rule 1 (regenerating it
-          # changes nothing) can fail then.
+          # Rules 2 and 3 of the check compare against the lock the change starts from: the target
+          # branch's tip for a PR, or the commit a push started from. A manual run, the first push
+          # of a branch, or a force push whose old commit is gone has none, so it compares the lock
+          # with itself: only rule 1 (regenerating it changes nothing) can fail then.
           if [ "$EVENT" = pull_request ]; then
             git fetch --no-tags --depth=1 origin "refs/heads/$BASE_REF:refs/remotes/origin/$BASE_REF"
             echo "ref=origin/$BASE_REF" >> "$GITHUB_OUTPUT"
-          elif [ "$EVENT" = push ] && [ -n "$BEFORE" ] && [ "$BEFORE" != 0000000000000000000000000000000000000000 ]; then
-            git fetch --no-tags --depth=1 origin "$BEFORE"
+          elif [ "$EVENT" = push ] && [ -n "$BEFORE" ] && [ "$BEFORE" != 0000000000000000000000000000000000000000 ] \
+              && git fetch --no-tags --depth=1 origin "$BEFORE"; then
             echo "ref=$BEFORE" >> "$GITHUB_OUTPUT"
           else
+            if [ "$EVENT" = push ]; then
+              echo "::warning::no previous commit to compare with (new branch or force push); checking rule 1 only"
+            fi
             echo "ref=HEAD" >> "$GITHUB_OUTPUT"
           fi
       - name: Check conan.lock
