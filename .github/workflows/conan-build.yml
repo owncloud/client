@@ -49,6 +49,8 @@ jobs:
           # python3-venv: the action creates Conan's venv with python3, which Debian splits it from.
           # pkgconf: the system recipes' package_info() runs pkg-config.
           # ninja-build: the cmake-generator passed to conan-deps below.
+          # libopengl0: libOpenGL.so.0, which the packaged Qt links (built against libglvnd);
+          # libgl-dev brings only libGL, and without it every test fails to start.
           sudo apt-get install -y -qq --no-install-recommends \
             python3-venv \
             pkgconf \
@@ -103,7 +105,8 @@ jobs:
             libgl-dev \
             libegl-dev \
             xkb-data \
-            ninja-build
+            ninja-build \
+            libopengl0
       - uses: $/.github/actions/conan-deps
         with:
           profile: linux-x86_64
