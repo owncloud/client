@@ -27,8 +27,8 @@
 #include <QByteArray>
 #include <QElapsedTimer>
 #include <QPointer>
-#include <memory>
 #include <QtQmlIntegration/qqmlintegration.h>
+#include <memory>
 
 
 class QDialog;
