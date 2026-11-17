@@ -79,5 +79,13 @@
         "autoconf/2.71#51077f068e61700d65bb05541ea1e4b0"
     ],
     "python_requires": [],
+    "overrides": {
+        "glib/2.78.3": [
+            "glib/2.86.5"
+        ],
+        "glib/[>=2.78.3 <3]": [
+            "glib/2.86.5#2886b0810a99a7d54b313db5d214f221"
+        ]
+    },
     "config_requires": []
 }
