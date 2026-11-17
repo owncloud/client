@@ -75,13 +75,14 @@ jobs:
           BEFORE: ${{ github.event.before }}
         run: |
           # Rules 2 and 3 of the check compare against the lock the change starts from: the merge
-          # commit's first parent for a PR, or the commit a push started from (a failed fetch of
-          # it fails the job). A manual run or the first push of a branch has none, so it compares
-          # the lock with itself: only rule 1 (regenerating it changes nothing) can fail then.
+          # commit's first parent for a PR, or the commit a push started from, fetched unless the
+          # clone has it. A manual run or the first push of a branch has none, and the fetch has no
+          # credentials (a private copy of the repository) and fails after a force-push; then it
+          # compares the lock with itself: only rule 1 (regenerating it changes nothing) can fail.
           if [ "$EVENT" = pull_request ]; then
             echo "ref=HEAD^1" >> "$GITHUB_OUTPUT"
-          elif [ "$EVENT" = push ] && [ "$BEFORE" != 0000000000000000000000000000000000000000 ]; then
-            git fetch --no-tags --depth=1 origin "$BEFORE"
+          elif [ "$EVENT" = push ] && [ "$BEFORE" != 0000000000000000000000000000000000000000 ] \
+              && { git cat-file -e "$BEFORE^{commit}" 2> /dev/null || git fetch --no-tags --depth=1 origin "$BEFORE"; }; then
             echo "ref=$BEFORE" >> "$GITHUB_OUTPUT"
           else
             echo "::notice::no previous commit to compare with; checking rule 1 only"
