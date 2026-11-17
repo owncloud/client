@@ -29,7 +29,7 @@
         "libgcrypt/1.12.2#e77e52accbb2d32c9ada41a9f2fbb850",
         "libffi/3.4.8#a045c00fb26779635e3bed40e80c5254",
         "libcap/2.78#49ad5ecc797164ef0f16a3eeee856401",
-        "kdsingleapplication/1.2.0#ecdfc730ea1e5ba4aa46cb5f64ce3520",
+        "kdsingleapplication/1.2.0#ea38d0805f73b8bca582677b6a1f5395",
         "icu/78.2#bb4613fd8b43edbd3b902fac008d3fe0",
         "harfbuzz/12.3.0#a5fef061896cd5c30e9a17c9d7920ad1",
         "glib/2.86.5#2886b0810a99a7d54b313db5d214f221",
