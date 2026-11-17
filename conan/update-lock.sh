@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
-# Regenerates conan.lock for all four platforms in conan/profiles/. This is the
-# only supported way to change conan.lock.
+# Regenerates conan.lock for all four platforms in conan/profiles/, and for
+# macos-x86_64 built on an arm64 Mac. This is the only supported way to change
+# conan.lock.
 #
-# Needs bash, git, conan (the version pinned in conanfile.py) and, for --check,
-# python3. On Windows, run it from Git Bash or MSYS2 with those on PATH.
+# Needs bash, git, conan (the version pinned in conanfile.py) and python3. On
+# Windows, run it from Git Bash or MSYS2 with those on PATH.
 #
 # Usage:
 #   OC_RECIPES_DIR=<checkout> conan/update-lock.sh [PATTERN...]
@@ -32,8 +33,11 @@
 # starting from the existing conan.lock (if any), so only what changed moves
 # and unused entries are dropped. -pr:a sets the host and the build profile,
 # so the build-context tool_requires are those of the target platform, and all
-# four platforms can be locked on any machine. The four results are merged
-# with `conan lock merge`.
+# four platforms can be locked on any machine. One more run locks the cross
+# build of macos-x86_64 on an arm64 Mac (-pr:h macos-x86_64 -pr:b macos-armv8),
+# which is how dependency-builder builds it: its build context (native tools,
+# and a native Qt for Qt's host tools) is not in any -pr:a graph. The results
+# are merged with `conan lock merge`.
 #
 # --update: without it, Conan resolves a version range from the local cache
 # whenever the cache has a match, and asks the remote only otherwise. The
@@ -102,6 +106,8 @@ root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$root"
 
 profiles=(linux-x86_64 windows-x86_64 macos-armv8 macos-x86_64)
+# The graphs to lock: a profile for host and build, or HOST:BUILD.
+graphs=("${profiles[@]}" macos-x86_64:macos-armv8)
 remote=oc-recipes
 
 check=0
@@ -128,9 +134,7 @@ fi
 
 command -v conan >/dev/null || die "conan not found on PATH"
 command -v git >/dev/null || die "git not found on PATH"
-if [ "$check" = 1 ]; then
-    command -v python3 >/dev/null || die "python3 not found on PATH (needed for --check)"
-fi
+command -v python3 >/dev/null || die "python3 not found on PATH"
 
 [ -n "${OC_RECIPES_DIR:-}" ] || die "OC_RECIPES_DIR is not set; point it at a checkout of
   https://github.com/owncloud/conan-center-index at commit $(cat conan/recipes-commit)"
@@ -152,6 +156,14 @@ done
 work="$(mktemp -d)"
 trap 'rm -rf "$work"' EXIT
 
+# The Conan profile arguments for one entry of graphs.
+pr_args() {
+    case "$1" in
+        *:*) printf '%s\n' -pr:h "conan/profiles/${1%%:*}" -pr:b "conan/profiles/${1#*:}" ;;
+        *) printf '%s\n' -pr:a "conan/profiles/$1" ;;
+    esac
+}
+
 if [ "$check" = 1 ]; then
     git rev-parse --verify --quiet "$base_ref^{commit}" >/dev/null \
         || die "--base $base_ref is not a commit in this repository; fetch it or pass another --base"
@@ -168,6 +180,31 @@ conan remote add "$remote" "$recipes_dir" --type=local-recipes-index
 [ "$(conan remote list | cut -d: -f1)" = "$remote" ] \
     || die "unexpected Conan remotes in the throwaway CONAN_HOME"
 
+# macos-armv8 is also the build profile of the cross build; its [options] must
+# be the conanfile's default_options, so that the build-context Qt has the
+# modules whose host tools the cross-built Qt needs (see the profile).
+conan inspect . --format=json > "$work/inspect.json" 2>/dev/null \
+    || die "conan inspect failed on conanfile.py"
+python3 -I - "$work/inspect.json" conan/profiles/macos-armv8 <<'EOF' \
+    || die "conan/profiles/macos-armv8 [options] differ from conanfile.py default_options; make them the same"
+import json, sys
+
+wanted = {key: str(value) for key, value in json.load(open(sys.argv[1]))["default_options"].items()}
+have, section = {}, None
+for line in open(sys.argv[2], encoding="utf-8"):
+    line = line.strip()
+    if line.startswith("["):
+        section = line
+    elif section == "[options]" and line and not line.startswith("#"):
+        key, _, value = line.partition("=")
+        have[key] = value
+for key in sorted(set(wanted) | set(have)):
+    if wanted.get(key) != have.get(key):
+        print("update-lock: %s: conanfile.py has %s, macos-armv8 has %s"
+              % (key, wanted.get(key, "nothing"), have.get(key, "nothing")), file=sys.stderr)
+sys.exit(0 if wanted == have else 1)
+EOF
+
 base=()
 if [ -f conan.lock ]; then
     base=(--lockfile=conan.lock)
@@ -178,18 +215,20 @@ else
 fi
 
 merge_args=()
-for p in "${profiles[@]}"; do
-    out="$work/$p.lock"
-    echo "update-lock: resolving $p" >&2
+for g in "${graphs[@]}"; do
+    out="$work/${g/:/-on-}.lock"
+    pr=()
+    while IFS= read -r arg; do pr+=("$arg"); done < <(pr_args "$g")
+    echo "update-lock: resolving $g" >&2
     if [ "${#patterns[@]}" -gt 0 ]; then
         bump=()
         for pat in "${patterns[@]}"; do
             bump+=("--update-requires=$pat" "--update-build-requires=$pat")
         done
-        conan lock upgrade . -pr:a "conan/profiles/$p" ${base[@]+"${base[@]}"} --lockfile-clean \
+        conan lock upgrade . "${pr[@]}" ${base[@]+"${base[@]}"} --lockfile-clean \
             --update "${bump[@]}" -r "$remote" --lockfile-out="$out" -verror
     else
-        conan lock create . -pr:a "conan/profiles/$p" ${base[@]+"${base[@]}"} --lockfile-clean \
+        conan lock create . "${pr[@]}" ${base[@]+"${base[@]}"} --lockfile-clean \
             --update -r "$remote" --lockfile-out="$out" -verror
     fi
     merge_args+=("--lockfile=$out")
@@ -204,10 +243,12 @@ if [ "$check" = 1 ]; then
     # using ./conan.lock on its own. --update matters even more here: the
     # runs above have just filled the cache with the locked versions.
     fresh_args=()
-    for p in "${profiles[@]}"; do
-        out="$work/fresh-$p.lock"
-        echo "update-lock: resolving $p without a lockfile" >&2
-        conan lock create . -pr:a "conan/profiles/$p" --lockfile= --update \
+    for g in "${graphs[@]}"; do
+        out="$work/fresh-${g/:/-on-}.lock"
+        pr=()
+        while IFS= read -r arg; do pr+=("$arg"); done < <(pr_args "$g")
+        echo "update-lock: resolving $g without a lockfile" >&2
+        conan lock create . "${pr[@]}" --lockfile= --update \
             -r "$remote" --lockfile-out="$out" -verror
         fresh_args+=("--lockfile=$out")
     done
