@@ -1,5 +1,5 @@
 if(APPLE)
-    if (SPARKLE_FOUND)
+    if (TARGET sparkle::sparkle)
         list(APPEND OWNCLOUD_BUNDLED_RESOURCES
             "${PROJECT_SOURCE_DIR}/admin/osx/deny_autoupdate_com.owncloud.desktopclient.plist"
             "${PROJECT_SOURCE_DIR}/admin/osx/sparkle/dsa_pub.pem")
@@ -22,14 +22,14 @@ target_sources(owncloudGui PRIVATE
     updatedownloadedwidget.ui
 )
 
-if(SPARKLE_FOUND)
+if(TARGET sparkle::sparkle)
     # Define this, we need to check in updater.cpp
     target_compile_definitions(owncloudGui PUBLIC HAVE_SPARKLE)
     target_sources(owncloudGui PRIVATE
         sparkleupdater_mac.mm
         sparkleupdater.h
     )
-    target_link_libraries(owncloudGui PRIVATE ${SPARKLE_LIBRARY})
+    target_link_libraries(owncloudGui PRIVATE sparkle::sparkle)
 endif()
 
 if(WITH_APPIMAGEUPDATER)
