@@ -59,13 +59,15 @@ jobs:
           ref: ${{ steps.recipes.outputs.commit }}
           path: .conan-recipes
           persist-credentials: false
-      # The Python for Conan's venv, the same in every Conan job.
+      # The Python for Conan's venv, the same in every Conan job on GitHub (see conan-build.yml).
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        id: python
         with:
           python-version: '3.12'
+          update-environment: false
       - uses: $/.github/actions/setup-conan
         with:
-          python: python
+          python: ${{ steps.python.outputs.python-path }}
       - name: Fetch the base lock
         id: base
         env:
