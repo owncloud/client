@@ -10,9 +10,3 @@ os.version=13.0
 
 [conf]
 tools.system.package_manager:mode=check
-# Built on an arm64 Mac as a cross build (-pr:b macos-armv8), except Qt: the
-# qt recipe's cross build takes only the core host tools from a native Qt and
-# fails in qtdeclarative. So Qt is built natively there, with
-# CMAKE_OSX_ARCHITECTURES=x86_64, and runs its own x86_64 tools under Rosetta.
-qt/*:tools.build.cross_building:cross_build=False
-qt/*:tools.cmake.cmaketoolchain:system_name=
