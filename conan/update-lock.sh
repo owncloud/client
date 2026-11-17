@@ -25,8 +25,9 @@
 #   --base GIT-REF  With --check: the commit whose conan.lock the change
 #                   starts from, read with `git show GIT-REF:conan.lock`.
 #                   Default: origin/master. CI (.github/workflows/conan-lock.yml)
-#                   passes the pull request's target branch, or the commit a
-#                   push started from.
+#                   passes the base a pull request is merged onto, or the
+#                   commit a push started from; a manual run or a branch's
+#                   first push passes HEAD, so only rule 1 applies there.
 #                   No conan.lock at GIT-REF counts as empty.
 #
 # How it works: once per profile it runs

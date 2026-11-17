@@ -38,10 +38,13 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       # GitHub's merge commit, as in conan-build.yml: the lock that lands, checked against the
-      # target branch's tip it lands on. A PR that is behind its base is judged on what it adds,
-      # and two PRs whose locks only drift once both are merged fail before the second merges.
+      # base commit it was merged onto (its first parent, hence depth 2), so a PR that is behind
+      # its base is judged on what it adds. A PR is not re-run when its base moves, so two PRs
+      # whose locks only drift once both are merged are caught by the push run afterwards. A PR
+      # that conflicts with its base has no merge commit and gets no run until it is rebased.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          fetch-depth: 2
           persist-credentials: false
       - name: Read the pinned recipes commit
         id: recipes
@@ -68,23 +71,19 @@ jobs:
         id: base
         env:
           EVENT: ${{ github.event_name }}
-          BASE_REF: ${{ github.base_ref }}
           BEFORE: ${{ github.event.before }}
         run: |
-          # Rules 2 and 3 of the check compare against the lock the change starts from: the target
-          # branch's tip for a PR, or the commit a push started from. A manual run, the first push
-          # of a branch, or a force push whose old commit is gone has none, so it compares the lock
-          # with itself: only rule 1 (regenerating it changes nothing) can fail then.
+          # Rules 2 and 3 of the check compare against the lock the change starts from: the merge
+          # commit's first parent for a PR, or the commit a push started from (a failed fetch of
+          # it fails the job). A manual run or the first push of a branch has none, so it compares
+          # the lock with itself: only rule 1 (regenerating it changes nothing) can fail then.
           if [ "$EVENT" = pull_request ]; then
-            git fetch --no-tags --depth=1 origin "refs/heads/$BASE_REF:refs/remotes/origin/$BASE_REF"
-            echo "ref=origin/$BASE_REF" >> "$GITHUB_OUTPUT"
-          elif [ "$EVENT" = push ] && [ -n "$BEFORE" ] && [ "$BEFORE" != 0000000000000000000000000000000000000000 ] \
-              && git fetch --no-tags --depth=1 origin "$BEFORE"; then
+            echo "ref=HEAD^1" >> "$GITHUB_OUTPUT"
+          elif [ "$EVENT" = push ] && [ "$BEFORE" != 0000000000000000000000000000000000000000 ]; then
+            git fetch --no-tags --depth=1 origin "$BEFORE"
             echo "ref=$BEFORE" >> "$GITHUB_OUTPUT"
           else
-            if [ "$EVENT" = push ]; then
-              echo "::warning::no previous commit to compare with (new branch or force push); checking rule 1 only"
-            fi
+            echo "::notice::no previous commit to compare with; checking rule 1 only"
             echo "ref=HEAD" >> "$GITHUB_OUTPUT"
           fi
       - name: Check conan.lock
