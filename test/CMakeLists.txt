@@ -7,9 +7,10 @@ owncloud_add_test(JHash)
 owncloud_add_test(OwncloudPropagator)
 owncloud_add_test(OwnSql)
 owncloud_add_test(SyncJournalDB)
-# Both include sqlite3.h themselves, and csync links SQLite privately.
-target_link_libraries(OwnSqlTest PRIVATE SQLite::SQLite3)
-target_link_libraries(SyncJournalDBTest PRIVATE SQLite::SQLite3)
+# Both include sqlite3.h themselves, and csync links SQLite privately. The plain
+# signature: ecm_add_test links with it, and CMake allows no mix on one target.
+target_link_libraries(OwnSqlTest SQLite::SQLite3)
+target_link_libraries(SyncJournalDBTest SQLite::SQLite3)
 owncloud_add_test(SyncFileItem)
 owncloud_add_test(ConcatUrl)
 owncloud_add_test(XmlParse)
