@@ -1,19 +1,25 @@
 name: Install the pinned Conan
 description: >-
   Installs the exact Conan version that conanfile.py pins with
-  required_conan_version into a venv in $RUNNER_TEMP/conan; the conan
-  executable is $RUNNER_TEMP/conan/bin/conan. Linux and macOS runners only: a
-  Windows venv puts pip and conan in Scripts\, not bin/.
+  required_conan_version into a venv in $RUNNER_TEMP/conan. The output
+  bin-dir is the venv's folder of executables: bin/ on Linux and macOS,
+  Scripts\ on Windows, where conan is conan.exe.
 
 inputs:
   python:
     description: The Python to create Conan's venv with.
     required: true
 
+outputs:
+  bin-dir:
+    description: The venv's folder with conan (and pip) in it.
+    value: ${{ steps.install.outputs.bin-dir }}
+
 runs:
   using: composite
   steps:
     - name: Install Conan
+      id: install
       shell: bash
       env:
         PYTHON: ${{ inputs.python }}
@@ -22,4 +28,11 @@ runs:
         version="$(sed -nE 's/^required_conan_version = "=([0-9]+\.[0-9]+\.[0-9]+)"$/\1/p' conanfile.py)"
         [ -n "$version" ] || { echo "::error::conanfile.py has no exact required_conan_version"; exit 1; }
         $PYTHON -m venv "$RUNNER_TEMP/conan"
-        "$RUNNER_TEMP/conan/bin/pip" install --quiet "conan==$version"
+        # A Windows venv has Scripts\ where the others have bin/.
+        if [ "$RUNNER_OS" = Windows ]; then
+          bin_dir="$RUNNER_TEMP/conan/Scripts"
+        else
+          bin_dir="$RUNNER_TEMP/conan/bin"
+        fi
+        "$bin_dir/pip" install --quiet "conan==$version"
+        echo "bin-dir=$bin_dir" >> "$GITHUB_OUTPUT"
