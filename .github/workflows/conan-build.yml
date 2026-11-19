@@ -226,6 +226,9 @@ jobs:
     # As Craft's Windows job: VS 2022, whose MSVC 14.4x is the compiler.version=194 of
     # conan/profiles/windows-x86_64 (the packages were built with VS 2022 Build Tools 17.14).
     runs-on: windows-2022
+    # The build takes about half an hour; a test that hangs (a dialog, a keychain prompt) must
+    # not hold the runner for GitHub's default six hours.
+    timeout-minutes: 120
     steps:
       # GitHub's merge commit, as for Linux above. .gitattributes keeps the Conan inputs LF, so
       # the runner's core.autocrlf=true does not change their fingerprint.
@@ -243,13 +246,13 @@ jobs:
           profile: windows-x86_64
           python: ${{ steps.python.outputs.python-path }}
           generators-folder: build
-          # Ninja comes with VS and is on PATH under conanvcvars.bat.
+          # Ninja comes with VS (its C++ CMake tools); conanvcvars.ps1 puts it on PATH.
           cmake-generator: Ninja
       # pwsh, with the PowerShell launchers conan-deps generates on Windows: conanbuild.ps1
       # brings the MSVC environment (conanvcvars.ps1) and the locked cmake. GitHub's pwsh stops
-      # on a failing cmdlet; $PSNativeCommandUseErrorActionPreference makes a failing native
-      # command (cmake, ctest) stop the step too.
-      - name: Check the MSVC version
+      # on a failing cmdlet; $PSNativeCommandUseErrorActionPreference, set after the launchers,
+      # makes a failing cmake or ctest stop the step too.
+      - name: Check the MSVC version and Ninja
         shell: pwsh
         run: |
           . build/conanvcvars.ps1
@@ -260,11 +263,21 @@ jobs:
             Write-Output '::error::cl.exe is not MSVC 19.4x, the compiler.version=194 of conan/profiles/windows-x86_64'
             exit 1
           }
+          $ninja = Get-Command ninja -ErrorAction SilentlyContinue
+          if (-not $ninja) {
+            Write-Output '::error::ninja is not on PATH under conanvcvars.ps1; the runner image lacks VS''s C++ CMake tools'
+            exit 1
+          }
+          Write-Output "ninja: $($ninja.Source)"
+          # cl's own exit status (no source file) must not decide the step: GitHub ends it with
+          # exit $LASTEXITCODE.
+          exit 0
       - name: Build
         shell: pwsh
         run: |
-          $PSNativeCommandUseErrorActionPreference = $true
           . build/conanbuild.ps1
+          # From here on, after the launchers: a failing cmake ends the step.
+          $PSNativeCommandUseErrorActionPreference = $true
           # WITH_AUTO_UPDATER: as on Linux and macOS, so the Windows updater (ocupdater) is
           # built and tested too; Craft's Windows job leaves it off.
           cmake --preset conan-release -DBUILD_TESTING=ON -DFORCE_ASSERTS=ON -DWITH_AUTO_UPDATER=ON
@@ -273,10 +286,11 @@ jobs:
         id: test
         shell: pwsh
         run: |
-          $PSNativeCommandUseErrorActionPreference = $true
           . build/conanbuild.ps1
           # conanrun.ps1: the Qt DLLs and plugins from the Conan cache.
           . build/conanrun.ps1
+          # From here on, after the launchers: failing tests end the step.
+          $PSNativeCommandUseErrorActionPreference = $true
           # -j1: one test at a time, as Craft runs them on Windows ([Compile]Jobs=1).
           ctest --preset conan-release --output-on-failure -j1
       - name: Upload the test log
