@@ -303,3 +303,66 @@ jobs:
           name: conan-build-windows-x86_64-test-log
           path: build/Testing/Temporary/LastTest.log
           if-no-files-found: ignore
+
+  macos-x86_64:
+    name: Build and test macos-x86_64
+    # An arm64 runner on purpose: the dependency archive is a cross build from arm64
+    # (-pr:b macos-armv8), so its build tools (cmake, pkgconf, ...) are arm64. The x86_64
+    # client, Qt's x86_64 tools (moc, qmlcachegen) and the tests run under Rosetta.
+    runs-on: macos-26
+    steps:
+      # GitHub's merge commit, as for Linux above.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Select Xcode with apple-clang 21
+        run: |
+          # conan/profiles/macos-x86_64 says compiler.version=21.
+          for app in /Applications/Xcode*.app; do
+            major="$(DEVELOPER_DIR="$app/Contents/Developer" xcrun clang --version 2>/dev/null | sed -nE 's/^Apple clang version ([0-9]+).*/\1/p')"
+            if [ "$major" = 21 ]; then
+              sudo xcode-select -s "$app/Contents/Developer"
+              xcrun clang --version | head -n 1
+              exit 0
+            fi
+          done
+          echo "::error::no Xcode with apple-clang 21 on this runner image"
+          exit 1
+      - name: Install Ninja
+        # The cmake-generator passed to conan-deps below.
+        run: command -v ninja || brew install ninja
+      # The Python for Conan's venv and the fingerprint script, the same in every Conan job on
+      # GitHub. update-environment: false keeps its PATH, LD_LIBRARY_PATH and PKG_CONFIG_PATH out of
+      # the build and the tests; it is used only through its path.
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        id: python
+        with:
+          python-version: '3.12'
+          update-environment: false
+      - uses: $/.github/actions/conan-deps
+        with:
+          profile: macos-x86_64
+          python: ${{ steps.python.outputs.python-path }}
+          generators-folder: build
+          cmake-generator: Ninja
+      - name: Build
+        run: |
+          # conanbuild.sh puts the locked cmake on PATH; the compiler is the Xcode selected above.
+          # WITH_AUTO_UPDATER: builds the Sparkle updater (src/gui/updater), so the client is
+          # compiled and linked against the Conan Sparkle framework. Craft's macOS job leaves it off.
+          source build/conanbuild.sh
+          cmake --preset conan-release -DBUILD_TESTING=ON -DFORCE_ASSERTS=ON -DWITH_AUTO_UPDATER=ON
+          cmake --build --preset conan-release
+      - name: Test
+        run: |
+          # conanrun.sh: the shared Qt and the Sparkle framework from the Conan cache.
+          source build/conanbuild.sh
+          source build/conanrun.sh
+          ctest --preset conan-release --output-on-failure
+      - name: Upload the test log
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: conan-build-macos-x86_64-test-log
+          path: build/Testing/Temporary/LastTest.log
+          if-no-files-found: ignore
