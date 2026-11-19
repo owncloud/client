@@ -2,8 +2,8 @@ name: Conan build
 
 # Builds the client against the locked Conan dependencies, which the GitLab dependency
 # builder publishes to ghcr.io (see .github/actions/conan-deps), and runs its tests. Runs on
-# every code change, next to the Craft build in main.yml, which it replaces later; Linux and
-# macOS arm64 first.
+# every code change, next to the Craft build in main.yml, which it replaces later; Linux,
+# macOS arm64 and Windows x86_64 first.
 
 on:
   push:
@@ -218,5 +218,71 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: conan-build-macos-armv8-test-log
+          path: build/Testing/Temporary/LastTest.log
+          if-no-files-found: ignore
+
+  windows:
+    name: Build and test windows-x86_64
+    # As Craft's Windows job: VS 2022, whose MSVC 14.4x is the compiler.version=194 of
+    # conan/profiles/windows-x86_64 (the packages were built with VS 2022 Build Tools 17.14).
+    runs-on: windows-2022
+    steps:
+      # GitHub's merge commit, as for Linux above. .gitattributes keeps the Conan inputs LF, so
+      # the runner's core.autocrlf=true does not change their fingerprint.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # The Python for Conan's venv and the fingerprint script, as in the other Conan jobs.
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        id: python
+        with:
+          python-version: '3.12'
+          update-environment: false
+      - uses: $/.github/actions/conan-deps
+        with:
+          profile: windows-x86_64
+          python: ${{ steps.python.outputs.python-path }}
+          generators-folder: build
+          # Ninja comes with VS and is on PATH under conanvcvars.bat.
+          cmake-generator: Ninja
+      # pwsh, with the PowerShell launchers conan-deps generates on Windows: conanbuild.ps1
+      # brings the MSVC environment (conanvcvars.ps1) and the locked cmake. GitHub's pwsh stops
+      # on a failing cmdlet; $PSNativeCommandUseErrorActionPreference makes a failing native
+      # command (cmake, ctest) stop the step too.
+      - name: Check the MSVC version
+        shell: pwsh
+        run: |
+          . build/conanvcvars.ps1
+          # cl without arguments prints its banner, with the version, to stderr.
+          $banner = (& cl 2>&1 | Out-String)
+          Write-Output $banner.Trim()
+          if ($banner -notmatch 'Version 19\.4\d\.') {
+            Write-Output '::error::cl.exe is not MSVC 19.4x, the compiler.version=194 of conan/profiles/windows-x86_64'
+            exit 1
+          }
+      - name: Build
+        shell: pwsh
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $true
+          . build/conanbuild.ps1
+          # WITH_AUTO_UPDATER: as on Linux and macOS, so the Windows updater (ocupdater) is
+          # built and tested too; Craft's Windows job leaves it off.
+          cmake --preset conan-release -DBUILD_TESTING=ON -DFORCE_ASSERTS=ON -DWITH_AUTO_UPDATER=ON
+          cmake --build --preset conan-release
+      - name: Test
+        id: test
+        shell: pwsh
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $true
+          . build/conanbuild.ps1
+          # conanrun.ps1: the Qt DLLs and plugins from the Conan cache.
+          . build/conanrun.ps1
+          # -j1: one test at a time, as Craft runs them on Windows ([Compile]Jobs=1).
+          ctest --preset conan-release --output-on-failure -j1
+      - name: Upload the test log
+        if: ${{ failure() && steps.test.outcome == 'failure' }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: conan-build-windows-x86_64-test-log
           path: build/Testing/Temporary/LastTest.log
           if-no-files-found: ignore
