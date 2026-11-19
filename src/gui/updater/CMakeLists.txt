@@ -22,7 +22,7 @@ target_sources(owncloudGui PRIVATE
     updatedownloadedwidget.ui
 )
 
-if(TARGET sparkle::sparkle)
+if(APPLE)
     # Define this, we need to check in updater.cpp
     target_compile_definitions(owncloudGui PUBLIC HAVE_SPARKLE)
     target_sources(owncloudGui PRIVATE
