@@ -28,6 +28,15 @@ class OwncloudClientConan(ConanFile):
         # Qt does not use harfbuzz's glib integration, and with it macOS and
         # Windows got a static glib inside Qt's harfbuzz.
         "harfbuzz/*:with_glib": False,
+        # One shared OpenSSL for QtNetwork, Qt's TLS plugin and everything else.
+        # Static, QtNetwork embedded a copy and exported its symbols, the TLS
+        # plugin linked a second one, and on macOS x86_64 the plugin did not
+        # link at all ("fixup error ... '_OPENSSL_cpuid_setup' does not have
+        # address": libcrypto.a's init section bound to QtNetwork's copy).
+        # With a shared OpenSSL the qt recipe would have Qt load it by name at
+        # runtime; the profiles' qt/*:...:extra_variables make Qt link it
+        # (and qt/*:tools.info.package_id:confs puts that into Qt's package ID).
+        "openssl/*:shared": True,
         "qt/*:gui": True,
         "qt/*:qtdeclarative": True,
         "qt/*:qtimageformats": True,

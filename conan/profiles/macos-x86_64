@@ -9,6 +9,12 @@ os=Macos
 os.version=13.0
 
 [conf]
+# Qt links the shared OpenSSL (the qt recipe would load it by name at runtime),
+# as KDE Craft's FEATURE_openssl_linked did: the version is pinned, and
+# macdeployqt and linuxdeploy bundle a link dependency (windeployqt does not).
+# The second line puts that conf into Qt's package ID.
+qt/*:tools.cmake.cmaketoolchain:extra_variables={"INPUT_openssl": {"value": "linked", "cache": True, "type": "STRING", "force": True}, "QT_FEATURE_openssl_runtime": {"value": "OFF", "cache": True, "type": "BOOL", "force": True}}
+qt/*:tools.info.package_id:confs=["tools.cmake.cmaketoolchain:extra_variables"]
 tools.system.package_manager:mode=check
 # Built on an arm64 Mac as a cross build (-pr:b macos-armv8), except Qt: the
 # qt recipe's cross build takes only the core host tools from a native Qt and
