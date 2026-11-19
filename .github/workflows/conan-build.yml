@@ -246,7 +246,7 @@ jobs:
           profile: windows-x86_64
           python: ${{ steps.python.outputs.python-path }}
           generators-folder: build
-          # Ninja comes with VS (its C++ CMake tools); conanvcvars.ps1 puts it on PATH.
+          # Ninja is on the runner image's PATH (Chocolatey's, in C:\ProgramData\Chocolatey\bin).
           cmake-generator: Ninja
       # pwsh, with the PowerShell launchers conan-deps generates on Windows: conanbuild.ps1
       # brings the MSVC environment (conanvcvars.ps1) and the locked cmake. GitHub's pwsh stops
@@ -266,7 +266,7 @@ jobs:
           }
           $ninja = Get-Command ninja -ErrorAction SilentlyContinue
           if (-not $ninja) {
-            Write-Output '::error::ninja is not on PATH under conanbuild.ps1 (it comes with VS''s C++ CMake tools)'
+            Write-Output '::error::ninja is not on PATH; the windows-2022 image had it from Chocolatey'
             exit 1
           }
           Write-Output "ninja: $($ninja.Source)"
