@@ -255,7 +255,8 @@ jobs:
       - name: Check the MSVC version and Ninja
         shell: pwsh
         run: |
-          . build/conanvcvars.ps1
+          # The environment Build and Test use: conanbuild.ps1, which brings conanvcvars.ps1.
+          . build/conanbuild.ps1
           # cl without arguments prints its banner, with the version, to stderr.
           $banner = (& cl 2>&1 | Out-String)
           Write-Output $banner.Trim()
@@ -265,7 +266,7 @@ jobs:
           }
           $ninja = Get-Command ninja -ErrorAction SilentlyContinue
           if (-not $ninja) {
-            Write-Output '::error::ninja is not on PATH under conanvcvars.ps1; the runner image lacks VS''s C++ CMake tools'
+            Write-Output '::error::ninja is not on PATH under conanbuild.ps1 (it comes with VS''s C++ CMake tools)'
             exit 1
           }
           Write-Output "ninja: $($ninja.Source)"
@@ -292,7 +293,9 @@ jobs:
           # From here on, after the launchers: failing tests end the step.
           $PSNativeCommandUseErrorActionPreference = $true
           # -j1: one test at a time, as Craft runs them on Windows ([Compile]Jobs=1).
-          ctest --preset conan-release --output-on-failure -j1
+          # --timeout: a hanging test fails after 15 minutes, well before the job's timeout,
+          # so its log is still uploaded.
+          ctest --preset conan-release --output-on-failure -j1 --timeout 900
       - name: Upload the test log
         if: ${{ failure() && steps.test.outcome == 'failure' }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
