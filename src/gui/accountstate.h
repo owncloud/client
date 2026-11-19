@@ -27,7 +27,7 @@
 #include <QByteArray>
 #include <QElapsedTimer>
 #include <QPointer>
-#include <QtQmlIntegration/qqmlintegration.h>
+#include <QtQmlIntegration/QtQmlIntegration>
 #include <memory>
 
 
