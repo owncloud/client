@@ -33,9 +33,12 @@ class OwncloudClientConan(ConanFile):
         # plugin linked a second one, and on macOS x86_64 the plugin did not
         # link at all ("fixup error ... '_OPENSSL_cpuid_setup' does not have
         # address": libcrypto.a's init section bound to QtNetwork's copy).
-        # With a shared OpenSSL the qt recipe would have Qt load it by name at
-        # runtime; the profiles' qt/*:...:extra_variables make Qt link it
-        # (and qt/*:tools.info.package_id:confs puts that into Qt's package ID).
+        # With a shared OpenSSL the qt recipe has Qt load it by name at runtime
+        # (Qt's own default). Linked, Qt's tools could not start in the client
+        # build (qmlcachegen: "Library not loaded: @rpath/libssl.3.dylib"). So
+        # packaging has to ship libssl/libcrypto where Qt looks for them: Qt's
+        # own libraries and plugins don't link them, so the deploy tools only
+        # pick them up if a client binary still does (through CMakeDeps).
         "openssl/*:shared": True,
         "qt/*:gui": True,
         "qt/*:qtdeclarative": True,
