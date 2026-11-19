@@ -9,4 +9,10 @@ os=Macos
 os.version=13.0
 
 [conf]
+# Qt without dup3: built with the Xcode 27.2 SDK, which declares dup3 (macOS
+# 27), Qt's qt_safe_dup2 called it unguarded (QProcess crashed on every start
+# below macOS 27). dup2 + fcntl, as with older SDKs; the second line puts this into
+# Qt's package ID.
+qt/*:tools.cmake.cmaketoolchain:extra_variables={"FEATURE_dup3": {"value": "OFF", "cache": True, "type": "BOOL", "force": True}}
+qt/*:tools.info.package_id:confs=["tools.cmake.cmaketoolchain:extra_variables"]
 tools.system.package_manager:mode=check
