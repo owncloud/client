@@ -42,6 +42,7 @@ runs:
         version: 1.3.6
 
     - uses: $/.github/actions/setup-conan
+      id: conan
       with:
         python: ${{ inputs.python }}
 
@@ -52,7 +53,8 @@ runs:
         PYTHON: ${{ inputs.python }}
         DEPS_REPOSITORY: ghcr.io/owncloud/client-deps
       run: |
-        fp="$($PYTHON conan/fingerprint.py --profile "$PROFILE" --root .)"
+        # tr: a native Windows Python ends the line with CRLF, and $(...) strips only the LF.
+        fp="$($PYTHON conan/fingerprint.py --profile "$PROFILE" --root . | tr -d '\r')"
         ref="$DEPS_REPOSITORY:$PROFILE-$fp"
         echo "archive: $ref"
         mkdir -p "$RUNNER_TEMP/deps"
@@ -71,13 +73,19 @@ runs:
         PROFILE: ${{ inputs.profile }}
         GENERATORS_FOLDER: ${{ inputs.generators-folder }}
         CMAKE_GENERATOR: ${{ inputs.cmake-generator }}
+        CONAN_BIN_DIR: ${{ steps.conan.outputs.bin-dir }}
       run: |
-        conan="$RUNNER_TEMP/conan/bin/conan"
+        conan="$CONAN_BIN_DIR/conan"
         generators=()
         if [ -n "$GENERATORS_FOLDER" ]; then
           generators=(-g CMakeDeps -g CMakeToolchain --output-folder "$GENERATORS_FOLDER")
           if [ -n "$CMAKE_GENERATOR" ]; then
             generators+=(-c "tools.cmake.cmaketoolchain:generator=$CMAKE_GENERATOR")
+          fi
+          # PowerShell launchers too (conanbuild.ps1, conanrun.ps1, and conanvcvars.ps1 with
+          # the MSVC environment), for pwsh steps: the workflows avoid shell: cmd.
+          if [ "$RUNNER_OS" = Windows ]; then
+            generators+=(-c tools.env.virtualenv:powershell=pwsh)
           fi
         fi
         "$conan" remote remove "*"
