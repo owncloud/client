@@ -3,7 +3,7 @@ name: Conan build
 # Builds the client against the locked Conan dependencies, which the GitLab dependency
 # builder publishes to ghcr.io (see .github/actions/conan-deps), and runs its tests. Runs on
 # every code change, next to the Craft build in main.yml, which it replaces later; Linux,
-# macOS arm64 and Windows x86_64 first.
+# macOS arm64, macOS x86_64 and Windows x86_64 so far.
 
 on:
   push:
@@ -311,13 +311,15 @@ jobs:
     # client, Qt's x86_64 tools (moc, qmlcachegen) and the tests run under Rosetta.
     runs-on: macos-26
     steps:
+      - name: Check that Rosetta runs x86_64 programs
+        run: arch -x86_64 /usr/bin/true || { echo "::error::Rosetta is not installed on this runner"; exit 1; }
       # GitHub's merge commit, as for Linux above.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - name: Select Xcode with apple-clang 21
         run: |
-          # conan/profiles/macos-x86_64 says compiler.version=21.
+          # conan/profiles/macos-x86_64 and its build profile macos-armv8 say compiler.version=21.
           for app in /Applications/Xcode*.app; do
             major="$(DEVELOPER_DIR="$app/Contents/Developer" xcrun clang --version 2>/dev/null | sed -nE 's/^Apple clang version ([0-9]+).*/\1/p')"
             if [ "$major" = 21 ]; then

@@ -98,5 +98,10 @@ runs:
           profiles=(-pr:a "conan/profiles/$PROFILE")
         else
           profiles=(-pr:h "conan/profiles/$PROFILE" -pr:b "conan/profiles/$build_profile")
+          # The client itself (&:) is built natively for the host arch, as Qt is: no
+          # CMAKE_SYSTEM_NAME, so CMake does not see a cross build (src/CMakeLists.txt adds
+          # -fstack-protector-strong only then), and CMAKE_OSX_ARCHITECTURES still selects
+          # the arch.
+          profiles+=(-c "&:tools.cmake.cmaketoolchain:system_name=")
         fi
         "$conan" install . --lockfile=conan.lock "${profiles[@]}" --build=never "${generators[@]}"
