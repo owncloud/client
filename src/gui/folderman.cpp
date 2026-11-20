@@ -778,7 +778,7 @@ Folder *FolderMan::addFolder(AccountState *accountState, const FolderDefinition 
     auto folder = builder.buildFolder(accountState, _ignoreHiddenFiles, _moveToTrash, this);
 
     if (!folder) {
-        qCWarning(lcFolderMan) << "Unable to create Folder for " << folder->path() << " with spaceId " << folderDefinition.spaceId();
+        qCWarning(lcFolderMan) << "Unable to create Folder for " << folderDefinition.localPath() << " with spaceId " << folderDefinition.spaceId();
         return nullptr;
     }
 
