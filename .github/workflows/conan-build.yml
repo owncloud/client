@@ -1,0 +1,370 @@
+name: Conan build
+
+# Builds the client against the locked Conan dependencies, which the GitLab dependency
+# builder publishes to ghcr.io (see .github/actions/conan-deps), and runs its tests. Runs on
+# every code change, next to the Craft build in main.yml, which it replaces later; Linux,
+# macOS arm64, macOS x86_64 and Windows x86_64 so far.
+
+on:
+  push:
+    branches:
+      - master
+      - '7.2'
+      - '6'
+    paths-ignore:
+      - '**.md'
+      - changelog/**
+  pull_request:
+    paths-ignore:
+      - '**.md'
+      - changelog/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: conan-build-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  linux:
+    name: Build and test linux-x86_64
+    # The packages were built in the GitLab builder image (AlmaLinux 8, gcc-toolset-13); the client is
+    # compiled here with the runner's gcc 13, and the archive's tool binaries (cmake, Qt host tools) run
+    # on the runner: they need glibc >= 2.28 and gcc 8's libstdc++ (GLIBCXX_3.4.25) or newer, AlmaLinux
+    # 8's own; gcc-toolset-13 links its newer libstdc++ parts statically, so it raises neither floor.
+    runs-on: ubuntu-24.04
+    steps:
+      # GitHub's merge commit, as in main.yml, so a PR is tested with its base. Its fingerprint inputs
+      # (see conan/fingerprint.py) match the PR head's or the base's, which both have archives, unless
+      # both changed any of them; then the PR needs a rebase and a new dependency build.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install the system packages Conan checks
+        # The profile has tools.system.package_manager:mode=check: the apt packages of xorg/system,
+        # opengl/system, egl/system and xkeyboard-config/system at conan/recipes-commit must be there.
+        run: |
+          sudo apt-get update -qq
+          # pkgconf: the system recipes' package_info() runs pkg-config.
+          # ninja-build: the cmake-generator passed to conan-deps below.
+          # libopengl0: libOpenGL.so.0, which the packaged Qt links (built against libglvnd);
+          # libgl-dev brings only libGL, and without it every test fails to start.
+          sudo apt-get install -y -qq --no-install-recommends \
+            pkgconf \
+            libx11-dev \
+            libx11-xcb-dev \
+            libfontenc-dev \
+            libice-dev \
+            libsm-dev \
+            libxau-dev \
+            libxaw7-dev \
+            libxcomposite-dev \
+            libxcursor-dev \
+            libxdamage-dev \
+            libxdmcp-dev \
+            libxext-dev \
+            libxfixes-dev \
+            libxi-dev \
+            libxinerama-dev \
+            libxkbfile-dev \
+            libxmu-dev \
+            libxmuu-dev \
+            libxpm-dev \
+            libxrandr-dev \
+            libxrender-dev \
+            libxres-dev \
+            libxss-dev \
+            libxt-dev \
+            libxtst-dev \
+            libxv-dev \
+            libxxf86vm-dev \
+            libxcb-glx0-dev \
+            libxcb-render0-dev \
+            libxcb-render-util0-dev \
+            libxcb-xkb-dev \
+            libxcb-icccm4-dev \
+            libxcb-image0-dev \
+            libxcb-keysyms1-dev \
+            libxcb-randr0-dev \
+            libxcb-shape0-dev \
+            libxcb-sync-dev \
+            libxcb-xfixes0-dev \
+            libxcb-xinerama0-dev \
+            libxcb-dri3-dev \
+            uuid-dev \
+            libxcb-cursor-dev \
+            libxcb-dri2-0-dev \
+            libxcb-present-dev \
+            libxcb-composite0-dev \
+            libxcb-ewmh-dev \
+            libxcb-res0-dev \
+            libxcb-util-dev \
+            libgl-dev \
+            libegl-dev \
+            xkb-data \
+            ninja-build \
+            libopengl0
+      # The Python for Conan's venv and the fingerprint script, the same in every Conan job on
+      # GitHub. update-environment: false keeps its PATH, LD_LIBRARY_PATH and PKG_CONFIG_PATH out of
+      # the build and the tests; it is used only through its path.
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        id: python
+        with:
+          python-version: '3.12'
+          update-environment: false
+      - uses: $/.github/actions/conan-deps
+        id: deps
+        with:
+          profile: linux-x86_64
+          python: ${{ steps.python.outputs.python-path }}
+          generators-folder: build
+          cmake-generator: Ninja
+      - name: Build
+        run: |
+          # conanbuild.sh puts the locked cmake on PATH; the compiler is the runner's gcc 13,
+          # which conan/profiles/linux-x86_64 names. WITH_AUTO_UPDATER: Craft's Linux job builds
+          # and tests the updater too (enableAutoUpdater).
+          source build/conanbuild.sh
+          cmake --preset conan-release -DBUILD_TESTING=ON -DFORCE_ASSERTS=ON -DWITH_AUTO_UPDATER=ON
+          cmake --build --preset conan-release
+      - name: Test
+        id: test
+        run: |
+          # AppConfigTest writes the system config /etc/ownCloud/ownCloud.ini; Craft's job runs as root.
+          sudo install -d -o "$(id -u)" -g "$(id -g)" /etc/ownCloud
+          # No session bus (the runner has none): libsecret then fails at once, which
+          # CredentialManagerTest expects while DBUS_SESSION_BUS_ADDRESS is unset. With a bus but
+          # no Secret Service, qtkeychain reports an error instead of using the plaintext fallback.
+          echo "DBUS_SESSION_BUS_ADDRESS: ${DBUS_SESSION_BUS_ADDRESS-unset}, XDG_RUNTIME_DIR: ${XDG_RUNTIME_DIR-unset}"
+          # conanrun.sh: the shared Qt, glib and libsecret from the Conan cache.
+          source build/conanbuild.sh
+          source build/conanrun.sh
+          ctest --preset conan-release --output-on-failure
+      - name: QML format lint
+        # Here rather than in format-lint.yml: qmlformat has to be the one of the Qt the client builds
+        # against, which only conan-deps installs. Runs even if the build or the tests failed.
+        if: ${{ !cancelled() && steps.deps.outcome == 'success' }}
+        run: |
+          # conanrun.sh: the Conan Qt's bin on PATH and its libraries on LD_LIBRARY_PATH.
+          source build/conanrun.sh
+          qmlformat --version
+          git ls-files -z '*.qml' | xargs -0 -r -n1 qmlformat -i
+          git diff --exit-code -- '*.qml'
+      - name: Upload the test log
+        # Only for failed tests, not for a failed QML format lint.
+        if: ${{ failure() && steps.test.outcome == 'failure' }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: conan-build-linux-x86_64-test-log
+          path: build/Testing/Temporary/LastTest.log
+          if-no-files-found: ignore
+
+  macos:
+    name: Build and test macos-armv8
+    runs-on: macos-26
+    steps:
+      # GitHub's merge commit, as for Linux above.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Select Xcode with apple-clang 21
+        run: |
+          # conan/profiles/macos-armv8 says compiler.version=21.
+          for app in /Applications/Xcode*.app; do
+            major="$(DEVELOPER_DIR="$app/Contents/Developer" xcrun clang --version 2>/dev/null | sed -nE 's/^Apple clang version ([0-9]+).*/\1/p')"
+            if [ "$major" = 21 ]; then
+              sudo xcode-select -s "$app/Contents/Developer"
+              xcrun clang --version | head -n 1
+              exit 0
+            fi
+          done
+          echo "::error::no Xcode with apple-clang 21 on this runner image"
+          exit 1
+      - name: Install Ninja
+        # The cmake-generator passed to conan-deps below.
+        run: command -v ninja || brew install ninja
+      # The Python for Conan's venv and the fingerprint script, the same in every Conan job on
+      # GitHub. update-environment: false keeps its PATH, LD_LIBRARY_PATH and PKG_CONFIG_PATH out of
+      # the build and the tests; it is used only through its path.
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        id: python
+        with:
+          python-version: '3.12'
+          update-environment: false
+      - uses: $/.github/actions/conan-deps
+        with:
+          profile: macos-armv8
+          python: ${{ steps.python.outputs.python-path }}
+          generators-folder: build
+          cmake-generator: Ninja
+      - name: Build
+        run: |
+          # conanbuild.sh puts the locked cmake on PATH; the compiler is the Xcode selected above.
+          # WITH_AUTO_UPDATER: builds the Sparkle updater (src/gui/updater), so the client is
+          # compiled and linked against the Conan Sparkle framework. Craft's macOS job leaves it off.
+          source build/conanbuild.sh
+          cmake --preset conan-release -DBUILD_TESTING=ON -DFORCE_ASSERTS=ON -DWITH_AUTO_UPDATER=ON
+          cmake --build --preset conan-release
+      - name: Test
+        run: |
+          # conanrun.sh: the shared Qt and the Sparkle framework from the Conan cache.
+          source build/conanbuild.sh
+          source build/conanrun.sh
+          ctest --preset conan-release --output-on-failure
+      - name: Upload the test log
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: conan-build-macos-armv8-test-log
+          path: build/Testing/Temporary/LastTest.log
+          if-no-files-found: ignore
+
+  windows:
+    name: Build and test windows-x86_64
+    # As Craft's Windows job: VS 2022, whose MSVC 14.4x is the compiler.version=194 of
+    # conan/profiles/windows-x86_64 (the packages were built with VS 2022 Build Tools 17.14).
+    runs-on: windows-2022
+    # The build takes about half an hour; a test that hangs (a dialog, a keychain prompt) must
+    # not hold the runner for GitHub's default six hours.
+    timeout-minutes: 120
+    steps:
+      # GitHub's merge commit, as for Linux above. .gitattributes keeps the Conan inputs LF, so
+      # the runner's core.autocrlf=true does not change their fingerprint.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # The Python for Conan's venv and the fingerprint script, as in the other Conan jobs.
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        id: python
+        with:
+          python-version: '3.12'
+          update-environment: false
+      - uses: $/.github/actions/conan-deps
+        with:
+          profile: windows-x86_64
+          python: ${{ steps.python.outputs.python-path }}
+          generators-folder: build
+          # Ninja is on the runner image's PATH (Chocolatey's, in C:\ProgramData\Chocolatey\bin).
+          cmake-generator: Ninja
+      # pwsh, with the PowerShell launchers conan-deps generates on Windows: conanbuild.ps1
+      # brings the MSVC environment (conanvcvars.ps1) and the locked cmake. GitHub's pwsh stops
+      # on a failing cmdlet; $PSNativeCommandUseErrorActionPreference, set after the launchers,
+      # makes a failing cmake or ctest stop the step too.
+      - name: Check the MSVC version and Ninja
+        shell: pwsh
+        run: |
+          # The environment Build and Test use: conanbuild.ps1, which brings conanvcvars.ps1.
+          . build/conanbuild.ps1
+          # cl without arguments prints its banner, with the version, to stderr.
+          $banner = (& cl 2>&1 | Out-String)
+          Write-Output $banner.Trim()
+          if ($banner -notmatch 'Version 19\.4\d\.') {
+            Write-Output '::error::cl.exe is not MSVC 19.4x, the compiler.version=194 of conan/profiles/windows-x86_64'
+            exit 1
+          }
+          $ninja = Get-Command ninja -ErrorAction SilentlyContinue
+          if (-not $ninja) {
+            Write-Output '::error::ninja is not on PATH; the windows-2022 image had it from Chocolatey'
+            exit 1
+          }
+          Write-Output "ninja: $($ninja.Source)"
+          # cl's own exit status (no source file) must not decide the step: GitHub ends it with
+          # exit $LASTEXITCODE.
+          exit 0
+      - name: Build
+        shell: pwsh
+        run: |
+          . build/conanbuild.ps1
+          # From here on, after the launchers: a failing cmake ends the step.
+          $PSNativeCommandUseErrorActionPreference = $true
+          # WITH_AUTO_UPDATER: as on Linux and macOS, so the Windows updater (ocupdater) is
+          # built and tested too; Craft's Windows job leaves it off.
+          cmake --preset conan-release -DBUILD_TESTING=ON -DFORCE_ASSERTS=ON -DWITH_AUTO_UPDATER=ON
+          cmake --build --preset conan-release
+      - name: Test
+        id: test
+        shell: pwsh
+        run: |
+          . build/conanbuild.ps1
+          # conanrun.ps1: the Qt DLLs and plugins from the Conan cache.
+          . build/conanrun.ps1
+          # From here on, after the launchers: failing tests end the step.
+          $PSNativeCommandUseErrorActionPreference = $true
+          # -j1: one test at a time, as Craft runs them on Windows ([Compile]Jobs=1).
+          # --timeout: a hanging test fails after 15 minutes, well before the job's timeout,
+          # so its log is still uploaded.
+          ctest --preset conan-release --output-on-failure -j1 --timeout 900
+      - name: Upload the test log
+        if: ${{ failure() && steps.test.outcome == 'failure' }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: conan-build-windows-x86_64-test-log
+          path: build/Testing/Temporary/LastTest.log
+          if-no-files-found: ignore
+
+  macos-x86_64:
+    name: Build and test macos-x86_64
+    # An arm64 runner on purpose: the dependency archive is a cross build from arm64
+    # (-pr:b macos-armv8), so its build tools (cmake, pkgconf, ...) are arm64. The x86_64
+    # client, Qt's x86_64 tools (moc, qmlcachegen) and the tests run under Rosetta.
+    runs-on: macos-26
+    steps:
+      - name: Check that Rosetta runs x86_64 programs
+        run: arch -x86_64 /usr/bin/true || { echo "::error::Rosetta is not installed on this runner"; exit 1; }
+      # GitHub's merge commit, as for Linux above.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Select Xcode with apple-clang 21
+        run: |
+          # conan/profiles/macos-x86_64 and its build profile macos-armv8 say compiler.version=21.
+          for app in /Applications/Xcode*.app; do
+            major="$(DEVELOPER_DIR="$app/Contents/Developer" xcrun clang --version 2>/dev/null | sed -nE 's/^Apple clang version ([0-9]+).*/\1/p')"
+            if [ "$major" = 21 ]; then
+              sudo xcode-select -s "$app/Contents/Developer"
+              xcrun clang --version | head -n 1
+              exit 0
+            fi
+          done
+          echo "::error::no Xcode with apple-clang 21 on this runner image"
+          exit 1
+      - name: Install Ninja
+        # The cmake-generator passed to conan-deps below.
+        run: command -v ninja || brew install ninja
+      # The Python for Conan's venv and the fingerprint script, the same in every Conan job on
+      # GitHub. update-environment: false keeps its PATH, LD_LIBRARY_PATH and PKG_CONFIG_PATH out of
+      # the build and the tests; it is used only through its path.
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        id: python
+        with:
+          python-version: '3.12'
+          update-environment: false
+      - uses: $/.github/actions/conan-deps
+        with:
+          profile: macos-x86_64
+          python: ${{ steps.python.outputs.python-path }}
+          generators-folder: build
+          cmake-generator: Ninja
+      - name: Build
+        run: |
+          # conanbuild.sh puts the locked cmake on PATH; the compiler is the Xcode selected above.
+          # WITH_AUTO_UPDATER: builds the Sparkle updater (src/gui/updater), so the client is
+          # compiled and linked against the Conan Sparkle framework. Craft's macOS job leaves it off.
+          source build/conanbuild.sh
+          cmake --preset conan-release -DBUILD_TESTING=ON -DFORCE_ASSERTS=ON -DWITH_AUTO_UPDATER=ON
+          cmake --build --preset conan-release
+      - name: Test
+        run: |
+          # conanrun.sh: the shared Qt and the Sparkle framework from the Conan cache.
+          source build/conanbuild.sh
+          source build/conanrun.sh
+          ctest --preset conan-release --output-on-failure
+      - name: Upload the test log
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: conan-build-macos-x86_64-test-log
+          path: build/Testing/Temporary/LastTest.log
+          if-no-files-found: ignore
