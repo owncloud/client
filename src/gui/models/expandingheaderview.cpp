@@ -38,6 +38,13 @@ ExpandingHeaderView::ExpandingHeaderView(const QString &objectName, QWidget *par
 
 ExpandingHeaderView::~ExpandingHeaderView()
 {
+    // pretty sure this is wrong.
+    // first, it doesn't seem to work. If I resize columns in either the errors or activity
+    // views, the sizes are not restored on restart, so presume trying to save in the dtr is "too late"
+    // better would be to do save after user has changed something, then we are covered even if shut down is
+    // abnormal.
+    // second, I think the save/restore routine should not live in the config file but should be local to "the one
+    // that owns the data" eg this, or an associated controller
     ConfigFile cfg;
     cfg.saveGeometryHeader(this);
 }

@@ -60,7 +60,7 @@ OAuth::PromptValuesSupportedFlags defaultOauthPromptValue(const OpenIdConfig& co
 seconds defaultTimeout()
 {
     // as the OAuth process can be interactive we don't want 5min of inactivity
-    return qMin(30s, OCC::AbstractNetworkJob::httpTimeout);
+    return qMin(30s, OCC::AbstractNetworkJob::httpTimeout());
 }
 
 int defaultTimeoutMs()

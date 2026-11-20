@@ -36,7 +36,7 @@ Q_LOGGING_CATEGORY(lcConnectionValidator, "sync.connectionvalidator", QtInfoMsg)
 namespace {
     auto timeoutToUse()
     {
-        return std::min(ConnectionValidator::DefaultCallingInterval - 5s, AbstractNetworkJob::httpTimeout);
+        return std::min(ConnectionValidator::DefaultCallingInterval - 5s, AbstractNetworkJob::httpTimeout());
     };
 }
 
