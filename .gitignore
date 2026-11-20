@@ -33,6 +33,10 @@ t1.cfg
 [Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/
+# The top-level release/ holds the release pipeline's lock files, which are tracked.
+!/release/
+/release/*
+!/release/*.lock
 [Rr]eleases/
 x64/
 x86/
