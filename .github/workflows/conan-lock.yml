@@ -1,0 +1,105 @@
+name: Conan lock
+
+# The drift check: conan.lock must be exactly what conan/update-lock.sh produces from
+# conanfile.py, the profiles and the recipes at conan/recipes-commit, for all four
+# platforms. Resolving builds nothing, so one Linux runner checks every platform.
+
+on:
+  push:
+    branches:
+      - master
+      - '7.2'
+      - '6'
+    paths:
+      - conanfile.py
+      - conan.lock
+      - conan/**
+      - .github/workflows/conan-lock.yml
+      - .github/actions/setup-conan/**
+  pull_request:
+    paths:
+      - conanfile.py
+      - conan.lock
+      - conan/**
+      - .github/workflows/conan-lock.yml
+      - .github/actions/setup-conan/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: conan-lock-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  check:
+    name: Lock drift check
+    runs-on: ubuntu-24.04
+    steps:
+      # GitHub's merge commit, as in conan-build.yml: the lock that lands, checked against the
+      # base commit it was merged onto (its first parent, hence depth 2), so a PR that is behind
+      # its base is judged on what it adds. A PR is not re-run when its base moves, so two PRs
+      # whose locks only drift once both are merged are caught by the push run afterwards. A PR
+      # that conflicts with its base has no merge commit and gets no run until it is rebased.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Read the pinned recipes commit
+        id: recipes
+        run: |
+          # It comes from the change under test: accept a full commit SHA only.
+          commit="$(tr -d '[:space:]' < conan/recipes-commit)"
+          [[ "$commit" =~ ^[0-9a-f]{40}$ ]] || { echo "::error::conan/recipes-commit is not a 40-character commit SHA"; exit 1; }
+          echo "commit=$commit" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: owncloud/conan-center-index
+          ref: ${{ steps.recipes.outputs.commit }}
+          path: .conan-recipes
+          persist-credentials: false
+      # The Python for Conan's venv, the same in every Conan job on GitHub (see conan-build.yml).
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        id: python
+        with:
+          python-version: '3.12'
+          update-environment: false
+      - uses: $/.github/actions/setup-conan
+        id: conan
+        with:
+          python: ${{ steps.python.outputs.python-path }}
+      - name: Fetch the base lock
+        id: base
+        env:
+          EVENT: ${{ github.event_name }}
+          BEFORE: ${{ github.event.before }}
+        run: |
+          # Rules 2 and 3 of the check compare against the lock the change starts from: the merge
+          # commit's first parent for a PR, or the commit a push started from, fetched unless the
+          # clone has it. That fetch has no credentials, so it fails on a private copy of the
+          # repository (or after a force-push once GitHub has dropped the old commit); then the
+          # push is compared with its last commit's parent. A manual run or the first push of a
+          # branch has no previous commit, so it compares the lock with itself: only rule 1
+          # (regenerating it changes nothing) can fail then.
+          if [ "$EVENT" = pull_request ]; then
+            echo "ref=HEAD^1" >> "$GITHUB_OUTPUT"
+          elif [ "$EVENT" = push ] && [ "$BEFORE" != 0000000000000000000000000000000000000000 ]; then
+            if git cat-file -e "$BEFORE^{commit}" 2> /dev/null || git fetch --no-tags --depth=1 origin "$BEFORE"; then
+              echo "ref=$BEFORE" >> "$GITHUB_OUTPUT"
+            else
+              echo "::warning::cannot fetch $BEFORE, the commit the push started from; checking against the last commit's parent"
+              echo "ref=HEAD^1" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            echo "::notice::no previous commit to compare with; checking rule 1 only"
+            echo "ref=HEAD" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Check conan.lock
+        env:
+          OC_RECIPES_DIR: .conan-recipes
+          BASE: ${{ steps.base.outputs.ref }}
+          CONAN_BIN_DIR: ${{ steps.conan.outputs.bin-dir }}
+        run: |
+          # update-lock.sh runs conan from PATH.
+          PATH="$CONAN_BIN_DIR:$PATH" conan/update-lock.sh --check --base "$BASE"

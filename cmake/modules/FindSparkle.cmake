@@ -3,6 +3,7 @@
 # Once done this will define
 #  SPARKLE_FOUND - system has Sparkle
 #  SPARKLE_LIBRARY - The framework needed to use Sparkle
+#  sparkle::sparkle - Imported target for it, the name the Conan package uses
 # Copyright (c) 2009, Vittorio Giovara <vittorio.giovara@gmail.com>
 #
 # Distributed under the OSI-approved BSD License (the "License");
@@ -19,3 +20,7 @@ find_library(SPARKLE_LIBRARY NAMES Sparkle)
 find_package_handle_standard_args(Sparkle DEFAULT_MSG SPARKLE_LIBRARY)
 mark_as_advanced(SPARKLE_LIBRARY)
 
+if(SPARKLE_FOUND AND NOT TARGET sparkle::sparkle)
+    add_library(sparkle::sparkle INTERFACE IMPORTED)
+    set_target_properties(sparkle::sparkle PROPERTIES INTERFACE_LINK_LIBRARIES "${SPARKLE_LIBRARY}")
+endif()
