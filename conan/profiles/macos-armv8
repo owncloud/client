@@ -9,26 +9,10 @@ os=Macos
 os.version=13.0
 
 [conf]
+# Qt without dup3: built with the Xcode 27.2 SDK, which declares dup3 (macOS
+# 27), Qt's qt_safe_dup2 called it unguarded (QProcess crashed on every start
+# below macOS 27). dup2 + fcntl, as with older SDKs; the second line puts this into
+# Qt's package ID.
+qt/*:tools.cmake.cmaketoolchain:extra_variables={"FEATURE_dup3": {"value": "OFF", "cache": True, "type": "BOOL", "force": True}}
+qt/*:tools.info.package_id:confs=["tools.cmake.cmaketoolchain:extra_variables"]
 tools.system.package_manager:mode=check
-
-# The conanfile's default_options, for the build context too: this profile is
-# also the build profile of the macos-x86_64 cross build, whose native Qt
-# provides the host tools (QT_HOST_PATH) and so needs the same modules.
-# update-lock.sh checks that this list matches default_options.
-[options]
-*:fPIC=True
-harfbuzz/*:with_glib=False
-qt/*:gui=True
-qt/*:qtdeclarative=True
-qt/*:qtimageformats=True
-qt/*:qtquickcontrols2=True
-qt/*:qtshadertools=True
-qt/*:qtsvg=True
-qt/*:qttools=True
-qt/*:qttranslations=True
-qt/*:shared=True
-qt/*:widgets=True
-qt/*:with_egl=True
-qt/*:with_libjpeg=libjpeg
-qt/*:with_odbc=False
-qt/*:with_pq=False

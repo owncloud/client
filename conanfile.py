@@ -8,8 +8,7 @@ conan/recipes-commit.
 conan.lock covers all four platforms in conan/profiles/, and macos-x86_64
 cross-built on an arm64 Mac. It is only ever changed with
 conan/update-lock.sh; run it after any change to the requirements or options
-below. default_options are repeated in conan/profiles/macos-armv8, the cross
-build's build profile; update-lock.sh checks the two match.
+below.
 
 The module level must stay free of dynamic code: CI reads the Conan version
 pin below statically, without importing this file.
@@ -29,6 +28,18 @@ class OwncloudClientConan(ConanFile):
         # Qt does not use harfbuzz's glib integration, and with it macOS and
         # Windows got a static glib inside Qt's harfbuzz.
         "harfbuzz/*:with_glib": False,
+        # One shared OpenSSL for QtNetwork, Qt's TLS plugin and everything else.
+        # Static, QtNetwork embedded a copy and exported its symbols, the TLS
+        # plugin linked a second one, and on macOS x86_64 the plugin did not
+        # link at all ("fixup error ... '_OPENSSL_cpuid_setup' does not have
+        # address": libcrypto.a's init section bound to QtNetwork's copy).
+        # With a shared OpenSSL the qt recipe has Qt load it by name at runtime
+        # (Qt's own default). Linked, Qt's tools could not start in the client
+        # build (qmlcachegen: "Library not loaded: @rpath/libssl.3.dylib"). So
+        # packaging has to ship libssl/libcrypto where Qt looks for them: Qt's
+        # own libraries and plugins don't link them, so the deploy tools only
+        # pick them up if a client binary still does (through CMakeDeps).
+        "openssl/*:shared": True,
         "qt/*:gui": True,
         "qt/*:qtdeclarative": True,
         "qt/*:qtimageformats": True,

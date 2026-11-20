@@ -71,6 +71,7 @@ runs:
       shell: bash
       env:
         PROFILE: ${{ inputs.profile }}
+        PYTHON: ${{ inputs.python }}
         GENERATORS_FOLDER: ${{ inputs.generators-folder }}
         CMAKE_GENERATOR: ${{ inputs.cmake-generator }}
         CONAN_BIN_DIR: ${{ steps.conan.outputs.bin-dir }}
@@ -90,4 +91,21 @@ runs:
         fi
         "$conan" remote remove "*"
         "$conan" cache restore "$RUNNER_TEMP/deps/cache.tgz"
-        "$conan" install . --lockfile=conan.lock -pr:a "conan/profiles/$PROFILE" --build=never "${generators[@]}"
+        # As the dependency builder built it: a cross-built profile (macos-x86_64) with its build
+        # profile as -pr:b, so the build-context binaries are the archive's.
+        build_profile="$($PYTHON conan/fingerprint.py --profile "$PROFILE" --print-build-profile)"
+        if [ "$build_profile" = "$PROFILE" ]; then
+          profiles=(-pr:a "conan/profiles/$PROFILE")
+        else
+          profiles=(-pr:h "conan/profiles/$PROFILE" -pr:b "conan/profiles/$build_profile")
+          # macOS to macOS (macos-x86_64 on an arm64 Mac): the client itself (&:) is built
+          # natively for the host arch, as Qt is (see the profile): no CMAKE_SYSTEM_NAME, so
+          # CMake does not see a cross build (src/CMakeLists.txt adds -fstack-protector-strong
+          # only then), and CMAKE_OSX_ARCHITECTURES still selects the arch. Set here, not in the
+          # profile, which is a fingerprint input of the dependency archives.
+          if grep -qx 'os=Macos' "conan/profiles/$PROFILE" && grep -qx 'os=Macos' "conan/profiles/$build_profile"; then
+            profiles+=(-c "&:tools.build.cross_building:cross_build=False"
+                       -c "&:tools.cmake.cmaketoolchain:system_name=")
+          fi
+        fi
+        "$conan" install . --lockfile=conan.lock "${profiles[@]}" --build=never "${generators[@]}"

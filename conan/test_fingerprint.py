@@ -20,11 +20,21 @@ FILES = {
     "conan/profiles/linux-x86_64": b"[settings]\nos=Linux\n",
 }
 EXPECTED = "1c0aa38d5b43d726d6900ca346ef2c2b005fa44b7b1f1d7c8c96d1945d919abb"
+# A cross-built profile also hashes its build profile; the same value as the dependency builder's.
+CROSS_FILES = {**{k: v for k, v in FILES.items() if not k.startswith("conan/profiles/")},
+               "conan/profiles/macos-x86_64": b"[settings]\narch=x86_64\n",
+               "conan/profiles/macos-armv8": b"[settings]\narch=armv8\n"}
+CROSS_EXPECTED = "b70099eb8278c64c31673cb8c7fd8a87a8e8ade6f2b2a155a52871d79527c3ad"
 
 
 class FingerprintTest(unittest.TestCase):
     def test_shared_fixture_value(self):
         self.assertEqual(fingerprint("linux-x86_64", FILES), EXPECTED)
+
+    def test_shared_cross_fixture_value(self):
+        self.assertEqual(fingerprint("macos-x86_64", CROSS_FILES), CROSS_EXPECTED)
+        with self.assertRaises(KeyError):
+            fingerprint("macos-x86_64", {k: v for k, v in CROSS_FILES.items() if k != "conan/profiles/macos-armv8"})
 
     def test_command_line_reads_the_checkout(self):
         with tempfile.TemporaryDirectory() as root:
@@ -34,6 +44,21 @@ class FingerprintTest(unittest.TestCase):
             out = subprocess.run([sys.executable, str(HERE / "fingerprint.py"), "--profile", "linux-x86_64",
                                   "--root", root], check=True, capture_output=True, text=True).stdout
         self.assertEqual(out, EXPECTED + "\n")
+
+    def test_command_line_hashes_the_build_profile_of_a_cross_build(self):
+        with tempfile.TemporaryDirectory() as root:
+            for path, content in CROSS_FILES.items():
+                (pathlib.Path(root) / path).parent.mkdir(parents=True, exist_ok=True)
+                (pathlib.Path(root) / path).write_bytes(content)
+            out = subprocess.run([sys.executable, str(HERE / "fingerprint.py"), "--profile", "macos-x86_64",
+                                  "--root", root], check=True, capture_output=True, text=True).stdout
+        self.assertEqual(out, CROSS_EXPECTED + "\n")
+
+    def test_command_line_prints_the_build_profile(self):
+        for profile, build in (("macos-x86_64", "macos-armv8"), ("linux-x86_64", "linux-x86_64")):
+            out = subprocess.run([sys.executable, str(HERE / "fingerprint.py"), "--profile", profile,
+                                  "--print-build-profile"], check=True, capture_output=True, text=True).stdout
+            self.assertEqual(out, build + "\n")
 
     def test_missing_input_fails(self):
         with self.assertRaises(KeyError):
