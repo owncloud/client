@@ -56,6 +56,7 @@ ownCloud admins and users.
 * Change - Eliminated excessive server checks: [#12619](https://github.com/owncloud/client/pull/12619)
 * Change - We ended support for OWNCLOUD_FORCE_DARK_MODE environment variable: [#12625](https://github.com/owncloud/client/pull/12625)
 * Change - Introduce a user editable account alias: [#12639](https://github.com/owncloud/client/pull/12639)
+* Enhancement - Add the Conan dependency configuration: [#12689](https://github.com/owncloud/client/pull/12689)
 
 ## Details
 
@@ -105,6 +106,18 @@ ownCloud admins and users.
    and selecting "Change alias..." which will pop a simple input dialog.
 
    https://github.com/owncloud/client/pull/12639
+
+* Enhancement - Add the Conan dependency configuration: [#12689](https://github.com/owncloud/client/pull/12689)
+
+   The client's dependencies are now described for Conan 2: `conanfile.py` with an
+   exact Conan pin, profiles for the four release platforms, one `conan.lock`
+   covering all of them, and `conan/update-lock.sh`, which regenerates the lock and
+   checks it for drift. A new CI workflow builds and tests the client on Linux,
+   macOS arm64 and Windows x86_64 with these dependencies, next to the Craft build.
+   This prepares the move of the build from KDE Craft to Conan and does not change
+   the current build.
+
+   https://github.com/owncloud/client/pull/12689
 
 # Changelog for ownCloud Desktop Client [7.1.1] (2026-08-27)
 
