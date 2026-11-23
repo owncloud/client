@@ -11,7 +11,7 @@ endif()
 # to be able to open a Mach port across the extension's sandbox boundary.
 # Pass the info through the xcodebuild command line and make sure that the project uses
 # those user-defined settings to build the plist.
-# The extension gets the client's deployment target: Xcode 27 refuses the project's own 10.15.
+# The extension has the client's minimum macOS (also set in the Xcode project).
 add_custom_target( mac_overlayplugin ALL
     xcodebuild -project ${CMAKE_SOURCE_DIR}/shell_integration/MacOSX/OwnCloudFinderSync/OwnCloudFinderSync.xcodeproj
         -target FinderSyncExt -configuration "${XCODE_CONFIG}" "SYMROOT=${CMAKE_CURRENT_BINARY_DIR}"
