@@ -17,9 +17,10 @@ qt/*:tools.cmake.cmaketoolchain:extra_variables={"FEATURE_dup3": {"value": "OFF"
 qt/*:tools.info.package_id:confs=["tools.cmake.cmaketoolchain:extra_variables"]
 tools.system.package_manager:mode=check
 
-# The qt and glib recipes pin pcre2/10.42, which has known CVEs fixed in 10.48.
-# A replacement here, not an override in conanfile.py, so that it also reaches
-# the build context (on Linux, libsecret's tool glib). Drop it once the recipes
-# take a range (conan-io/conan-center-index#31497).
+# qt, and on Linux glib and libselinux, pin pcre2/10.42, which has known CVEs
+# fixed in 10.48. A replacement here, not an override in conanfile.py, so that
+# it also reaches the build context, and for any pinned version. Drop it only
+# once all of them require pcre2 with a lower bound of 10.48 or later
+# (conan-io/conan-center-index#31497 proposes 10.43, which is not enough).
 [replace_requires]
-pcre2/10.42: pcre2/[>=10.48 <11]
+pcre2/*: pcre2/[>=10.48 <11]
