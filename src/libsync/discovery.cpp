@@ -958,9 +958,10 @@ void ProcessDirectoryJob::processFileAnalyzeLocalInfo(
         auto job = new RequestEtagJob(_discoveryData->_account.get(), _discoveryData->_baseUrl, serverOriginalPath, this);
         connect(job, &RequestEtagJob::finishedSignal, this,
             [job, recurseQueryServer, path = path, postProcessLocalNew, processRename, base, item, originalPath, this] {
-                // Only an etag the server reported can show that the source changed. A failed request
-                // (403, 5xx, no connection) has none: then keep the move, and let its MOVE report the
-                // error, instead of uploading the destination and deleting the source.
+                // Only an etag the server reported can show that a file's source changed. A failed
+                // request (403, 5xx, no connection) has none: then keep the file's move, and let its
+                // MOVE report the error, instead of uploading the destination and deleting the source.
+                // A directory's move is kept on any answer but a 404; its server query follows.
                 const bool sourceGone = job->httpStatusCode() == 404;
                 const bool sourceChanged = !job->etag().isEmpty() && job->etag().toUtf8() != base._etag && !item->isDirectory();
                 if (sourceGone || sourceChanged || _discoveryData->isRenamed(originalPath)) {
