@@ -48,9 +48,7 @@ QString convertSidToQString(_In_ PSID sid)
 };
 } // anonymous namespace
 
-CfAPIUtil::CfOpdata::CfOpdata()
-{
-}
+CfAPIUtil::CfOpdata::CfOpdata() { }
 
 CfAPIUtil::CfOpdata::CfOpdata(const CF_CALLBACK_INFO *info)
     : connectionKey(info->ConnectionKey)
