@@ -34,7 +34,7 @@ runs:
         PYTHON: ${{ inputs.python }}
       # As a script: `-m unittest conan/...` would import it as conan.test_fingerprint, which an
       # installed Conan package shadows.
-      run: $PYTHON conan/test_fingerprint.py
+      run: '"$PYTHON" conan/test_fingerprint.py'
 
     # Checks the download against its own SHA-256 table of the official releases.
     - uses: oras-project/setup-oras@5e2f2482b30b0cb3e14e67f89a80c88c659a7c63 # v2.0.3
@@ -54,7 +54,7 @@ runs:
         DEPS_REPOSITORY: ghcr.io/owncloud/client-deps
       run: |
         # tr: a native Windows Python ends the line with CRLF, and $(...) strips only the LF.
-        fp="$($PYTHON conan/fingerprint.py --profile "$PROFILE" --root . | tr -d '\r')"
+        fp="$("$PYTHON" conan/fingerprint.py --profile "$PROFILE" --root . | tr -d '\r')"
         ref="$DEPS_REPOSITORY:$PROFILE-$fp"
         echo "archive: $ref"
         mkdir -p "$RUNNER_TEMP/deps"
@@ -93,7 +93,7 @@ runs:
         "$conan" cache restore "$RUNNER_TEMP/deps/cache.tgz"
         # As the dependency builder built it: a cross-built profile (macos-x86_64) with its build
         # profile as -pr:b, so the build-context binaries are the archive's.
-        build_profile="$($PYTHON conan/fingerprint.py --profile "$PROFILE" --print-build-profile)"
+        build_profile="$("$PYTHON" conan/fingerprint.py --profile "$PROFILE" --print-build-profile)"
         if [ "$build_profile" = "$PROFILE" ]; then
           profiles=(-pr:a "conan/profiles/$PROFILE")
         else
