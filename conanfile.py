@@ -83,17 +83,20 @@ class OwncloudClientConan(ConanFile):
         self.requires("openssl/3.4.8")
         self.requires("qt/6.10.3")
         self.requires("qtkeychain/0.15.0")
-        self.requires("sqlite3/3.51.3")
-        self.requires("zlib/1.3.2")
+        self.requires("sqlite3/3.54.1")
+        self.requires("zlib/1.4")
+        # The qt and glib recipes pin pcre2/10.42, which has known CVEs fixed in
+        # 10.48. Drop this once the recipes take a range (conan-io/conan-center-index#31497).
+        self.requires("pcre2/[>=10.48 <11]", override=True)
 
         if self.settings.os == "Linux":
-            # The qt recipe's requirements() pin glib/2.78.3 once with_glib is on
-            # (configure() above); without this override the whole graph would go
-            # down from 2.86.5. A range, so update-lock.sh 'glib/*' can still bump it.
+            # qt (once with_glib is on, configure() above) and libsecret require
+            # glib/[>=2.78.3 <3]; this override keeps the graph at 2.86.5 or newer.
+            # A range, so update-lock.sh 'glib/*' can still bump it.
             self.requires("glib/[>=2.86.5 <3]", override=True)
 
         if self.settings.os == "Macos":
-            self.requires("sparkle/2.7.0")
+            self.requires("sparkle/2.9.6")
 
     def build_requirements(self):
         # The client's own cmake must stay below 4, because extra-cmake-modules
