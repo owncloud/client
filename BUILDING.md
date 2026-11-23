@@ -142,8 +142,7 @@ Set it again in a new shell, too.
 CI builds and tests the client against an archive of all the dependency packages, which our dependency
 builder publishes for the Conan inputs of `master`: `ghcr.io/owncloud/client-deps:<profile>-<fingerprint>`.
 The fingerprint is a hash of the Conan inputs listed above, so every combination of them has its own archive,
-about 150 MB. The archives are
-public, and pulling them needs no login.
+about 150 MB. The archives are public, and pulling them needs no login.
 
 You need [ORAS](https://oras.land/docs/installation) to pull them. CI uses version 1.3.6. On macOS
 `brew install oras` works; on Linux and Windows, download it from the
@@ -165,7 +164,7 @@ You need [ORAS](https://oras.land/docs/installation) to pull them. CI uses versi
    ```powershell
    $PROFILE_NAME = 'windows-x86_64'
    $fp = (python conan/fingerprint.py --profile $PROFILE_NAME --root .).Trim()
-   Remove-Item -Recurse -Force "$env:TEMP\client-deps" -ErrorAction SilentlyContinue
+   if (Test-Path "$env:TEMP\client-deps") { Remove-Item -Recurse -Force "$env:TEMP\client-deps" }
    oras pull --output "$env:TEMP\client-deps" "ghcr.io/owncloud/client-deps:$PROFILE_NAME-$fp"
    ```
 
@@ -279,14 +278,17 @@ Everything else stays as locked:
 OC_RECIPES_DIR=../conan-center-index conan/update-lock.sh
 ```
 
-To bump packages to the newest version the pinned recipes offer, name them:
+To bump packages to the newest version the pinned recipes offer, or after changing the version or range of an
+existing requirement, name them:
 
 ```bash
 OC_RECIPES_DIR=../conan-center-index conan/update-lock.sh 'openssl/*'
 ```
 
-The script needs bash, git, python3 and the venv's `conan` on `PATH`. On Windows, run it from Git Bash with those
-on `PATH` and `CONAN_HOME` set there too, or on a Linux or macOS machine. See its header for the other options.
+The script needs bash, git, `python3` and the venv's `conan` on `PATH`. It runs in a throwaway Conan home of its
+own and leaves your `CONAN_HOME` alone. On Windows, run it in WSL or on a Linux or macOS machine; Git Bash works
+only with a `python3` on `PATH`, which a python.org venv doesn't have (it has `python.exe`). See its header for
+the other options.
 
 Commit `conanfile.py` and `conan.lock` together. CI checks that the lock is what the script produces.
 
