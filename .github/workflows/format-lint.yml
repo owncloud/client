@@ -36,17 +36,26 @@ jobs:
         env:
           EVENT: ${{ github.event_name }}
           BEFORE: ${{ github.event.before }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           # The commit the change starts from: the merge commit's first parent for a PR, the
-          # commit a push started from for a push. That one is fetched unless the clone has it; the
-          # fetch has no credentials, so it fails on a private copy of the repository (or after a
-          # force-push once GitHub has dropped the old commit), and then only the last commit is
-          # checked. A manual run or the first push of a branch has no previous commit and checks
-          # the last commit too.
+          # commit a push started from for a push. That one is fetched unless the clone has it, with
+          # the job's token (checkout keeps none), so it works on a private copy of the repository
+          # too. If the fetch still fails (a force-push once GitHub has dropped the old commit, or a
+          # network error), only the last commit is checked. A manual run or the first push of a
+          # branch has no previous commit and checks the last commit too.
+          # The token goes to git as environment config, never on the command line or into .git/config.
+          fetch() {
+            local auth
+            auth="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+            GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=http.https://github.com/.extraheader \
+              GIT_CONFIG_VALUE_0="AUTHORIZATION: basic $auth" \
+              git fetch --no-tags --depth=1 origin "$1"
+          }
           if [ "$EVENT" = pull_request ]; then
             ref=HEAD^1
           elif [ "$EVENT" = push ] && [ "$BEFORE" != 0000000000000000000000000000000000000000 ]; then
-            if git cat-file -e "$BEFORE^{commit}" 2> /dev/null || git fetch --no-tags --depth=1 origin "$BEFORE"; then
+            if git cat-file -e "$BEFORE^{commit}" 2> /dev/null || fetch "$BEFORE"; then
               ref="$BEFORE"
             else
               echo "::warning::cannot fetch $BEFORE, the commit the push started from; checking the last commit only"
