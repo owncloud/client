@@ -3,6 +3,9 @@ name: Conan lock
 # The drift check: conan.lock must be exactly what conan/update-lock.sh produces from
 # conanfile.py, the profiles and the recipes at conan/recipes-commit, for all four
 # platforms. Resolving builds nothing, so one Linux runner checks every platform.
+#
+# It runs on every pull request, with no path filter, so that it can be a required check: a
+# required check that is filtered out never reports and blocks the PR. It takes about 30 s.
 
 on:
   push:
@@ -17,12 +20,6 @@ on:
       - .github/workflows/conan-lock.yml
       - .github/actions/setup-conan/**
   pull_request:
-    paths:
-      - conanfile.py
-      - conan.lock
-      - conan/**
-      - .github/workflows/conan-lock.yml
-      - .github/actions/setup-conan/**
   workflow_dispatch:
 
 permissions:
