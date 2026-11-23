@@ -63,7 +63,7 @@ bool expectAndWipeConflict(FakeFolder &fFolder, const QString &path)
 SyncJournalFileRecord dbRecord(FakeFolder &folder, const QString &path)
 {
     SyncJournalFileRecord record;
-    folder.syncJournal()->getFileRecord(path, &record);
+    folder.syncJournal()->getFileRecord(path, record);
     return record;
 }
 

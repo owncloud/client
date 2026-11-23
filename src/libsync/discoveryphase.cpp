@@ -162,14 +162,9 @@ void DiscoveryPhase::startJob(ProcessDirectoryJob *job)
     job->start();
 }
 
-void DiscoveryPhase::setSelectiveSyncBlackList(const QSet<QString> &list)
+void DiscoveryPhase::setSelectiveSyncExclusions(const QSet<QString> &list)
 {
     _selectiveSyncBlackList = {list.cbegin(), list.cend()};
-}
-
-void DiscoveryPhase::setSelectiveSyncWhiteList(const QSet<QString> &list)
-{
-    _selectiveSyncWhiteList = {list.cbegin(), list.cend()};
 }
 
 void DiscoveryPhase::scheduleMoreJobs()

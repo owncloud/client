@@ -293,13 +293,6 @@ public:
     SyncResult syncResult() const { return _syncResult; }
 
     /**
-     * @brief updateSelectiveSync takes necessary steps to update the excluded subfolders list and triggers remote discovery on next
-     * sync
-     * @param blacklist contains the collection of folders to exclude from the sync
-     */
-    void updateSelectiveSync(const QSet<QString> &blacklist);
-
-    /**
       * This is called when the sync folder definition is removed. Do cleanups here.
       *
       * It removes the database, among other things.
@@ -315,6 +308,62 @@ public:
 
     // TODO: don't expose
     SyncJournalDb *journalDb() { return _journal; }
+
+    // replacements for journalDb() Getter:
+
+    /**
+     * @brief selectiveSyncExclusions
+     * @return the list of excluded items for selective sync
+     */
+    QSet<QString> selectiveSyncExclusions();
+
+    /**
+     * @brief updateSelectiveSyncExclusions takes necessary steps to update the excluded subfolders list and triggers remote discovery on next
+     * sync
+     * @param blacklist contains the collection of folders to exclude from the sync
+     */
+    void updateSelectiveSyncExclusions(const QSet<QString> &blacklist);
+
+    /**
+     * @brief getFileRecord retrieves the file record for the given file name
+     * @param filename for record to be retrieved
+     * @param record - the record which will be updated with the actual data.
+     *
+     * @return false if the operation can't be completed, true if it succeeded.
+     */
+    bool getFileRecord(const QString &filename, SyncJournalFileRecord &record) { return _journal->getFileRecord(filename, record); }
+
+    /**
+     * @brief wipeErrorBlacklist clears all entries from the folder errors blacklist
+     * @return the number of entries removed, or -1 if the operation failed
+     */
+    int wipeErrorBlacklist();
+
+    /**
+     * @brief wipeErrorBlacklistForEntry removes any errors related to given path
+     * @param relativePath should be relative to local folder
+     *
+     */
+    void wipeErrorBlacklistForEntry(const QString &relativePath);
+
+    /**
+     * @brief conflictFileBaseName provides the original name of the conflicted file
+     * @param conflictFile should be relative path in the local folder
+     * @return the relative path for the real/normal file that the conflict file relates to
+     */
+    QString conflictFileBaseName(const QString &conflictFile);
+
+    /**
+     * @brief nextSyncForceFullLocalDiscovery ensures a full local discovery is performed on next sync
+     */
+    void nextSyncForceFullLocalDiscovery();
+
+    /**
+     * @brief nextSyncForceFullRemoteDiscovery ensures a full remote discovery is performed on next sync
+     */
+    void nextSyncForceFullRemoteDiscovery();
+
+
     // TODO: don't expose
     SyncEngine *syncEngine() { return _engine; }
 
@@ -390,7 +439,6 @@ public Q_SLOTS:
     void startSync();
 
     void slotDiscardDownloadProgress();
-    int slotWipeErrorBlacklist();
 
     /**
        * Triggered by the folder watcher when a file/dir in this folder
@@ -416,8 +464,6 @@ public Q_SLOTS:
      */
     void implicitlyHydrateFile(const QString &relativepath);
 
-    /** Ensures that the next sync performs a full local discovery. */
-    void slotNextSyncFullLocalDiscovery();
 
     /** Adds the path to the local discovery list
      *

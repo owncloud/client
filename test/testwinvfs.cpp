@@ -41,7 +41,7 @@ bool itemInstruction(const QSignalSpy &spy, const QString &path, const SyncInstr
 SyncJournalFileRecord dbRecord(FakeFolder &folder, const QString &path)
 {
     SyncJournalFileRecord record;
-    folder.syncJournal()->getFileRecord(path, &record);
+    folder.syncJournal()->getFileRecord(path, record);
     return record;
 }
 
@@ -49,7 +49,7 @@ void markForDownload(FakeFolder &folder, const QByteArray &path)
 {
     auto journal = folder.syncJournal();
     SyncJournalFileRecord record;
-    journal->getFileRecord(path, &record);
+    journal->getFileRecord(path, record);
     if (!record.isValid())
         return;
     record._type = ItemTypeVirtualFileDownload;

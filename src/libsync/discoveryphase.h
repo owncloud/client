@@ -200,7 +200,6 @@ class DiscoveryPhase : public QObject
 
     // both must contain a sorted list
     std::set<QString> _selectiveSyncBlackList;
-    std::set<QString> _selectiveSyncWhiteList;
 
     void scheduleMoreJobs();
 
@@ -249,8 +248,7 @@ public:
 
     void startJob(ProcessDirectoryJob *);
 
-    void setSelectiveSyncBlackList(const QSet<QString> &list);
-    void setSelectiveSyncWhiteList(const QSet<QString> &list);
+    void setSelectiveSyncExclusions(const QSet<QString> &list);
 
     // output
     QByteArray _dataFingerprint;
