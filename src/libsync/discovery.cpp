@@ -974,7 +974,9 @@ void ProcessDirectoryJob::processFileAnalyzeLocalInfo(
                     }
                     // In case the deleted item was discovered in parallel
                     _discoveryData->findAndCancelDeletedJob(originalPath);
-                    processFileFinalize(item, processRename(path), item->isDirectory(), NormalQuery, job->etag().toUtf8() == base._etag ? ParentNotChanged : NormalQuery);
+                    // Only a confirmed etag spares the moved directory's server query
+                    const bool sourceUnchanged = !job->etag().isEmpty() && job->etag().toUtf8() == base._etag;
+                    processFileFinalize(item, processRename(path), item->isDirectory(), NormalQuery, sourceUnchanged ? ParentNotChanged : NormalQuery);
                 }
                 _pendingAsyncJobs--;
                 QTimer::singleShot(0, _discoveryData, &DiscoveryPhase::scheduleMoreJobs);
