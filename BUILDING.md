@@ -78,8 +78,8 @@ prebuilt archive's tools also need glibc 2.28 or newer.
 
 ### macOS
 
-- An Xcode whose compiler is **Apple clang 21**, the `compiler.version=21` in the macOS profiles. Check the
-  selected one with `xcrun clang --version`. If you have several, select one with:
+- An Xcode whose compiler is **Apple clang 21**, the `compiler.version=21` in the macOS profiles, such as
+  Xcode 26.4 or 27.2. Check the selected one with `xcrun clang --version`. If you have several, select one with:
 
   ```bash
   sudo xcode-select -s /Applications/Xcode-<version>.app/Contents/Developer
@@ -131,14 +131,18 @@ $env:CONAN_HOME = 'C:\ch'
 conan --version
 ```
 
-Set `PATH` and `CONAN_HOME` like this in every new shell you build in. `python` is then the venv's Python. `PROFILE` below is the profile you build
-for: `linux-x86_64`, `windows-x86_64`, `macos-armv8` or `macos-x86_64`.
+Set `PATH` and `CONAN_HOME` like this in every new shell you build in. `python` is then the venv's Python.
+
+The commands below name the profile you build for in a variable: `PROFILE` in bash, `$PROFILE_NAME` in `pwsh`
+(`$PROFILE` is taken there). It is one of `linux-x86_64`, `windows-x86_64`, `macos-armv8` and `macos-x86_64`.
+Set it again in a new shell, too.
 
 ## A: Prebuilt dependencies from ghcr.io
 
 CI builds and tests the client against an archive of all the dependency packages, which our dependency
-builder publishes for the Conan inputs of `master`: `ghcr.io/owncloud/client-deps:<profile>-<fingerprint>`. The fingerprint is a hash of the
-Conan inputs listed above, so every combination of them has its own archive, about 150 MB. The archives are
+builder publishes for the Conan inputs of `master`: `ghcr.io/owncloud/client-deps:<profile>-<fingerprint>`.
+The fingerprint is a hash of the Conan inputs listed above, so every combination of them has its own archive,
+about 150 MB. The archives are
 public, and pulling them needs no login.
 
 You need [ORAS](https://oras.land/docs/installation) to pull them. CI uses version 1.3.6. On macOS
@@ -152,6 +156,7 @@ You need [ORAS](https://oras.land/docs/installation) to pull them. CI uses versi
    ```bash
    PROFILE=macos-armv8   # or linux-x86_64, macos-x86_64
    fp="$(python conan/fingerprint.py --profile "$PROFILE" --root .)"
+   rm -rf /tmp/client-deps
    oras pull --output /tmp/client-deps "ghcr.io/owncloud/client-deps:$PROFILE-$fp"
    ```
 
@@ -160,8 +165,11 @@ You need [ORAS](https://oras.land/docs/installation) to pull them. CI uses versi
    ```powershell
    $PROFILE_NAME = 'windows-x86_64'
    $fp = (python conan/fingerprint.py --profile $PROFILE_NAME --root .).Trim()
+   Remove-Item -Recurse -Force "$env:TEMP\client-deps" -ErrorAction SilentlyContinue
    oras pull --output "$env:TEMP\client-deps" "ghcr.io/owncloud/client-deps:$PROFILE_NAME-$fp"
    ```
+
+   The folder is emptied first, so that a failed pull cannot leave an older archive behind for step 2.
 
    If `oras` says `not found`, there is no archive for these Conan inputs. Either your branch changed any of
    them (then [build the dependencies from source](#b-building-the-dependencies-from-source)), or the archive
@@ -261,18 +269,30 @@ Notes:
 
 ### Changing the dependencies
 
-To add, remove or bump a dependency, change `conanfile.py` and regenerate the lock against the pinned recipes:
+Regenerate the lock against the pinned recipes with [`conan/update-lock.sh`](conan/update-lock.sh). It locks all
+four platforms on any machine.
+
+After adding or removing a requirement in `conanfile.py`, or changing its options, run it without arguments.
+Everything else stays as locked:
+
+```bash
+OC_RECIPES_DIR=../conan-center-index conan/update-lock.sh
+```
+
+To bump packages to the newest version the pinned recipes offer, name them:
 
 ```bash
 OC_RECIPES_DIR=../conan-center-index conan/update-lock.sh 'openssl/*'
 ```
 
-See the header of [`conan/update-lock.sh`](conan/update-lock.sh) for its options. Commit `conanfile.py` and
-`conan.lock` together. CI checks that the lock is what the script produces.
+The script needs bash, git, python3 and the venv's `conan` on `PATH`. On Windows, run it from Git Bash with those
+on `PATH` and `CONAN_HOME` set there too, or on a Linux or macOS machine. See its header for the other options.
 
-Any change to the Conan inputs needs new prebuilt archives, which the maintainers have to get built for the
-pull request. Until then, the Conan build on your pull request fails with "no dependency binaries for this commit's
-Conan inputs". Say in the pull request that it changes the dependencies.
+Commit `conanfile.py` and `conan.lock` together. CI checks that the lock is what the script produces.
+
+Any change to the Conan inputs needs new prebuilt archives, which the maintainers have to get built for
+the pull request. Until then, the Conan build on your pull request fails with "no dependency binaries for this
+commit's Conan inputs". Say in the pull request that it changes the dependencies.
 
 ## Building and testing the client
 
