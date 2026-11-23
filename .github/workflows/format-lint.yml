@@ -36,17 +36,30 @@ jobs:
         env:
           EVENT: ${{ github.event_name }}
           BEFORE: ${{ github.event.before }}
+          GH_TOKEN: ${{ github.token }}
+          SERVER_URL: ${{ github.server_url }}
         run: |
           # The commit the change starts from: the merge commit's first parent for a PR, the
-          # commit a push started from for a push. That one is fetched unless the clone has it; the
-          # fetch has no credentials, so it fails on a private copy of the repository (or after a
-          # force-push once GitHub has dropped the old commit), and then only the last commit is
-          # checked. A manual run or the first push of a branch has no previous commit and checks
-          # the last commit too.
+          # commit a push started from for a push. That one is fetched unless the clone has it, with
+          # the job's token (checkout keeps none), so it works on a private copy of the repository
+          # too. If the fetch still fails (a force-push once GitHub has dropped the old commit, or a
+          # network error), only the last commit is checked. A manual run or the first push of a
+          # branch has no previous commit and checks the last commit too.
+          # git gets the token as environment config for this one fetch, appended to any config
+          # entries already there; it is never on a command line or in .git/config, and its base64
+          # form is masked like the token itself.
+          fetch() {
+            local auth n="${GIT_CONFIG_COUNT:-0}"
+            auth="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+            echo "::add-mask::$auth"
+            env GIT_CONFIG_COUNT=$((n + 1)) "GIT_CONFIG_KEY_$n=http.$SERVER_URL/.extraheader" \
+              "GIT_CONFIG_VALUE_$n=AUTHORIZATION: basic $auth" \
+              git fetch --no-tags --depth=1 origin "$1"
+          }
           if [ "$EVENT" = pull_request ]; then
             ref=HEAD^1
           elif [ "$EVENT" = push ] && [ "$BEFORE" != 0000000000000000000000000000000000000000 ]; then
-            if git cat-file -e "$BEFORE^{commit}" 2> /dev/null || git fetch --no-tags --depth=1 origin "$BEFORE"; then
+            if git cat-file -e "$BEFORE^{commit}" 2> /dev/null || fetch "$BEFORE"; then
               ref="$BEFORE"
             else
               echo "::warning::cannot fetch $BEFORE, the commit the push started from; checking the last commit only"
