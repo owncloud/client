@@ -85,9 +85,6 @@ class OwncloudClientConan(ConanFile):
         self.requires("qtkeychain/0.15.0")
         self.requires("sqlite3/3.54.1")
         self.requires("zlib/1.4")
-        # The qt and glib recipes pin pcre2/10.42, which has known CVEs fixed in
-        # 10.48. Drop this once the recipes take a range (conan-io/conan-center-index#31497).
-        self.requires("pcre2/[>=10.48 <11]", override=True)
 
         if self.settings.os == "Linux":
             # qt (once with_glib is on, configure() above) and libsecret require

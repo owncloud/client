@@ -54,7 +54,7 @@
         "pkgconf/2.5.1#93c2051284cba1279494a43a4fcfeae2",
         "pkgconf/2.2.0#4ac315b50ef734072b00ff3aacbf52bf",
         "pkgconf/2.1.0#21f96520faf7660b99f872e956d2ac13",
-        "pcre2/10.42#9274fdc267475c2eb8c8134f1ee55919",
+        "pcre2/10.49#2956a88c8d5da26353a1fb478eebb4f2",
         "ninja/1.13.2#c8c5dc2a52ed6e4e42a66d75b4717ceb",
         "nasm/2.16.01#31e26f2ee3c4346ecd347911bd126904",
         "meson/1.10.2#9d2d10681fe7fe61c788c58626c89b25",
@@ -80,15 +80,8 @@
     ],
     "python_requires": [],
     "overrides": {
-        "pcre2/[>=10.48 <11]": [
-            "pcre2/10.49"
-        ],
         "glib/[>=2.86.5 <3]": [
             "glib/2.90.1"
-        ],
-        "pcre2/10.42": [
-            null,
-            "pcre2/10.49"
         ],
         "glib/[>=2.78.3 <3]": [
             "glib/2.90.1"
