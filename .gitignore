@@ -5,6 +5,8 @@
 CMakeLists.txt.user*
 .vs/
 CMakeSettings.json
+# Written into the source tree by conan install (see BUILDING.md).
+CMakeUserPresets.json
 *~
 *.autosave
 doc/_build/*

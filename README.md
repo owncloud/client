@@ -23,14 +23,8 @@ https://github.com/owncloud/client.
 
 ### Building from source
 
-This project uses CMake as build system. Please refer to the cmake documentation
-for general instructions on how to use CMake: https://cmake.org/documentation/.
-
-Further more as meta build system KDE Craft is used. Please refer to the KDE Craft
-documentation for instructions on how to use Craft: https://community.kde.org/Craft.
-
-For easy to use instructions on how to build the ownCloud Desktop Client please have 
-a look at https://github.com/owncloud/ownbuild.
+The client is built with CMake, and its dependencies come from Conan. See
+[BUILDING.md](BUILDING.md) for how to build and test it on Linux, Windows and macOS.
 
 ## Reporting issues and contributing
 
