@@ -11,6 +11,7 @@ endif()
 # to be able to open a Mach port across the extension's sandbox boundary.
 # Pass the info through the xcodebuild command line and make sure that the project uses
 # those user-defined settings to build the plist.
+# The extension gets the client's deployment target: Xcode 27 refuses the project's own 10.15.
 add_custom_target( mac_overlayplugin ALL
     xcodebuild -project ${CMAKE_SOURCE_DIR}/shell_integration/MacOSX/OwnCloudFinderSync/OwnCloudFinderSync.xcodeproj
         -target FinderSyncExt -configuration "${XCODE_CONFIG}" "SYMROOT=${CMAKE_CURRENT_BINARY_DIR}"
@@ -18,6 +19,7 @@ add_custom_target( mac_overlayplugin ALL
         "OC_APPLICATION_NAME=${APPLICATION_NAME}"
         "OC_APPLICATION_REV_DOMAIN=${APPLICATION_REV_DOMAIN}"
         "OC_SOCKETAPI_TEAM_IDENTIFIER_PREFIX=${SOCKETAPI_TEAM_IDENTIFIER_PREFIX}"
+        "MACOSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}"
     COMMENT building Mac Overlay icons
     VERBATIM)
 add_dependencies(mac_overlayplugin owncloud) # for the ownCloud.icns to be generated
