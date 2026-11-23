@@ -30,6 +30,10 @@ Q_DECLARE_LOGGING_CATEGORY(lcVfs)
 namespace OCC::CfAPIUtil {
 
 /// Holds data that callbacks provide and that needs to be passed into CfExecute
+///
+/// It keeps only the keys, not the callback's CorrelationVector: that pointer is valid only
+/// during the callback, and CfExecute mostly runs after the callback has returned. Microsoft's
+/// CloudMirror sample likewise passes only the keys when it completes a transfer asynchronously.
 struct CfOpdata
 {
     CfOpdata();
@@ -40,7 +44,6 @@ struct CfOpdata
 
     CF_CONNECTION_KEY connectionKey;
     LARGE_INTEGER transferKey;
-    PCORRELATION_VECTOR correlationVector;
 };
 
 inline QString hstringToQString(const winrt::hstring &str)
