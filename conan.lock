@@ -80,8 +80,14 @@
     ],
     "python_requires": [],
     "overrides": {
+        "pcre2/[>=10.48 <11]": [
+            "pcre2/10.49#2956a88c8d5da26353a1fb478eebb4f2"
+        ],
         "glib/[>=2.86.5 <3]": [
             "glib/2.90.1"
+        ],
+        "pcre2/[>=10.43 <11]": [
+            "pcre2/10.49#2956a88c8d5da26353a1fb478eebb4f2"
         ],
         "glib/[>=2.78.3 <3]": [
             "glib/2.90.1"

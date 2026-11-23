@@ -85,6 +85,8 @@ class OwncloudClientConan(ConanFile):
         self.requires("qtkeychain/0.15.0")
         self.requires("sqlite3/3.54.1")
         self.requires("zlib/1.4")
+        # The recipes accept pcre2/[>=10.43 <11]; keep the client at 10.48 or newer.
+        self.requires("pcre2/[>=10.48 <11]", override=True)
 
         if self.settings.os == "Linux":
             # qt (once with_glib is on, configure() above) and libsecret require
