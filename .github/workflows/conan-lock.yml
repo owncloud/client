@@ -75,6 +75,7 @@ jobs:
           EVENT: ${{ github.event_name }}
           BEFORE: ${{ github.event.before }}
           GH_TOKEN: ${{ github.token }}
+          SERVER_URL: ${{ github.server_url }}
         run: |
           # Rules 2 and 3 of the check compare against the lock the change starts from: the merge
           # commit's first parent for a PR, or the commit a push started from, fetched unless the
@@ -83,12 +84,15 @@ jobs:
           # the old commit, or a network error), the push is compared with its last commit's
           # parent. A manual run or the first push of a branch has no previous commit, so it
           # compares the lock with itself: only rule 1 (regenerating it changes nothing) can fail then.
-          # The token goes to git as environment config, never on the command line or into .git/config.
+          # git gets the token as environment config for this one fetch, appended to any config
+          # entries already there; it is never on a command line or in .git/config, and its base64
+          # form is masked like the token itself.
           fetch() {
-            local auth
+            local auth n="${GIT_CONFIG_COUNT:-0}"
             auth="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
-            GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=http.https://github.com/.extraheader \
-              GIT_CONFIG_VALUE_0="AUTHORIZATION: basic $auth" \
+            echo "::add-mask::$auth"
+            env GIT_CONFIG_COUNT=$((n + 1)) "GIT_CONFIG_KEY_$n=http.$SERVER_URL/.extraheader" \
+              "GIT_CONFIG_VALUE_$n=AUTHORIZATION: basic $auth" \
               git fetch --no-tags --depth=1 origin "$1"
           }
           if [ "$EVENT" = pull_request ]; then
