@@ -3,6 +3,12 @@ name: Conan lock
 # The drift check: conan.lock must be exactly what conan/update-lock.sh produces from
 # conanfile.py, the profiles and the recipes at conan/recipes-commit, for all four
 # platforms. Resolving builds nothing, so one Linux runner checks every platform.
+#
+# It runs on every pull request, with no path filter, so that it can be a required check: a
+# required check that is filtered out never reports and blocks the PR. A PR that changes none of
+# the Conan inputs passes after the first step, so neither it nor a drift already on its base
+# branch costs it anything. Pushes keep the path filter: they don't gate anything, and the push
+# run after a merge is what catches two PRs whose locks only drift once both are in.
 
 on:
   push:
@@ -17,12 +23,6 @@ on:
       - .github/workflows/conan-lock.yml
       - .github/actions/setup-conan/**
   pull_request:
-    paths:
-      - conanfile.py
-      - conan.lock
-      - conan/**
-      - .github/workflows/conan-lock.yml
-      - .github/actions/setup-conan/**
   workflow_dispatch:
 
 permissions:
@@ -46,7 +46,22 @@ jobs:
         with:
           fetch-depth: 2
           persist-credentials: false
+      - name: Look for changed Conan inputs
+        id: changes
+        env:
+          EVENT: ${{ github.event_name }}
+        run: |
+          # The paths of the push filter above. Only a PR can change none of them: a push run was
+          # filtered by them already, and a manual run always checks.
+          if [ "$EVENT" = pull_request ] && git diff --quiet HEAD^1 HEAD -- \
+              conanfile.py conan.lock conan/ .github/workflows/conan-lock.yml .github/actions/setup-conan/; then
+            echo "::notice::the PR changes no Conan input; nothing to check"
+            echo "check=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "check=true" >> "$GITHUB_OUTPUT"
+          fi
       - name: Read the pinned recipes commit
+        if: steps.changes.outputs.check == 'true'
         id: recipes
         run: |
           # It comes from the change under test: accept a full commit SHA only.
@@ -54,6 +69,7 @@ jobs:
           [[ "$commit" =~ ^[0-9a-f]{40}$ ]] || { echo "::error::conan/recipes-commit is not a 40-character commit SHA"; exit 1; }
           echo "commit=$commit" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: steps.changes.outputs.check == 'true'
         with:
           repository: owncloud/conan-center-index
           ref: ${{ steps.recipes.outputs.commit }}
@@ -61,31 +77,47 @@ jobs:
           persist-credentials: false
       # The Python for Conan's venv, the same in every Conan job on GitHub (see conan-build.yml).
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        if: steps.changes.outputs.check == 'true'
         id: python
         with:
           python-version: '3.12'
           update-environment: false
       - uses: $/.github/actions/setup-conan
+        if: steps.changes.outputs.check == 'true'
         id: conan
         with:
           python: ${{ steps.python.outputs.python-path }}
       - name: Fetch the base lock
+        if: steps.changes.outputs.check == 'true'
         id: base
         env:
           EVENT: ${{ github.event_name }}
           BEFORE: ${{ github.event.before }}
+          GH_TOKEN: ${{ github.token }}
+          SERVER_URL: ${{ github.server_url }}
         run: |
           # Rules 2 and 3 of the check compare against the lock the change starts from: the merge
           # commit's first parent for a PR, or the commit a push started from, fetched unless the
-          # clone has it. That fetch has no credentials, so it fails on a private copy of the
-          # repository (or after a force-push once GitHub has dropped the old commit); then the
-          # push is compared with its last commit's parent. A manual run or the first push of a
-          # branch has no previous commit, so it compares the lock with itself: only rule 1
-          # (regenerating it changes nothing) can fail then.
+          # clone has it, with the job's token (checkout keeps none), so it works on a private copy
+          # of the repository too. If the fetch still fails (a force-push once GitHub has dropped
+          # the old commit, or a network error), the push is compared with its last commit's
+          # parent. A manual run or the first push of a branch has no previous commit, so it
+          # compares the lock with itself: only rule 1 (regenerating it changes nothing) can fail then.
+          # git gets the token as environment config for this one fetch, appended to any config
+          # entries already there; it is never on a command line or in .git/config, and its base64
+          # form is masked like the token itself.
+          fetch() {
+            local auth n="${GIT_CONFIG_COUNT:-0}"
+            auth="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
+            echo "::add-mask::$auth"
+            env GIT_CONFIG_COUNT=$((n + 1)) "GIT_CONFIG_KEY_$n=http.$SERVER_URL/.extraheader" \
+              "GIT_CONFIG_VALUE_$n=AUTHORIZATION: basic $auth" \
+              git fetch --no-tags --depth=1 origin "$1"
+          }
           if [ "$EVENT" = pull_request ]; then
             echo "ref=HEAD^1" >> "$GITHUB_OUTPUT"
           elif [ "$EVENT" = push ] && [ "$BEFORE" != 0000000000000000000000000000000000000000 ]; then
-            if git cat-file -e "$BEFORE^{commit}" 2> /dev/null || git fetch --no-tags --depth=1 origin "$BEFORE"; then
+            if git cat-file -e "$BEFORE^{commit}" 2> /dev/null || fetch "$BEFORE"; then
               echo "ref=$BEFORE" >> "$GITHUB_OUTPUT"
             else
               echo "::warning::cannot fetch $BEFORE, the commit the push started from; checking against the last commit's parent"
@@ -96,6 +128,7 @@ jobs:
             echo "ref=HEAD" >> "$GITHUB_OUTPUT"
           fi
       - name: Check conan.lock
+        if: steps.changes.outputs.check == 'true'
         env:
           OC_RECIPES_DIR: .conan-recipes
           BASE: ${{ steps.base.outputs.ref }}

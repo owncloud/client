@@ -107,8 +107,9 @@ jobs:
             ninja-build \
             libopengl0
       # The Python for Conan's venv and the fingerprint script, the same in every Conan job on
-      # GitHub. update-environment: false keeps its PATH, LD_LIBRARY_PATH and PKG_CONFIG_PATH out of
-      # the build and the tests; it is used only through its path.
+      # GitHub. update-environment: false keeps its PATH, LD_LIBRARY_PATH, PKG_CONFIG_PATH and
+      # Python*_ROOT_DIR (which CMake's FindPython would use) out of the build and the tests; it is
+      # used only through its path.
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         id: python
         with:
@@ -186,8 +187,9 @@ jobs:
         # The cmake-generator passed to conan-deps below.
         run: command -v ninja || brew install ninja
       # The Python for Conan's venv and the fingerprint script, the same in every Conan job on
-      # GitHub. update-environment: false keeps its PATH, LD_LIBRARY_PATH and PKG_CONFIG_PATH out of
-      # the build and the tests; it is used only through its path.
+      # GitHub. update-environment: false keeps its PATH, PKG_CONFIG_PATH and Python*_ROOT_DIR
+      # (which CMake's FindPython would use) out of the build and the tests; it is used only
+      # through its path.
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         id: python
         with:
@@ -334,8 +336,9 @@ jobs:
         # The cmake-generator passed to conan-deps below.
         run: command -v ninja || brew install ninja
       # The Python for Conan's venv and the fingerprint script, the same in every Conan job on
-      # GitHub. update-environment: false keeps its PATH, LD_LIBRARY_PATH and PKG_CONFIG_PATH out of
-      # the build and the tests; it is used only through its path.
+      # GitHub. update-environment: false keeps its PATH, PKG_CONFIG_PATH and Python*_ROOT_DIR
+      # (which CMake's FindPython would use) out of the build and the tests; it is used only
+      # through its path.
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         id: python
         with:
