@@ -42,8 +42,8 @@ struct CfOpdata
 
     CF_OPERATION_INFO toOpinfo() const;
 
-    CF_CONNECTION_KEY connectionKey;
-    LARGE_INTEGER transferKey;
+    CF_CONNECTION_KEY connectionKey = {};
+    LARGE_INTEGER transferKey = {};
 };
 
 inline QString hstringToQString(const winrt::hstring &str)
