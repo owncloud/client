@@ -37,12 +37,31 @@ runs:
         # ignored); setup-conan's own use_venv writes the same.
         echo "$bin_dir" >> "$GITHUB_PATH"
         echo "version=$version" >> "$GITHUB_OUTPUT"
+        # The action upgrades pip to the latest release first. A constraint on the venv's own pip
+        # makes that a no-op.
+        pip_version="$("$bin_dir/python" -m pip --version | cut -d' ' -f2 | tr -d '\r')"
+        echo "pip==$pip_version" > "$RUNNER_TEMP/conan-pip-constraint.txt"
+        echo "pip-version=$pip_version" >> "$GITHUB_OUTPUT"
 
     # The action expands the version into its shell scripts unquoted; the sed above lets only
     # digits and dots through. No profile detection: the jobs use conan/profiles. No package
     # cache: the dependencies come from ghcr.io (see conan-deps).
     - uses: conan-io/setup-conan@2c7f599b76d52302b8e122bf890878e696d4577b # v1.5.1
+      env:
+        PIP_CONSTRAINT: ${{ runner.temp }}/conan-pip-constraint.txt
       with:
         version: ${{ steps.venv.outputs.version }}
         use_venv: 'false'
         profile_detect: 'false'
+
+    - name: Check Conan and pip
+      shell: bash
+      env:
+        VERSION: ${{ steps.venv.outputs.version }}
+        PIP_VERSION: ${{ steps.venv.outputs.pip-version }}
+      run: |
+        # conan and pip on PATH have to be the venv's: the pinned Conan and the bundled pip. tr: a
+        # native Windows Python ends the line with CRLF, and $(...) strips only the LF.
+        conan --version
+        [ "$(conan --version | tr -d '\r')" = "Conan version $VERSION" ] || { echo "::error::conan on PATH ($(command -v conan)) is not Conan $VERSION from the venv"; exit 1; }
+        [ "$(python -m pip --version | cut -d' ' -f2 | tr -d '\r')" = "$PIP_VERSION" ] || { echo "::error::pip of python on PATH ($(command -v python)) is not the venv's pip $PIP_VERSION: not the venv's python, or setup-conan upgraded pip despite the constraint"; exit 1; }
