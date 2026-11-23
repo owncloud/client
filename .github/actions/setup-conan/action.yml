@@ -1,29 +1,28 @@
 name: Install the pinned Conan
 description: >-
   Installs the exact Conan version that conanfile.py pins with
-  required_conan_version into a venv in $RUNNER_TEMP/conan. The output
-  bin-dir is the venv's folder of executables: bin/ on Linux and macOS,
-  Scripts\ on Windows, where conan is conan.exe.
+  required_conan_version, with conan-io/setup-conan, into a venv in
+  $RUNNER_TEMP/conan, and puts the venv's folder of executables (bin/ on Linux
+  and macOS, Scripts\ on Windows) on PATH for the rest of the job.
 
 inputs:
   python:
     description: The Python to create Conan's venv with.
     required: true
 
-outputs:
-  bin-dir:
-    description: The venv's folder with conan (and pip) in it.
-    value: ${{ steps.install.outputs.bin-dir }}
-
 runs:
   using: composite
   steps:
-    - name: Install Conan
-      id: install
+    # conan-io/setup-conan runs whatever `python` is on PATH, and the macOS runners have none (only
+    # Homebrew's python3). So the venv is created here with the given Python, and only its bin/
+    # goes on PATH, not the environment of setup-python (see conan-build.yml). The action's
+    # `python -m pip install` is then the venv's, and installs Conan into it.
+    - name: Create Conan's venv
+      id: venv
       shell: bash
       env:
         PYTHON: ${{ inputs.python }}
-      run: |
+      run: | # zizmor: ignore[github-env]
         # The exact pin of conanfile.py's required_conan_version ("=2.x.y").
         version="$(sed -nE 's/^required_conan_version = "=([0-9]+\.[0-9]+\.[0-9]+)"$/\1/p' conanfile.py)"
         [ -n "$version" ] || { echo "::error::conanfile.py has no exact required_conan_version"; exit 1; }
@@ -34,5 +33,16 @@ runs:
         else
           bin_dir="$RUNNER_TEMP/conan/bin"
         fi
-        "$bin_dir/pip" install --quiet "conan==$version"
-        echo "bin-dir=$bin_dir" >> "$GITHUB_OUTPUT"
+        # A fixed folder under $RUNNER_TEMP, nothing a pull request controls (zizmor github-env
+        # ignored); setup-conan's own use_venv writes the same.
+        echo "$bin_dir" >> "$GITHUB_PATH"
+        echo "version=$version" >> "$GITHUB_OUTPUT"
+
+    # The action expands the version into its shell scripts unquoted; the sed above lets only
+    # digits and dots through. No profile detection: the jobs use conan/profiles. No package
+    # cache: the dependencies come from ghcr.io (see conan-deps).
+    - uses: conan-io/setup-conan@2c7f599b76d52302b8e122bf890878e696d4577b # v1.5.1
+      with:
+        version: ${{ steps.venv.outputs.version }}
+        use_venv: 'false'
+        profile_detect: 'false'
