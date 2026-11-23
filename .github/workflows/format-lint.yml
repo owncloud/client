@@ -75,7 +75,7 @@ jobs:
         run: |
           # git-clang-format and clang-format come from the venv; --diff prints what clang-format
           # would change and exits 1 if that is anything. --extensions: C, C++ and Objective-C only;
-          # the defaults include json and ts, which here are config files and Qt translations, and
-          # .clang-format has only a C++ style.
+          # the defaults include json and ts, so clang-format would format Qt's .ts translations as
+          # TypeScript and the JSON config files with the C++ style of .clang-format.
           PATH="$RUNNER_TEMP/clang-format/bin:$PATH" git clang-format --diff \
             --extensions c,cc,cpp,cxx,h,hpp,m,mm "$BASE"
