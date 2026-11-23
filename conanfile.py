@@ -85,7 +85,9 @@ class OwncloudClientConan(ConanFile):
         self.requires("qtkeychain/0.15.0")
         self.requires("sqlite3/3.54.1")
         self.requires("zlib/1.4")
-        # The recipes accept pcre2/[>=10.43 <11]; keep the client at 10.48 or newer.
+        # The client's minimum pcre2 version. The recipes accept pcre2/[>=10.43 <11],
+        # and qt requires pcre2 on every platform; drop this once every recipe that
+        # requires pcre2 has a lower bound of 10.48 or later.
         self.requires("pcre2/[>=10.48 <11]", override=True)
 
         if self.settings.os == "Linux":
