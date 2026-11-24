@@ -1,20 +1,15 @@
 # SPDX-FileCopyrightText: 2026 ownCloud GmbH - A Kiteworks Company and ownCloud contributors
 # SPDX-License-Identifier: MIT
-# pylint: disable=redefined-outer-name
 
 import builtins
 import json
 import os
-import shutil
-import sys
-from pathlib import Path
 
 import pytest
+from suite_copy import SUITE_MIN, copy_suite
 
 from harness import bdd, results, suite
 from harness.tags import TagFilter
-
-SUITE_MIN = Path(__file__).resolve().parent / "data" / "suite_min"
 
 
 class RecordingReporter:
@@ -44,29 +39,6 @@ class RecordingReporter:
         return [c for c in self.calls if c[0] == "step" and result in (None, c[1])]
 
 
-@pytest.fixture
-def isolated(tmp_path):
-    """Undo what a suite run changes in the process: env, cwd, paths, builtins."""
-    environ = dict(os.environ)
-    cwd = os.getcwd()
-    path = list(sys.path)
-    names = dict(vars(builtins))
-    modules = set(sys.modules)
-    events = tmp_path / "events.jsonl"
-    os.environ["SUITE_MIN_EVENTS"] = str(events)
-    yield events
-    os.environ.clear()
-    os.environ.update(environ)
-    os.chdir(cwd)
-    sys.path[:] = path
-    for name in set(vars(builtins)) - set(names):
-        delattr(builtins, name)
-    vars(builtins).update(names)
-    for name in set(sys.modules) - modules:
-        del sys.modules[name]
-    results.reset()
-
-
 def _events(path):
     if not path.exists():
         return []
@@ -79,15 +51,6 @@ def _run(suite_dir=SUITE_MIN, tags=(), abort_on_fail=False, testcases=None):
         str(suite_dir), testcases, TagFilter(list(tags)), abort_on_fail, reporter
     )
     return code, reporter
-
-
-def _copy_suite(tmp_path, feature):
-    """suite_min with an extra test case tst_b running the given feature."""
-    target = tmp_path / "suite"
-    shutil.copytree(SUITE_MIN, target)
-    shutil.copytree(target / "tst_a", target / "tst_b")
-    (target / "tst_b" / "test.feature").write_text(feature, encoding="utf-8")
-    return target
 
 
 # --- tags ---------------------------------------------------------------------
@@ -297,7 +260,7 @@ Feature: second feature
 
 
 def test_undefined_step_and_failed_verification(isolated, tmp_path):
-    suite_dir = _copy_suite(tmp_path, UNDEFINED)
+    suite_dir = copy_suite(tmp_path, UNDEFINED)
     code, reporter = _run(suite_dir, tags=["~@skip", "~@crash"], testcases=["tst_b"])
     assert code == 1
     assert results.result_count("errors") == 1
@@ -325,7 +288,7 @@ Feature: passing feature
 
 
 def test_test_cases_run_in_order_and_count_results_per_test_case(isolated, tmp_path):
-    suite_dir = _copy_suite(tmp_path, PASSING)
+    suite_dir = copy_suite(tmp_path, PASSING)
     code, reporter = _run(suite_dir, tags=["~@skip"])
     assert code == 1  # the crash in tst_a
     features = [c[1] for c in reporter.calls if c[0] == "feature_start"]
@@ -345,7 +308,7 @@ def test_unknown_test_case_is_rejected():
 
 @pytest.mark.usefixtures("isolated")
 def test_failing_test_py_is_an_error(tmp_path):
-    suite_dir = _copy_suite(tmp_path, UNDEFINED)
+    suite_dir = copy_suite(tmp_path, UNDEFINED)
     (suite_dir / "tst_b" / "test.py").write_text(
         "source(findFile('scripts', 'no_such_file.py'))\n", encoding="utf-8"
     )
@@ -355,7 +318,7 @@ def test_failing_test_py_is_an_error(tmp_path):
 
 
 def test_find_file_and_source(isolated, tmp_path):
-    suite_dir = _copy_suite(tmp_path, UNDEFINED)
+    suite_dir = copy_suite(tmp_path, UNDEFINED)
     (suite_dir / "shared" / "scripts" / "extra.py").write_text(
         "EXTRA = 'sourced'\n", encoding="utf-8"
     )
@@ -372,3 +335,33 @@ def test_find_file_and_source(isolated, tmp_path):
     sourced = next(e for e in _events(isolated) if e[0] == "sourced")
     assert sourced[1] == "sourced"
     assert sourced[2].endswith(os.path.join("shim", "squish.py"))
+
+
+def test_failing_end_hooks_are_one_scenario(isolated, tmp_path):
+    suite_dir = copy_suite(tmp_path, PASSING, end_hooks=True)
+    code, reporter = _run(suite_dir, testcases=["tst_b"])
+    assert code == 1
+    title = "passing feature: OnFeatureEnd"
+    assert [c for c in reporter.calls if c[0] == "scenario_start"][-1:] == [
+        ("scenario_start", title, [])
+    ]
+    assert len([c for c in reporter.calls if c[0] == "scenario_start"]) == 2
+    errors = reporter.steps("error")
+    assert [e[2] for e in errors] == [title, title]
+    assert "first end hook broke" in errors[0][3]
+    assert "second end hook broke" in errors[1][3]
+    assert reporter.calls[-2:] == [("scenario_end", title, True), ("finish",)]
+    assert ["OnFeatureEnd", "passing feature"] in _events(isolated)
+
+
+@pytest.mark.usefixtures("isolated")
+def test_failing_test_py_is_a_feature_of_its_own(tmp_path):
+    suite_dir = copy_suite(tmp_path, PASSING)
+    (suite_dir / "tst_b" / "test.py").write_text("raise KeyError('x')\n", "utf-8")
+    _, reporter = _run(suite_dir, testcases=["tst_b"])
+    assert reporter.calls[0] == (
+        "feature_start",
+        "tst_b",
+        str((suite_dir / "tst_b" / "test.py").resolve()),
+    )
+    assert reporter.calls[1] == ("scenario_start", "tst_b/test.py", [])

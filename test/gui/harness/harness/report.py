@@ -1,0 +1,368 @@
+# SPDX-FileCopyrightText: 2026 ownCloud GmbH - A Kiteworks Company and ownCloud contributors
+# SPDX-License-Identifier: MIT
+"""Reports of a run: progress and a summary as text, HTML and JUnit XML.
+
+``Report`` is a ``bdd.Reporter``. It collects features, scenarios and their
+steps while the suite runs and writes the files when the run finishes.
+Screenshots that hooks save under ``$GUI_TEST_REPORT_DIR/screenshots``
+while a scenario runs are attached to that scenario.
+"""
+
+import html
+import os
+import re
+import time
+import xml.etree.ElementTree as ET
+from dataclasses import dataclass, field
+from urllib.parse import quote
+
+from harness import bdd
+
+PASSED = "passed"
+FAILED = "failed"
+ERROR = "error"
+
+# Characters XML 1.0 does not allow, e.g. the ESC of colour codes in a log.
+_INVALID_XML = re.compile("[^\t\n\r\x20-\ud7ff\ue000-\ufffd\U00010000-\U0010ffff]")
+
+
+@dataclass
+class Step:
+    result: str
+    text: str
+    message: str
+    duration: float
+
+
+@dataclass
+class Scenario:  # pylint: disable=too-many-instance-attributes
+    title: str
+    tags: list
+    steps: list = field(default_factory=list)
+    attachments: list = field(default_factory=list)
+    record: object = None  # the scenario's results.Results
+    duration: float = 0.0
+    started: float = 0.0
+    screenshots_before: dict = None
+
+    @property
+    def status(self):
+        kinds = {e.kind for e in self.record.entries} if self.record else set()
+        results = {s.result for s in self.steps}
+        if bdd.ERROR in results or "errors" in kinds:
+            return ERROR
+        if bdd.FAILED in results or "fails" in kinds:
+            return FAILED
+        return PASSED
+
+    def problems(self):
+        """What went wrong, as (title, message, detail) per failing step.
+
+        A scenario that failed without a failing step, as by ``test.fail``
+        in a hook, reports the failed results instead.
+        """
+        details = {}
+        if self.record:
+            for entry in self.record.entries:
+                if entry.kind in ("fails", "errors") and entry.detail:
+                    details.setdefault(entry.message, entry.detail)
+        problems = [
+            (s.text, s.message, details.get(s.message, ""))
+            for s in self.steps
+            if s.result in (bdd.FAILED, bdd.ERROR)
+        ]
+        if not problems and self.record:
+            problems = [
+                (e.kind, e.message, e.detail)
+                for e in self.record.entries
+                if e.kind in ("fails", "errors")
+            ]
+        return problems
+
+
+@dataclass
+class Feature:
+    title: str
+    path: str
+    scenarios: list = field(default_factory=list)
+
+    def count(self, status):
+        return sum(1 for s in self.scenarios if s.status == status)
+
+
+class Report(bdd.Reporter):
+    """Collects a run and writes its reports when it finishes.
+
+    ``html_dirs`` each receive an ``index.html``, ``junit_paths`` a JUnit
+    XML file. ``stream`` gets a line per scenario and a summary at the end;
+    None keeps it quiet.
+    """
+
+    def __init__(self, html_dirs=(), junit_paths=(), stream=None):
+        self.html_dirs = list(html_dirs)
+        self.junit_paths = list(junit_paths)
+        self.stream = stream
+        self.features = []
+        self._current = None  # the running scenario
+        self._last = None  # the scenario attach() adds to outside of one
+        self._started = time.monotonic()
+
+    # -- bdd.Reporter ------------------------------------------------------------
+
+    def feature_start(self, title, path):
+        self.features.append(Feature(title, path))
+
+    def scenario_start(self, title, tags):
+        if not self.features:
+            self.features.append(Feature("", ""))
+        scenario = Scenario(title, list(tags), started=time.monotonic())
+        scenario.screenshots_before = _listing(_screenshots_dir())
+        self.features[-1].scenarios.append(scenario)
+        self._current = self._last = scenario
+
+    def step(self, result, text, message, duration):
+        if self._current:
+            self._current.steps.append(Step(result, text, message, duration))
+
+    def scenario_end(self, record):
+        if not (scenario := self._current):
+            return
+        scenario.record = record
+        scenario.duration = time.monotonic() - scenario.started
+        directory = _screenshots_dir()
+        for name, mtime in sorted(_listing(directory).items()):
+            if scenario.screenshots_before.get(name) != mtime:
+                scenario.attachments.append(os.path.join(directory, name))
+        self._current = None
+        if self.stream:
+            self._write(
+                f"{scenario.status.upper():7} {scenario.title} "
+                f"({scenario.duration:.1f} s)"
+            )
+
+    def attach(self, path):
+        """Link a file from the running scenario, or else the last one."""
+        if scenario := self._current or self._last:
+            scenario.attachments.append(os.path.abspath(path))
+
+    def finish(self):
+        for directory in self.html_dirs:
+            os.makedirs(directory, exist_ok=True)
+            path = os.path.join(directory, "index.html")
+            with open(path, "w", encoding="utf-8") as stream:
+                stream.write(self.html(directory))
+        for path in self.junit_paths:
+            if parent := os.path.dirname(path):
+                os.makedirs(parent, exist_ok=True)
+            ET.ElementTree(self.junit()).write(path, "utf-8", xml_declaration=True)
+        if self.stream:
+            self._write(self.summary())
+
+    # -- outputs -----------------------------------------------------------------
+
+    def scenarios(self):
+        return [s for f in self.features for s in f.scenarios]
+
+    def totals(self):
+        scenarios = self.scenarios()
+        return {
+            status: sum(1 for s in scenarios if s.status == status)
+            for status in (PASSED, FAILED, ERROR)
+        }
+
+    def summary(self):
+        """The text summary: totals, then each scenario that did not pass."""
+        totals = self.totals()
+        lines = [
+            "",
+            f"{len(self.scenarios())} scenarios: {totals[PASSED]} passed, "
+            f"{totals[FAILED]} failed, {totals[ERROR]} errors "
+            f"in {time.monotonic() - self._started:.1f} s",
+        ]
+        for feature in self.features:
+            for scenario in feature.scenarios:
+                if scenario.status == PASSED:
+                    continue
+                lines.append(
+                    f"{scenario.status.upper():7} {feature.title}: {scenario.title}"
+                )
+                for title, message, _ in scenario.problems():
+                    lines.append(f"    {title}: {message}")
+                for path in scenario.attachments:
+                    lines.append(f"    attachment: {path}")
+        return "\n".join(lines)
+
+    def junit(self):
+        """The run as a JUnit XML element tree: a testsuite per feature."""
+        root = ET.Element("testsuites", name="GUI tests")
+        totals = self.totals()
+        _counts(root, len(self.scenarios()), totals[FAILED], totals[ERROR])
+        root.set("time", _seconds(sum(s.duration for s in self.scenarios())))
+        for feature in self.features:
+            suite = ET.SubElement(root, "testsuite", name=_xml(feature.title))
+            _counts(
+                suite,
+                len(feature.scenarios),
+                feature.count(FAILED),
+                feature.count(ERROR),
+            )
+            suite.set("time", _seconds(sum(s.duration for s in feature.scenarios)))
+            suite.set("file", _xml(feature.path))
+            for scenario in feature.scenarios:
+                _junit_testcase(suite, feature, scenario)
+        return root
+
+    def html(self, directory):
+        """The run as one self-contained HTML page written to ``directory``."""
+        totals = self.totals()
+        parts = [
+            _HTML_HEAD,
+            f"<p class=summary>{len(self.scenarios())} scenarios: "
+            f"<span class=passed>{totals[PASSED]} passed</span>, "
+            f"<span class=failed>{totals[FAILED]} failed</span>, "
+            f"<span class=error>{totals[ERROR]} errors</span></p>",
+        ]
+        for feature in self.features:
+            parts.append(
+                f"<section><h2>{_h(feature.title)}</h2>"
+                f"<p class=path>{_h(feature.path)}</p><table>"
+                "<tr><th>Status</th><th>Scenario</th><th>Time</th></tr>"
+            )
+            for scenario in feature.scenarios:
+                parts.append(_html_scenario(scenario, directory))
+            parts.append("</table></section>")
+        parts.append("</body></html>\n")
+        return "\n".join(parts)
+
+    def _write(self, text):
+        print(text, file=self.stream, flush=True)
+
+
+def _screenshots_dir():
+    report_dir = os.environ.get("GUI_TEST_REPORT_DIR")
+    return (
+        os.path.abspath(os.path.join(report_dir, "screenshots")) if report_dir else ""
+    )
+
+
+def _listing(directory):
+    """File name -> modification time of the files in a directory."""
+    if not directory:
+        return {}
+    try:
+        entries = list(os.scandir(directory))
+    except OSError:
+        return {}
+    return {e.name: e.stat().st_mtime_ns for e in entries if e.is_file()}
+
+
+def _xml(text):
+    return _INVALID_XML.sub("", str(text))
+
+
+def _seconds(duration):
+    return f"{duration:.3f}"
+
+
+def _counts(element, tests, failures, errors):
+    element.set("tests", str(tests))
+    element.set("failures", str(failures))
+    element.set("errors", str(errors))
+    element.set("skipped", "0")
+
+
+def _junit_testcase(suite, feature, scenario):
+    case = ET.SubElement(
+        suite,
+        "testcase",
+        name=_xml(scenario.title),
+        classname=_xml(feature.title),
+        time=_seconds(scenario.duration),
+    )
+    if scenario.status != PASSED:
+        problems = scenario.problems()
+        tag = "error" if scenario.status == ERROR else "failure"
+        first = problems[0][1] if problems else scenario.status
+        element = ET.SubElement(case, tag, message=_xml(first), type=scenario.status)
+        element.text = _xml(
+            "\n\n".join(
+                "\n".join(part for part in (f"{title}: {message}", detail) if part)
+                for title, message, detail in problems
+            )
+        )
+    lines = [f"{s.result.upper():7} {s.text}" for s in scenario.steps]
+    lines += [f"attachment: {path}" for path in scenario.attachments]
+    if scenario.record:
+        lines += [
+            f"[{e.kind}] {e.message}" + (f": {e.detail}" if e.detail else "")
+            for e in scenario.record.entries
+            if e.kind not in ("fails", "errors")
+        ]
+    if lines:
+        ET.SubElement(case, "system-out").text = _xml("\n".join(lines))
+
+
+def _h(text):
+    return html.escape(str(text), quote=True)
+
+
+def _link(path, directory):
+    """A link to ``path`` from a page in ``directory``, relative where possible."""
+    try:
+        target = os.path.relpath(path, os.path.abspath(directory))
+    except ValueError:  # another drive
+        target = os.path.abspath(path)
+    return _h(quote(target.replace(os.sep, "/")))
+
+
+def _html_scenario(scenario, directory):
+    status = scenario.status
+    tags = " ".join(scenario.tags)
+    cells = [
+        f"<tr class={status}><td class=status>{status}</td><td>",
+        f"<span class=title>{_h(scenario.title)}</span>",
+    ]
+    if tags:
+        cells.append(f" <span class=tags>{_h(tags)}</span>")
+    for title, message, detail in scenario.problems():
+        cells.append(f"<div class=problem>{_h(title)}<pre>{_h(message)}</pre>")
+        if detail:
+            cells.append(
+                f"<details><summary>details</summary><pre>{_h(detail)}</pre></details>"
+            )
+        cells.append("</div>")
+    if scenario.attachments:
+        links = ", ".join(
+            f'<a href="{_link(p, directory)}">{_h(os.path.basename(p))}</a>'
+            for p in scenario.attachments
+        )
+        cells.append(f"<div class=attachments>Attachments: {links}</div>")
+    if scenario.steps:
+        cells.append("<details><summary>steps</summary><ol class=steps>")
+        cells.extend(
+            f"<li class={s.result}>{_h(s.text)} <small>({s.result}, "
+            f"{s.duration:.1f} s)</small></li>"
+            for s in scenario.steps
+        )
+        cells.append("</ol></details>")
+    cells.append(f"</td><td class=time>{scenario.duration:.1f} s</td></tr>")
+    return "".join(cells)
+
+
+_HTML_HEAD = """<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>GUI test report</title>
+<style>
+body { font-family: sans-serif; margin: 1em 2em; }
+table { border-collapse: collapse; width: 100%; }
+th, td { border: 1px solid #ccc; padding: 0.3em 0.5em; text-align: left;
+         vertical-align: top; }
+td.status { font-weight: bold; text-transform: uppercase; width: 5em; }
+td.time { white-space: nowrap; width: 5em; }
+tr.passed td.status, span.passed, li.passed { color: #1a7f37; }
+tr.failed td.status, span.failed, li.failed { color: #cf222e; }
+tr.error td.status, span.error, li.error { color: #9a6700; }
+li.skipped { color: #777; }
+.tags, .path { color: #777; font-size: smaller; }
+pre { white-space: pre-wrap; margin: 0.2em 0; background: #f6f8fa; padding: 0.3em; }
+</style></head><body>
+<h1>GUI test report</h1>"""

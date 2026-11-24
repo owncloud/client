@@ -148,8 +148,10 @@ class Reporter:
     ``scenario_end(record)`` with the scenario's ``results.Results``;
     ``finish()`` once at the end. ``result`` is one of PASSED, FAILED,
     ERROR or SKIPPED, ``text`` starts with the keyword, ``duration`` is in
-    seconds. A failing hook is reported as a step named after the hook. A
-    failing feature hook or ``test.py`` is reported as a scenario of its own.
+    seconds. A failing hook is reported as a step named after the hook.
+    Failing feature hooks of one kind are reported as one scenario of their
+    own, with a step per failure; a failing ``test.py`` as a feature named
+    after its test case, with one such scenario.
     ``attach(path)`` is for reports' own use; the runner does not call it.
     """
 
@@ -226,10 +228,15 @@ class Runner:
         register.__name__ = name
         return register
 
-    def report_problem(self, title, result, message, duration):
-        """Report a failure outside any scenario as a scenario of its own."""
+    def report_problems(self, title, problems):
+        """Report failures outside any scenario as one scenario of their own.
+
+        ``problems`` are (result, message, duration) tuples, each reported as
+        a step; they all belong to the current ``results`` record.
+        """
         self.reporter.scenario_start(title, [])
-        self.reporter.step(result, title, message, duration)
+        for result, message, duration in problems:
+            self.reporter.step(result, title, message, duration)
         self.reporter.scenario_end(results.current())
         if self.abort_on_fail:
             self.aborted = True
@@ -264,11 +271,13 @@ class Runner:
         self._run_feature_hooks("OnFeatureEnd", context)
 
     def _run_feature_hooks(self, name, context):
-        results.begin_scenario(f"{context.title}: {name}")
-        problems = self._run_hooks(name, context, stop_on_error=name.endswith("Start"))
-        for result, message, duration in problems:
-            self.report_problem(f"{context.title}: {name}", result, message, duration)
-        return not problems
+        title = f"{context.title}: {name}"
+        results.begin_scenario(title)
+        stop_on_error = name.endswith("Start")
+        if problems := self._run_hooks(name, context, stop_on_error):
+            self.report_problems(title, problems)
+            return False
+        return True
 
     def _run_hooks(self, name, context, stop_on_error):
         """Run the hooks of one kind; returns (result, message, duration) per failure.

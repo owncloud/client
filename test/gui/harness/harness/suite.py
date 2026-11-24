@@ -119,7 +119,10 @@ class Suite:
             title = f"{name}/test.py"
             results.begin_scenario(title)
             result, message = bdd.outcome(exc, fails_before)
-            self.runner.report_problem(title, result, message, time.monotonic() - start)
+            self.runner.reporter.feature_start(name, str(self.testcase_dir / "test.py"))
+            self.runner.report_problems(
+                title, [(result, message, time.monotonic() - start)]
+            )
         finally:
             os.chdir(cwd)
             aut.detach_all()

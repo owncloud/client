@@ -27,12 +27,12 @@ def hook(context):
     record_event('OnScenarioStart', context.title)
 
 
-@OnStepStart  # pylint: disable=undefined-variable
+@OnStepStart
 def hook(context):
     record_event('OnStepStart', context.title)
 
 
-@OnStepEnd  # pylint: disable=undefined-variable
+@OnStepEnd
 def hook(context):
     record_event('OnStepEnd', context.title)
 
