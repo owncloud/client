@@ -13,3 +13,7 @@ qtguiprobe_add_test(tst_protocol)
 qtguiprobe_add_test(tst_startup)
 qtguiprobe_add_test(tst_selector)
 qtguiprobe_add_test(tst_items)
+qtguiprobe_add_test(tst_quick)
+qt_add_resources(tst_quick tst_quick_qml PREFIX "/" FILES tst_quick.qml)
+# Qt Quick renders without a GPU under the offscreen platform; the Basic style looks the same everywhere
+set_tests_properties(qtguiprobe-tst_quick PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen;QT_QUICK_BACKEND=software;QT_QUICK_CONTROLS_STYLE=Basic")

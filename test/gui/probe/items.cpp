@@ -3,6 +3,8 @@
 
 #include "items.h"
 
+#include "quick.h"
+
 #include <QAbstractItemModel>
 #include <QAbstractItemView>
 #include <QApplication>
@@ -10,6 +12,8 @@
 #include <QHeaderView>
 #include <QItemSelectionModel>
 #include <QPointer>
+#include <QQuickItem>
+#include <QQuickWidget>
 #include <QTabBar>
 #include <QTabWidget>
 
@@ -386,7 +390,11 @@ QWidget *itemWidget(const Target &target)
         }
         return nullptr;
     }
-    return qobject_cast<QWidget *>(std::get<QObject *>(target));
+    QObject *object = std::get<QObject *>(target);
+    if (const auto *item = qobject_cast<const QQuickItem *>(object)) {
+        return quickHost(item);
+    }
+    return qobject_cast<QWidget *>(object);
 }
 
 QRect itemRect(const Target &target)
@@ -406,7 +414,11 @@ QRect itemRect(const Target &target)
         }
         return {};
     }
-    const auto *widget = qobject_cast<const QWidget *>(std::get<QObject *>(target));
+    const QObject *object = std::get<QObject *>(target);
+    if (const auto *item = qobject_cast<const QQuickItem *>(object)) {
+        return quickItemRect(item);
+    }
+    const auto *widget = qobject_cast<const QWidget *>(object);
     return widget ? widget->rect() : QRect();
 }
 

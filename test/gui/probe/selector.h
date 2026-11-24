@@ -42,6 +42,12 @@ public:
     using PropertyReader = std::function<std::optional<QJsonValue>(const Target &target, const QString &name)>;
     /// Decides whether a target is ready (visible and enabled); std::nullopt passes to the next check.
     using ReadyCheck = std::function<std::optional<bool>(const Target &target)>;
+    /// The objects a search (and `children`) descends into below `object` instead of searchChildren(object),
+    /// e.g. the item tree below a QQuickWidget; std::nullopt passes to the next provider.
+    using ChildrenProvider = std::function<std::optional<QObjectList>(const QObject *object)>;
+    /// The object `object` hangs from instead of its QObject parent (a null pointer for none), e.g. the parent item
+    /// of a Qt Quick item; std::nullopt passes to the next provider.
+    using ParentProvider = std::function<std::optional<QObject *>(const QObject *object)>;
 
     explicit SelectorEngine(Registry &registry);
 
@@ -60,8 +66,23 @@ public:
 
     /// Resolvers are asked in registration order; the first one that does not decline wins for a scope.
     void addTypeResolver(TypeResolver resolver);
+    /// Readers are asked in registration order, after the QObject's own properties.
     void addPropertyReader(PropertyReader reader);
+    /// Like a reader, but asked before the QObject's own properties, for a value an object reports incompletely
+    /// (a Qt Quick item's `visible` ignores its QQuickWidget). Keep overrides to such cases.
+    void addPropertyOverride(PropertyReader reader);
     void addReadyCheck(ReadyCheck check);
+    void addChildrenProvider(ChildrenProvider provider);
+    void addParentProvider(ParentProvider provider);
+
+    /// The value `get` answers for `name`: the overrides, then the QObject's properties (Q_PROPERTY or dynamic),
+    /// then the readers. The same order serves selector keys. std::nullopt if none knows the name.
+    std::optional<QJsonValue> readValue(const Target &target, const QString &name);
+    /// The objects below `object` that searches and `children` descend into: the first provider's answer, else
+    /// searchChildren(object).
+    QObjectList childrenOf(const QObject *object) const;
+    /// The object `object` hangs from: the first provider's answer, else its QObject parent.
+    QObject *parentOf(const QObject *object) const;
 
 private:
     struct PropertyValue
@@ -79,10 +100,15 @@ private:
     bool matchesObject(const Target &target, const QJsonValue &want);
     bool matchesBuddy(QObject *object, const QJsonValue &want);
     std::optional<PropertyValue> readProperty(const Target &target, const QString &name);
+    std::optional<PropertyValue> fromReader(const QJsonValue &value);
+    static std::optional<QJsonValue> ask(const std::vector<PropertyReader> &readers, const Target &target, const QString &name);
 
     Registry &_registry;
     std::vector<TypeResolver> _resolvers;
     std::vector<PropertyReader> _propertyReaders;
+    std::vector<PropertyReader> _propertyOverrides;
+    std::vector<ChildrenProvider> _childrenProviders;
+    std::vector<ParentProvider> _parentProviders;
     std::vector<ReadyCheck> _readyChecks;
 };
 

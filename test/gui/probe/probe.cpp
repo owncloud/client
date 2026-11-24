@@ -4,7 +4,7 @@
 #include "probe.h"
 
 #include "items.h"
-#include "jsonvalue.h"
+#include "quick.h"
 
 #include <QCoreApplication>
 #include <QJsonArray>
@@ -13,7 +13,6 @@
 #include <QLocalSocket>
 #include <QLoggingCategory>
 #include <QMetaMethod>
-#include <QMetaProperty>
 #include <QTimer>
 
 #include <exception>
@@ -33,23 +32,6 @@ void startProbeLater()
         return;
     }
     QTimer::singleShot(0, QCoreApplication::instance(), [] { QtGuiProbe::Probe::startIfRequested(); });
-}
-
-std::optional<QVariant> readObjectProperty(const QObject *object, const QString &name)
-{
-    const QByteArray key = name.toUtf8();
-    const QMetaObject *metaObject = object->metaObject();
-    const int index = metaObject->indexOfProperty(key.constData());
-    if (index >= 0) {
-        return metaObject->property(index).read(object);
-    }
-    if (object->dynamicPropertyNames().contains(key)) {
-        return object->property(key.constData());
-    }
-    if (name == QLatin1String("objectName")) {
-        return object->objectName();
-    }
-    return std::nullopt;
 }
 
 QJsonObject errorObject(const QtGuiProbe::ProbeError &error)
@@ -196,9 +178,8 @@ void Probe::registerBuiltinMethods()
         }
         return result;
     });
-    // model indexes, tabs and header sections
-    registerItemSupport(_selectors, _registry);
-    // property hooks serve selector keys as they serve `get`
+    // `get` and selector keys read properties in the same order: the object's own properties, then the property
+    // hooks, then the readers of the item types, so the hooks are registered first
     _selectors.addPropertyReader([this](const Target &target, const QString &name) -> std::optional<QJsonValue> {
         for (const auto &hook : _propertyHooks) {
             if (auto value = hook(target, name)) {
@@ -207,6 +188,10 @@ void Probe::registerBuiltinMethods()
         }
         return std::nullopt;
     });
+    // model indexes, tabs and header sections
+    registerItemSupport(_selectors, _registry);
+    // Qt Quick items in a QQuickWidget
+    registerQuickSupport(_selectors, _registry);
 }
 
 QJsonObject Probe::handle(const QJsonObject &request)
@@ -262,17 +247,7 @@ QJsonValue Probe::get(const QJsonObject &params)
 {
     const Target target = _registry.resolve(params.value(QStringLiteral("handle")));
     const QString name = stringParam(params, QStringLiteral("name"));
-    if (const auto *object = std::get_if<QObject *>(&target)) {
-        if (const auto value = readObjectProperty(*object, name)) {
-            return toJson(*value, _registry);
-        }
-    }
-    for (const auto &hook : _propertyHooks) {
-        if (auto value = hook(target, name)) {
-            return *value;
-        }
-    }
-    if (auto value = itemProperty(target, name)) {
+    if (auto value = _selectors.readValue(target, name)) {
         return *value;
     }
     throw ProbeError{QStringLiteral("NoSuchProperty"), QStringLiteral("%1 has no property %2").arg(_registry.className(target), name),
@@ -285,7 +260,7 @@ QJsonValue Probe::children(const QJsonObject &params)
     // a view lists its items first, then its widgets
     QList<Target> children = itemChildren(target);
     if (const auto *object = std::get_if<QObject *>(&target)) {
-        const QObjectList objectChildren = searchChildren(*object);
+        const QObjectList objectChildren = _selectors.childrenOf(*object);
         for (auto *child : objectChildren) {
             children.append(child);
         }

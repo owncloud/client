@@ -3,6 +3,8 @@
 
 #include "selector.h"
 
+#include "jsonvalue.h"
+
 #include <QAction>
 #include <QApplication>
 #include <QGuiApplication>
@@ -254,11 +256,11 @@ namespace {
     };
 
     // The objects a QObject hangs from: its parent and, for an action, the widgets showing it (e.g. a menu).
-    QObjectList logicalParents(const QObject *object)
+    QObjectList logicalParents(const SelectorEngine &engine, const QObject *object)
     {
         QObjectList parents;
-        if (object->parent()) {
-            parents.append(object->parent());
+        if (QObject *parent = engine.parentOf(object)) {
+            parents.append(parent);
         }
         if (const auto *action = qobject_cast<const QAction *>(object)) {
             const auto associated = action->associatedObjects();
@@ -271,24 +273,24 @@ namespace {
         return parents;
     }
 
-    QObjectList logicalAncestors(QObject *object)
+    QObjectList logicalAncestors(const SelectorEngine &engine, QObject *object)
     {
         QObjectList ancestors;
-        QObjectList pending = logicalParents(object);
+        QObjectList pending = logicalParents(engine, object);
         while (!pending.isEmpty()) {
             QObject *next = pending.takeFirst();
             if (next == object || ancestors.contains(next)) {
                 continue;
             }
             ancestors.append(next);
-            pending.append(logicalParents(next));
+            pending.append(logicalParents(engine, next));
         }
         return ancestors;
     }
 
     // The windows an object counts as belonging to: its window(), and for a popup (a menu) also the windows it pops
     // up from, as Squish names a context menu by its parent's window. A non-widget belongs to its parents' windows.
-    QObjectList windowsOf(QObject *object)
+    QObjectList windowsOf(const SelectorEngine &engine, QObject *object)
     {
         QObjectList windows;
         QObjectList pending{object};
@@ -308,7 +310,7 @@ namespace {
                     window = window->windowType() == Qt::Popup && window->parentWidget() ? window->parentWidget()->window() : nullptr;
                 }
             } else {
-                pending.append(logicalParents(next));
+                pending.append(logicalParents(engine, next));
             }
         }
         return windows;
@@ -399,9 +401,44 @@ void SelectorEngine::addPropertyReader(PropertyReader reader)
     _propertyReaders.push_back(std::move(reader));
 }
 
+void SelectorEngine::addPropertyOverride(PropertyReader reader)
+{
+    _propertyOverrides.push_back(std::move(reader));
+}
+
 void SelectorEngine::addReadyCheck(ReadyCheck check)
 {
     _readyChecks.push_back(std::move(check));
+}
+
+void SelectorEngine::addChildrenProvider(ChildrenProvider provider)
+{
+    _childrenProviders.push_back(std::move(provider));
+}
+
+void SelectorEngine::addParentProvider(ParentProvider provider)
+{
+    _parentProviders.push_back(std::move(provider));
+}
+
+QObjectList SelectorEngine::childrenOf(const QObject *object) const
+{
+    for (const auto &provider : _childrenProviders) {
+        if (auto children = provider(object)) {
+            return std::move(*children);
+        }
+    }
+    return searchChildren(object);
+}
+
+QObject *SelectorEngine::parentOf(const QObject *object) const
+{
+    for (const auto &provider : _parentProviders) {
+        if (const auto parent = provider(object)) {
+            return *parent;
+        }
+    }
+    return object->parent();
 }
 
 std::vector<Target> SelectorEngine::findAll(const QJsonObject &selector)
@@ -462,7 +499,7 @@ std::vector<Target> SelectorEngine::searchScope(const QJsonObject &selector, con
     QSet<QObject *> visited;
     // depth first, in children order; the scope itself is not a candidate
     std::vector<QObject *> pending;
-    const QObjectList roots = *scopeObject ? searchChildren(*scopeObject) : topLevelRoots();
+    const QObjectList roots = *scopeObject ? childrenOf(*scopeObject) : topLevelRoots();
     pending.assign(roots.rbegin(), roots.rend());
     if (*scopeObject) {
         visited.insert(*scopeObject);
@@ -477,7 +514,7 @@ std::vector<Target> SelectorEngine::searchScope(const QJsonObject &selector, con
         if (matchesKeys(object, selector, false, true)) {
             found.push_back(object);
         }
-        const QObjectList children = searchChildren(object);
+        const QObjectList children = childrenOf(object);
         for (auto it = children.rbegin(); it != children.rend(); ++it) {
             pending.push_back(*it);
         }
@@ -620,7 +657,7 @@ bool SelectorEngine::matchesKeys(const Target &target, const QJsonObject &select
         if (!object) {
             return false;
         }
-        const QObjectList windows = windowsOf(*object);
+        const QObjectList windows = windowsOf(*this, *object);
         if (!std::any_of(windows.begin(), windows.end(), [&](QObject *window) { return matchesObject(window, selector.value(windowKey)); })) {
             return false;
         }
@@ -629,7 +666,7 @@ bool SelectorEngine::matchesKeys(const Target &target, const QJsonObject &select
         if (!object) {
             return false;
         }
-        const QObjectList ancestors = logicalAncestors(*object);
+        const QObjectList ancestors = logicalAncestors(*this, *object);
         if (!std::any_of(ancestors.begin(), ancestors.end(), [&](QObject *ancestor) { return matchesObject(ancestor, selector.value(containerKey)); })) {
             return false;
         }
@@ -693,8 +730,52 @@ bool SelectorEngine::matchesBuddy(QObject *object, const QJsonValue &want)
         labels.begin(), labels.end(), [&](QLabel *label) { return label->buddy() == widget && matchesObject(static_cast<QObject *>(label), want); });
 }
 
+std::optional<QJsonValue> SelectorEngine::ask(const std::vector<PropertyReader> &readers, const Target &target, const QString &name)
+{
+    for (const auto &reader : readers) {
+        if (auto value = reader(target, name)) {
+            return value;
+        }
+    }
+    return std::nullopt;
+}
+
+std::optional<QJsonValue> SelectorEngine::readValue(const Target &target, const QString &name)
+{
+    if (auto value = ask(_propertyOverrides, target, name)) {
+        return value;
+    }
+    if (const auto *object = std::get_if<QObject *>(&target)) {
+        const QByteArray key = name.toUtf8();
+        const QMetaObject *metaObject = (*object)->metaObject();
+        const int index = metaObject->indexOfProperty(key.constData());
+        if (index >= 0) {
+            return toJson(metaObject->property(index).read(*object), _registry);
+        }
+        if ((*object)->dynamicPropertyNames().contains(key)) {
+            return toJson((*object)->property(key.constData()), _registry);
+        }
+    }
+    return ask(_propertyReaders, target, name);
+}
+
+std::optional<SelectorEngine::PropertyValue> SelectorEngine::fromReader(const QJsonValue &value)
+{
+    if (isHandle(value)) {
+        if (value.toObject().value(handleKey).isNull()) {
+            return PropertyValue{};
+        }
+        return PropertyValue{QVariant(), QMetaEnum(), _registry.resolve(value)};
+    }
+    return PropertyValue{value.toVariant()};
+}
+
+// The same order as readValue(), keeping the enumerator and the object of a QObject's own property.
 std::optional<SelectorEngine::PropertyValue> SelectorEngine::readProperty(const Target &target, const QString &name)
 {
+    if (const auto value = ask(_propertyOverrides, target, name)) {
+        return fromReader(*value);
+    }
     if (const auto *object = std::get_if<QObject *>(&target)) {
         const QByteArray key = name.toUtf8();
         const QMetaObject *metaObject = (*object)->metaObject();
@@ -715,16 +796,8 @@ std::optional<SelectorEngine::PropertyValue> SelectorEngine::readProperty(const 
             return result;
         }
     }
-    for (const auto &reader : _propertyReaders) {
-        if (const auto value = reader(target, name)) {
-            if (isHandle(*value)) {
-                if (value->toObject().value(handleKey).isNull()) {
-                    return PropertyValue{};
-                }
-                return PropertyValue{QVariant(), QMetaEnum(), _registry.resolve(*value)};
-            }
-            return PropertyValue{value->toVariant()};
-        }
+    if (const auto value = ask(_propertyReaders, target, name)) {
+        return fromReader(*value);
     }
     return std::nullopt;
 }

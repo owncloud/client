@@ -43,12 +43,14 @@ QList<Target> itemChildren(const Target &target);
 QAbstractItemView *viewOf(const QModelIndex &index);
 
 /// The widget whose coordinates itemRect() uses: the view's viewport for a QModelIndex, the tab bar for a
-/// TabItem, the header's viewport for a HeaderViewItem, the widget itself for a QWidget. nullptr otherwise.
+/// TabItem, the header's viewport for a HeaderViewItem, the QQuickWidget showing a Qt Quick item (quickHost), the
+/// widget itself for a QWidget. nullptr otherwise.
 QWidget *itemWidget(const Target &target);
 
 /// The rectangle of `target` in itemWidget(target)'s coordinates: QAbstractItemView::visualRect for an index,
 /// QTabBar::tabRect for a tab, sectionViewportPosition/sectionSize across the header's viewport for a header
-/// section, rect() for a QWidget. An invalid QRect if the item is not laid out (collapsed, hidden) or unknown.
+/// section, quickItemRect() for a Qt Quick item, rect() for a QWidget. An invalid QRect if the item is not laid out
+/// (collapsed, hidden, not in a QQuickWidget) or unknown.
 QRect itemRect(const Target &target);
 
 } // namespace QtGuiProbe
