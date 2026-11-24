@@ -9,12 +9,15 @@
 #include <QHeaderView>
 #include <QJsonArray>
 #include <QJsonDocument>
+#include <QPushButton>
 #include <QStandardItemModel>
+#include <QStyledItemDelegate>
 #include <QTabBar>
 #include <QTabWidget>
 #include <QTableView>
 #include <QTableWidget>
 #include <QTest>
+#include <QTreeView>
 #include <QTreeWidget>
 #include <QVBoxLayout>
 
@@ -109,6 +112,54 @@ const char personalSelector[] = R"_({"type":"QModelIndex","container":{"name":"t
 const char folder1Selector[] = R"_({"type":"QModelIndex","column":"0","text":"folder1 (13 B)",
     "container":{"type":"QModelIndex","container":{"name":"tree","type":"QTreeWidget"},"column":"0","text":"Personal"}})_";
 const char headerSelector[] = R"_({"type":"QHeaderView","container":{"name":"tree","type":"QTreeWidget"}})_";
+
+// A tree view whose delegate shows one reused push button as the editor of a cell, as a "..." menu button.
+struct EditorFixture
+{
+    struct ButtonDelegate : QStyledItemDelegate
+    {
+        QPushButton *button = new QPushButton(QStringLiteral("..."));
+        ~ButtonDelegate() override
+        {
+            if (!button->parent()) {
+                delete button;
+            }
+        }
+        QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &, const QModelIndex &) const override
+        {
+            button->setParent(parent);
+            button->setObjectName(QStringLiteral("buttonDelegateButton"));
+            return button;
+        }
+        void destroyEditor(QWidget *, const QModelIndex &) const override { button->hide(); }
+    };
+
+    QWidget window;
+    QTreeView *view = new QTreeView(&window);
+    QStandardItemModel model{3, 2};
+    ButtonDelegate delegate;
+
+    EditorFixture()
+    {
+        view->setObjectName(QStringLiteral("folders"));
+        (new QVBoxLayout(&window))->addWidget(view);
+        for (int row = 0; row < model.rowCount(); ++row) {
+            model.setItem(row, 0, new QStandardItem(QStringLiteral("folder %1").arg(row)));
+            model.setItem(row, 1, new QStandardItem());
+        }
+        view->setModel(&model);
+        view->setItemDelegateForColumn(1, &delegate);
+        window.resize(500, 300);
+    }
+
+    ~EditorFixture() { view->setModel(nullptr); }
+
+    void show()
+    {
+        window.show();
+        QVERIFY(QTest::qWaitForWindowExposed(&window));
+    }
+};
 
 } // namespace
 
@@ -434,6 +485,59 @@ private Q_SLOTS:
     }
 
     // over the protocol: find, get, children and handle identity
+    // Squish's rowIndex and columnIndex: the cell a widget inside an item view (an editor, an index widget) sits on.
+    void widgetsInsideAViewHaveRowAndColumnIndex()
+    {
+        EditorFixture fixture;
+        fixture.show();
+        fixture.view->openPersistentEditor(fixture.model.index(1, 1));
+        QTRY_VERIFY(fixture.delegate.button->isVisible());
+        Probe probe;
+        QJsonObject selector = json(R"_({"columnIndex":1,"rowIndex":1,"container":{"name":"folders","type":"QTreeView"},
+            "name":"buttonDelegateButton","type":"QPushButton","visible":1})_");
+        const QJsonObject button = find(probe, selector);
+        QCOMPARE(button.value(QStringLiteral("$handle")).isDouble(), true);
+        QCOMPARE(get(probe, button, "rowIndex"), QJsonValue(1));
+        QCOMPARE(get(probe, button, "columnIndex"), QJsonValue(1));
+        selector.insert(QStringLiteral("rowIndex"), 0);
+        QVERIFY(find(probe, selector).value(QStringLiteral("$handle")).isNull());
+        selector.insert(QStringLiteral("rowIndex"), 1);
+        selector.insert(QStringLiteral("columnIndex"), 0);
+        QVERIFY(find(probe, selector).value(QStringLiteral("$handle")).isNull());
+    }
+
+    void nestedIndexWidgetChildHasRowAndColumnIndex()
+    {
+        EditorFixture fixture;
+        auto *cell = new QWidget;
+        auto *inner = new QPushButton(QStringLiteral("inner"), cell);
+        inner->setObjectName(QStringLiteral("inner"));
+        (new QVBoxLayout(cell))->addWidget(inner);
+        fixture.view->setIndexWidget(fixture.model.index(0, 0), cell);
+        fixture.show();
+        QTRY_VERIFY(inner->isVisible());
+        Probe probe;
+        const QJsonObject ref = find(probe, json(R"_({"name":"inner","rowIndex":0,"columnIndex":0})_"));
+        QCOMPARE(ref.value(QStringLiteral("$handle")).isDouble(), true);
+    }
+
+    void widgetsOutsideViewsHaveNoRowIndex()
+    {
+        EditorFixture fixture;
+        auto *outside = new QPushButton(QStringLiteral("outside"), &fixture.window);
+        outside->setObjectName(QStringLiteral("outside"));
+        fixture.window.layout()->addWidget(outside);
+        fixture.show();
+        Probe probe;
+        const QJsonObject ref = find(probe, json(R"_({"name":"outside"})_"));
+        const QJsonObject response =
+            request(probe, QStringLiteral("get"), {{QStringLiteral("handle"), ref}, {QStringLiteral("name"), QStringLiteral("rowIndex")}});
+        QCOMPARE(response.value(QStringLiteral("error")).toObject().value(QStringLiteral("code")).toString(), QStringLiteral("NoSuchProperty"));
+        QVERIFY(find(probe, json(R"_({"name":"outside","rowIndex":0})_")).value(QStringLiteral("$handle")).isNull());
+        // the view and its viewport are not inside the viewport
+        QVERIFY(find(probe, json(R"_({"name":"folders","rowIndex":0})_")).value(QStringLiteral("$handle")).isNull());
+    }
+
     void probeServesItems()
     {
         TreeFixture fixture;

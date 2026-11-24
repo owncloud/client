@@ -255,6 +255,36 @@ namespace {
         return std::nullopt;
     }
 
+    // The cell a widget inside an item view (an editor, an index widget or a child of one) sits on: the index under
+    // the widget's centre in the innermost view's viewport. Invalid outside views and where no cell is.
+    // indexAt() rather than the view's editor bookkeeping: the index -> editor map (indexWidget()) has no public
+    // reverse, and delegates lay editors out over their cell (updateEditorGeometry), so the centre is in that cell.
+    QModelIndex cellOf(const QWidget *widget)
+    {
+        for (const QWidget *parent = widget->parentWidget(); parent; parent = parent->parentWidget()) {
+            QAbstractItemView *view = itemViewOf(parent->parentWidget());
+            if (view && view->viewport() == parent) {
+                return view->indexAt(widget->mapTo(parent, widget->rect().center()));
+            }
+        }
+        return {};
+    }
+
+    // Squish's rowIndex and columnIndex of a widget inside an item view, std::nullopt for other names and targets.
+    std::optional<QJsonValue> cellProperty(const Target &target, const QString &name)
+    {
+        const bool row = name == QLatin1String("rowIndex");
+        if (!row && name != QLatin1String("columnIndex")) {
+            return std::nullopt;
+        }
+        const auto *widget = qobject_cast<const QWidget *>(objectOf(target));
+        const QModelIndex cell = widget ? cellOf(widget) : QModelIndex();
+        if (!cell.isValid()) {
+            return std::nullopt;
+        }
+        return QJsonValue(row ? cell.row() : cell.column());
+    }
+
     bool widgetReady(const QWidget *widget)
     {
         return widget && widget->isVisible() && widget->isEnabled();
@@ -279,6 +309,7 @@ void registerItemSupport(SelectorEngine &engine, Registry &registry)
         return std::nullopt;
     });
     engine.addPropertyReader([](const Target &target, const QString &name) { return itemProperty(target, name); });
+    engine.addPropertyReader([](const Target &target, const QString &name) { return cellProperty(target, name); });
     engine.addReadyCheck([](const Target &target) -> std::optional<bool> {
         if (const auto *index = std::get_if<QPersistentModelIndex>(&target)) {
             return index->isValid() && widgetReady(viewOf(*index));
