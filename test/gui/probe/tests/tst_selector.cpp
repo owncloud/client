@@ -13,12 +13,14 @@
 #include <QJsonDocument>
 #include <QLabel>
 #include <QLineEdit>
+#include <QMainWindow>
 #include <QMenu>
 #include <QPushButton>
 #include <QSlider>
 #include <QStackedWidget>
 #include <QTest>
 #include <QVBoxLayout>
+#include <QWizard>
 
 #include <memory>
 
@@ -30,6 +32,13 @@ class TestDialog : public QDialog
     Q_OBJECT
 public:
     using QDialog::QDialog;
+};
+
+class EmbeddedWizard : public QWizard
+{
+    Q_OBJECT
+public:
+    using QWizard::QWizard;
 };
 } // namespace Fixture
 
@@ -293,6 +302,67 @@ private Q_SLOTS:
         SelectorEngine engine(registry);
         QCOMPARE(objectsOf(engine.findAll(json(R"({"type":"Fixture::TestDialog","visible":1})"))), QObjectList({&first, &second}));
         QCOMPARE(objectOf(engine.find(json(R"({"type":"Fixture::TestDialog","visible":1,"occurrence":2})"), true)), &second);
+    }
+
+    // A dialog embedded in another window (flags reset to Qt::Widget, put into a layout) is not a window to Qt, but
+    // Squish still names its children by it: `window` accepts any dialog or main window among the ancestors.
+    void windowMatchesEmbeddedDialogs()
+    {
+        QMainWindow mainWindow;
+        mainWindow.setObjectName(QStringLiteral("MainWindow"));
+        auto *stack = new QStackedWidget(&mainWindow);
+        mainWindow.setCentralWidget(stack);
+        auto *page = new QWidget;
+        auto *pageLayout = new QVBoxLayout(page);
+        auto *panel = new QWidget(page);
+        panel->setObjectName(QStringLiteral("Panel"));
+        auto *panelLayout = new QVBoxLayout(panel);
+        auto *outside = new QPushButton(QStringLiteral("Outside"), panel);
+        outside->setObjectName(QStringLiteral("outside"));
+        panelLayout->addWidget(outside);
+        auto *wizard = new Fixture::EmbeddedWizard(page);
+        wizard->setObjectName(QStringLiteral("AddFolderSyncWizard"));
+        wizard->setWindowFlags(Qt::Widget);
+        wizard->addPage(new QWizardPage);
+        wizard->addPage(new QWizardPage);
+        pageLayout->addWidget(panel);
+        pageLayout->addWidget(wizard);
+        stack->addWidget(page);
+        mainWindow.show();
+        QVERIFY(QTest::qWaitForWindowExposed(&mainWindow));
+        QVERIFY(!wizard->isWindow());
+        QVERIFY(wizard->isVisible());
+        QAbstractButton *cancel = wizard->button(QWizard::CancelButton);
+        QAbstractButton *next = wizard->button(QWizard::NextButton);
+        QCOMPARE(cancel->objectName(), QStringLiteral("qt_wizard_cancel"));
+        QVERIFY(cancel->isVisible());
+        Registry registry;
+        SelectorEngine engine(registry);
+
+        const QJsonObject cancelInWizard = json(R"({"window":{"name":"AddFolderSyncWizard","type":"Fixture::EmbeddedWizard","visible":1},
+            "name":"qt_wizard_cancel","type":"QPushButton","visible":1})");
+        QCOMPARE(objectsOf(engine.findAll(cancelInWizard)), QObjectList({cancel}));
+        QCOMPARE(objectOf(engine.find(cancelInWizard, true)), cancel);
+        const QJsonObject nextInWizard = json(R"({"window":{"name":"AddFolderSyncWizard","type":"Fixture::EmbeddedWizard","visible":1},
+            "name":"__qt__passive_wizardbutton1","type":"QPushButton","visible":1})");
+        QCOMPARE(objectsOf(engine.findAll(nextInWizard)), QObjectList({next}));
+        // the true top-level window still counts
+        QCOMPARE(objectsOf(engine.findAll(json(R"({"window":{"name":"MainWindow","type":"QMainWindow","visible":1},
+            "name":"qt_wizard_cancel","type":"QPushButton","visible":1})"))),
+            QObjectList({cancel}));
+        // a handle of the embedded dialog works as well, with and without a scope search
+        const QJsonObject wizardRef = registry.ref(wizard);
+        QCOMPARE(objectsOf(engine.findAll({{QStringLiteral("window"), wizardRef}, {QStringLiteral("name"), QStringLiteral("qt_wizard_cancel")}})),
+            QObjectList({cancel}));
+        QVERIFY(engine.matches(cancel, {{QStringLiteral("window"), wizardRef}}));
+        // a widget outside the dialog does not belong to it
+        QVERIFY(!engine.matches(outside, {{QStringLiteral("window"), wizardRef}}));
+        const QJsonObject outsideInWizard =
+            json(R"({"window":{"name":"AddFolderSyncWizard","type":"Fixture::EmbeddedWizard","visible":1},"name":"outside","type":"QPushButton"})");
+        QVERIFY(engine.findAll(outsideInWizard).empty());
+        // a plain container is no window
+        QVERIFY(engine.findAll(json(R"({"window":{"name":"Panel","type":"QWidget","visible":1},"name":"outside","type":"QPushButton"})")).empty());
+        QVERIFY(!engine.matches(outside, {{QStringLiteral("window"), registry.ref(panel)}}));
     }
 
     void menuActionsAreSearched()

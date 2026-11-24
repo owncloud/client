@@ -288,8 +288,17 @@ namespace {
         return ancestors;
     }
 
-    // The windows an object counts as belonging to: its window(), and for a popup (a menu) also the windows it pops
-    // up from, as Squish names a context menu by its parent's window. A non-widget belongs to its parents' windows.
+    // A widget Squish names other objects by: a window, or a dialog or main window embedded in another window
+    // (reparented into a layout with its flags reset to Qt::Widget, so window() passes over it).
+    bool isWindowLike(const QWidget *widget)
+    {
+        return widget->isWindow() || widget->inherits("QDialog") || widget->inherits("QMainWindow");
+    }
+
+    // The windows an object counts as belonging to, innermost first: every window-like widget from the object itself
+    // up to its window(), and for a popup (a menu) also those it pops up from, as Squish names a context menu by its
+    // parent's window. A dialog is not chained to the window it is parented to. A non-widget (an action, a Qt Quick
+    // item) belongs to its parents' windows.
     QObjectList windowsOf(const SelectorEngine &engine, QObject *object)
     {
         QObjectList windows;
@@ -302,12 +311,14 @@ namespace {
             }
             visited.insert(next);
             if (auto *widget = qobject_cast<QWidget *>(next)) {
-                QWidget *window = widget->window();
-                while (window) {
-                    if (!windows.contains(window)) {
-                        windows.append(window);
+                while (widget) {
+                    if (isWindowLike(widget) && !windows.contains(widget)) {
+                        windows.append(widget);
                     }
-                    window = window->windowType() == Qt::Popup && window->parentWidget() ? window->parentWidget()->window() : nullptr;
+                    if (widget->isWindow() && widget->windowType() != Qt::Popup) {
+                        break;
+                    }
+                    widget = widget->parentWidget();
                 }
             } else {
                 pending.append(logicalParents(engine, next));
