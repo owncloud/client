@@ -8,30 +8,6 @@ from harness.selectors import HandleRef, encode_value
 # Error codes that mean a handle no longer refers to a live object.
 _STALE = ("DeadObject", "NoSuchObject")
 
-# Names that are callable on remote objects although they are not properties.
-# The wire protocol cannot tell a method from a missing name: ``get`` answers
-# ``NoSuchProperty`` for both. A name in this set becomes a remote ``call``;
-# any other unknown name raises AttributeError, so ``hasattr`` stays honest.
-METHOD_NAMES = {
-    # QAbstractItemView / QAbstractItemModel allowlist of the probe
-    "model",
-    "rowCount",
-    "columnCount",
-    "index",
-    "data",
-    # Slots and invokables the suite calls
-    "close",
-    "setText",
-    "setFocus",
-    "show",
-    "hide",
-    "click",
-    "toggle",
-    "trigger",
-    "setChecked",
-    "deleteLater",
-}
-
 
 def request(client, method, **params):
     """Send a request, turning stale-handle errors into RuntimeError."""
@@ -114,7 +90,7 @@ class RemoteObject(HandleRef):
         except ProbeError as err:
             if err.code != "NoSuchProperty":
                 raise
-            if not self.is_null() and name in METHOD_NAMES:
+            if err.is_method:
                 return RemoteMethod(self, name)
             raise AttributeError(f"{self!r} has no attribute '{name}'") from err
 

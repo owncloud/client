@@ -134,6 +134,15 @@ def test_proxy_calls_methods_and_wraps_results(fake):
     assert fake.sent("call")[0] == {"handle": view.handle, "name": "model", "args": []}
 
 
+def test_any_probe_method_is_callable(fake):
+    view = fake.add("QTableView", methods={"columnCount": lambda: 4})
+    proxy = RemoteObject(fake.client, view.handle)
+    assert proxy.columnCount() == 4
+    assert hasattr(proxy, "columnCount") is True
+    assert hasattr(proxy, "rowCount") is False
+    assert fake.sent("get")[0] == {"handle": view.handle, "name": "columnCount"}
+
+
 def test_proxy_item_access(fake):
     header = fake.add("HeaderViewItem", props={"section": 1})
     assert RemoteObject(fake.client, header.handle)["section"] == 1

@@ -37,10 +37,11 @@ class FakeObject:
 
 
 class FakeError(Exception):
-    def __init__(self, code, message):
+    def __init__(self, code, message, **extra):
         super().__init__(message)
         self.code = code
         self.message = message
+        self.extra = extra
 
 
 class FakeProbe:  # pylint: disable=too-many-instance-attributes
@@ -107,7 +108,11 @@ class FakeProbe:  # pylint: disable=too-many-instance-attributes
                         request["method"], request.get("params", {})
                     )
                 except FakeError as err:
-                    response["error"] = {"code": err.code, "message": err.message}
+                    response["error"] = {
+                        "code": err.code,
+                        "message": err.message,
+                        **err.extra,
+                    }
                 data = json.dumps(response, ensure_ascii=False) + "\n"
                 try:
                     self._server.sendall(data.encode("utf-8"))
@@ -208,7 +213,11 @@ class FakeProbe:  # pylint: disable=too-many-instance-attributes
         if name == "visible":
             return obj.visible
         if name not in obj.props:
-            raise FakeError("NoSuchProperty", f"{obj.cls} has no property {name}")
+            raise FakeError(
+                "NoSuchProperty",
+                f"{obj.cls} has no property {name}",
+                isMethod=name in obj.methods,
+            )
         return self._to_json(obj.props[name])
 
     def _m_call(self, params):

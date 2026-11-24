@@ -10,10 +10,12 @@ import threading
 class ProbeError(Exception):
     """An error response from the probe."""
 
-    def __init__(self, code, message):
+    def __init__(self, code, message, is_method=False):
         super().__init__(f"{code}: {message}")
         self.code = code
         self.message = message
+        # Set on NoSuchProperty from ``get``: the name is a callable method.
+        self.is_method = is_method
 
 
 class ProbeClient:
@@ -44,7 +46,11 @@ class ProbeClient:
                     break
         if "error" in response:
             error = response["error"]
-            raise ProbeError(error.get("code", ""), error.get("message", ""))
+            raise ProbeError(
+                error.get("code", ""),
+                error.get("message", ""),
+                bool(error.get("isMethod", False)),
+            )
         return response.get("result")
 
     def close(self):
