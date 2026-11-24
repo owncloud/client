@@ -97,6 +97,8 @@ option(WITH_AUTO_UPDATER "WITH_AUTO_UPDATER" OFF)
 # build with -DQT_FORCE_ASSERTS
 option(FORCE_ASSERTS "FORCE_ASSERTS" OFF)
 
+option(WITH_GUI_TEST_PROBE "Build the GUI test probe into the client (never for releases)" OFF)
+
 option(WITH_APPIMAGEUPDATER OFF "Enable built-in libappimageupdate based updater on Linux")
 add_feature_info(AppImageUpdate WITH_APPIMAGEUPDATER "Built-in libappimageupdate based updater")
 
@@ -138,6 +140,10 @@ if (NOT OWNCLOUD_ICONS)
 endif()
 MESSAGE(STATUS "OWNCLOUD_ICONS: ${APPLICATION_ICON_NAME}: ${OWNCLOUD_ICONS}")
 
+# before src, so that the qtguiprobe target exists when src/gui links it
+if(WITH_GUI_TEST_PROBE)
+    add_subdirectory(test/gui/probe)
+endif()
 add_subdirectory(src)
 if(IS_DIRECTORY ${CMAKE_SOURCE_DIR}/admin)
     add_subdirectory(admin)
