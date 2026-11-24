@@ -222,6 +222,29 @@ jobs:
           name: conan-build-macos-armv8-test-log
           path: build/Testing/Temporary/LastTest.log
           if-no-files-found: ignore
+      # The system writes the crash reports asynchronously: wait until they stop changing, at most a minute.
+      - name: Wait for the crash reports
+        if: failure()
+        run: |
+          reports=~/Library/Logs/DiagnosticReports
+          last="" stable=0
+          for _ in $(seq 60); do
+            now=$(ls -l "$reports"/*Test-*.ips "$reports"/test_helper-*.ips 2>/dev/null || true)
+            if [ "$now" = "$last" ]; then stable=$((stable + 1)); else stable=0 last=$now; fi
+            [ "$stable" -ge 5 ] && exit 0
+            sleep 1
+          done
+          echo "::warning::The crash reports were still changing after a minute"
+      # QtTest prints no stack trace of a crashing test on arm64 Macs; the system's crash report has one.
+      - name: Upload the crash reports
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: conan-build-macos-armv8-crash-reports
+          path: |
+            ~/Library/Logs/DiagnosticReports/*Test-*.ips
+            ~/Library/Logs/DiagnosticReports/test_helper-*.ips
+          if-no-files-found: ignore
 
   windows:
     name: Build and test windows-x86_64
@@ -370,4 +393,28 @@ jobs:
         with:
           name: conan-build-macos-x86_64-test-log
           path: build/Testing/Temporary/LastTest.log
+          if-no-files-found: ignore
+      # The system writes the crash reports asynchronously: wait until they stop changing, at most a minute.
+      - name: Wait for the crash reports
+        if: failure()
+        run: |
+          reports=~/Library/Logs/DiagnosticReports
+          last="" stable=0
+          for _ in $(seq 60); do
+            now=$(ls -l "$reports"/*Test-*.ips "$reports"/test_helper-*.ips 2>/dev/null || true)
+            if [ "$now" = "$last" ]; then stable=$((stable + 1)); else stable=0 last=$now; fi
+            [ "$stable" -ge 5 ] && exit 0
+            sleep 1
+          done
+          echo "::warning::The crash reports were still changing after a minute"
+      # QtTest skips its stack trace of a crashing x86_64 test unless SIP is disabled; the system's crash report
+      # has one.
+      - name: Upload the crash reports
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: conan-build-macos-x86_64-crash-reports
+          path: |
+            ~/Library/Logs/DiagnosticReports/*Test-*.ips
+            ~/Library/Logs/DiagnosticReports/test_helper-*.ips
           if-no-files-found: ignore
