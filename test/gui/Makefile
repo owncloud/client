@@ -15,6 +15,10 @@ python-lint-fix:
 	black .
 	python3.10 -m pylint --rcfile ./.pylintrc $(PYTHON_LINT_PATHS)
 
+.PHONY: harness-test
+harness-test:
+	cd harness && python3.10 -m pytest tests -q
+
 .PHONY: gherkin-lint
 gherkin-lint:
 	gherlint -c ./config/.gherlintrc.json .
