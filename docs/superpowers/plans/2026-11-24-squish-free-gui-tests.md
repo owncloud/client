@@ -38,7 +38,7 @@ into the client and a Squish-compatible Python harness take Squish's place.
   names or the changelog. Commit trailer: `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`.
 - **Ready to be split out:**
   - MIT license. Every new file in `test/gui/probe/` and `test/gui/harness/` starts with
-    `SPDX-License-Identifier: MIT` and `Copyright (C) 2026 Thomas Müller <323649642+oc-tmueller@users.noreply.github.com>`. Each directory has a `LICENSE`.
+    `SPDX-License-Identifier: MIT` and `SPDX-FileCopyrightText: 2026 ownCloud GmbH - A Kiteworks Company and ownCloud contributors`. Each directory has a `LICENSE`.
   - No ownCloud names, `OCC::` classes or client paths inside those directories. That includes tests and
     fixtures.
 - Python code passes `make -C test/gui python-lint` (black 24.3, pylint with `test/gui/.pylintrc`).
@@ -104,17 +104,18 @@ into the client and a Squish-compatible Python harness take Squish's place.
 
 ---
 
-### Task 1: Restore both GUI test workflows (plain reverts)
+### Task 1: Restore the GUI test workflow (plain revert)
 
 **Files:**
 - Restore: `.github/workflows/gui-tests.yml` (revert `5029d6f25`, #12618)
-- Modify: `.github/workflows/branded-client.yml` (revert `3bd29f739`, #12620)
 
-- [ ] **Step 1: Run** `git revert --no-edit 5029d6f25 && git revert --no-edit 3bd29f739`. Commit messages
-  stay git's default `Revert "…"` text, with the trailer added via
+`branded-client.yml` and #12620 are out of scope: neither is touched or reverted.
+
+- [ ] **Step 1: Run** `git revert --no-edit 5029d6f25`. The commit message stays git's default
+  `Revert "…"` text, with the trailer added via
   `git commit --amend -m "$(git log -1 --format=%B)" -m "Co-Authored-By: …"`.
-- [ ] **Step 2: Verify.** Run `git diff HEAD~2 --stat`. Expected: `gui-tests.yml` with +152, and
-  `branded-client.yml` with +2 -2 (the `schedule:` and `cron` lines uncommented).
+- [ ] **Step 2: Verify.** Run `git diff HEAD~1 --stat`. Expected: only `.github/workflows/gui-tests.yml`,
+  with +152.
 
 ### Task 2: Probe core: build option, activation, protocol, handles
 
@@ -610,11 +611,11 @@ into the client and a Squish-compatible Python harness take Squish's place.
 
 **Files:**
 - Create: `test/gui/ci/run-gui-tests.sh`
-- Modify: `.github/workflows/gui-tests.yml`, `.github/workflows/branded-client.yml`
+- Modify: `.github/workflows/gui-tests.yml` only. `branded-client.yml` is out of scope.
 - Modify: `test/gui/Makefile` (add target `harness-test: cd harness && python3.10 -m pytest tests -q`)
 - Create or modify: `test/gui/README.md` (a section on running locally)
-- Delete: `test/gui/ci/server.ini` and `test/gui/ci/client_server.ini`. Their AUT mappings become `--aut`
-  flags.
+- Delete: `test/gui/ci/server.ini`. Its AUT mapping becomes an `--aut` flag. Keep `client_server.ini`,
+  because the untouched branded job still uses it.
 
 **Interfaces:**
 - **`run-gui-tests.sh`** reads `GUI_TEST_PARAMETERS` (the same tokens as the old `SQUISH_PARAMETERS`) and
@@ -629,18 +630,17 @@ into the client and a Squish-compatible Python harness take Squish's place.
   - The builder reads `/dockerstartup/vnc_startup.sh` and `entrypoint.sh` in the image
     (`owncloud-ci/squish`, `fedora/src/startup/`) and keeps whatever the client needs from them (D-Bus env,
     keyring, `HOME`).
-- **Both workflows:**
+- **`gui-tests.yml`:**
   - cmake gets `-DWITH_GUI_TEST_PROBE=ON -DBUILD_TESTING=ON`, and the build adds `ctest -R tst_ --output-on-failure`
     for the probe tests. `BUILD_TESTING` was `OFF` before. If `ON` pulls in the full unit-test build, use
     `-DBUILD_TESTING=OFF` and build only `qtguiprobe` tests with `-DWITH_GUI_TEST_PROBE_TESTS=ON`.
     Decide after timing it.
   - Remove `LICENSEKEY` and `SERVER_INI`. Rename `SQUISH_PARAMETERS` to `GUI_TEST_PARAMETERS`, with the same
-    tags and the same `full-ci` expression in `gui-tests.yml`.
+    tags and the same `full-ci` expression.
   - `run:` becomes `bash test/gui/ci/run-gui-tests.sh`.
-  - `AUT_NAME` is `owncloud` in `gui-tests.yml` and `${{ secrets.CLIENT_NAME }}` lower-cased in the branded
-    workflow. The old INI used `kiteworks`; derive it in the script with `${CLIENT_NAME,,}`.
+  - `AUT_NAME` is `owncloud`.
   - `AUT_DIR` is `$GITHUB_WORKSPACE/build/bin`.
-- **`gui-tests.yml` only:**
+- **Hardening:**
   - Add a top-level `permissions: contents: read`.
   - Every `actions/checkout` gets `persist-credentials: false`.
   - Set the pins equal to `branded-client.yml`: checkout `3d3c42e5…` v7.0.1, upload-artifact `cf430e03…`
@@ -653,8 +653,8 @@ into the client and a Squish-compatible Python harness take Squish's place.
   - `zizmor .github/workflows/gui-tests.yml`, the same check the repo's `zizmor.yml` runs.
 
   Expected: no errors.
-- [ ] **Step 2: Verify that no Squish references remain:**
-  `grep -rnE 'LICENSEKEY|squishrunner|entrypoint.sh|SQUISH_PARAMETERS|server.ini' .github test/gui --exclude-dir=harness`.
+- [ ] **Step 2: Verify that no Squish references remain in the regular job:**
+  `grep -nE 'LICENSEKEY|squishrunner|entrypoint.sh|SQUISH_PARAMETERS|server.ini' .github/workflows/gui-tests.yml test/gui/ci/run-gui-tests.sh`.
   Expected: no output.
 - [ ] **Step 3: Write the README section:** build with `-DWITH_GUI_TEST_PROBE=ON`, then
   `pip install -r test/gui/requirements.txt`, then
@@ -687,8 +687,7 @@ into the client and a Squish-compatible Python harness take Squish's place.
 - Create: `changelog/unreleased/<PR number>.md`
 
 - [ ] **Step 1: Run on the branch.** Push `gui-test-harness` (after asking the user) and run `gui-tests.yml`
-  without `--abortOnFail` by putting `full-ci` in the PR title, or by dispatching. Also run
-  `gh workflow run branded-client.yml --ref gui-test-harness`.
+  without `--abortOnFail` by putting `full-ci` in the PR title, or by dispatching.
 - [ ] **Step 2: Handle each failing scenario** (it passed at the baseline, so it is a client regression):
   - Draft a public GitHub issue naming the scenario, `passed at fb1c873a7d`, the failing step and its
     message. No internal ticket references.

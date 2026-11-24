@@ -22,7 +22,9 @@ no license server, and with no rewrite of the tests.
   - `GUI Tests` (`gui-tests.yml`): revert #12618, which deleted it. It runs on every pull request, on
     pushes to `master` and on tags, and nightly, against a local oCIS service container, without secrets.
     This is the main signal.
-  - `GUI Tests (Branded Client)`: revert #12620, so it runs nightly again.
+  - `GUI Tests (Branded Client)` is **out of scope** (the user's decision). `branded-client.yml` stays as it
+    is, and #12620 is not reverted: re-enabling its nightly cron without converting the job would only
+    produce a failing Squish install every night.
 - **Everything is open source**, in `owncloud/client`, delivered as one public PR.
 
 ## Non-goals
@@ -223,26 +225,23 @@ The user picked **option 1**.
 
 ### 4. CI
 
-- **Reverts.** The first two commits are the plain reverts, so the history shows exactly what came back:
-  - `Revert "chore: disable squish tests"` (#12618), which restores `gui-tests.yml`.
-  - `Revert "chore: temporary disable gui tests"` (#12620), which re-enables the branded nightly cron.
-- **A shared runner script.** A new in-repo `test/gui/ci/run-gui-tests.sh` starts Xvfb (or the image's VNC
+- **Revert.** The first commit is the plain revert of #12618 (`Revert "chore: disable squish tests"`), which
+  restores `gui-tests.yml`, so the history shows exactly what came back.
+- **A runner script.** A new in-repo `test/gui/ci/run-gui-tests.sh` starts Xvfb (or the image's VNC
   script), D-Bus and an unlocked gnome-keyring. It then calls the harness, turning the workflow's parameters
-  into harness flags. Both workflows replace `bash /dockerstartup/entrypoint.sh` with this script.
-- **Changes to both workflows:**
+  into harness flags. `gui-tests.yml` replaces `bash /dockerstartup/entrypoint.sh` with this script.
+- **Changes to `gui-tests.yml`:**
   - Keep the `owncloudci/squish` image for its toolchain and Qt 6.8.
   - Configure with `-DWITH_GUI_TEST_PROBE=ON`.
   - Drop `LICENSEKEY` and `SERVER_INI`. `SQUISH_PARAMETERS` becomes `GUI_TEST_PARAMETERS`, with the same
     tags and the same `full-ci` rule for `--abortOnFail` in `gui-tests.yml`.
   - Report upload, stack traces and core dumps stay as they are.
-- **`gui-tests.yml` hardening**, brought in line with `branded-client.yml` and the repo's zizmor check:
+- **Hardening**, bringing `gui-tests.yml` in line with `branded-client.yml` and the repo's zizmor check:
   - Update the action pins to the ones `branded-client.yml` uses now.
   - Add `permissions: contents: read` and `persist-credentials: false`.
   - The harness unit tests join `lint-gui-test`.
 - **Verification before merge:**
   - `gui-tests.yml` runs on the PR itself, and must be green with the `~@skip ~@skipOnLinux` tag set.
-  - `branded-client.yml` runs through `workflow_dispatch` on the PR branch. That branch must be in
-    `owncloud/client` for the secrets to be available.
   - **Baseline:** master `fb1c873a7d`. Its scheduled run on 2026-08-01 was green with the full
     `~@skip ~@skipOnLinux` set and `--abortOnFail`, so every scenario in that set passed under Squish. The
     next day's run failed, and so did the branded job's. Run logs from then are no longer available.
@@ -259,7 +258,7 @@ cycle. To keep the split a mechanical `git subtree split`:
 - **License: MIT** (the user's choice; it can be linked into any Qt application, including GPL-2.0-only
   ones).
   - Every new file under `test/gui/probe/` and `test/gui/harness/` starts with
-    `SPDX-License-Identifier: MIT` and `Copyright (C) 2026 Thomas Müller <323649642+oc-tmueller@users.noreply.github.com>`.
+    `SPDX-License-Identifier: MIT` and `SPDX-FileCopyrightText: 2026 ownCloud GmbH - A Kiteworks Company and ownCloud contributors`.
   - Each of the two directories has its own `LICENSE` with the MIT text.
 - **The probe is a standalone CMake project:** `test/gui/probe/CMakeLists.txt` has its own `project()` and
   `find_package(Qt6 …)` and installs a `QtGuiProbeConfig.cmake` package. The client consumes it with
@@ -278,12 +277,13 @@ cycle. To keep the split a mechanical `git subtree split`:
 - **Changelog:** `changelog/unreleased/<PR number>.md`, type `Change`: "GUI tests run without Squish".
 - **Documentation:** a `test/gui/README.md` section on running locally, covering the build flag, the harness
   command and the environment.
-- Squish-specific leftovers (`ci/client_server.ini`, `SQUISH_PARAMETERS`) are removed once they're unused.
+- `ci/server.ini` is removed once it's unused. `ci/client_server.ini` stays, because the untouched
+  `branded-client.yml` still uses it.
 
 ## Definition of done
 
 - The harness passes the full `~@skip ~@skipOnLinux` set at baseline `fb1c873a7d`.
-- `gui-tests.yml` is green on the PR. `branded-client.yml` passes through dispatch on the branch.
+- `gui-tests.yml` is green on the PR.
 - **Scenarios that fail on master for client reasons** (the user chose this): a scenario that passes at the
   baseline but fails on master is a client regression. It gets `@skip @issue-<n>` in its `.feature` file,
   following the suite's existing tag convention.
