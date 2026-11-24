@@ -9,10 +9,12 @@
 #include "probe.h"
 #include "quick.h"
 
+#include <QAbstractButton>
 #include <QAbstractItemModel>
 #include <QAbstractItemView>
 #include <QAction>
 #include <QApplication>
+#include <QCheckBox>
 #include <QClipboard>
 #include <QElapsedTimer>
 #include <QHeaderView>
@@ -25,11 +27,15 @@
 #include <QPointer>
 #include <QQuickItem>
 #include <QQuickWidget>
+#include <QRadioButton>
 #include <QScreen>
 #include <QSpontaneKeyEvent>
+#include <QStyle>
+#include <QStyleOptionButton>
 #include <QTest>
 #include <QToolButton>
 
+#include <array>
 #include <cmath>
 
 namespace QtGuiProbe {
@@ -184,6 +190,48 @@ namespace {
             const Qt::MouseButtons buttons = type == QEvent::MouseButtonRelease ? Qt::NoButton : Qt::MouseButtons(button);
             sendMouse(guard, type, pos, button, buttons, mods);
         }
+    }
+
+    // QAbstractButton::hitButton() is protected. A pointer to it formed through a subclass is legal C++ and still
+    // dispatches virtually, so QRadioButton's and QCheckBox's overrides (the style's click rect) answer.
+    struct HitButtonAccess : QAbstractButton
+    {
+        static bool hits(const QAbstractButton *button, const QPoint &pos) { return (button->*(&HitButtonAccess::hitButton))(pos); }
+    };
+
+    // A point in `button` that its hitButton() accepts: the centre, else the centre of the style's indicator or
+    // contents rect for a radio button or check box. std::nullopt if none of them is accepted.
+    std::optional<QPoint> buttonHitPoint(const QAbstractButton *button)
+    {
+        const QPoint centre = button->rect().center();
+        if (HitButtonAccess::hits(button, centre)) {
+            return centre;
+        }
+        std::array<QStyle::SubElement, 2> elements{};
+        if (qobject_cast<const QRadioButton *>(button)) {
+            elements = {QStyle::SE_RadioButtonIndicator, QStyle::SE_RadioButtonContents};
+        } else if (qobject_cast<const QCheckBox *>(button)) {
+            elements = {QStyle::SE_CheckBoxIndicator, QStyle::SE_CheckBoxContents};
+        } else {
+            return std::nullopt;
+        }
+        QStyleOptionButton option;
+        option.initFrom(button);
+        option.text = button->text();
+        option.icon = button->icon();
+        option.iconSize = button->iconSize();
+        for (const QStyle::SubElement element : elements) {
+            const QRect rect = button->style()->subElementRect(element, &option, button);
+            if (rect.isValid() && HitButtonAccess::hits(button, rect.center())) {
+                return rect.center();
+            }
+        }
+        return std::nullopt;
+    }
+
+    QString describeWidget(const QWidget *widget)
+    {
+        return QStringLiteral("%1 '%2'").arg(QString::fromLatin1(widget->metaObject()->className()), widget->objectName());
     }
 
     // Focuses `target` for typing and returns the widget its key events go to.
@@ -398,6 +446,24 @@ namespace {
 
     // ---- input
 
+    // Validates that `target` is shown, then posts a click at its rect topLeft() + `offset`, or its centre.
+    void postClick(Probe &probe, const Target &target, std::optional<QPoint> offset, Qt::MouseButton button, Qt::KeyboardModifiers mods, int clicks)
+    {
+        if (!clickTarget(target, false)) {
+            throw badRequest(QStringLiteral("%1 is not shown, there is nowhere to click").arg(probe.registry().className(target)));
+        }
+        probe.postInput([later = LaterTarget(target), offset, button, mods, clicks] {
+            const auto target = later.get();
+            const auto where = target ? clickTarget(*target, true) : std::nullopt;
+            if (!where || !where->widget) {
+                qWarning("qtguiprobe: the click target went away before the click");
+                return;
+            }
+            const QPoint pos = offset ? where->rect.topLeft() + *offset : where->rect.center();
+            click(where->widget, pos, button, mods, clicks);
+        });
+    }
+
     QJsonValue mouseClick(Probe &probe, const QJsonObject &params)
     {
         const Target target = probe.registry().resolve(params.value(QStringLiteral("handle")));
@@ -422,18 +488,31 @@ namespace {
         if (hasX) {
             offset = QPoint(intParam(params, QStringLiteral("x"), 0), intParam(params, QStringLiteral("y"), 0));
         }
-        if (!clickTarget(target, false)) {
-            throw badRequest(QStringLiteral("%1 is not shown, there is nowhere to click").arg(probe.registry().className(target)));
+        postClick(probe, target, offset, Qt::MouseButton(button), Qt::KeyboardModifiers(mods), clicks);
+        return QJsonValue::Null;
+    }
+
+    QJsonValue clickButton(Probe &probe, const QJsonObject &params)
+    {
+        const Target target = probe.registry().resolve(params.value(QStringLiteral("handle")));
+        auto *button = qobject_cast<QAbstractButton *>(objectOf(target));
+        if (!button) {
+            postClick(probe, target, std::nullopt, Qt::LeftButton, Qt::NoModifier, 1);
+            return QJsonValue::Null;
         }
-        probe.postInput([later = LaterTarget(target), offset, button, mods, clicks] {
-            const auto target = later.get();
-            const auto where = target ? clickTarget(*target, true) : std::nullopt;
-            if (!where || !where->widget) {
-                qWarning("qtguiprobe: the click target went away before the click");
+        if (!button->isVisible()) {
+            throw badRequest(QStringLiteral("%1 is not shown, there is nowhere to click").arg(describeWidget(button)));
+        }
+        if (!buttonHitPoint(button)) {
+            throw badRequest(QStringLiteral("%1 accepts no click at its centre, indicator or text").arg(describeWidget(button)));
+        }
+        probe.postInput([button = QPointer<QAbstractButton>(button)] {
+            const auto pos = button ? buttonHitPoint(button) : std::nullopt;
+            if (!pos) {
+                qWarning("qtguiprobe: the button went away or stopped accepting clicks before the click");
                 return;
             }
-            const QPoint pos = offset ? where->rect.topLeft() + *offset : where->rect.center();
-            click(where->widget, pos, Qt::MouseButton(button), Qt::KeyboardModifiers(mods), clicks);
+            click(button, *pos, Qt::LeftButton, Qt::NoModifier, 1);
         });
         return QJsonValue::Null;
     }
@@ -528,6 +607,7 @@ void registerActions(Probe &probe)
     Registry &registry = probe.registry();
     probe.registerMethod(QStringLiteral("call"), [&registry](const QJsonObject &params) { return call(params, registry); });
     probe.registerMethod(QStringLiteral("mouseClick"), [&probe](const QJsonObject &params) { return mouseClick(probe, params); });
+    probe.registerMethod(QStringLiteral("clickButton"), [&probe](const QJsonObject &params) { return clickButton(probe, params); });
     probe.registerMethod(QStringLiteral("typeText"), [&probe](const QJsonObject &params) { return typeText(probe, params); });
     probe.registerMethod(QStringLiteral("activateItem"), [&probe](const QJsonObject &params) { return activateItem(probe, params); });
     probe.registerMethod(QStringLiteral("clipboardText"), [](const QJsonObject &) -> QJsonValue { return QGuiApplication::clipboard()->text(); });

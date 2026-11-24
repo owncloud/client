@@ -6,8 +6,10 @@
 #include "probe.h"
 #include "registry.h"
 
+#include <QAbstractButton>
 #include <QAction>
 #include <QApplication>
+#include <QCheckBox>
 #include <QClipboard>
 #include <QDialog>
 #include <QElapsedTimer>
@@ -21,6 +23,7 @@
 #include <QPushButton>
 #include <QQuickItem>
 #include <QQuickWidget>
+#include <QRadioButton>
 #include <QSignalSpy>
 #include <QTableWidget>
 #include <QTemporaryDir>
@@ -300,6 +303,115 @@ private Q_SLOTS:
         QTRY_COMPARE(clicked.count(), 1);
         QTest::qWait(50);
         QCOMPARE(clicked.count(), 1);
+    }
+
+    // A radio button or check box stretched by its layout accepts presses only on its indicator and text
+    // (QAbstractButton::hitButton), so clickButton must not click the centre of the widget.
+    void clickButtonChecksAStretchedRadioButton()
+    {
+        QWidget window;
+        auto *layout = new QVBoxLayout(&window);
+        auto *all = new QRadioButton(u"All"_s, &window);
+        auto *manual = new QRadioButton(u"Manual"_s, &window);
+        layout->addWidget(all);
+        layout->addWidget(manual);
+        all->setChecked(true);
+        window.resize(500, 120);
+        window.show();
+        QVERIFY(QTest::qWaitForWindowExposed(&window));
+        QVERIFY(manual->width() >= 400);
+        QSignalSpy toggled(manual, &QAbstractButton::toggled);
+        QSignalSpy clicked(manual, &QAbstractButton::clicked);
+        Probe probe;
+        // the gap: a click at the centre misses the button
+        request(probe, u"mouseClick"_s, click(refOf(probe, manual)));
+        runPostedInput();
+        QVERIFY(!manual->isChecked());
+        QCOMPARE(result(request(probe, u"clickButton"_s, {{u"handle"_s, refOf(probe, manual)}})), QJsonValue());
+        QTRY_VERIFY(manual->isChecked());
+        QVERIFY(!all->isChecked());
+        QTest::qWait(50);
+        QCOMPARE(toggled.count(), 1);
+        QCOMPARE(clicked.count(), 1);
+    }
+
+    void clickButtonTogglesAStretchedCheckBox()
+    {
+        QWidget window;
+        auto *layout = new QVBoxLayout(&window);
+        auto *box = new QCheckBox(u"Keep"_s, &window);
+        layout->addWidget(box);
+        window.resize(500, 80);
+        window.show();
+        QVERIFY(QTest::qWaitForWindowExposed(&window));
+        QVERIFY(box->width() >= 400);
+        QSignalSpy toggled(box, &QAbstractButton::toggled);
+        Probe probe;
+        QCOMPARE(result(request(probe, u"clickButton"_s, {{u"handle"_s, refOf(probe, box)}})), QJsonValue());
+        QTRY_VERIFY(box->isChecked());
+        QTest::qWait(50);
+        QCOMPARE(toggled.count(), 1);
+    }
+
+    void clickButtonClicksAPushButtonAtItsCentre()
+    {
+        QWidget window;
+        auto *layout = new QVBoxLayout(&window);
+        auto *button = new QPushButton(u"Go"_s, &window);
+        layout->addWidget(button);
+        window.resize(500, 80);
+        window.show();
+        struct Recorder : QObject
+        {
+            QPoint pos;
+            bool eventFilter(QObject *, QEvent *event) override
+            {
+                if (event->type() == QEvent::MouseButtonPress) {
+                    pos = static_cast<QMouseEvent *>(event)->position().toPoint();
+                }
+                return false;
+            }
+        } recorder;
+        button->installEventFilter(&recorder);
+        QSignalSpy clicked(button, &QPushButton::clicked);
+        Probe probe;
+        QCOMPARE(result(request(probe, u"clickButton"_s, {{u"handle"_s, refOf(probe, button)}})), QJsonValue());
+        QTRY_COMPARE(clicked.count(), 1);
+        QCOMPARE(recorder.pos, button->rect().center());
+    }
+
+    void clickButtonRejectsAButtonWithoutAHitArea()
+    {
+        struct Deaf : QAbstractButton
+        {
+            using QAbstractButton::QAbstractButton;
+            void paintEvent(QPaintEvent *) override { }
+            bool hitButton(const QPoint &) const override { return false; }
+        };
+        QWidget window;
+        auto *deaf = new Deaf(&window);
+        deaf->setObjectName(u"deaf"_s);
+        deaf->setGeometry(0, 0, 100, 30);
+        auto *hidden = new QPushButton(u"Hidden"_s, &window);
+        hidden->hide();
+        window.show();
+        Probe probe;
+        const QJsonObject response = request(probe, u"clickButton"_s, {{u"handle"_s, refOf(probe, deaf)}});
+        QCOMPARE(errorCode(response), u"BadRequest"_s);
+        QVERIFY2(response.value(u"error"_s).toObject().value(u"message"_s).toString().contains(u"deaf"_s), QJsonDocument(response).toJson().constData());
+        QCOMPARE(errorCode(request(probe, u"clickButton"_s, {{u"handle"_s, refOf(probe, hidden)}})), u"BadRequest"_s);
+    }
+
+    void clickButtonClicksAnActionInAnOpenMenu()
+    {
+        QMenu menu;
+        QAction *settings = menu.addAction(u"Settings"_s);
+        QSignalSpy triggered(settings, &QAction::triggered);
+        menu.popup(QPoint(20, 20));
+        QVERIFY(QTest::qWaitForWindowExposed(&menu));
+        Probe probe;
+        QCOMPARE(result(request(probe, u"clickButton"_s, {{u"handle"_s, refOf(probe, settings)}})), QJsonValue());
+        QTRY_COMPARE(triggered.count(), 1);
     }
 
     void rightClickWithModifiers()

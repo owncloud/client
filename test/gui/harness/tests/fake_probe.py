@@ -237,6 +237,9 @@ class FakeProbe:  # pylint: disable=too-many-instance-attributes
     def _m_mouse_click(self, params):
         self._resolve(params["handle"])
 
+    def _m_click_button(self, params):
+        self._resolve(params["handle"])
+
     def _m_type_text(self, params):
         if params.get("handle") is not None:
             self._resolve(params["handle"])

@@ -119,7 +119,10 @@ def doubleClick(obj, x=None, y=None, modifiers=0, button=Qt.LeftButton):
 
 
 def clickButton(obj):
-    _click(obj, None, None, Qt.NoModifier, Qt.LeftButton, 1)
+    """Click where the button accepts clicks; a stretched radio button or check box
+    ignores a click at its centre."""
+    obj = _resolve(obj)
+    request(obj.client, "clickButton", handle=obj.handle)
 
 
 def type(obj, text):

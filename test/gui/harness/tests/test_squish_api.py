@@ -212,8 +212,7 @@ def test_mouse_click_defaults_and_double_click(fake):
     obj = fake.add("QPushButton", props={"name": "ok"})
     squish.mouseClick(squish.waitForObject({"name": "ok"}))
     squish.doubleClick(RemoteObject(fake.client, obj.handle))
-    squish.clickButton(RemoteObject(fake.client, obj.handle))
-    single, double, button = fake.sent("mouseClick")
+    single, double = fake.sent("mouseClick")
     assert single == {
         "handle": obj.handle,
         "modifiers": 0,
@@ -221,7 +220,14 @@ def test_mouse_click_defaults_and_double_click(fake):
         "clicks": 1,
     }
     assert double["clicks"] == 2
-    assert button == single
+
+
+def test_click_button_asks_the_probe_for_a_point_the_button_accepts(fake):
+    # a stretched radio button ignores a click at its centre, so the probe picks the point
+    obj = fake.add("QRadioButton", props={"name": "manual"})
+    squish.clickButton({"name": "manual"})
+    assert fake.sent("clickButton") == [{"handle": obj.handle}]
+    assert not fake.sent("mouseClick")
 
 
 def test_typing_and_activation(fake):
