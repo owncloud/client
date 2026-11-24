@@ -131,7 +131,7 @@ The user picked **option 1**.
 - **Linking:** a library linked into the client executable. It starts itself through
   `Q_COREAPP_STARTUP_FUNCTION`, so `src/` needs no code changes beyond the CMake wiring. The builder makes
   sure the linker doesn't drop the startup object, by using an object library or whole-archive.
-- **Activation:** inert unless the environment variable `OWNCLOUD_GUI_TEST_PROBE=<name>` is set. Then it
+- **Activation:** inert unless the environment variable `QT_GUI_TEST_PROBE=<name>` is set. Then it
   opens a `QLocalServer` with that name, which is a Unix socket on Linux and macOS and a named pipe on
   Windows. It accepts one client and runs everything on the GUI thread.
 - **Protocol:** newline-delimited JSON, with requests `{id, method, params}` and responses
@@ -187,7 +187,7 @@ The user picked **option 1**.
   - `waitFor(cond, timeout)` and `snooze` are local.
 - **`startApplication(cmd)`:**
   - Resolves the executable through `--aut-path`, which replaces `server.ini`.
-  - Launches it with `OWNCLOUD_GUI_TEST_PROBE` set and connects, with a timeout. The launch also gets the
+  - Launches it with `QT_GUI_TEST_PROBE` set and connects, with a timeout. The launch also gets the
     suite's `ENVVARS` and the runner's `--envvar` values.
   - Registers an application context with `pid`, `isRunning` and `detach()`.
   - Feeds `applicationContextList()` and `currentApplicationContext()`.
@@ -250,7 +250,30 @@ The user picked **option 1**.
     and run the same set. It must be fully green before master results count. Any failure there is a harness
     bug.
 
-### 5. Housekeeping
+### 5. Open source and later extraction
+
+The probe and the harness are developed in `owncloud/client` first. They move to their own repository once
+the baseline run at `fb1c873a7d` is green; until then the interfaces change too fast for a separate release
+cycle. To keep the split a mechanical `git subtree split`:
+
+- **License: MIT** (the user's choice; it can be linked into any Qt application, including GPL-2.0-only
+  ones).
+  - Every new file under `test/gui/probe/` and `test/gui/harness/` starts with
+    `SPDX-License-Identifier: MIT` and `Copyright (C) 2026 ownCloud GmbH`.
+  - Each of the two directories has its own `LICENSE` with the MIT text.
+- **The probe is a standalone CMake project:** `test/gui/probe/CMakeLists.txt` has its own `project()` and
+  `find_package(Qt6 …)` and installs a `QtGuiProbeConfig.cmake` package. The client consumes it with
+  `add_subdirectory`, and after the split with `FetchContent`.
+- **The harness is a standalone Python package,** with `test/gui/harness/pyproject.toml`, package `harness`
+  and console script `qtguiprobe-run`. The client installs it from the path in `requirements.txt`.
+- **Neutral names:**
+  - C++ namespace `QtGuiProbe`, CMake target `qtguiprobe`, env var `QT_GUI_TEST_PROBE`.
+  - No ownCloud names, classes or paths in either directory. Only the client's CMake wiring, the CI script
+    and the workflows know about ownCloud.
+  - The final project name is chosen at split time. It must not contain the Squish trademark;
+    "Squish-compatible" in the description is fine.
+
+### 6. Housekeeping
 
 - **Changelog:** `changelog/unreleased/<PR number>.md`, type `Change`: "GUI tests run without Squish".
 - **Documentation:** a `test/gui/README.md` section on running locally, covering the build flag, the harness

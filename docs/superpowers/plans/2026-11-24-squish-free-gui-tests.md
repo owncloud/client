@@ -7,7 +7,7 @@ into the client and a Squish-compatible Python harness take Squish's place.
 
 **Architecture:**
 - **Probe:** a C++ library in `test/gui/probe/`. It is linked into the `owncloud` executable only with
-  `-DWITH_GUI_TEST_PROBE=ON`, and only activated by `OWNCLOUD_GUI_TEST_PROBE=<name>`. It serves
+  `-DWITH_GUI_TEST_PROBE=ON`, and only activated by `QT_GUI_TEST_PROBE=<name>`. It serves
   newline-delimited JSON over a `QLocalServer` and resolves Squish-style selectors against QWidget, QModelIndex
   and Qt Quick trees.
 - **Harness:** a Python package in `test/gui/harness/`. It provides the modules `squish`, `test`, `object`,
@@ -28,7 +28,7 @@ into the client and a Squish-compatible Python harness take Squish's place.
   `tst_*/test.py`. The only exception is `@skip @issue-<n>` tags in Task 13. Any other unavoidable edit is
   listed in the PR body with its reason.
 - The probe is OFF by default (`option(WITH_GUI_TEST_PROBE ... OFF)`). It is inert without the
-  `OWNCLOUD_GUI_TEST_PROBE` env var, listens only on `QLocalServer` (no TCP), and needs no code changes in
+  `QT_GUI_TEST_PROBE` env var, listens only on `QLocalServer` (no TCP), and needs no code changes in
   `src/` beyond CMake wiring.
 - All probe work runs on the GUI thread.
 - Default timeout: `testSettings.waitForObjectTimeout = 20000` ms. A timeout raises `LookupError`.
@@ -36,6 +36,11 @@ into the client and a Squish-compatible Python harness take Squish's place.
   `test.stopVideoCapture` log and do nothing.
 - Public repo: no Jira keys, CVE/GHSA IDs or "security"/"vulnerab…" wording in commits, the PR, branch
   names or the changelog. Commit trailer: `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`.
+- **Ready to be split out:**
+  - MIT license. Every new file in `test/gui/probe/` and `test/gui/harness/` starts with
+    `SPDX-License-Identifier: MIT` and `Copyright (C) 2026 ownCloud GmbH`. Each directory has a `LICENSE`.
+  - No ownCloud names, `OCC::` classes or client paths inside those directories. That includes tests and
+    fixtures.
 - Python code passes `make -C test/gui python-lint` (black 24.3, pylint with `test/gui/.pylintrc`).
 - Work happens on branch `gui-test-harness`. Subagents get their own worktree under
   `/Users/thomas.mueller/Development/squish/.worktrees/` (per `~/.claude/CLAUDE.md`).
@@ -116,12 +121,16 @@ into the client and a Squish-compatible Python harness take Squish's place.
 **Files:**
 - Modify: `CMakeLists.txt` (add `option(WITH_GUI_TEST_PROBE "Build the GUI test probe into the client (never for releases)" OFF)`
   next to the other options at lines 89–103)
-- Modify: `src/gui/CMakeLists.txt:150` (`if(WITH_GUI_TEST_PROBE) target_link_libraries(owncloud PRIVATE guitestprobe) endif()`)
+- Modify: `src/gui/CMakeLists.txt:150` (`if(WITH_GUI_TEST_PROBE) target_link_libraries(owncloud PRIVATE qtguiprobe) endif()`)
 - Modify: top-level `CMakeLists.txt`, just before `add_subdirectory(src)` (line 141), adding
   `if(WITH_GUI_TEST_PROBE) add_subdirectory(test/gui/probe) endif()`. This way the target exists when
   `src/gui` links it.
+- Create: `test/gui/probe/LICENSE` (MIT)
 - Create: `test/gui/probe/CMakeLists.txt`
-  - `add_library(guitestprobe OBJECT …)`. An OBJECT library makes sure the startup function is not dropped
+  - It must also build on its own: `cmake_minimum_required`, `project(QtGuiProbe LANGUAGES CXX)`, and its
+    own `find_package(Qt6 REQUIRED COMPONENTS Widgets Network Test Quick QuickWidgets)`.
+  - It installs a `QtGuiProbeConfig.cmake` that exports `QtGuiProbe::qtguiprobe`.
+  - `add_library(qtguiprobe OBJECT …)`. An OBJECT library makes sure the startup function is not dropped
     by the linker.
   - Links Qt6::Widgets, Network, Test, Quick, QuickWidgets.
   - Tests are added with `ecm_add_test` / `add_test` when `BUILD_TESTING`.
@@ -131,9 +140,9 @@ into the client and a Squish-compatible Python harness take Squish's place.
 - Test: `test/gui/probe/tests/tst_protocol.cpp`
 
 **Interfaces:**
-- Produces, in C++ namespace `OCC::GuiTestProbe`:
+- Produces, in C++ namespace `QtGuiProbe`:
   - `class Probe : public QObject` with:
-    - `static Probe *startIfRequested()`, which reads `OWNCLOUD_GUI_TEST_PROBE` and returns nullptr if it
+    - `static Probe *startIfRequested()`, which reads `QT_GUI_TEST_PROBE` and returns nullptr if it
       is unset.
     - `bool listen(const QString &name)`.
     - `QJsonObject handle(const QJsonObject &request)`, so tests can drive it without a socket.
@@ -172,8 +181,11 @@ into the client and a Squish-compatible Python harness take Squish's place.
 - [ ] **Step 3: Implement** `Probe`, `Registry` and `toJson` as specified. Make one `QLocalSocket`
   connection at a time, buffer on `readyRead` and split on `\n`.
 - [ ] **Step 4: Run** the same `ctest` command. Expected: PASS.
+- [ ] **Step 5a: Verify the probe builds on its own:**
+  `cmake -S test/gui/probe -B build-probe-standalone -G Ninja -DBUILD_TESTING=ON && ninja -C build-probe-standalone && ctest --test-dir build-probe-standalone`.
+  Expected: PASS.
 - [ ] **Step 5: Verify the default build is clean:**
-  `cmake -S . -B build-default -G Ninja && ninja -C build-default owncloud && ! nm -C build-default/bin/owncloud | grep -q GuiTestProbe`.
+  `cmake -S . -B build-default -G Ninja && ninja -C build-default owncloud && ! nm -C build-default/bin/owncloud | grep -q QtGuiProbe`.
   Expected: exit 0.
 - [ ] **Step 6: Commit** with the message `test(gui): add GUI test probe core behind WITH_GUI_TEST_PROBE`.
 
@@ -223,8 +235,8 @@ into the client and a Squish-compatible Python harness take Squish's place.
     - `{"type":"QLabel","aboveWidget":{checkbox},"unnamed":1}` (the upper label)
   - `valueMatches("0", 0)`, `valueMatches(1, true)` and `valueMatches(true, "true")` are all true.
   - `find(..., ready=true)` returns nothing for a hidden or disabled widget, while `ready=false` finds it.
-  - A namespaced class (`class OCC::TestDialog : public QDialog` with `Q_OBJECT`) matches
-    `{"type":"OCC::TestDialog"}`.
+  - A namespaced class (`class Fixture::TestDialog : public QDialog` with `Q_OBJECT`) matches
+    `{"type":"Fixture::TestDialog"}`.
 - [ ] **Step 2: Run** `ctest --test-dir build-probe -R tst_selector --output-on-failure`. Expected: FAIL.
 - [ ] **Step 3: Implement** `SelectorEngine` and `valueMatches`, and register `find`/`findAll`.
 - [ ] **Step 4: Run** the same command. Expected: PASS.
@@ -366,6 +378,11 @@ into the client and a Squish-compatible Python harness take Squish's place.
 ### Task 7: Python client, proxies and the `squish`, `object`, `objectmaphelper` modules
 
 **Files:**
+- Create: `test/gui/harness/LICENSE` (MIT)
+- Create: `test/gui/harness/pyproject.toml`
+  - Project `qtguiprobe-harness`, `requires-python = ">=3.10"`, dependency `gherkin-official>=29,<30`.
+  - Console script `qtguiprobe-run = harness.__main__:main`.
+  - Package data includes `shim/`.
 - Create: `test/gui/harness/harness/__init__.py`
 - Create: `test/gui/harness/harness/client.py`
 - Create: `test/gui/harness/harness/proxy.py`
@@ -375,8 +392,8 @@ into the client and a Squish-compatible Python harness take Squish's place.
 - Create: `test/gui/harness/tests/fake_probe.py` (an in-process fake that speaks the wire protocol over a
   socketpair and holds a dict-based object tree)
 - Test: `test/gui/harness/tests/test_squish_api.py`
-- Modify: `test/gui/requirements.txt`. Add `gherkin-official==29.*` and `pytest==8.*`, both with
-  `python_version >= "3.10"`.
+- Modify: `test/gui/requirements.txt`. Add `-e ./harness` (the path is relative to `test/gui`, and
+  `make install` runs from there), and `pytest==8.*; python_version >= "3.10"`.
 
 **Interfaces:**
 - **`harness.client.ProbeClient(sock)`:**
@@ -453,9 +470,9 @@ into the client and a Squish-compatible Python harness take Squish's place.
 - **`harness.aut.configure(aut_paths: dict[str, str], env: dict[str, str])`** is called by the runner.
 - **`startApplication(cmdline: str) -> ApplicationContext`:**
   - Resolve the first word against `aut_paths`, which map AUT name to directory, the same as `server.ini`.
-  - Set `OWNCLOUD_GUI_TEST_PROBE=oc-guitest-<pid>-<n>`, plus `env` and the suite `ENVVARS`.
+  - Set `QT_GUI_TEST_PROBE=qtguiprobe-<pid>-<n>`, plus `env` and the suite `ENVVARS`.
   - `subprocess.Popen` the command, then connect to the socket. The Linux path is
-    `/tmp/oc-guitest-…` (`QLocalServer` default). Retry until `AUTPMTimeout=15000` ms, then raise
+    `/tmp/qtguiprobe-…` (`QLocalServer` default). Retry until `AUTPMTimeout=15000` ms, then raise
     `RuntimeError` with the process's exit code and the stderr tail.
   - Becomes the current context.
 - **`ApplicationContext`:** `.pid`, `.name`, `.isRunning`, `.detach()` (closes the socket and terminates
@@ -615,7 +632,7 @@ into the client and a Squish-compatible Python harness take Squish's place.
 - **Both workflows:**
   - cmake gets `-DWITH_GUI_TEST_PROBE=ON -DBUILD_TESTING=ON`, and the build adds `ctest -R tst_ --output-on-failure`
     for the probe tests. `BUILD_TESTING` was `OFF` before. If `ON` pulls in the full unit-test build, use
-    `-DBUILD_TESTING=OFF` and build only `guitestprobe` tests with `-DWITH_GUI_TEST_PROBE_TESTS=ON`.
+    `-DBUILD_TESTING=OFF` and build only `qtguiprobe` tests with `-DWITH_GUI_TEST_PROBE_TESTS=ON`.
     Decide after timing it.
   - Remove `LICENSEKEY` and `SERVER_INI`. Rename `SQUISH_PARAMETERS` to `GUI_TEST_PARAMETERS`, with the same
     tags and the same `full-ci` expression in `gui-tests.yml`.
