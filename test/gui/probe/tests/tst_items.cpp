@@ -6,6 +6,7 @@
 #include "registry.h"
 #include "selector.h"
 
+#include <QDialog>
 #include <QHeaderView>
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -519,6 +520,35 @@ private Q_SLOTS:
         Probe probe;
         const QJsonObject ref = find(probe, json(R"_({"name":"inner","rowIndex":0,"columnIndex":0})_"));
         QCOMPARE(ref.value(QStringLiteral("$handle")).isDouble(), true);
+    }
+
+    // A window parented to an editor (the menu or dialog a delegate button opens) is not inside the view.
+    void windowsParentedToAnEditorHaveNoRowIndex()
+    {
+        EditorFixture fixture;
+        fixture.show();
+        fixture.view->openPersistentEditor(fixture.model.index(1, 1));
+        QTRY_VERIFY(fixture.delegate.button->isVisible());
+        auto *dialog = new QDialog(fixture.delegate.button);
+        dialog->setObjectName(QStringLiteral("dialog"));
+        auto *inside = new QPushButton(QStringLiteral("ok"), dialog);
+        inside->setObjectName(QStringLiteral("inside"));
+        // at the screen's top left, so a walk across the window boundary maps it onto the editor's cell
+        dialog->setGeometry(0, 0, 20, 20);
+        inside->setGeometry(0, 0, 20, 20);
+        dialog->show();
+        QVERIFY(QTest::qWaitForWindowExposed(dialog));
+        Probe probe;
+        for (const char *name : {"dialog", "inside"}) {
+            const QJsonObject ref = find(probe, {{QStringLiteral("name"), QString::fromLatin1(name)}});
+            QVERIFY(ref.value(QStringLiteral("$handle")).isDouble());
+            for (const QString key : {QStringLiteral("rowIndex"), QStringLiteral("columnIndex")}) {
+                const QJsonObject response = request(probe, QStringLiteral("get"), {{QStringLiteral("handle"), ref}, {QStringLiteral("name"), key}});
+                QVERIFY2(response.value(QStringLiteral("error")).toObject().value(QStringLiteral("code")).toString() == QStringLiteral("NoSuchProperty"),
+                    QJsonDocument(response).toJson().constData());
+            }
+        }
+        delete dialog;
     }
 
     void widgetsOutsideViewsHaveNoRowIndex()

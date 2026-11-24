@@ -259,9 +259,14 @@ namespace {
     // the widget's centre in the innermost view's viewport. Invalid outside views and where no cell is.
     // indexAt() rather than the view's editor bookkeeping: the index -> editor map (indexWidget()) has no public
     // reverse, and delegates lay editors out over their cell (updateEditorGeometry), so the centre is in that cell.
+    // The walk stays inside the widget's window: a menu or dialog parented to an editor is not inside the view, and
+    // mapTo() across a window boundary would add the window's screen position. A viewport is never a window.
     QModelIndex cellOf(const QWidget *widget)
     {
-        for (const QWidget *parent = widget->parentWidget(); parent; parent = parent->parentWidget()) {
+        if (widget->isWindow()) {
+            return {};
+        }
+        for (const QWidget *parent = widget->parentWidget(); parent && !parent->isWindow(); parent = parent->parentWidget()) {
             QAbstractItemView *view = itemViewOf(parent->parentWidget());
             if (view && view->viewport() == parent) {
                 return view->indexAt(widget->mapTo(parent, widget->rect().center()));

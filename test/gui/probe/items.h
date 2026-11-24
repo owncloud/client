@@ -26,9 +26,10 @@ namespace QtGuiProbe {
 /// - {"type": "HeaderViewItem", "container": <QHeaderView>, "section", "text"}.
 /// Also serves the item properties (itemProperty) as selector keys and adds ready checks: an item is ready when
 /// its view, tab bar or header is visible and enabled.
-/// A QWidget inside an item view's viewport (an editor, an index widget, a child of one) gets Squish's `rowIndex`
-/// and `columnIndex`: the row and column of the index under the widget's centre, QAbstractItemView::indexAt() in the
-/// innermost view. No such property where there is no index, so selectors with these keys do not match there.
+/// A QWidget inside an item view's viewport (an editor, an index widget, a child of one, not a window parented to
+/// one) gets Squish's `rowIndex` and `columnIndex`: the row and column of the index under the widget's centre,
+/// QAbstractItemView::indexAt() in the innermost view. No such property where there is no index, so selectors with
+/// these keys do not match there.
 void registerItemSupport(SelectorEngine &engine, Registry &registry);
 
 /// The value of an item property, std::nullopt for an unknown name or a non-item target.
