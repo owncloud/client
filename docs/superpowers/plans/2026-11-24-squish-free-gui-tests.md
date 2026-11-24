@@ -38,7 +38,7 @@ into the client and a Squish-compatible Python harness take Squish's place.
   names or the changelog. Commit trailer: `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`.
 - **Ready to be split out:**
   - MIT license. Every new file in `test/gui/probe/` and `test/gui/harness/` starts with
-    `SPDX-License-Identifier: MIT` and `Copyright (C) 2026 ownCloud GmbH`. Each directory has a `LICENSE`.
+    `SPDX-License-Identifier: MIT` and `Copyright (C) 2026 Thomas Müller <323649642+oc-tmueller@users.noreply.github.com>`. Each directory has a `LICENSE`.
   - No ownCloud names, `OCC::` classes or client paths inside those directories. That includes tests and
     fixtures.
 - Python code passes `make -C test/gui python-lint` (black 24.3, pylint with `test/gui/.pylintrc`).

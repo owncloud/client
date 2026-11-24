@@ -259,7 +259,7 @@ cycle. To keep the split a mechanical `git subtree split`:
 - **License: MIT** (the user's choice; it can be linked into any Qt application, including GPL-2.0-only
   ones).
   - Every new file under `test/gui/probe/` and `test/gui/harness/` starts with
-    `SPDX-License-Identifier: MIT` and `Copyright (C) 2026 ownCloud GmbH`.
+    `SPDX-License-Identifier: MIT` and `Copyright (C) 2026 Thomas Müller <323649642+oc-tmueller@users.noreply.github.com>`.
   - Each of the two directories has its own `LICENSE` with the MIT text.
 - **The probe is a standalone CMake project:** `test/gui/probe/CMakeLists.txt` has its own `project()` and
   `find_package(Qt6 …)` and installs a `QtGuiProbeConfig.cmake` package. The client consumes it with
