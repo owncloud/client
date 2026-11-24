@@ -47,7 +47,8 @@ class FakeError(Exception):
 class FakeProbe:  # pylint: disable=too-many-instance-attributes
     """Holds the object tree and serves requests on a background thread."""
 
-    def __init__(self):
+    def __init__(self, sock=None, pid=4242):
+        """Serve on ``sock``; without one, connect ``self.client`` to a pair."""
         self._objects = {}
         self._roots = []
         self._next_handle = 1
@@ -55,8 +56,12 @@ class FakeProbe:  # pylint: disable=too-many-instance-attributes
         self.before_request = None
         self.clipboard = ""
         self.modal = None
-        self._server, client_sock = socket.socketpair()
-        self.client = ProbeClient(client_sock)
+        self.pid = pid
+        if sock is None:
+            self._server, client_sock = socket.socketpair()
+            self.client = ProbeClient(client_sock)
+        else:
+            self._server, self.client = sock, None
         self._thread = threading.Thread(target=self._serve, daemon=True)
         self._thread.start()
 
@@ -88,7 +93,8 @@ class FakeProbe:  # pylint: disable=too-many-instance-attributes
         obj.alive = False
 
     def close(self):
-        self.client.close()
+        if self.client is not None:
+            self.client.close()
         self._server.close()
         self._thread.join(timeout=2)
 
@@ -188,7 +194,7 @@ class FakeProbe:  # pylint: disable=too-many-instance-attributes
         return True
 
     def _m_hello(self, _):
-        return {"pid": 4242, "qtVersion": "6.8.0"}
+        return {"pid": self.pid, "qtVersion": "6.8.0"}
 
     def _m_find(self, params):
         for obj in self._all():
