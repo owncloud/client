@@ -48,15 +48,11 @@ QString convertSidToQString(_In_ PSID sid)
 };
 } // anonymous namespace
 
-CfAPIUtil::CfOpdata::CfOpdata()
-    : correlationVector(nullptr)
-{
-}
+CfAPIUtil::CfOpdata::CfOpdata() { }
 
 CfAPIUtil::CfOpdata::CfOpdata(const CF_CALLBACK_INFO *info)
     : connectionKey(info->ConnectionKey)
     , transferKey(info->TransferKey)
-    , correlationVector(info->CorrelationVector)
 {
 }
 
@@ -66,7 +62,6 @@ CF_OPERATION_INFO CfAPIUtil::CfOpdata::toOpinfo() const
     opInfo.StructSize = sizeof(opInfo);
     opInfo.ConnectionKey = connectionKey;
     opInfo.TransferKey = transferKey;
-    opInfo.CorrelationVector = correlationVector;
     return opInfo;
 }
 

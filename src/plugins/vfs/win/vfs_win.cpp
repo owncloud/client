@@ -68,8 +68,29 @@ std::wstring convertFullNativePathToFullyDecodedUrlW(const QString &path)
     return QStringLiteral("file:///%1").arg(path).toStdWString();
 }
 
-// Tell windows that the hydration needs to be restarted, possibly with a new size
-void restartHydration(const CfOpdata &opdata, const QString &filePath = {}, const qint64 &updatedFilesize = -1)
+// Tell windows that the fetch_data request has failed for the range [offset, offset + length)
+void transferDataError(const CfOpdata &opdata, quint64 offset, quint64 length, NTSTATUS status)
+{
+    auto opInfo = opdata.toOpinfo();
+    opInfo.Type = CF_OPERATION_TYPE_TRANSFER_DATA;
+
+    CF_OPERATION_PARAMETERS opParams = {};
+    opParams.ParamSize = CF_SIZE_OF_OP_PARAM(TransferData);
+    opParams.TransferData.CompletionStatus = status;
+    opParams.TransferData.Offset.QuadPart = offset;
+    opParams.TransferData.Length.QuadPart = length;
+
+    HRESULT ok = CfExecute(&opInfo, &opParams);
+    if (FAILED(ok)) {
+        qCWarning(lcVfs) << "CfExecute error on signaling fetch error" << Utility::formatWinError(ok);
+        return;
+    }
+}
+
+// Tell windows that the hydration needs to be restarted, possibly with a new size.
+// Returns false if Windows got no answer: the caller must then fail the request, or the
+// application that opened the file waits until the Cloud Files API times out.
+bool restartHydration(const CfOpdata &opdata, const QString &filePath = {}, const qint64 &updatedFilesize = -1)
 {
     auto opInfo = opdata.toOpinfo();
     opInfo.Type = CF_OPERATION_TYPE_RESTART_HYDRATION;
@@ -85,16 +106,17 @@ void restartHydration(const CfOpdata &opdata, const QString &filePath = {}, cons
         metadata.FileSize.QuadPart = updatedFilesize;
         const auto result = getFileMetadata(filePath, &metadata.BasicInfo);
         if (!result) {
-            qCWarning(lcVfs) << "CfExecute error on restart hydration" << Utility::formatWinError(result.error());
-            return;
+            qCWarning(lcVfs) << "Failed to read the file's metadata on restart hydration" << Utility::formatWinError(result.error());
+            return false;
         }
     }
 
     HRESULT ok = CfExecute(&opInfo, &opParams);
     if (FAILED(ok)) {
         qCWarning(lcVfs) << "CfExecute error on restart hydration" << Utility::formatWinError(ok);
-        return;
+        return false;
     }
+    return true;
 }
 
 // Takes oldFile's pin state and sets it on newFile which is a new hydrated file
@@ -193,23 +215,9 @@ winrt::com_ptr<ISearchCrawlScopeManager> getSearchCrawlScopeManager()
 // Tell windows that the fetch_data request has failed
 void HydrationContext::transferDataError(NTSTATUS status)
 {
-    auto opInfo = opdata.toOpinfo();
-    opInfo.Type = CF_OPERATION_TYPE_TRANSFER_DATA;
-
-    CF_OPERATION_PARAMETERS opParams = {};
-    opParams.ParamSize = CF_SIZE_OF_OP_PARAM(TransferData);
-    opParams.TransferData.CompletionStatus = status;
-
     // the error affects the whole file, not a transfer chunk
-    opParams.TransferData.Offset.QuadPart = 0;
-    opParams.TransferData.Length.QuadPart = hydrationDevice->fileSize();
-    assert_4_KiB_chunk(hydrationDevice->fileSize(), opParams.TransferData.Offset.QuadPart, opParams.TransferData.Length.QuadPart);
-
-    HRESULT ok = CfExecute(&opInfo, &opParams);
-    if (FAILED(ok)) {
-        qCWarning(lcVfs) << "CfExecute error on signaling fetch error" << Utility::formatWinError(ok);
-        return;
-    }
+    assert_4_KiB_chunk(hydrationDevice->fileSize(), 0, hydrationDevice->fileSize());
+    ::transferDataError(opdata, 0, hydrationDevice->fileSize(), status);
 }
 
 void VfsWinPrivate::startFetchData(CfOpdata opdata, const QString &targetPath, quint64 fetchStart, quint64 fetchEnd, const QByteArray &fileId)
@@ -225,6 +233,7 @@ void VfsWinPrivate::startFetchData(CfOpdata opdata, const QString &targetPath, q
     });
     if (!record.isValid()) {
         qCWarning(lcVfs) << "Failed to find record for" << fileId;
+        transferDataError(opdata, 0, fetchEnd, STATUS_CLOUD_FILE_NOT_IN_SYNC);
         return;
     }
     QString accountRelativePath = params.remotePath + QString::fromUtf8(record._path);
@@ -238,7 +247,9 @@ void VfsWinPrivate::startFetchData(CfOpdata opdata, const QString &targetPath, q
     if (static_cast<quint64>(record._fileSize) != fetchEnd) {
         qCInfo(lcVfs) << "DB size and placeholder size don't match up, restarting…"
                       << accountRelativePath << record._fileSize << fetchEnd;
-        restartHydration(opdata, targetPath, record._fileSize);
+        if (!restartHydration(opdata, targetPath, record._fileSize)) {
+            transferDataError(opdata, 0, fetchEnd, STATUS_CLOUD_FILE_UNSUCCESSFUL);
+        }
         return;
     }
 
@@ -313,7 +324,9 @@ void HydrationContext::downloadJobDone()
                 qCInfo(lcVfs) << "Data size and placeholder size don't match up, restarting…" << record._path;
                 record._fileSize = newFileSize;
                 journal->setFileRecord(record);
-                restartHydration(opdata, filesystemPath, record._fileSize);
+                if (!restartHydration(opdata, filesystemPath, record._fileSize)) {
+                    transferDataError(STATUS_CLOUD_FILE_UNSUCCESSFUL);
+                }
             }
         } else {
             qCDebug(lcVfs) << "Reporting generic download failed";
