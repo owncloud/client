@@ -69,7 +69,7 @@ def log(message):
 
 
 def resultCount(kind):
-    """Results of a kind ("passes", "fails", "errors", "warnings") in the run."""
+    """Results of a kind ("passes", "fails", "errors", "warnings") in this test case."""
     return results.result_count(kind)
 
 

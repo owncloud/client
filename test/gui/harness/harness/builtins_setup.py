@@ -18,3 +18,9 @@ def install():
     squish = importlib.import_module("squish")
     builtins.testSettings = squish.testSettings
     builtins.QApplication = squish.QApplication
+
+
+def install_names(names):
+    """Put further Squish globals (the BDD entry points) into builtins."""
+    for name, value in names.items():
+        setattr(builtins, name, value)

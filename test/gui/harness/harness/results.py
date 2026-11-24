@@ -31,24 +31,41 @@ class Results:
         return any(entry.kind in ("fails", "errors") for entry in self.entries)
 
 
-_totals = dict.fromkeys(KINDS, 0)
+_totals = dict.fromkeys(KINDS, 0)  # since the run started
+_case_totals = dict.fromkeys(KINDS, 0)  # since the test case started
 _current = Results()
 
 
 def record(kind, message, detail=""):
-    """Record one result in the current scenario and the run-wide totals."""
+    """Record one result in the current scenario and the totals."""
     if kind != "log":
         _check(kind)
         _totals[kind] += 1
+        _case_totals[kind] += 1
     entry = Entry(kind, str(message), str(detail))
     _current.entries.append(entry)
     return entry
 
 
 def result_count(kind):
+    """How many results of a kind the current test case recorded.
+
+    This is Squish's ``test.resultCount``: it counts within one test case,
+    across its scenarios.
+    """
+    _check(kind)
+    return _case_totals[kind]
+
+
+def run_count(kind):
     """How many results of a kind were recorded since the run started."""
     _check(kind)
     return _totals[kind]
+
+
+def begin_test_case():
+    """Start counting a new test case; the run-wide totals carry on."""
+    _case_totals.update(dict.fromkeys(KINDS, 0))
 
 
 def begin_scenario(title):
@@ -66,6 +83,7 @@ def reset():
     """Forget everything, as at the start of a run."""
     global _current
     _totals.update(dict.fromkeys(KINDS, 0))
+    _case_totals.update(dict.fromkeys(KINDS, 0))
     _current = Results()
 
 
