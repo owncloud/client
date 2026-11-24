@@ -147,6 +147,8 @@ void CALLBACK callbackRename(const CF_CALLBACK_INFO *info, const CF_CALLBACK_PAR
     auto opInfo = opdata.toOpinfo();
     opInfo.Type = CF_OPERATION_TYPE_ACK_RENAME;
     opInfo.SyncStatus = syncStatus;
+    // Still inside the callback, so its CorrelationVector is valid and links the reply to the request
+    opInfo.CorrelationVector = info->CorrelationVector;
 
     HRESULT ok = CfExecute(&opInfo, &opParams);
     if (FAILED(ok)) {

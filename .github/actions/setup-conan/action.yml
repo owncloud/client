@@ -27,7 +27,7 @@ runs:
         # The exact pin of conanfile.py's required_conan_version ("=2.x.y").
         version="$(sed -nE 's/^required_conan_version = "=([0-9]+\.[0-9]+\.[0-9]+)"$/\1/p' conanfile.py)"
         [ -n "$version" ] || { echo "::error::conanfile.py has no exact required_conan_version"; exit 1; }
-        $PYTHON -m venv "$RUNNER_TEMP/conan"
+        "$PYTHON" -m venv "$RUNNER_TEMP/conan"
         # A Windows venv has Scripts\ where the others have bin/.
         if [ "$RUNNER_OS" = Windows ]; then
           bin_dir="$RUNNER_TEMP/conan/Scripts"
