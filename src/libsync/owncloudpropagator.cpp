@@ -385,7 +385,9 @@ qint64 OwncloudPropagator::smallFileSize()
 
 OwncloudPropagator::~OwncloudPropagator()
 {
-    // As a member, the root job would only go after the members declared below it, which it and its own jobs may still use
+    // Members are destroyed in the reverse order of their declaration. Left to that, _rootJob would only be deleted
+    // after _syncOptions, _localDir, _remoteFolder and _webDavUrl, which are declared after it, are already gone, while
+    // the root job and the jobs it owns may still use them when they are deleted. So delete it while all members exist.
     _rootJob.reset();
 }
 
