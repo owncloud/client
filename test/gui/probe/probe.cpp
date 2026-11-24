@@ -3,6 +3,7 @@
 
 #include "probe.h"
 
+#include "actions.h"
 #include "items.h"
 #include "quick.h"
 
@@ -16,6 +17,7 @@
 #include <QTimer>
 
 #include <exception>
+#include <memory>
 
 namespace {
 
@@ -192,6 +194,8 @@ void Probe::registerBuiltinMethods()
     registerItemSupport(_selectors, _registry);
     // Qt Quick items in a QQuickWidget
     registerQuickSupport(_selectors, _registry);
+    // call, input, clipboard, screenshot
+    registerActions(*this);
 }
 
 QJsonObject Probe::handle(const QJsonObject &request)
@@ -275,6 +279,68 @@ QJsonValue Probe::children(const QJsonObject &params)
     return result;
 }
 
+void Probe::connectTransport(Writer writer)
+{
+    _writer = std::move(writer);
+    ++_connection;
+    _buffer.clear();
+}
+
+void Probe::receive(const QByteArray &bytes)
+{
+    _buffer.append(bytes);
+    processBuffer();
+}
+
+void Probe::postInput(std::function<void()> input)
+{
+    _pendingInput.push_back(std::move(input));
+    if (!_inputScheduled) {
+        _inputScheduled = true;
+        QMetaObject::invokeMethod(this, &Probe::runNextInput, Qt::QueuedConnection);
+    }
+}
+
+void Probe::runNextInput()
+{
+    _inputScheduled = false;
+    if (_pendingInput.empty()) {
+        return;
+    }
+    const std::function<void()> input = std::move(_pendingInput.front());
+    _pendingInput.pop_front();
+    const auto running = std::make_shared<bool>(true);
+    if (!_pendingInput.empty()) {
+        // the next input runs after this one, or inside the event loop of a dialog this one opens
+        _inputScheduled = true;
+        QMetaObject::invokeMethod(this, &Probe::runNextInput, Qt::QueuedConnection);
+    } else {
+        // if this input opens a modal dialog, its event loop serves the waiting requests
+        QMetaObject::invokeMethod(
+            this,
+            [this, running] {
+                if (*running) {
+                    processBuffer();
+                }
+            },
+            Qt::QueuedConnection);
+    }
+    try {
+        input();
+    } catch (const ProbeError &error) {
+        qCWarning(lcProbe) << "input failed:" << error.code << error.message;
+    } catch (const std::exception &error) {
+        qCWarning(lcProbe) << "input failed:" << error.what();
+    } catch (...) {
+        qCWarning(lcProbe) << "input failed with an unknown exception";
+    }
+    *running = false;
+    if (_pendingInput.empty()) {
+        // after the events the input posted itself
+        QMetaObject::invokeMethod(this, &Probe::processBuffer, Qt::QueuedConnection);
+    }
+}
+
 void Probe::onNewConnection()
 {
     while (QLocalSocket *socket = _server->nextPendingConnection()) {
@@ -285,7 +351,11 @@ void Probe::onNewConnection()
             continue;
         }
         _socket = socket;
-        _buffer.clear();
+        connectTransport([socket = QPointer<QLocalSocket>(socket)](const QByteArray &line) {
+            if (socket) {
+                socket->write(line);
+            }
+        });
         connect(socket, &QLocalSocket::readyRead, this, &Probe::onReadyRead);
         connect(socket, &QLocalSocket::disconnected, this, &Probe::onDisconnected);
         // data may have arrived before the connections above
@@ -297,27 +367,31 @@ void Probe::onNewConnection()
 
 void Probe::onReadyRead()
 {
-    if (!_socket) {
-        return;
+    if (_socket) {
+        receive(_socket->readAll());
     }
-    _buffer.append(_socket->readAll());
-    // a method that spins an event loop (a modal dialog) re-enters here; the outer loop then takes the new lines
+}
+
+void Probe::processBuffer()
+{
+    // a method that spins an event loop re-enters here; the outer loop then takes the new lines
     if (_processing) {
         return;
     }
     const FlagGuard processing(_processing);
     qsizetype end;
-    while (_socket && (end = _buffer.indexOf('\n')) >= 0) {
+    // a request after posted input waits until that input has run (see postInput)
+    while (_writer && _pendingInput.empty() && (end = _buffer.indexOf('\n')) >= 0) {
         const QByteArray line = _buffer.left(end);
         _buffer.remove(0, end + 1);
         if (line.trimmed().isEmpty()) {
             continue;
         }
-        const QPointer<QLocalSocket> socket = _socket;
+        const quint64 connection = _connection;
         const QByteArray response = handleLine(line);
         // the client may have gone, or been replaced, while the request ran
-        if (socket && socket == _socket) {
-            socket->write(response);
+        if (connection == _connection && _writer) {
+            _writer(response);
         }
     }
 }
@@ -328,6 +402,8 @@ void Probe::onDisconnected()
         _socket->deleteLater();
         _socket = nullptr;
     }
+    _writer = {};
+    ++_connection;
     _buffer.clear();
     _registry.clear();
 }

@@ -15,6 +15,7 @@
 #include <QPointer>
 #include <QString>
 
+#include <deque>
 #include <functional>
 #include <optional>
 #include <vector>
@@ -49,8 +50,22 @@ public:
     /// Listens on `name` (a full path on Unix), replacing a stale socket of that name.
     bool listen(const QString &name);
 
-    /// Answers one request object; the socket handler calls this for every line.
+    /// Answers one request object; the socket handler calls this for every line. It does not wait for posted input.
     QJsonObject handle(const QJsonObject &request);
+
+    /// Receives one response line (with its trailing newline).
+    using Writer = std::function<void(const QByteArray &line)>;
+    /// Serves a client that is not on the socket (tests, other transports): `writer` gets the response lines to the
+    /// requests passed to receive(). Replaces the current client, as a new socket connection would.
+    void connectTransport(Writer writer);
+    /// Request bytes from the client, split into lines and answered as on the socket.
+    void receive(const QByteArray &bytes);
+
+    /// Runs `input` (a click, key strokes, an activation) from the event loop instead of inside the request, so the
+    /// request is answered even if the input opens a modal dialog. Inputs run in order. Requests the client sends
+    /// after one wait until all posted input has run or is running in a nested event loop (a modal dialog), so a
+    /// later request sees the input's effects.
+    void postInput(std::function<void()> input);
 
     /// Adds or replaces a protocol method.
     void registerMethod(const QString &name, Method method);
@@ -73,6 +88,8 @@ private:
     void onNewConnection();
     void onReadyRead();
     void onDisconnected();
+    void processBuffer();
+    void runNextInput();
     QByteArray handleLine(const QByteArray &line);
 
     Registry _registry;
@@ -85,7 +102,12 @@ private:
     QLocalServer *_server = nullptr;
     QPointer<QLocalSocket> _socket;
     QByteArray _buffer;
+    Writer _writer;
+    /// Changes with every new or lost client, so a response to a request of the previous client is dropped.
+    quint64 _connection = 0;
     bool _processing = false;
+    std::deque<std::function<void()>> _pendingInput;
+    bool _inputScheduled = false;
 };
 
 /// The string parameter `key`; throws BadRequest if it is missing or not a string.

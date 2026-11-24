@@ -40,6 +40,9 @@ QList<Target> itemChildren(const Target &target);
 
 /// The view an index is shown in: the one it was last found or listed through, else a view of its model
 /// (visible ones first). nullptr if there is none.
+/// Limitation: the "last view" is remembered per model, process-wide, so with two views sharing one model an index
+/// may resolve to the other view, and itemRect(), clicks and activateItem then go there.
+/// Nothing in the suite shares a model between views.
 QAbstractItemView *viewOf(const QModelIndex &index);
 
 /// The widget whose coordinates itemRect() uses: the view's viewport for a QModelIndex, the tab bar for a

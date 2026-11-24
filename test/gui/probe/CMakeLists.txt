@@ -49,6 +49,10 @@ add_library(qtguiprobe OBJECT
     items.h
     quick.cpp
     quick.h
+    actions.cpp
+    actions.h
+    keys.cpp
+    keys.h
 )
 add_library(QtGuiProbe::qtguiprobe ALIAS qtguiprobe)
 qtguiprobe_apply_settings(qtguiprobe)
@@ -72,7 +76,7 @@ if(QTGUIPROBE_STANDALONE)
     include(CMakePackageConfigHelpers)
     set(QTGUIPROBE_CMAKE_DIR ${CMAKE_INSTALL_LIBDIR}/cmake/QtGuiProbe)
     install(TARGETS qtguiprobe EXPORT QtGuiProbeTargets OBJECTS DESTINATION ${CMAKE_INSTALL_LIBDIR}/QtGuiProbe)
-    install(FILES probe.h registry.h jsonvalue.h selector.h items.h quick.h DESTINATION include/QtGuiProbe)
+    install(FILES probe.h registry.h jsonvalue.h selector.h items.h quick.h actions.h keys.h DESTINATION include/QtGuiProbe)
     install(EXPORT QtGuiProbeTargets NAMESPACE QtGuiProbe:: DESTINATION ${QTGUIPROBE_CMAKE_DIR})
     configure_package_config_file(QtGuiProbeConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/QtGuiProbeConfig.cmake
         INSTALL_DESTINATION ${QTGUIPROBE_CMAKE_DIR}
