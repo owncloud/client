@@ -1,0 +1,27 @@
+# SPDX-FileCopyrightText: 2026 ownCloud GmbH - A Kiteworks Company and ownCloud contributors
+# SPDX-License-Identifier: MIT
+
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qtguiprobe-harness"
+version = "0.1.0"
+description = "Squish-compatible Python test runner on top of the Qt GUI test probe"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+dependencies = ["gherkin-official>=29,<30"]
+
+[project.scripts]
+qtguiprobe-run = "harness.__main__:main"
+
+[tool.setuptools]
+# shim/ holds the Squish-named modules (squish, object, objectmaphelper, ...).
+# It is installed next to the harness package and put first on sys.path by the
+# runner, so its modules are imported by their bare names, never as "shim.x".
+packages = ["harness", "shim"]
+
+[tool.pytest.ini_options]
+pythonpath = [".", "shim", "tests"]
+testpaths = ["tests"]
