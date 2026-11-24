@@ -649,7 +649,7 @@ into the client and a Squish-compatible Python harness take Squish's place.
 
 - [ ] **Step 1: Verify locally**, running from the repository root:
   - `bash -n test/gui/ci/run-gui-tests.sh`.
-  - If available, `actionlint .github/workflows/gui-tests.yml .github/workflows/branded-client.yml`.
+  - If available, `actionlint .github/workflows/gui-tests.yml`.
   - `zizmor .github/workflows/gui-tests.yml`, the same check the repo's `zizmor.yml` runs.
 
   Expected: no errors.

@@ -244,7 +244,7 @@ The user picked **option 1**.
   - `gui-tests.yml` runs on the PR itself, and must be green with the `~@skip ~@skipOnLinux` tag set.
   - **Baseline:** master `fb1c873a7d`. Its scheduled run on 2026-08-01 was green with the full
     `~@skip ~@skipOnLinux` set and `--abortOnFail`, so every scenario in that set passed under Squish. The
-    next day's run failed, and so did the branded job's. Run logs from then are no longer available.
+    next day's run failed. Run logs from then are no longer available.
   - **Prove the harness first.** On a throwaway branch, put the probe and harness on top of `fb1c873a7d`
     and run the same set. It must be fully green before master results count. Any failure there is a harness
     bug.
