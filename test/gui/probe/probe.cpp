@@ -11,7 +11,6 @@
 #include <QLocalServer>
 #include <QLocalSocket>
 #include <QLoggingCategory>
-#include <QMenu>
 #include <QMetaMethod>
 #include <QMetaProperty>
 #include <QTimer>
@@ -64,6 +63,32 @@ QtGuiProbe::ProbeError badRequest(const QString &message)
 {
     return {QStringLiteral("BadRequest"), message};
 }
+
+QJsonObject selectorParam(const QJsonObject &params)
+{
+    const QJsonValue value = params.value(QStringLiteral("selector"));
+    if (!value.isObject()) {
+        throw badRequest(QStringLiteral("parameter 'selector' must be an object"));
+    }
+    return value.toObject();
+}
+
+// Clears a flag when it goes out of scope, whatever way the scope is left.
+class FlagGuard
+{
+public:
+    explicit FlagGuard(bool &flag)
+        : _flag(flag)
+    {
+        _flag = true;
+    }
+    ~FlagGuard() { _flag = false; }
+    FlagGuard(const FlagGuard &) = delete;
+    FlagGuard &operator=(const FlagGuard &) = delete;
+
+private:
+    bool &_flag;
+};
 
 } // namespace
 
@@ -155,6 +180,30 @@ void Probe::registerBuiltinMethods()
         _registry.clear();
         return QJsonValue::Null;
     });
+    registerMethod(QStringLiteral("find"), [this](const QJsonObject &params) -> QJsonValue {
+        const QJsonValue ready = params.value(QStringLiteral("ready"));
+        if (!ready.isUndefined() && !ready.isNull() && !ready.isBool()) {
+            throw badRequest(QStringLiteral("parameter 'ready' must be a bool"));
+        }
+        const auto target = _selectors.find(selectorParam(params), ready.toBool());
+        return target ? _registry.ref(*target) : Registry::nullRef();
+    });
+    registerMethod(QStringLiteral("findAll"), [this](const QJsonObject &params) -> QJsonValue {
+        QJsonArray result;
+        for (const auto &target : _selectors.findAll(selectorParam(params))) {
+            result.append(_registry.ref(target));
+        }
+        return result;
+    });
+    // property hooks serve selector keys as they serve `get`
+    _selectors.addPropertyReader([this](const Target &target, const QString &name) -> std::optional<QJsonValue> {
+        for (const auto &hook : _propertyHooks) {
+            if (auto value = hook(target, name)) {
+                return value;
+            }
+        }
+        return std::nullopt;
+    });
 }
 
 QJsonObject Probe::handle(const QJsonObject &request)
@@ -180,6 +229,8 @@ QJsonObject Probe::handle(const QJsonObject &request)
         response.insert(QStringLiteral("error"), errorObject(error));
     } catch (const std::exception &error) {
         response.insert(QStringLiteral("error"), errorObject(badRequest(QStringLiteral("internal error: %1").arg(QString::fromLocal8Bit(error.what())))));
+    } catch (...) {
+        response.insert(QStringLiteral("error"), errorObject(badRequest(QStringLiteral("internal error: unknown exception"))));
     }
     return response;
 }
@@ -227,18 +278,9 @@ QJsonValue Probe::children(const QJsonObject &params)
     const Target target = _registry.resolve(params.value(QStringLiteral("handle")));
     QList<Target> children;
     if (const auto *object = std::get_if<QObject *>(&target)) {
-        const QObjectList objectChildren = (*object)->children();
+        const QObjectList objectChildren = searchChildren(*object);
         for (auto *child : objectChildren) {
             children.append(child);
-        }
-        // a menu's actions need not be its children
-        if (const auto *menu = qobject_cast<const QMenu *>(*object)) {
-            const auto actions = menu->actions();
-            for (auto *action : actions) {
-                if (action->parent() != menu) {
-                    children.append(action);
-                }
-            }
         }
     }
     for (const auto &hook : _childrenHooks) {
@@ -281,7 +323,7 @@ void Probe::onReadyRead()
     if (_processing) {
         return;
     }
-    _processing = true;
+    const FlagGuard processing(_processing);
     qsizetype end;
     while (_socket && (end = _buffer.indexOf('\n')) >= 0) {
         const QByteArray line = _buffer.left(end);
@@ -296,7 +338,6 @@ void Probe::onReadyRead()
             socket->write(response);
         }
     }
-    _processing = false;
 }
 
 void Probe::onDisconnected()

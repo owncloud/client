@@ -4,6 +4,7 @@
 #pragma once
 
 #include "registry.h"
+#include "selector.h"
 
 #include <QByteArray>
 #include <QHash>
@@ -58,6 +59,8 @@ public:
     void registerChildrenHook(ChildrenHook hook);
 
     Registry &registry() { return _registry; }
+    /// The selector engine behind `find` and `findAll`, to extend with type resolvers and ready checks.
+    SelectorEngine &selectors() { return _selectors; }
 
     /// True if `target` is a QObject with a slot or Q_INVOKABLE named `name`, or a MethodNameHook says so.
     bool isMethod(const Target &target, const QString &name) const;
@@ -73,6 +76,7 @@ private:
     QByteArray handleLine(const QByteArray &line);
 
     Registry _registry;
+    SelectorEngine _selectors{_registry};
     QHash<QString, Method> _methods;
     std::vector<PropertyHook> _propertyHooks;
     std::vector<MethodNameHook> _methodNameHooks;

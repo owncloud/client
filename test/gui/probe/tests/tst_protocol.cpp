@@ -23,6 +23,8 @@
 #include <QTimeZone>
 #include <QUrl>
 
+#include <stdexcept>
+
 using namespace QtGuiProbe;
 
 namespace {
@@ -150,6 +152,20 @@ private Q_SLOTS:
         Probe probe;
         QCOMPARE(errorCode(request(probe, QStringLiteral("noSuchMethod"))), QStringLiteral("BadRequest"));
         QCOMPARE(errorCode(probe.handle(QJsonObject{{QStringLiteral("id"), 1}})), QStringLiteral("BadRequest"));
+    }
+
+    void foreignExceptionsAreErrors()
+    {
+        Probe probe;
+        probe.registerMethod(QStringLiteral("throwsInt"), [](const QJsonObject &) -> QJsonValue { throw 42; });
+        probe.registerMethod(QStringLiteral("throwsStd"), [](const QJsonObject &) -> QJsonValue { throw std::runtime_error("boom"); });
+        QJsonObject response = request(probe, QStringLiteral("throwsInt"));
+        QCOMPARE(response.value(QStringLiteral("id")).toInt(), 7);
+        QCOMPARE(errorCode(response), QStringLiteral("BadRequest"));
+        QVERIFY(!response.contains(QStringLiteral("result")));
+        response = request(probe, QStringLiteral("throwsStd"));
+        QCOMPARE(errorCode(response), QStringLiteral("BadRequest"));
+        QVERIFY(response.value(QStringLiteral("error")).toObject().value(QStringLiteral("message")).toString().contains(QStringLiteral("boom")));
     }
 
     void missingParamsAreBadRequest()
@@ -360,6 +376,19 @@ private Q_SLOTS:
         QVERIFY(response.contains(QStringLiteral("id")));
         QVERIFY(response.value(QStringLiteral("id")).isNull());
         QCOMPARE(errorCode(response), QStringLiteral("BadRequest"));
+
+        // a method that throws something foreign is answered, and the connection keeps serving
+        probe->registerMethod(QStringLiteral("throwsInt"), [](const QJsonObject &) -> QJsonValue { throw 42; });
+        socket.write(R"({"id": 4, "method": "throwsInt"})"
+                     "\n"
+                     R"({"id": 5, "method": "hello"})"
+                     "\n");
+        response = readResponse(socket);
+        QCOMPARE(response.value(QStringLiteral("id")).toInt(), 4);
+        QCOMPARE(errorCode(response), QStringLiteral("BadRequest"));
+        response = readResponse(socket);
+        QCOMPARE(response.value(QStringLiteral("id")).toInt(), 5);
+        QVERIFY(response.contains(QStringLiteral("result")));
 
         // a second connection is refused while the first one is open
         QLocalSocket second;

@@ -11,3 +11,4 @@ endfunction()
 
 qtguiprobe_add_test(tst_protocol)
 qtguiprobe_add_test(tst_startup)
+qtguiprobe_add_test(tst_selector)
