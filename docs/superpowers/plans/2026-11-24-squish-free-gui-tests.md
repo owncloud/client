@@ -72,6 +72,12 @@ into the client and a Squish-compatible Python harness take Squish's place.
   - Response: `{"id": int, "result": any}` or `{"id": int, "error": {"code": str, "message": str}}`.
 - Error codes: `BadRequest`, `NoSuchObject` (unknown handle), `DeadObject`, `NoSuchProperty`,
   `MethodNotAllowed`, `NotFound`.
+  - A `NoSuchProperty` error from `get` also carries `"isMethod": bool`. It is true if the object has a slot,
+    `Q_INVOKABLE` or allowlisted method of that name. The Python proxy uses it to decide between a remote
+    callable and `AttributeError`.
+  - `get` also serves allowlisted zero-argument getters that Squish exposes as properties. The first is
+    `QToolButton::defaultAction` (`Toolbar.py:141`).
+  - Searching and `children` of a `QMenu` include `QMenu::actions()` (`waitForObjectItem` on menus).
 - **Encoding object references:**
   - A live object is `{"$handle": int, "$class": str}`. `$class` is the Squish type name: the `QMetaObject`
     class name, the QML name for Quick items, or `QModelIndex`/`TabItem`/`HeaderViewItem`.
