@@ -49,8 +49,9 @@ jobs:
           sudo apt-get update -qq
           # pkgconf: the system recipes' package_info() runs pkg-config.
           # ninja-build: the cmake-generator passed to conan-deps below.
-          # libopengl0: libOpenGL.so.0, which the packaged Qt links (built against libglvnd);
-          # libgl-dev brings only libGL, and without it every test fails to start.
+          # libopengl-dev: libOpenGL.so(.0), which the packaged Qt links (built against libglvnd)
+          # and the opengl/system recipe checks for; libgl-dev brings only libGL, and without
+          # it every test fails to start.
           sudo apt-get install -y -qq --no-install-recommends \
             pkgconf \
             libx11-dev \
@@ -105,7 +106,7 @@ jobs:
             libegl-dev \
             xkb-data \
             ninja-build \
-            libopengl0
+            libopengl-dev
       # The Python for Conan's venv and the fingerprint script, the same in every Conan job on
       # GitHub. update-environment: false keeps its PATH, LD_LIBRARY_PATH, PKG_CONFIG_PATH and
       # Python*_ROOT_DIR (which CMake's FindPython would use) out of the build and the tests; it is
