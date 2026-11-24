@@ -383,6 +383,12 @@ qint64 OwncloudPropagator::smallFileSize()
     return smallFileSize;
 }
 
+OwncloudPropagator::~OwncloudPropagator()
+{
+    // As a member, the root job would only go after the members declared below it, which it and its own jobs may still use
+    _rootJob.reset();
+}
+
 /**
  * This builds all the jobs needed for the propagation.
  * Each directory is a PropagateDirectory job, which contains the files in it.

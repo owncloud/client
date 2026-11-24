@@ -41,6 +41,7 @@ owncloud_add_test(LocalDiscovery)
 owncloud_add_test(RemoteDiscovery)
 owncloud_add_test(Permissions)
 owncloud_add_test(DatabaseError)
+owncloud_add_test(PropagatorTeardown)
 owncloud_add_test(LockedFiles)
 owncloud_add_test(Adapters
     ../src/gui/networkadapters/determineauthtypeadapter.cpp
