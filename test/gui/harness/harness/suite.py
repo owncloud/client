@@ -101,38 +101,78 @@ class Suite:
         }
 
     def _run_testcase(self, name):
-        """Run one test case as Squish does: a fresh start, in its directory."""
+        """Run one test case as Squish does: a fresh start, in its directory.
+
+        An error of the runner itself, before or after the test case's own
+        code, is an error of that test case; the next one still runs.
+        """
         self.testcase_dir = self.dir / name
-        self._forget_suite_modules()
-        self.runner.reset_definitions()
         results.begin_test_case()
-        cwd = os.getcwd()
-        os.chdir(self.testcase_dir)
         start = time.monotonic()
         fails_before = results.run_count("fails")
+        try:
+            self._forget_suite_modules()
+            self.runner.reset_definitions()
+        except Exception as exc:  # pylint: disable=broad-exception-caught
+            self._report_error(f"{name}: setup", exc, fails_before, start)
+            return
+        cwd = os.getcwd()
+        os.chdir(self.testcase_dir)
         try:
             namespace = _namespace(self.testcase_dir / "test.py", "__main__")
             _exec_file(self.testcase_dir / "test.py", namespace)
             if callable(main := namespace.get("main")):
                 main()
         except Exception as exc:  # pylint: disable=broad-exception-caught
-            title = f"{name}/test.py"
-            results.begin_scenario(title)
-            result, message = bdd.outcome(exc, fails_before)
-            self.runner.reporter.feature_start(name, str(self.testcase_dir / "test.py"))
-            self.runner.report_problems(
-                title, [(result, message, time.monotonic() - start)]
-            )
+            self._report_error(f"{name}/test.py", exc, fails_before, start)
         finally:
             os.chdir(cwd)
+            self._detach_all(name)
+
+    def _detach_all(self, name):
+        start = time.monotonic()
+        fails_before = results.run_count("fails")
+        try:
             aut.detach_all()
+        except Exception as exc:  # pylint: disable=broad-exception-caught
+            self._report_error(f"{name}: teardown", exc, fails_before, start)
+
+    def _report_error(self, title, exc, fails_before, start):
+        """Report an exception outside any scenario as a feature of its own."""
+        results.begin_scenario(title)
+        result, message = bdd.outcome(exc, fails_before)
+        self.runner.reporter.feature_start(
+            self.testcase_dir.name, str(self.testcase_dir / "test.py")
+        )
+        self.runner.report_problems(
+            title, [(result, message, time.monotonic() - start)]
+        )
 
     def _forget_suite_modules(self):
-        """Drop the suite's modules, so each test case imports them afresh."""
+        """Drop the suite's modules, so each test case imports them afresh.
+
+        All locations are read before anything is dropped: the ``__path__`` of
+        a namespace package (a directory without ``__init__.py``) looks up its
+        parent package in ``sys.modules`` whenever it is read.
+        """
+        dropped = set()
         for name, module in list(sys.modules.items()):
-            paths = [getattr(module, "__file__", None) or ""]
-            paths += list(getattr(module, "__path__", None) or [])
-            if any(_is_within(p, self.scripts_dir) for p in paths if p):
+            try:
+                locations = _locations(module)
+            except Exception as exc:  # pylint: disable=broad-exception-caught
+                # dropped below anyway if its package is the suite's
+                print(
+                    f"[WARNING] cannot tell where module {name} lives: "
+                    f"{type(exc).__name__}: {exc}",
+                    file=sys.stderr,
+                    flush=True,
+                )
+                continue
+            if any(_is_within(p, self.scripts_dir) for p in locations):
+                dropped.add(name)
+        prefixes = tuple(f"{name}." for name in dropped)
+        for name in list(sys.modules):
+            if name in dropped or name.startswith(prefixes):
                 del sys.modules[name]
 
     def _resolve(self, path):
@@ -196,6 +236,16 @@ def _exec_file(path, namespace):
     with open(path, encoding="utf-8") as stream:
         code = compile(stream.read(), str(path), "exec")
     exec(code, namespace)  # pylint: disable=exec-used
+
+
+def _locations(module):
+    """Where a module was loaded from: its file, and its package directories."""
+    if (spec := getattr(module, "__spec__", None)) is not None:
+        locations = [spec.origin] if spec.has_location else []
+        return locations + list(spec.submodule_search_locations or [])
+    locations = [getattr(module, "__file__", None)]
+    locations += list(getattr(module, "__path__", None) or [])
+    return [p for p in locations if isinstance(p, str) and p]
 
 
 def _is_within(path, directory):

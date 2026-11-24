@@ -2,8 +2,11 @@
 # SPDX-License-Identifier: MIT
 
 import builtins
+import importlib
 import json
 import os
+import sys
+import types
 
 import pytest
 from suite_copy import SUITE_MIN, copy_suite
@@ -298,6 +301,96 @@ def test_test_cases_run_in_order_and_count_results_per_test_case(isolated, tmp_p
     assert ["OnScenarioEnd", "a passing scenario", False] in _events(isolated)
     assert not results.result_count("errors")
     assert results.run_count("errors") == 1
+
+
+def test_namespace_packages_are_imported_afresh_per_test_case(isolated, tmp_path):
+    # pkg and pkg.sub have no __init__.py, like helpers and helpers.api in a
+    # real suite; their __path__ looks up the parent package in sys.modules
+    suite_dir = copy_suite(tmp_path, PASSING)
+    code, reporter = _run(suite_dir, tags=["~@skip"])
+    assert code == 1  # the crash in tst_a
+    features = [c[1] for c in reporter.calls if c[0] == "feature_start"]
+    assert features == ["minimal suite", "passing feature"]
+    events = _events(isolated)
+    # the module's code ran once per test case: each got a fresh module object
+    assert [e for e in events if e[0] == "imported"] == [
+        ["imported", "pkg.sub.mod"]
+    ] * 2
+    greeting = "hello from a namespace package"
+    assert [e for e in events if e[0] == "hooks"] == [["hooks", greeting]] * 2
+    assert ["step", "created Carol", greeting] in events
+    assert reporter.calls[-1] == ("finish",)
+
+
+@pytest.mark.usefixtures("isolated")
+def test_modules_that_cannot_be_placed_are_skipped(tmp_path, capsys):
+    suite_dir = copy_suite(tmp_path, PASSING)
+    sys.path.insert(0, str(suite_dir / "shared" / "scripts"))
+    module = importlib.import_module("pkg.sub.mod")
+
+    class Unplaceable(types.ModuleType):  # pylint: disable=too-few-public-methods
+        @property
+        def __spec__(self):
+            raise RuntimeError("no spec today")
+
+    sys.modules["pkg.sub.unplaceable"] = Unplaceable("pkg.sub.unplaceable")
+    sys.modules["elsewhere_unplaceable"] = Unplaceable("elsewhere_unplaceable")
+    code, _ = _run(suite_dir, testcases=["tst_b"])
+    assert not code
+    assert sys.modules["pkg.sub.mod"] is not module
+    # dropped with its package, though it cannot tell where it lives
+    assert "pkg.sub.unplaceable" not in sys.modules
+    assert "elsewhere_unplaceable" in sys.modules
+    assert "no spec today" in capsys.readouterr().err
+
+
+def test_error_between_test_cases_is_an_error_and_the_run_goes_on(
+    isolated, tmp_path, monkeypatch
+):
+    suite_dir = copy_suite(tmp_path, PASSING)
+    forget = vars(suite.Suite)["_forget_suite_modules"]
+    calls = []
+
+    def forget_once_broken(self):
+        calls.append(self.testcase_dir.name)
+        if len(calls) == 1:
+            raise RuntimeError("could not forget modules")
+        forget(self)
+
+    monkeypatch.setattr(suite.Suite, "_forget_suite_modules", forget_once_broken)
+    code, reporter = _run(suite_dir, tags=["~@skip"])
+    assert code == 1
+    assert calls == ["tst_a", "tst_b"]
+    errors = reporter.steps("error")
+    assert [e[2] for e in errors] == ["tst_a: setup"]
+    assert "could not forget modules" in errors[0][3]
+    features = [c[1] for c in reporter.calls if c[0] == "feature_start"]
+    assert features == ["tst_a", "passing feature"]
+    assert ["OnScenarioEnd", "a passing scenario", False] in _events(isolated)
+    assert reporter.calls[-1] == ("finish",)
+    assert results.run_count("errors") == 1
+
+
+def test_error_detaching_after_a_test_case_is_an_error_and_the_run_goes_on(
+    isolated, tmp_path, monkeypatch
+):
+    suite_dir = copy_suite(tmp_path, PASSING)
+    calls = []
+
+    def detach_once_broken():
+        calls.append(len(calls))
+        if len(calls) == 1:
+            raise RuntimeError("could not detach")
+
+    monkeypatch.setattr(suite.aut, "detach_all", detach_once_broken)
+    code, reporter = _run(suite_dir, tags=["~@skip", "~@crash"])
+    assert code == 1
+    assert calls == [0, 1]
+    errors = reporter.steps("error")
+    assert [e[2] for e in errors] == ["tst_a: teardown"]
+    assert "could not detach" in errors[0][3]
+    assert ["OnScenarioEnd", "a passing scenario", False] in _events(isolated)
+    assert reporter.calls[-1] == ("finish",)
 
 
 @pytest.mark.usefixtures("isolated")

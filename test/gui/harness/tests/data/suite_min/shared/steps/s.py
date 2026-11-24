@@ -1,11 +1,12 @@
 # SPDX-FileCopyrightText: 2026 ownCloud GmbH - A Kiteworks Company and ownCloud contributors
 # SPDX-License-Identifier: MIT
 from helpers.EventHelper import record_event
+from pkg.sub.mod import greeting
 
 
 @Given('user "|any|" has been created')
 def step(context, username):
-    record_event('step', f'created {username}')
+    record_event('step', f'created {username}', greeting())
 
 
 @Given('the user has set up the following accounts:')

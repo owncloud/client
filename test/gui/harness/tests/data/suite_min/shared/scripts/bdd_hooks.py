@@ -3,6 +3,7 @@
 import os
 
 from helpers.EventHelper import record_event
+from pkg.sub import mod
 
 testSettings.throwOnFailure = True
 
@@ -20,6 +21,7 @@ def hook(context):
         os.environ.get('SUITE_MIN_GREETING'),
         callable(object.children),
     )
+    record_event('hooks', mod.greeting())
 
 
 @OnScenarioStart
