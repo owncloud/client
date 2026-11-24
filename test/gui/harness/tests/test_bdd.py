@@ -365,3 +365,72 @@ def test_failing_test_py_is_a_feature_of_its_own(tmp_path):
         str((suite_dir / "tst_b" / "test.py").resolve()),
     )
     assert reporter.calls[1] == ("scenario_start", "tst_b/test.py", [])
+
+
+# --- backslashes in tables, as Squish passes them -------------------------------
+
+BACKSLASH_FEATURE = r'''Feature: backslashes
+
+    Scenario: a table
+        Given the files
+            | files             |
+            | /Folder1/a\\a.txt |
+            |   a\|b            |
+            | a\nb              |
+            | \\ |
+        And the text
+            """
+            a\\b | \|
+            """
+
+    Scenario Outline: an outline
+        Given the file "<x>" with
+            | name |
+            | <x>  |
+
+        Examples:
+            | x         |
+            | dir\\f.txt |
+'''
+
+
+def _run_backslash_feature(tmp_path):
+    feature = tmp_path / "test.feature"
+    feature.write_text(BACKSLASH_FEATURE, encoding="utf-8")
+    runner = bdd.Runner(TagFilter([]))
+    names = runner.builtins()
+    seen = []
+
+    @names["Given"]("the files")
+    def files(context):
+        seen.append(("files", context.table))
+
+    @names["Given"]("the text")
+    def text(context):
+        seen.append(("text", context.multiLineText))
+
+    @names["Given"]('the file "|any|" with')
+    def file_with(context, name):
+        seen.append(("file", name, context.table))
+
+    runner.run_feature_file(str(feature))
+    return seen
+
+
+def test_table_cells_keep_backslashes_as_written(tmp_path):
+    seen = _run_backslash_feature(tmp_path)
+    table = seen[0][1]
+    assert table[1][0] == "/Folder1/a\\\\a.txt"  # two backslashes
+    assert table[2][0] == "a|b"  # an escaped pipe, leading spaces trimmed
+    assert table[3][0] == "a\\nb"  # backslash-n, not a newline
+    assert table[4][0] == "\\\\"
+
+
+def test_doc_strings_are_unchanged(tmp_path):
+    seen = _run_backslash_feature(tmp_path)
+    assert seen[1] == ("text", ["a\\\\b | \\|"])
+
+
+def test_examples_cells_keep_backslashes(tmp_path):
+    seen = _run_backslash_feature(tmp_path)
+    assert seen[2] == ("file", "dir\\\\f.txt", [["name"], ["dir\\\\f.txt"]])

@@ -15,6 +15,7 @@ from dataclasses import dataclass
 
 from gherkin.parser import Parser
 from gherkin.pickles.compiler import Compiler
+from gherkin.token_matcher import TokenMatcher
 
 from harness import results
 from harness.tags import TagFilter
@@ -42,6 +43,57 @@ _PLACEHOLDERS = {  # pylint: disable=consider-using-namedtuple-or-dataclass
     "integer": (r"([-+]?\d+)", int),
 }
 _PLACEHOLDER_RE = re.compile(r"\|(any|word|integer)\|")
+
+
+class _SquishTableMatcher(TokenMatcher):
+    """Gherkin's lexer, with table cells split the way Squish passes them.
+
+    Cucumber unescapes ``\\\\``, ``\\n`` and ``\\|`` in table cells; Squish
+    passes a backslash through as written (``a\\\\a.txt`` stays two
+    backslashes). Splitting the row here, at the lexer's table-row token,
+    covers data tables and Examples tables alike, so ``<x>`` substitutes the
+    cell as written, and it leaves doc strings and step text alone.
+    """
+
+    def match_TableRow(self, token):
+        if not token.line.startswith("|"):
+            return False
+        text = token.line.get_line_text()  # without the indent
+        cells = []
+        for cell, column in _split_table_row(text.rstrip()):
+            stripped = cell.lstrip()
+            cells.append(
+                {
+                    "column": token.line.indent + column + len(cell) - len(stripped),
+                    "text": stripped.rstrip(),
+                }
+            )
+        self._set_token_matched(token, "TableRow", items=cells)
+        return True
+
+
+def _split_table_row(row):
+    """Yield (cell text, 1-based column) for each cell between pipes.
+
+    A backslash is literal, except that ``\\|`` is a pipe inside a cell. That
+    is an assumption: Squish's handling of ``\\|`` was not observed, but it
+    is the only way to write a pipe into a cell. Text before the first and
+    after the last pipe is not a cell.
+    """
+    cell, start, index = "", None, 0
+    while index < len(row):
+        char = row[index]
+        if char == "\\" and row[index + 1 : index + 2] == "|":
+            cell += "|"
+            index += 2
+            continue
+        if char == "|":
+            if start is not None:
+                yield cell, start
+            cell, start = "", index + 2
+        else:
+            cell += char
+        index += 1
 
 
 class UndefinedStep(LookupError):
@@ -246,7 +298,7 @@ class Runner:
     def run_feature_file(self, path):
         """Run the scenarios of a feature file that the tag filter accepts."""
         with open(path, encoding="utf-8") as stream:
-            document = Parser().parse(stream.read())
+            document = Parser().parse(stream.read(), _SquishTableMatcher())
         document["uri"] = path
         feature = document.get("feature")
         if not feature or self.aborted:
