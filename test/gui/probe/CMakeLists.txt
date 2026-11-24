@@ -84,6 +84,12 @@ if(QTGUIPROBE_STANDALONE)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/QtGuiProbeConfig.cmake DESTINATION ${QTGUIPROBE_CMAKE_DIR})
 endif()
 
-if(BUILD_TESTING)
+# The probe's own tests come with BUILD_TESTING, or alone with WITH_GUI_TEST_PROBE_TESTS for an application
+# that does not want its whole test build. Then the tests run with: ctest --test-dir <build>/<path to probe>
+option(WITH_GUI_TEST_PROBE_TESTS "Build the probe's tests even without BUILD_TESTING" OFF)
+if(BUILD_TESTING OR WITH_GUI_TEST_PROBE_TESTS)
+    if(NOT BUILD_TESTING)
+        enable_testing()
+    endif()
     add_subdirectory(tests)
 endif()
