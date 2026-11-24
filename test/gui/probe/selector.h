@@ -34,7 +34,7 @@ public:
     /// Searches `scope` for targets the widget search cannot see (model items, Qt Quick items).
     /// `scope` is the container (or window) the selector is scoped to, or a null QObject* for the whole
     /// application. Returns std::nullopt to decline; a vector claims the selector for this scope and replaces
-    /// the widget search there. It must hold exactly the matches below `scope`, in display order, for every key
+    /// the widget search there. It must hold exactly the matches below `scope`, each once, in display order, for every key
     /// except `container`, `window` (both already applied through `scope`), `occurrence`, `aboveWidget` and
     /// `leftWidget` (the engine applies those to the merged result; with the last two, only QWidget results count).
     using TypeResolver = std::function<std::optional<std::vector<Target>>(const QJsonObject &sel, const Target &scope)>;

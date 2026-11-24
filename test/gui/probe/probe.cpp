@@ -3,6 +3,7 @@
 
 #include "probe.h"
 
+#include "items.h"
 #include "jsonvalue.h"
 
 #include <QCoreApplication>
@@ -195,6 +196,8 @@ void Probe::registerBuiltinMethods()
         }
         return result;
     });
+    // model indexes, tabs and header sections
+    registerItemSupport(_selectors, _registry);
     // property hooks serve selector keys as they serve `get`
     _selectors.addPropertyReader([this](const Target &target, const QString &name) -> std::optional<QJsonValue> {
         for (const auto &hook : _propertyHooks) {
@@ -269,6 +272,9 @@ QJsonValue Probe::get(const QJsonObject &params)
             return *value;
         }
     }
+    if (auto value = itemProperty(target, name)) {
+        return *value;
+    }
     throw ProbeError{QStringLiteral("NoSuchProperty"), QStringLiteral("%1 has no property %2").arg(_registry.className(target), name),
         QJsonObject{{QStringLiteral("isMethod"), isMethod(target, name)}}};
 }
@@ -276,7 +282,8 @@ QJsonValue Probe::get(const QJsonObject &params)
 QJsonValue Probe::children(const QJsonObject &params)
 {
     const Target target = _registry.resolve(params.value(QStringLiteral("handle")));
-    QList<Target> children;
+    // a view lists its items first, then its widgets
+    QList<Target> children = itemChildren(target);
     if (const auto *object = std::get_if<QObject *>(&target)) {
         const QObjectList objectChildren = searchChildren(*object);
         for (auto *child : objectChildren) {

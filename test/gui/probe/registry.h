@@ -35,6 +35,28 @@ struct SyntheticItem
     int index = -1;
 };
 
+/// A synthetic item by value (owner address, kind, index), for hashing. Holds no guard: check the owner separately.
+struct SyntheticItemKey
+{
+    const QObject *owner = nullptr;
+    QString kind;
+    int index = -1;
+
+    explicit SyntheticItemKey(const SyntheticItem &item)
+        : owner(item.owner.data())
+        , kind(item.kind)
+        , index(item.index)
+    {
+    }
+
+    friend bool operator==(const SyntheticItemKey &a, const SyntheticItemKey &b) noexcept
+    {
+        return a.owner == b.owner && a.index == b.index && a.kind == b.kind;
+    }
+    friend bool operator!=(const SyntheticItemKey &a, const SyntheticItemKey &b) noexcept { return !(a == b); }
+    friend size_t qHash(const SyntheticItemKey &key, size_t seed = 0) noexcept { return qHashMulti(seed, key.owner, key.kind, key.index); }
+};
+
 /// Everything a handle can stand for.
 using Target = std::variant<QObject *, QPersistentModelIndex, SyntheticItem>;
 
@@ -47,9 +69,11 @@ public:
 
     /// {"$handle": n, "$class": ...}, or the null object for nullptr. An object keeps its handle while it lives.
     QJsonObject ref(QObject *object);
-    /// A handle to a model index; the null object for an invalid index.
+    /// A handle to a model index; the null object for an invalid index. The same index (same model, same
+    /// QPersistentModelIndex, so it follows row moves) keeps its handle.
     QJsonObject ref(const QModelIndex &index);
-    /// A handle to a synthetic item; the null object if its owner is gone.
+    /// A handle to a synthetic item; the null object if its owner is gone. The same (owner, kind, index) keeps its
+    /// handle.
     QJsonObject ref(const SyntheticItem &item);
     QJsonObject ref(const Target &target);
 
@@ -79,6 +103,8 @@ private:
 
     QHash<int, Entry> _entries;
     QHash<const QObject *, int> _objectHandles;
+    QHash<QPersistentModelIndex, int> _indexHandles;
+    QHash<SyntheticItemKey, int> _itemHandles;
     std::vector<ClassNameHook> _classNameHooks;
     int _nextHandle = 1;
 };

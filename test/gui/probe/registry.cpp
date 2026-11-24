@@ -59,7 +59,20 @@ QJsonObject Registry::ref(const QModelIndex &index)
     if (!index.isValid()) {
         return nullRef();
     }
-    return add(QPersistentModelIndex(index), QStringLiteral("QModelIndex"), nullptr);
+    const QPersistentModelIndex persistent(index);
+    const auto known = _indexHandles.constFind(persistent);
+    if (known != _indexHandles.cend()) {
+        const auto entry = _entries.constFind(known.value());
+        if (entry != _entries.cend()) {
+            const auto *stored = std::get_if<QPersistentModelIndex>(&entry->target);
+            if (stored && stored->isValid() && *stored == persistent) {
+                return {{handleKey, known.value()}, {classKey, QStringLiteral("QModelIndex")}};
+            }
+        }
+    }
+    const QJsonObject result = add(persistent, QStringLiteral("QModelIndex"), nullptr);
+    _indexHandles.insert(persistent, result.value(handleKey).toInt());
+    return result;
 }
 
 QJsonObject Registry::ref(const SyntheticItem &item)
@@ -67,7 +80,21 @@ QJsonObject Registry::ref(const SyntheticItem &item)
     if (!item.owner) {
         return nullRef();
     }
-    return add(item, item.kind, nullptr);
+    const SyntheticItemKey key(item);
+    const auto known = _itemHandles.constFind(key);
+    if (known != _itemHandles.cend()) {
+        const auto entry = _entries.constFind(known.value());
+        // a dead owner's address may have been reused
+        if (entry != _entries.cend()) {
+            const auto *stored = std::get_if<SyntheticItem>(&entry->target);
+            if (stored && stored->owner == item.owner) {
+                return {{handleKey, known.value()}, {classKey, item.kind}};
+            }
+        }
+    }
+    const QJsonObject result = add(item, item.kind, nullptr);
+    _itemHandles.insert(key, result.value(handleKey).toInt());
+    return result;
 }
 
 QJsonObject Registry::ref(const Target &target)
@@ -123,6 +150,8 @@ void Registry::clear()
 {
     _entries.clear();
     _objectHandles.clear();
+    _indexHandles.clear();
+    _itemHandles.clear();
 }
 
 QString Registry::className(const QObject *object) const

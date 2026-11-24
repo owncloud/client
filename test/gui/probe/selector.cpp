@@ -215,21 +215,43 @@ namespace {
         return x.owner == y.owner && x.kind == y.kind && x.index == y.index;
     }
 
-    // Appends `targets` to `result`, skipping ones already in it.
-    void merge(std::vector<Target> &result, QSet<QObject *> &seenObjects, std::vector<Target> targets)
+    // Appends targets to a result, skipping ones already in it; hashed, as model scopes can hold many items.
+    class Merger
     {
-        for (auto &target : targets) {
-            if (const auto *object = std::get_if<QObject *>(&target)) {
-                if (seenObjects.contains(*object)) {
-                    continue;
+    public:
+        void merge(std::vector<Target> &result, std::vector<Target> targets)
+        {
+            for (auto &target : targets) {
+                if (insert(target)) {
+                    result.push_back(std::move(target));
                 }
-                seenObjects.insert(*object);
-            } else if (std::any_of(result.begin(), result.end(), [&target](const Target &known) { return sameTarget(known, target); })) {
-                continue;
             }
-            result.push_back(std::move(target));
         }
-    }
+
+    private:
+        bool insert(const Target &target)
+        {
+            if (const auto *object = std::get_if<QObject *>(&target)) {
+                return insertInto(_objects, *object);
+            }
+            if (const auto *index = std::get_if<QPersistentModelIndex>(&target)) {
+                return insertInto(_indexes, *index);
+            }
+            return insertInto(_items, SyntheticItemKey(std::get<SyntheticItem>(target)));
+        }
+
+        template <typename T>
+        static bool insertInto(QSet<T> &set, const T &value)
+        {
+            const auto size = set.size();
+            set.insert(value);
+            return set.size() != size;
+        }
+
+        QSet<QObject *> _objects;
+        QSet<QPersistentModelIndex> _indexes;
+        QSet<SyntheticItemKey> _items;
+    };
 
     // The objects a QObject hangs from: its parent and, for an action, the widgets showing it (e.g. a menu).
     QObjectList logicalParents(const QObject *object)
@@ -403,9 +425,14 @@ std::vector<Target> SelectorEngine::findAll(const QJsonObject &selector)
     }
 
     std::vector<Target> result;
-    QSet<QObject *> seenObjects;
-    for (const auto &scopeTarget : scopeTargets) {
-        merge(result, seenObjects, searchScope(selector, scopeTarget));
+    if (scopeTargets.size() == 1) {
+        // one search yields each target once
+        result = searchScope(selector, scopeTargets.front());
+    } else {
+        Merger merger;
+        for (const auto &scopeTarget : scopeTargets) {
+            merger.merge(result, searchScope(selector, scopeTarget));
+        }
     }
 
     if (selector.contains(aboveWidgetKey) || selector.contains(leftWidgetKey)) {
