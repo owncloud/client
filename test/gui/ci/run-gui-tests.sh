@@ -37,6 +37,13 @@ wait_for() { # what timeout_seconds command...
     done
 }
 
+# the session writes the address with a single echo; the file exists, empty, before the line is
+# in it, so wait for the complete line: the variable set and the final newline written
+dbus_env_ready() {
+    grep -qs '^\(export \)\?DBUS_SESSION_BUS_ADDRESS=[^[:space:]]' "${DBUS_ENV_FILE}" &&
+        [[ -z "$(tail -c 1 "${DBUS_ENV_FILE}")" ]]
+}
+
 display_ready() {
     [[ -S "/tmp/.X11-unix/X${DISPLAY#:}" ]]
 }
@@ -90,7 +97,7 @@ rm -f "${DBUS_ENV_FILE}"
 "${STARTUPDIR}/vnc_startup.sh" &
 # the desktop session writes the file once D-Bus and the keyring are up; a first, short-lived VNC
 # server that vnc_startup.sh starts to prepare its configuration never writes it
-wait_for "the D-Bus session" 180 test -f "${DBUS_ENV_FILE}"
+wait_for "the D-Bus session" 180 dbus_env_ready
 wait_for "the VNC display" 60 display_ready
 # shellcheck source=/dev/null
 source "${DBUS_ENV_FILE}"
