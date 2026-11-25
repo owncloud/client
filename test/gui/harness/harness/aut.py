@@ -212,13 +212,22 @@ def release_all():
     """Let every application drop the handles it gave out.
 
     Objects are found anew afterwards. An application that closed its
-    connection or stopped answering has nothing to release.
+    connection or stopped answering has nothing to release. Neither has one
+    whose connection failed otherwise or that refused, which is only
+    logged: the scenario does not fail for it.
     """
     for ctx in list(_CONTEXTS):
         try:
             ctx.client.request("release")
         except (ConnectionError, TimeoutError):
             pass
+        except (OSError, client_module.ProbeError) as exc:
+            print(
+                f"[WARNING] '{ctx.name}' did not release its handles: "
+                f"{type(exc).__name__}: {exc}",
+                file=sys.stderr,
+                flush=True,
+            )
 
 
 def detach_all():

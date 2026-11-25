@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: MIT
 
 import builtins
+import errno
 import importlib
 import json
 import os
@@ -644,9 +645,24 @@ def test_handles_are_released_after_each_scenario(isolated, monkeypatch):
     assert not aut.applicationContextList()  # detached after the test case
 
 
+class _Unconnected:
+    """A client whose socket is no longer connected."""
+
+    @staticmethod
+    def request(method, **_):
+        raise OSError(errno.ENOTCONN, f"not connected, sending {method!r}")
+
+    @staticmethod
+    def close():
+        pass
+
+
+@pytest.mark.parametrize("cause", ["probe error", "socket error"])
 @pytest.mark.usefixtures("isolated")
-def test_failing_release_is_an_error_of_the_scenario(monkeypatch):
+def test_release_that_fails_leaves_the_scenario_passed(monkeypatch, capsys, cause):
     probe = _fake_context(monkeypatch, "broken")
+    if cause == "socket error":
+        aut._CONTEXTS[-1].client = _Unconnected()  # pylint: disable=protected-access
 
     def refuse(method, _):
         if method == "release":
@@ -657,6 +673,24 @@ def test_failing_release_is_an_error_of_the_scenario(monkeypatch):
         code, reporter = _run(tags=["~@skip", "@smokeTest"])
     finally:
         probe.close()
+    assert code == 0
+    assert not reporter.steps("error")
+    assert ("scenario_end", "tables, doc strings and user data", False) in (
+        reporter.calls
+    )
+    expected = "cannot release" if cause == "probe error" else "not connected"
+    err = capsys.readouterr().err
+    assert "[WARNING] 'broken' did not release its handles" in err
+    assert expected in err
+
+
+@pytest.mark.usefixtures("isolated")
+def test_failing_after_scenario_is_an_error_of_the_scenario(monkeypatch):
+    def broken():
+        raise ValueError("cannot release")
+
+    monkeypatch.setattr(aut, "release_all", broken)
+    code, reporter = _run(tags=["~@skip", "@smokeTest"])
     assert code == 1
     errors = reporter.steps("error")
     assert [e[2] for e in errors] == ["release handles"]
