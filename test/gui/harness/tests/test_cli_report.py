@@ -140,7 +140,9 @@ def test_failing_end_hooks_are_one_testcase(tmp_path):
 @pytest.mark.usefixtures("isolated", "configured")
 def test_envvar_and_aut_reach_the_application_configuration(tmp_path, monkeypatch):
     calls = []
-    monkeypatch.setattr(aut, "configure", lambda *args: calls.append(args))
+    monkeypatch.setattr(
+        aut, "configure", lambda *args, **kwargs: calls.append((args, kwargs))
+    )
     code = _main(
         "--testsuite",
         SUITE_MIN,
@@ -154,18 +156,23 @@ def test_envvar_and_aut_reach_the_application_configuration(tmp_path, monkeypatc
         f"fakeaut={tmp_path / 'bin'}",
         "--aut",
         "other=relative/dir",
+        "--aut-log-dir",
+        "relative/logs",
     )
     assert not code
     assert calls == [
         (
-            {
-                "fakeaut": str(tmp_path / "bin"),
-                "other": os.path.abspath("relative/dir"),
-            },
-            {
-                "QT_LOGGING_RULES": "sync.httplogger=true;gui.socketapi=false",
-                "EMPTY": "",
-            },
+            (
+                {
+                    "fakeaut": str(tmp_path / "bin"),
+                    "other": os.path.abspath("relative/dir"),
+                },
+                {
+                    "QT_LOGGING_RULES": "sync.httplogger=true;gui.socketapi=false",
+                    "EMPTY": "",
+                },
+            ),
+            {"log_dir": os.path.abspath("relative/logs")},
         )
     ]
 

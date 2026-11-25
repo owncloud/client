@@ -7,6 +7,7 @@
 
 import atexit
 import collections
+import importlib
 import itertools
 import os
 import shlex
@@ -32,6 +33,9 @@ _REQUEST_TIMEOUT = 30.0
 _CONTEXTS = []
 _CURRENT = None
 _SOCKET_NUMBERS = itertools.count(1)
+_LOG_DIR = None
+_LOG_NUMBERS = collections.Counter()  # launches so far, per log directory
+_NEW_LOGS = []  # log files of the launches take_new_logs() has not returned
 
 
 def configure(
@@ -39,35 +43,65 @@ def configure(
     env,
     start_timeout_ms=DEFAULT_START_TIMEOUT_MS,
     request_timeout=30.0,
+    log_dir=None,
 ):
     """Set the applications (name -> directory, as in server.ini) and their env.
 
     ``env`` is added to the harness's own environment, which already holds
     the suite's ENVVARS. ``request_timeout`` is the probe request timeout in
-    seconds.
+    seconds. With ``log_dir``, each launch writes its stdout and stderr to
+    ``log_dir/<test case>/<NN>-<name>.log`` instead of the harness's own;
+    NN counts the launches in that test case.
     """
-    global _AUT_PATHS, _ENV, _START_TIMEOUT_MS, _REQUEST_TIMEOUT
+    global _AUT_PATHS, _ENV, _START_TIMEOUT_MS, _REQUEST_TIMEOUT, _LOG_DIR
     _AUT_PATHS = dict(aut_paths)
     _ENV = dict(env)
     _START_TIMEOUT_MS = start_timeout_ms
     _REQUEST_TIMEOUT = request_timeout
+    _LOG_DIR = log_dir
+    _LOG_NUMBERS.clear()
+    _NEW_LOGS.clear()
 
 
-class _StderrTail:  # pylint: disable=too-few-public-methods
-    """Copies the application's stderr through and keeps its last lines."""
+class _StderrTail:
+    """Copies the application's stderr through and keeps its last lines.
 
-    def __init__(self, stream):
+    The lines go to ``sink``, a binary file it closes at the end of the
+    stream, or else to the harness's stderr.
+    """
+
+    def __init__(self, stream, sink=None):
         self.lines = collections.deque(maxlen=_STDERR_TAIL_LINES)
         self._stream = stream
+        self._sink = sink
         self._thread = threading.Thread(target=self._run, daemon=True)
         self._thread.start()
 
     def _run(self):
-        with self._stream:
-            for raw in self._stream:
-                line = raw.decode("utf-8", "replace")
-                self.lines.append(line.rstrip("\n"))
-                sys.stderr.write(line)
+        try:
+            with self._stream:
+                for raw in self._stream:
+                    line = raw.decode("utf-8", "replace")
+                    self.lines.append(line.rstrip("\n"))
+                    self._write(raw, line)
+        finally:
+            if self._sink:
+                self._sink.close()
+
+    def _write(self, raw, line):
+        if self._sink:
+            try:
+                self._sink.write(raw)
+                return
+            except OSError as exc:  # as a full disk: keep reading, or it blocks
+                self._sink.close()
+                self._sink = None
+                sys.stderr.write(f"[WARNING] cannot write the log: {exc}\n")
+        sys.stderr.write(line)
+
+    def wait(self, timeout):
+        """Wait for the end of the stream, at most ``timeout`` seconds."""
+        self._thread.join(timeout)
 
     def text(self, wait=2.0):
         """The tail; waits a little for the reader once the process exited."""
@@ -78,12 +112,17 @@ class _StderrTail:  # pylint: disable=too-few-public-methods
 class ApplicationContext:
     """One started application and the connection to its probe."""
 
-    def __init__(self, name, process, client, pid, socket_path):
+    def __init__(
+        self, name, process, client, pid, socket_path, *, stderr=None, log_path=None
+    ):
         self.name = name
         self.pid = pid
         self.client = client
+        # where its output goes, or None when it goes to the harness's own
+        self.log_path = log_path
         self._process = process
         self._socket_path = socket_path
+        self._stderr = stderr
 
     @property
     def isRunning(self):
@@ -96,6 +135,9 @@ class ApplicationContext:
         except OSError:
             pass
         _stop(self._process)
+        if self._stderr:
+            # the rest of stderr into the log, which is then closed
+            self._stderr.wait(2.0)
         _remove(self._socket_path)
         _forget(self)
 
@@ -138,6 +180,24 @@ def _executable(name):
     return directory, os.path.join(directory, name)
 
 
+def _open_log(name):
+    """The log file of a new launch of ``name``, opened to append."""
+    test_case = os.path.basename(importlib.import_module("squishinfo").testCase)
+    directory = os.path.join(_LOG_DIR, test_case or "no-test-case")
+    os.makedirs(directory, exist_ok=True)
+    _LOG_NUMBERS[directory] += 1
+    path = os.path.join(directory, f"{_LOG_NUMBERS[directory]:02d}-{name}.log")
+    # unbuffered: the application appends to the same file through its stdout
+    return open(path, "ab", buffering=0)
+
+
+def take_new_logs():
+    """The log files of the launches since the last call, oldest first."""
+    logs = list(_NEW_LOGS)
+    _NEW_LOGS.clear()
+    return logs
+
+
 def _connect(name, process, socket_path, stderr):
     """Connect to the probe socket, retrying until it is open."""
     deadline = time.monotonic() + _START_TIMEOUT_MS / 1000
@@ -176,11 +236,24 @@ def startApplication(cmdline):
     )
     _remove(socket_path)
     env = {**os.environ, **_ENV, "QT_GUI_TEST_PROBE": socket_path}
-    # pylint: disable-next=consider-using-with
-    process = subprocess.Popen(
-        [executable, *args[1:]], cwd=directory, env=env, stderr=subprocess.PIPE
-    )
-    stderr = _StderrTail(process.stderr)
+    log = _open_log(name) if _LOG_DIR else None
+    try:
+        # pylint: disable-next=consider-using-with
+        process = subprocess.Popen(
+            [executable, *args[1:]],
+            cwd=directory,
+            env=env,
+            stdout=log,
+            stderr=subprocess.PIPE,
+        )
+    except BaseException:
+        if log:
+            log.close()
+        raise
+    if log:
+        _NEW_LOGS.append(log.name)
+    # from here on, it closes the log
+    stderr = _StderrTail(process.stderr, sink=log)
     try:
         sock = _connect(name, process, socket_path, stderr)
         client = client_module.ProbeClient(sock, timeout=_REQUEST_TIMEOUT)
@@ -193,7 +266,15 @@ def startApplication(cmdline):
         _stop(process)
         _remove(socket_path)
         raise
-    ctx = ApplicationContext(name, process, client, pid, socket_path)
+    ctx = ApplicationContext(
+        name,
+        process,
+        client,
+        pid,
+        socket_path,
+        stderr=stderr,
+        log_path=log.name if log else None,
+    )
     _CONTEXTS.append(ctx)
     _CURRENT = ctx
     client_module.set_current_client(client)

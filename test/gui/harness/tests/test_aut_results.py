@@ -12,9 +12,11 @@ import time
 from pathlib import Path
 
 import pytest
+from suite_copy import copy_suite
 
 import squish
 import squishinfo
+from harness import __main__ as cli
 from harness import aut, builtins_setup, results
 from harness import client as client_module
 
@@ -125,6 +127,74 @@ def test_context_list_and_detach():
     # Reaped, so the suite's psutil-based wait sees the process gone.
     with pytest.raises(ChildProcessError):
         os.waitpid(pid, os.WNOHANG)
+
+
+@pytest.fixture
+def log_dir(auts, tmp_path, monkeypatch):
+    """Applications that say "hello", their output logged per test case."""
+    _, _, paths, env = auts
+    monkeypatch.setattr(squishinfo, "testCase", str(tmp_path / "suite" / "tst_logs"))
+    directory = tmp_path / "logs"
+    aut.configure(paths, {**env, "FAKE_AUT_SAY": "hello"}, log_dir=str(directory))
+    return directory
+
+
+def test_with_a_log_dir_each_launch_writes_its_own_log_file(log_dir, capfd):
+    first = squish.startApplication("fakeaut")
+    first.detach()
+    second = squish.startApplication("fakeaut")
+    second.detach()
+    case_dir = log_dir / "tst_logs"
+    assert first.log_path == str(case_dir / "01-fakeaut.log")
+    assert second.log_path == str(case_dir / "02-fakeaut.log")
+    for ctx in (first, second):
+        text = Path(ctx.log_path).read_text("utf-8")
+        assert "hello on stdout" in text
+        assert "hello on stderr" in text
+    out, err = capfd.readouterr()
+    assert "hello on" not in out + err
+
+
+def test_without_a_log_dir_the_output_goes_through(auts, capfd):
+    _, _, paths, env = auts
+    aut.configure(paths, {**env, "FAKE_AUT_SAY": "hello"})
+    ctx = squish.startApplication("fakeaut")
+    ctx.detach()
+    assert ctx.log_path is None
+    out, err = capfd.readouterr()
+    assert "hello on stdout" in out
+    assert "hello on stderr" in err
+
+
+def test_with_a_log_dir_a_failed_launch_still_quotes_stderr(log_dir, capfd):
+    with pytest.raises(RuntimeError, match="exit code 3") as err:
+        squish.startApplication("crashaut")
+    assert "cannot start: boom" in str(err.value)
+    log = log_dir / "tst_logs" / "01-crashaut.log"
+    assert "cannot start: boom" in log.read_text("utf-8")
+    assert "boom" not in capfd.readouterr().err
+
+
+@pytest.mark.usefixtures("isolated")
+def test_the_html_report_links_the_log_of_each_launch(auts, tmp_path, monkeypatch):
+    # the suite's hooks set it; restored afterwards
+    monkeypatch.setattr(squish.testSettings, "throwOnFailure", False)
+    bin_dir = auts[0]
+    feature = (
+        "Feature: logs\n\n"
+        "    Scenario: one launch\n"
+        '        When the application "fakeaut" is started\n'
+    )
+    suite_dir = copy_suite(tmp_path, feature)
+    html_dir, log_dir = tmp_path / "html", tmp_path / "logs"
+    args = ["--testsuite", suite_dir, "--testcase", "tst_b"]
+    args += ["--aut", f"fakeaut={bin_dir}", "--envvar", "FAKE_AUT_SAY=hi"]
+    args += ["--aut-log-dir", log_dir, "--reportgen", f"html,{html_dir}"]
+    assert not cli.main([str(a) for a in args])
+    log = log_dir / "tst_b" / "01-fakeaut.log"
+    assert "hi on stdout" in log.read_text("utf-8")
+    page = (html_dir / "index.html").read_text("utf-8")
+    assert '<a href="../logs/tst_b/01-fakeaut.log">01-fakeaut.log</a>' in page
 
 
 @pytest.mark.usefixtures("fresh_results")

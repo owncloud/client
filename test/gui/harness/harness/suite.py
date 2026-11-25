@@ -70,9 +70,7 @@ class Suite:
         self.conf = read_key_values(conf) if conf.is_file() else {}
         self.scripts_dir = self.dir / "shared" / "scripts"
         self.runner = runner
-        # Without releasing, an application keeps every object it handed
-        # out, as each model index, until the harness disconnects.
-        self.runner.after_scenario = aut.release_all
+        self.runner.after_scenario = self._after_scenario
         self.testcase_dir = None
 
     def testcases(self, names=None):
@@ -157,6 +155,7 @@ class Suite:
         """
         self.testcase_dir = self.dir / name
         _squishinfo().testCase = str(self.testcase_dir)
+        aut.take_new_logs()  # launches after the last scenario stay unlinked
         results.begin_test_case()
         start = time.monotonic()
         fails_before = results.run_count("fails")
@@ -178,6 +177,17 @@ class Suite:
         finally:
             os.chdir(cwd)
             self._detach_all(name)
+
+    def _after_scenario(self):
+        """Link the scenario's application logs, and let the applications
+        release their handles.
+
+        Without releasing, an application keeps every object it handed out,
+        as each model index, until the harness disconnects.
+        """
+        for path in aut.take_new_logs():
+            self.runner.reporter.attach(path)
+        aut.release_all()
 
     def _detach_all(self, name):
         start = time.monotonic()

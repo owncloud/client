@@ -67,6 +67,12 @@ and an unlocked Secret Service keyring (gnome-keyring), since the client keeps i
    environment (e.g. `--envvar QT_LOGGING_RULES=sync.httplogger=true`), and `--reportgen html,DIR` or
    `--reportgen junitxml,FILE`. `python3.10 -m harness --help` lists them all.
 
+   The client writes its log to its standard output (`--logfile -`), so by default it shows up between
+   the test results. `--aut-log-dir DIR` writes the standard output and error of each client launch to
+   `DIR/<test case>/<NN>-<name>.log` instead (`NN` counts the launches in that test case), and the HTML
+   report links each scenario's logs. CI passes it and uploads the logs as an artifact. A failed launch
+   still quotes the last lines of the client's standard error in its error message.
+
 ## Checks
 
 ```sh

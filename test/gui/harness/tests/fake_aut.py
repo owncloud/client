@@ -8,6 +8,8 @@ harness disconnects, so ``detach()`` has to terminate it.
 
 ``FAKE_AUT_ARGV`` names a file that receives the arguments and working
 directory as JSON. ``FAKE_AUT_DELAY`` delays listening by that many seconds.
+``FAKE_AUT_SAY`` is written as a line "<text> on stdout" to stdout and
+"<text> on stderr" to stderr.
 """
 
 import json
@@ -28,6 +30,9 @@ def main():
     if argv_file := os.environ.get("FAKE_AUT_ARGV"):
         with open(argv_file, "w", encoding="utf-8") as out:
             json.dump({"argv": sys.argv[1:], "cwd": os.getcwd()}, out)
+    if say := os.environ.get("FAKE_AUT_SAY"):
+        print(f"{say} on stdout", flush=True)
+        print(f"{say} on stderr", file=sys.stderr, flush=True)
     time.sleep(float(os.environ.get("FAKE_AUT_DELAY", "0")))
     server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
     server.bind(os.environ["QT_GUI_TEST_PROBE"])

@@ -4,8 +4,9 @@
 
 Run a suite with ``python -m harness --testsuite DIR`` and optionally
 ``--testcase NAME``, ``--tags EXPR``, ``--abortOnFail``, ``--envvar K=V``,
-``--aut NAME=DIR`` and ``--reportgen html,DIR`` or ``--reportgen
-junitxml,FILE``. The exit code is 0 only if nothing failed or errored.
+``--aut NAME=DIR``, ``--aut-log-dir DIR`` and ``--reportgen html,DIR`` or
+``--reportgen junitxml,FILE``. The exit code is 0 only if nothing failed or
+errored.
 """
 
 import argparse
@@ -85,6 +86,14 @@ def parser():
         help="where the application NAME lives (repeatable)",
     )
     add(
+        "--aut-log-dir",
+        # absolute now: the suite changes into each test case's directory
+        type=os.path.abspath,
+        metavar="DIR",
+        help="write each application's output to DIR/<test case>/<NN>-<name>.log "
+        "instead of the console",
+    )
+    add(
         "--reportgen",
         action="append",
         default=[],
@@ -109,6 +118,7 @@ def main(argv=None):
     aut.configure(
         {name: os.path.abspath(directory) for name, directory in args.aut},
         dict(args.envvar),
+        log_dir=args.aut_log_dir,
     )
     html_dirs = [path for kind, path in args.reportgen if kind == "html"]
     reporter = report.Report(

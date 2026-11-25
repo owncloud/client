@@ -7,7 +7,8 @@ order Squish runs them: OnFeatureStart, then per scenario OnScenarioStart,
 OnStepStart and OnStepEnd around every step, OnScenarioEnd; OnFeatureEnd
 last. Hooks of one kind run in the order they were defined. After a
 scenario's OnScenarioEnd hooks the runner's ``after_scenario`` runs; the
-suite lets the applications release their handles there.
+suite links the logs of the applications started in the scenario there and
+lets the applications release their handles.
 """
 
 import re
@@ -210,7 +211,8 @@ class Reporter:
     Failing feature hooks of one kind are reported as one scenario of their
     own, with a step per failure; a failing ``test.py`` as a feature named
     after its test case, with one such scenario.
-    ``attach(path)`` is for reports' own use; the runner does not call it.
+    ``attach(path)`` links a file to the running scenario; the suite calls it
+    from ``after_scenario`` for the logs of the applications started in it.
     ``interrupted(message)`` comes before ``finish()`` when the run stops
     in the middle, as on KeyboardInterrupt or SIGTERM; a running scenario
     then ends as an error.

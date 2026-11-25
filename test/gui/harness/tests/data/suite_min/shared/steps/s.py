@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2026 ownCloud GmbH - A Kiteworks Company and ownCloud contributors
 # SPDX-License-Identifier: MIT
+import squish
 from helpers.EventHelper import record_event
 from pkg.sub.mod import greeting
 
@@ -49,3 +50,8 @@ def step(context, word, count):
 def step(context):
     # stands in for an exception from a crashed application under test
     raise RuntimeError('the application under test crashed')
+
+
+@When('the application "|any|" is started')
+def step(context, name):
+    squish.startApplication(name)
