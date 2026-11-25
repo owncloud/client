@@ -181,14 +181,27 @@ def _executable(name):
 
 
 def _open_log(name):
-    """The log file of a new launch of ``name``, opened to append."""
+    """The log file of a new launch of ``name``, emptied and opened to append."""
     test_case = os.path.basename(importlib.import_module("squishinfo").testCase)
     directory = os.path.join(_LOG_DIR, test_case or "no-test-case")
     os.makedirs(directory, exist_ok=True)
     _LOG_NUMBERS[directory] += 1
     path = os.path.join(directory, f"{_LOG_NUMBERS[directory]:02d}-{name}.log")
-    # unbuffered: the application appends to the same file through its stdout
-    return open(path, "ab", buffering=0)
+    # Emptied, as a log of an earlier run with the same number; appending and
+    # unbuffered, as the application writes to it through its stdout too.
+    return open(
+        path,
+        "ab",
+        buffering=0,
+        opener=lambda p, flags: os.open(p, flags | os.O_TRUNC, 0o666),
+    )
+
+
+def _discard_log(log):
+    """Remove the log of a launch that did not start, and free its number."""
+    log.close()
+    _remove(log.name)
+    _LOG_NUMBERS[os.path.dirname(log.name)] -= 1
 
 
 def take_new_logs():
@@ -248,7 +261,7 @@ def startApplication(cmdline):
         )
     except BaseException:
         if log:
-            log.close()
+            _discard_log(log)
         raise
     if log:
         _NEW_LOGS.append(log.name)

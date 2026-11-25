@@ -176,6 +176,35 @@ def test_with_a_log_dir_a_failed_launch_still_quotes_stderr(log_dir, capfd):
     assert "boom" not in capfd.readouterr().err
 
 
+def test_a_log_from_an_earlier_run_is_replaced(log_dir):
+    old = log_dir / "tst_logs" / "01-fakeaut.log"
+    old.parent.mkdir(parents=True)
+    old.write_text("from an earlier run\n", encoding="utf-8")
+    squish.startApplication("fakeaut").detach()
+    text = old.read_text("utf-8")
+    assert "from an earlier run" not in text
+    assert "hello on stdout" in text and "hello on stderr" in text
+
+
+def test_a_launch_that_cannot_start_leaves_no_log(auts, log_dir):
+    _, _, paths, env = auts
+    missing = log_dir.parent / "missing"
+    missing.mkdir()
+    aut.configure(
+        {**paths, "nosuchaut": str(missing)},
+        {**env, "FAKE_AUT_SAY": "hello"},
+        log_dir=str(log_dir),
+    )
+    with pytest.raises(FileNotFoundError):
+        squish.startApplication("nosuchaut")
+    case_dir = log_dir / "tst_logs"
+    assert not list(case_dir.iterdir())
+    assert not aut.take_new_logs()
+    ctx = squish.startApplication("fakeaut")
+    ctx.detach()
+    assert ctx.log_path == str(case_dir / "01-fakeaut.log")
+
+
 @pytest.mark.usefixtures("isolated")
 def test_the_html_report_links_the_log_of_each_launch(auts, tmp_path, monkeypatch):
     # the suite's hooks set it; restored afterwards
