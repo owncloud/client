@@ -162,7 +162,7 @@ def display_path(path, base=None, line=None):
     return f"{shown}:{line}" if line else shown
 
 
-def _titled(problem, base):
+def titled(problem, base):
     """A problem's text, and where it is written."""
     if not problem.location:
         return problem.text
@@ -384,10 +384,12 @@ def _junit_testcase(suite, feature, scenario, base):
         element = ET.SubElement(case, tag, message=_xml(first), type=scenario.status)
         element.text = _xml(
             "\n\n".join(
-                "\n".join(part for part in (f"{title}: {message}", detail) if part)
-                for title, message, detail in (
-                    (_titled(p, base), p.message, p.detail) for p in problems
+                "\n".join(
+                    part
+                    for part in (f"{titled(p, base)}: {p.message}", p.detail)
+                    if part
                 )
+                for p in problems
             )
         )
     lines = [f"{s.result.upper():7} {s.text}" for s in scenario.steps]
@@ -424,12 +426,13 @@ def _html_scenario(scenario, directory, base):
     ]
     if tags:
         cells.append(f" <span class=tags>{_h(tags)}</span>")
-    for problem in scenario.problems():
-        title, message, detail = _titled(problem, base), problem.message, problem.detail
-        cells.append(f"<div class=problem>{_h(title)}<pre>{_h(message)}</pre>")
-        if detail:
+    for p in scenario.problems():
+        cells.append(
+            f"<div class=problem>{_h(titled(p, base))}<pre>{_h(p.message)}</pre>"
+        )
+        if p.detail:
             cells.append(
-                f"<details><summary>details</summary><pre>{_h(detail)}</pre></details>"
+                f"<details><summary>details</summary><pre>{_h(p.detail)}</pre></details>"
             )
         cells.append("</div>")
     if scenario.attachments:

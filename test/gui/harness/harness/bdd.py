@@ -405,8 +405,9 @@ class Runner:  # pylint: disable=too-many-instance-attributes
         context = Context(title)
         self.reporter.feature_start(title, path)
         if self._run_feature_hooks("OnFeatureStart", context):
+            lines = _Lines(path, nodes)
             for pickle, tags in scenarios:
-                failed = self._run_scenario(pickle, tags, _Lines(path, nodes))
+                failed = self._run_scenario(pickle, tags, lines)
                 if failed and self.abort_on_fail:
                     self.aborted = True
                     break

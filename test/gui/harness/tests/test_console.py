@@ -89,7 +89,7 @@ def test_pretty_shows_features_scenarios_steps_and_failures(tmp_path, capsys):
     assert lines[skipped].endswith(" skipped")
     result = _index(lines, r"^✗ a breaking scenario  \(error, \d+\.\d s\)$")
     assert lines[result + 1 : result + 4] == [
-        f"    {BREAKING_STEP}  ({FEATURE_PATH}:9)",
+        f"    {BREAKING_STEP} ({FEATURE_PATH}:9)",
         "    RuntimeError: 100% broken",
         "    ::error::injected",
     ]

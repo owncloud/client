@@ -132,8 +132,7 @@ class ConsoleReporter(bdd.Reporter):  # pylint: disable=too-many-instance-attrib
             return
         problems = scenario.problems()
         for problem in problems:
-            where = f"  ({self._path(*problem.location)})" if problem.location else ""
-            self._write(f"    {problem.text}{where}")
+            self._write(f"    {report.titled(problem, self.workspace)}")
             if problem.message:
                 self._write(_indent(problem.message, 4))
         for path in scenario.attachments:
