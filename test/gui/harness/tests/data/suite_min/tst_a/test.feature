@@ -8,7 +8,6 @@ Feature: minimal suite
     Background:
         Given user "Alice" has been created
 
-
     @smokeTest
     Scenario: tables, doc strings and user data
         Given the user has set up the following accounts:
@@ -24,7 +23,6 @@ Feature: minimal suite
         Then the remembered value should be "kept"
         And the word notes should have 5 letters
 
-
     @crash
     Scenario: the application crashes
         When the application crashes
@@ -38,7 +36,6 @@ Feature: minimal suite
             | name |
             | one  |
             | two  |
-
 
     @skip
     Scenario: skipped by tag
