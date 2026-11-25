@@ -11,7 +11,7 @@ import time
 
 from harness.client import current_client
 from harness.proxy import RemoteObject, request, wrap
-from harness.selectors import encode
+from harness.selectors import encode, encode_value
 from harness.settings import test_settings
 
 testSettings = test_settings
@@ -40,19 +40,27 @@ def _timeout_ms(timeout):
 
 
 def _poll_find(sel, ready, timeout):
+    """Poll ``find`` until it matches; an object is found as soon as it is ready."""
     if isinstance(sel, RemoteObject):
         if sel.is_null():
             raise LookupError("cannot wait for the null object")
-        return sel
-    client = current_client()
-    encoded = encode(sel)
+        if not ready:
+            return sel
+        client, encoded = sel.client, encode_value(sel)  # the handle as selector
+    else:
+        client, encoded = current_client(), encode(sel)
     timeout = _timeout_ms(timeout)
     deadline = time.monotonic() + timeout / 1000
     while True:
-        if found := wrap(
-            client, request(client, "find", selector=encoded, ready=ready)
-        ):
-            return found
+        try:
+            found = wrap(client, request(client, "find", selector=encoded, ready=ready))
+        except RuntimeError as err:
+            if not isinstance(sel, RemoteObject):
+                raise
+            raise LookupError(f"cannot wait for {sel!r}: {err}") from err
+        if found:
+            # a ready object is returned as it was given
+            return sel if isinstance(sel, RemoteObject) else found
         if (remaining := deadline - time.monotonic()) <= 0:
             state = "ready" if ready else "existing"
             raise LookupError(f"no {state} object after {timeout} ms: {sel!r}")
@@ -60,12 +68,18 @@ def _poll_find(sel, ready, timeout):
 
 
 def waitForObject(sel, timeout=None):
-    """Wait until the selector matches a visible and enabled object."""
+    """Wait until the selector matches a visible and enabled object.
+
+    An object found before is waited for until it is visible and enabled.
+    """
     return _poll_find(sel, True, timeout)
 
 
 def waitForObjectExists(sel, timeout=None):
-    """Wait until the selector matches an object, visible or not."""
+    """Wait until the selector matches an object, visible or not.
+
+    An object found before is returned at once.
+    """
     return _poll_find(sel, False, timeout)
 
 

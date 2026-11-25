@@ -72,13 +72,41 @@ def test_wait_for_object_exists_accepts_hidden_object(fake):
     assert fake.sent("find")[-1]["ready"] is False
 
 
-def test_wait_for_object_passes_raw_handles_through(fake):
-    tree = fake.add("QTreeView")
+def test_wait_for_object_waits_until_a_remote_object_is_ready(fake):
+    tree = fake.add("QTreeView", enabled=False)
     proxy = RemoteObject(fake.client, tree.handle, "QTreeView")
+
+    def make_ready(method, _):
+        if method == "find" and len(fake.sent("find")) == 3:
+            tree.enabled = True
+
+    fake.before_request = make_ready
     assert squish.waitForObject(proxy) is proxy
-    assert not fake.sent("find")
+    finds = fake.sent("find")
+    assert len(finds) == 3
+    assert finds[0] == {"selector": {"$handle": tree.handle}, "ready": True}
     with pytest.raises(LookupError):
         squish.waitForObject(RemoteObject(fake.client, None))
+
+
+@pytest.mark.usefixtures("short_timeout")
+def test_wait_for_object_times_out_on_a_hidden_remote_object(fake):
+    tree = fake.add("QTreeView", visible=False)
+    proxy = RemoteObject(fake.client, tree.handle, "QTreeView")
+    with pytest.raises(LookupError, match="no ready object after 300 ms"):
+        squish.waitForObject(proxy)
+    # waitForObjectExists does not wait for it to become visible
+    assert squish.waitForObjectExists(proxy) is proxy
+
+
+def test_wait_for_object_on_a_dead_remote_object_is_a_lookup_error(fake):
+    tree = fake.add("QTreeView")
+    proxy = RemoteObject(fake.client, tree.handle, "QTreeView")
+    fake.kill(tree)
+    start = time.monotonic()
+    with pytest.raises(LookupError, match="no longer exists"):
+        squish.waitForObject(proxy)
+    assert time.monotonic() - start < 1
 
 
 def test_find_object_raises_immediately(fake):

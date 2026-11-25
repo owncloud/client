@@ -203,6 +203,11 @@ class FakeProbe:  # pylint: disable=too-many-instance-attributes
         return {"pid": self.pid, "qtVersion": "6.8.0"}
 
     def _m_find(self, params):
+        if "$handle" in params["selector"]:  # a handle as the whole selector
+            obj = self._resolve(params["selector"])
+            if params.get("ready") and not (obj.visible and obj.enabled):
+                return self._ref(None)
+            return self._ref(obj)
         for obj in self._all():
             if self._matches(obj, params["selector"]):
                 if params.get("ready") and not (obj.visible and obj.enabled):
