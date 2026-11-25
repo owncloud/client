@@ -343,3 +343,26 @@ def test_report_files_are_replaced_whole(tmp_path, monkeypatch):
         "index.html",
         "junit.xml",
     ]
+
+
+@pytest.mark.parametrize("where", ["write", "replace"])
+def test_interrupted_report_write_leaves_no_temporary_file(
+    tmp_path, monkeypatch, where
+):
+    path = tmp_path / "junit.xml"
+    path.write_text("previous run", "utf-8")
+
+    def interrupt(*_):
+        raise KeyboardInterrupt
+
+    def write(stream):
+        stream.write(b"partial")
+        if where == "write":
+            interrupt()
+
+    if where == "replace":
+        monkeypatch.setattr(report.os, "replace", interrupt)
+    with pytest.raises(KeyboardInterrupt):
+        report._write_file(str(path), write)  # pylint: disable=protected-access
+    assert path.read_text("utf-8") == "previous run"
+    assert sorted(p.name for p in tmp_path.iterdir()) == ["junit.xml"]

@@ -274,18 +274,24 @@ def _write_file(path, write):
             write(stream)
         os.replace(temp, path)
         return True
-    except Exception as exc:  # pylint: disable=broad-exception-caught
+    except BaseException as exc:  # pylint: disable=broad-exception-caught
+        if created:
+            _remove_quietly(temp)
+        if not isinstance(exc, Exception):
+            raise  # interrupted: the run stops here
         print(
             f"[ERROR] cannot write report {path}: {type(exc).__name__}: {exc}",
             file=sys.stderr,
             flush=True,
         )
-        if created:
-            try:
-                os.unlink(temp)
-            except OSError:
-                pass
         return False
+
+
+def _remove_quietly(path):
+    try:
+        os.unlink(path)
+    except OSError:
+        pass
 
 
 def _screenshots_dir():
