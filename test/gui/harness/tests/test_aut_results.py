@@ -206,6 +206,42 @@ def test_a_launch_that_cannot_start_leaves_no_log(auts, log_dir):
     assert ctx.log_path == str(case_dir / "01-fakeaut.log")
 
 
+def test_logs_of_an_earlier_run_are_removed_at_the_first_launch(log_dir):
+    case_dir = log_dir / "tst_logs"
+    case_dir.mkdir(parents=True)
+    for name in ("03-fakeaut.log", "04-otheraut.log", "notes.txt"):
+        (case_dir / name).write_text("from an earlier run\n", encoding="utf-8")
+    squish.startApplication("fakeaut").detach()
+    squish.startApplication("fakeaut").detach()
+    assert sorted(p.name for p in case_dir.iterdir()) == [
+        "01-fakeaut.log",
+        "02-fakeaut.log",
+        "notes.txt",
+    ]
+
+
+def test_a_log_that_cannot_be_removed_keeps_the_launch_error(
+    auts, log_dir, monkeypatch, capfd
+):
+    _, _, paths, env = auts
+    missing = log_dir.parent / "missing"
+    missing.mkdir()
+    aut.configure({**paths, "nosuchaut": str(missing)}, env, log_dir=str(log_dir))
+    unlink = os.unlink
+
+    def refuse(path, *args, **kwargs):
+        if str(path).endswith(".log"):
+            raise PermissionError(1, "not permitted", str(path))
+        unlink(path, *args, **kwargs)
+
+    monkeypatch.setattr(os, "unlink", refuse)
+    with pytest.raises(FileNotFoundError):
+        squish.startApplication("nosuchaut")
+    case_dir = str(log_dir / "tst_logs")
+    assert not aut._LOG_NUMBERS[case_dir]  # pylint: disable=protected-access
+    assert "[WARNING] cannot remove the log" in capfd.readouterr().err
+
+
 @pytest.fixture
 def forking_aut(auts):
     """fakeaut, started by a shell that leaves a child holding its stderr."""

@@ -10,6 +10,7 @@ import collections
 import importlib
 import itertools
 import os
+import re
 import shlex
 import socket
 import subprocess
@@ -28,6 +29,7 @@ _RETRY_INTERVAL = 0.05
 # how long detach() waits for the rest of a logged stderr; a child process
 # that inherited it may hold it open for much longer
 _LOG_DRAIN_TIMEOUT = 0.5
+_LOG_NAME = re.compile(r"[0-9]{2,}-.*\.log")  # as _open_log names them
 
 _AUT_PATHS = {}
 _ENV = {}
@@ -205,6 +207,8 @@ def _open_log(name):
     test_case = os.path.basename(importlib.import_module("squishinfo").testCase)
     directory = os.path.join(_LOG_DIR, test_case or "no-test-case")
     os.makedirs(directory, exist_ok=True)
+    if not _LOG_NUMBERS[directory]:
+        _remove_old_logs(directory)
     _LOG_NUMBERS[directory] += 1
     path = os.path.join(directory, f"{_LOG_NUMBERS[directory]:02d}-{name}.log")
     # Emptied, as a log of an earlier run with the same number; appending and
@@ -217,11 +221,32 @@ def _open_log(name):
     )
 
 
+def _remove_old_logs(directory):
+    """Remove the logs an earlier run left in a test case's log directory."""
+    for entry in os.scandir(directory):
+        if _LOG_NAME.fullmatch(entry.name) and entry.is_file():
+            _remove_log(entry.path)
+
+
+def _remove_log(path):
+    """Remove a log; one that cannot be removed is only warned about."""
+    try:
+        _remove(path)
+    except OSError as exc:
+        print(f"[WARNING] cannot remove the log: {exc}", file=sys.stderr, flush=True)
+
+
 def _discard_log(log):
-    """Remove the log of a launch that did not start, and free its number."""
-    log.close()
-    _remove(log.name)
+    """Remove the log of a launch that did not start, and free its number.
+
+    It does not raise, so the launch's own error is the one reported.
+    """
     _LOG_NUMBERS[os.path.dirname(log.name)] -= 1
+    try:
+        log.close()
+    except OSError:
+        pass
+    _remove_log(log.name)
 
 
 def take_new_logs():
