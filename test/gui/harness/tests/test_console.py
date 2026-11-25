@@ -1,17 +1,19 @@
 # SPDX-FileCopyrightText: 2026 ownCloud GmbH - A Kiteworks Company and ownCloud contributors
 # SPDX-License-Identifier: MIT
 
+import contextlib
 import io
 import logging
 import os
 import re
 import subprocess
 import sys
+import threading
 
 import pytest
 from suite_copy import copy_suite
 
-from harness import bdd, results, suite
+from harness import bdd, console, results, suite
 from harness.console import ConsoleReporter
 from harness.tags import TagFilter
 
@@ -157,10 +159,21 @@ def _streams():
 
 @pytest.fixture(autouse=True)
 def real_streams():
-    """Fails a test that leaves fd 1 or 2 redirected."""
+    """Fails a test that leaves fd 1 or 2 redirected, or sys.stdout or
+    sys.stderr one of the capture's streams."""
     before = _fds()
     yield
     assert _fds() == before, "the reporter left fd 1 or 2 redirected"
+    for name in ("stdout", "stderr"):
+        assert not console.is_capture_stream(getattr(sys, name)), name
+
+
+def _open_fds():
+    return set(os.listdir("/dev/fd"))
+
+
+def _readers():
+    return [t for t in threading.enumerate() if t.name == "console capture"]
 
 
 @pytest.mark.usefixtures("isolated")
@@ -323,6 +336,38 @@ def test_github_captures_child_processes_and_bytes():
         "  bytes",
     ]
     assert [c[1] for c in _commands(lines)] == ["error"]
+
+
+def test_github_restores_the_fds_when_the_original_stream_was_closed(monkeypatch):
+    # as sys.stdout is; the test closes it
+    # pylint: disable-next=consider-using-with
+    original = open(1, "w", encoding="utf-8", closefd=False)
+    monkeypatch.setattr(sys, "stdout", original)
+    fds, open_fds, readers = _fds(), _open_fds(), _readers()
+    reporter = _github()
+    reporter.feature_start("feature", "/x/test.feature")
+    reporter.scenario_start("closing", [])
+    original.close()  # as a step might; its line_buffering cannot be put back
+    reporter.scenario_end(results.begin_scenario("closing"))
+    reporter.finish()
+    assert _fds() == fds
+    assert _open_fds() == open_fds
+    assert _readers() == readers
+    assert sys.stdout is original
+
+
+def test_github_leaves_a_stream_redirected_across_the_end_alone():
+    before = _streams()
+    reporter = _github()
+    buffer = io.StringIO()
+    with contextlib.redirect_stdout(buffer):
+        reporter.feature_start("feature", "/x/test.feature")
+        reporter.finish()
+        assert sys.stdout is buffer
+        assert _fds() == before[0]
+    # redirect_stdout put back what it found: the capture's stream over fd 1
+    assert console.is_capture_stream(sys.stdout)
+    sys.stdout = before[1]
 
 
 def test_github_captures_a_log_handler_made_during_the_run():

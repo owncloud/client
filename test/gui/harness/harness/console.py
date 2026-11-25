@@ -30,7 +30,7 @@ interrupted, the descriptors are put back and what was captured is printed.
 Nothing shows while a scenario runs; a run killed with SIGKILL loses the
 running scenario's output (the reports and application logs keep theirs).
 A process that still holds the pipe after the capture ended, as a child left
-running, gets EPIPE when it writes.
+running, gets SIGPIPE when it writes (EPIPE if it ignores the signal).
 
 Workflow-command neutralisation: GitHub runs a line as a workflow command if
 it starts with ``::`` after whitespace, and takes the older ``##[name]``
@@ -51,10 +51,12 @@ import html
 import os
 import re
 import secrets
+import signal
 import sys
 import threading
 import time
 import unicodedata
+import weakref
 
 from harness import bdd, report, results
 
@@ -69,6 +71,8 @@ INTERRUPTED = "interrupted"
 STEP_WIDTH = 72
 # How long, in seconds, the github console waits for captured output.
 SYNC_TIMEOUT = 5.0
+# How long, in seconds, it waits for the rest when the capture ends.
+STOP_TIMEOUT = 10.0
 # The longest message the job summary quotes.
 SUMMARY_MESSAGE = 2000
 
@@ -121,7 +125,8 @@ class _FdCapture:  # pylint: disable=too-many-instance-attributes
                 os.dup2(self._write_fd, fd)
             self._point_streams()
         except BaseException:
-            self._restore()
+            with _signals_blocked():
+                self._restore()
             self._close_fds(self._read_fd, *self.saved.values())
             raise
         self._thread = threading.Thread(
@@ -144,7 +149,7 @@ class _FdCapture:  # pylint: disable=too-many-instance-attributes
 
     def sync(self):
         """Wait until what was written so far has arrived, at most
-        ``SYNC_TIMEOUT``; after that, a line says that some may follow."""
+        ``SYNC_TIMEOUT``; after that, a line says that output may be missing."""
         _flush(sys.stdout, sys.stderr)
         self._sent += 1
         number = self._sent
@@ -153,22 +158,51 @@ class _FdCapture:  # pylint: disable=too-many-instance-attributes
             if not self._condition.wait_for(lambda: self._seen >= number, SYNC_TIMEOUT):
                 self._entries.append(
                     f"[WARNING] the console capture is {SYNC_TIMEOUT:.0f} s behind; "
-                    "what is missing follows later\n"
+                    "output may be incomplete or out of order\n"
                 )
 
     def stop(self):
-        """Sync, put the descriptors and streams back and end the reader."""
+        """Sync, put the descriptors and streams back and end the reader.
+
+        Each step happens whatever the one before did; SIGINT and SIGTERM
+        wait until the descriptors and streams are back. The first error of
+        putting them back is raised at the end.
+        """
+        errors = []
         try:
             self.sync()
         finally:
-            self._restore()
+            try:
+                with _signals_blocked():
+                    errors = self._restore()
+            finally:
+                self._end_reader()
+        if errors:
+            raise errors[0]
+
+    def _end_reader(self):
+        """Let the reader take the rest and end; close what the capture opened."""
+        try:
             try:
                 os.write(self._write_fd, self._prefix + b"stop\n")
-                self._thread.join(SYNC_TIMEOUT)
-            finally:
-                for stream in self._outputs:
+            except OSError:
+                pass
+            self._close_fds()  # the write end: EOF, once no child holds it
+            self._thread.join(STOP_TIMEOUT)
+            if self._thread.is_alive():
+                with self._condition:
+                    self._entries.append(
+                        "[WARNING] the console capture did not end within "
+                        f"{STOP_TIMEOUT:.0f} s; output may be incomplete\n"
+                    )
+        finally:
+            for stream in self._outputs:
+                try:
                     stream.close()
-                self._close_fds(*self.saved.values())
+                except (OSError, ValueError):
+                    pass
+            for fd in self.saved.values():
+                _close_quietly(fd)
 
     def _point_streams(self):
         for name, fd in (("stdout", 1), ("stderr", 2)):
@@ -186,28 +220,40 @@ class _FdCapture:  # pylint: disable=too-many-instance-attributes
                     buffering=1,
                     closefd=False,
                 )
+                _CAPTURE_STREAMS.add(replacement)
                 self._streams.append((name, stream, None, replacement))
                 setattr(sys, name, replacement)
 
     def _restore(self):
-        """The descriptors and streams as before; the write end stays open."""
+        """The descriptors, then the streams, as before; returns the errors.
+
+        A sys stream goes back only if it still is the capture's: one
+        replaced since stays. The write end stays open.
+        """
+        errors = []
         _flush(sys.stdout, sys.stderr)
         for fd, saved in self.saved.items():
-            os.dup2(saved, fd)
+            try:
+                os.dup2(saved, fd)
+            except OSError as exc:
+                errors.append(exc)
         for name, original, line_buffering, replacement in self._streams:
-            if replacement:
-                # left open: a log handler may hold it, and fd 2 is real again
-                setattr(sys, name, original)
-            else:
-                original.reconfigure(line_buffering=line_buffering)
+            try:
+                if not replacement:
+                    original.reconfigure(line_buffering=line_buffering)
+                elif getattr(sys, name) is replacement:
+                    # left open: a log handler may hold it; fd 2 is real again
+                    setattr(sys, name, original)
+            except ValueError:
+                pass  # closed by the suite: nothing to put back
+            except Exception as exc:  # pylint: disable=broad-exception-caught
+                errors.append(exc)
         self._streams.clear()
+        return errors
 
     def _close_fds(self, *fds):
         for fd in (self._write_fd, *fds):
-            try:
-                os.close(fd)
-            except OSError:
-                pass
+            _close_quietly(fd)
 
     def _read(self):
         pending, stop = b"", False
@@ -240,6 +286,39 @@ class _FdCapture:  # pylint: disable=too-many-instance-attributes
             self._seen = int(tag)
             self._condition.notify_all()
         return False
+
+
+# the streams over fds 1 and 2 a capture put in place of sys.stdout or sys.stderr
+_CAPTURE_STREAMS = weakref.WeakSet()
+
+
+def is_capture_stream(stream):
+    """Whether ``stream`` is one a capture put in place of a sys stream."""
+    try:
+        return stream in _CAPTURE_STREAMS
+    except TypeError:  # cannot be weakly referenced: not one
+        return False
+
+
+@contextlib.contextmanager
+def _signals_blocked():
+    """SIGINT and SIGTERM held back, where signals can be, until the end."""
+    mask = getattr(signal, "pthread_sigmask", None)
+    if not mask or threading.current_thread() is not threading.main_thread():
+        yield
+        return
+    previous = mask(signal.SIG_BLOCK, {signal.SIGINT, signal.SIGTERM})
+    try:
+        yield
+    finally:
+        mask(signal.SIG_SETMASK, previous)
+
+
+def _close_quietly(fd):
+    try:
+        os.close(fd)
+    except OSError:
+        pass
 
 
 def _fileno(stream):
@@ -441,11 +520,11 @@ class ConsoleReporter(bdd.Reporter):  # pylint: disable=too-many-instance-attrib
     def _release(self):
         """Put the streams back and print what is still captured, as it is."""
         if capture := self._fd_capture:
-            self._fd_capture = None
-            atexit.unregister(self.close)
             try:
                 capture.stop()
             finally:
+                self._fd_capture = None
+                atexit.unregister(self.close)
                 self._out = self.stream
         if entries := self._take():
             self._write(*self._body(entries, ""))
