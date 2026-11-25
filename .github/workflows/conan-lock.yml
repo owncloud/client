@@ -84,7 +84,6 @@ jobs:
           update-environment: false
       - uses: $/.github/actions/setup-conan
         if: steps.changes.outputs.check == 'true'
-        id: conan
         with:
           python: ${{ steps.python.outputs.python-path }}
       - name: Fetch the base lock
@@ -132,7 +131,4 @@ jobs:
         env:
           OC_RECIPES_DIR: .conan-recipes
           BASE: ${{ steps.base.outputs.ref }}
-          CONAN_BIN_DIR: ${{ steps.conan.outputs.bin-dir }}
-        run: |
-          # update-lock.sh runs conan from PATH.
-          PATH="$CONAN_BIN_DIR:$PATH" conan/update-lock.sh --check --base "$BASE"
+        run: conan/update-lock.sh --check --base "$BASE"
