@@ -37,9 +37,9 @@ def nxt():
     t = time.monotonic(); rep = nam.get(req)
     def done():
         try:
-            loc = bytes(rep.rawHeader(QByteArray(b"Location")).data())
+            loc = rep.rawHeader("Location").data()
             status = rep.attribute(QNetworkRequest.HttpStatusCodeAttribute)
-            print(f"GET {h}: error={rep.error().name} status={status} location={loc!r} {time.monotonic() - t:.2f}s", flush=True)
+            print(f"GET {h}: error={rep.error().name} ({rep.errorString()}) status={status} location={loc!r} {time.monotonic() - t:.2f}s", flush=True)
         finally:
             nxt()
     rep.finished.connect(done)
