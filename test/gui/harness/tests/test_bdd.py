@@ -566,6 +566,13 @@ def test_reporters_raise_the_first_failure():
         both.finish()
 
 
+@pytest.mark.parametrize("interruption", [KeyboardInterrupt(), suite.Terminated()])
+def test_an_interruption_wins_over_an_earlier_failure(interruption):
+    both = bdd.Reporters([_Broken(ValueError("one")), _Broken(interruption)])
+    with pytest.raises(type(interruption)):
+        both.finish()
+
+
 # --- backslashes in tables, as Squish passes them -------------------------------
 
 BACKSLASH_FEATURE = r'''Feature: backslashes

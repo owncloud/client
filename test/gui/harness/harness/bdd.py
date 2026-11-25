@@ -262,7 +262,7 @@ class Reporters(Reporter):
     A reporter that raises does not keep the others from getting the call.
     Its exception is reported on stderr, unless it is an interruption such
     as KeyboardInterrupt, and once all have been called the first exception
-    is raised again.
+    is raised again; the first interruption, if there was one.
     """
 
     def __init__(self, reporters):
@@ -281,7 +281,11 @@ class Reporters(Reporter):
                         file=sys.stderr,
                         flush=True,
                     )
-                first = first or exc
+                # an interruption wins over a failure, so that the run stops
+                if first is None or (
+                    isinstance(first, Exception) and not isinstance(exc, Exception)
+                ):
+                    first = exc
         if first is not None:
             raise first
 
