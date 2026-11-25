@@ -21,11 +21,10 @@
 namespace OCC {
 
 /**
- * Tags for checksum header.
+ * Tag for checksum header.
  * It's here for being shared between Upload- and Download Job
  */
 static const char checkSumHeaderC[] = "OC-Checksum";
-static const char contentMd5HeaderC[] = "Content-MD5";
 
 /**
  * @brief Remove (or move to the trash) a file or folder that was removed remotely

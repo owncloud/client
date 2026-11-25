@@ -146,6 +146,7 @@ private Q_SLOTS:
         QString localA4 = fakeFolder.localPath() + QStringLiteral("A/a4");
         QString localA5 = fakeFolder.localPath() + QStringLiteral("A/a5");
         QString localA6 = fakeFolder.localPath() + QStringLiteral("A/a6");
+        const QByteArray a1CorrectChecksum("SHA1:8886930866e6faf7558cda88305d92d13ee26cc9");
 
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
 
@@ -174,7 +175,7 @@ private Q_SLOTS:
         QCOMPARE(QFileInfo(localA1).lastModified(), someDate);
         QCOMPARE(QFileInfo(localA1).size(), 5_MiB);
         QCOMPARE(dbRecord(fakeFolder, QStringLiteral("A/a1"))._type, ItemTypeFile);
-        QCOMPARE(dbRecord(fakeFolder, QStringLiteral("A/a1"))._checksumHeader, "SHA1:8886930866e6faf7558cda88305d92d13ee26cc9");
+        QCOMPARE(dbRecord(fakeFolder, QStringLiteral("A/a1"))._checksumHeader, a1CorrectChecksum);
         QCOMPARE(fakeFolder.vfs()->pinState(QStringLiteral("A/a1")).get(), PinState::Unspecified); // since it was an implicit hydration
 
         //
@@ -258,9 +259,9 @@ private Q_SLOTS:
         QVERIFY(!hydratePlaceholderSynchronously(localA5));
         QVERIFY(fakeFolder.vfs()->isDehydratedPlaceholder(localA5));
 
-        checksumValue = "MD5:b8fc857a25e7958868c2f003d5e0952d";
+        checksumValue = a1CorrectChecksum;
         QVERIFY(hydratePlaceholderSynchronously(localA5));
-        QCOMPARE(dbRecord(fakeFolder, QStringLiteral("A/a5"))._checksumHeader, "SHA1:8886930866e6faf7558cda88305d92d13ee26cc9");
+        QCOMPARE(dbRecord(fakeFolder, QStringLiteral("A/a5"))._checksumHeader, a1CorrectChecksum);
 
         fakeFolder.setServerOverride(nullptr);
 

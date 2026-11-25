@@ -351,10 +351,6 @@ void HydrationContext::downloadJobDone()
     // Find checksum header
     // TODO: Duplicated with PropagateDownload
     transmissionChecksumHeader = findBestChecksum(job->reply()->rawHeader(checkSumHeaderC));
-    const auto contentMd5Header = job->reply()->rawHeader(contentMd5HeaderC);
-    if (transmissionChecksumHeader.isEmpty() && !contentMd5Header.isEmpty()) {
-        transmissionChecksumHeader = "MD5:" + contentMd5Header;
-    }
 
     // signal that validation may start now
     isDownloadDone = true;
