@@ -12,7 +12,8 @@ import types
 import pytest
 from suite_copy import SUITE_MIN, copy_suite
 
-from harness import bdd, results, suite
+from fake_probe import FakeError, FakeProbe
+from harness import aut, bdd, results, suite
 from harness.tags import TagFilter
 
 
@@ -595,3 +596,71 @@ def test_squishinfo_result_dir_is_empty_without_a_report(isolated, tmp_path):
     assert [e for e in _events(isolated) if e[0] == "squishinfo"] == [
         ["squishinfo", str(suite_dir.resolve() / "tst_b"), ""]
     ]
+
+
+# --- releasing handles ----------------------------------------------------------
+
+
+class _Exited:  # pylint: disable=too-few-public-methods
+    """A process that has exited, for an application context without one."""
+
+    returncode = 0
+
+    @staticmethod
+    def poll():
+        return 0
+
+
+def _fake_context(monkeypatch, name):
+    probe = FakeProbe()
+    ctx = aut.ApplicationContext(name, _Exited(), probe.client, probe.pid, "")
+    monkeypatch.setattr(aut, "_remove", lambda path: None)
+    aut._CONTEXTS.append(ctx)  # pylint: disable=protected-access
+    return probe
+
+
+def test_handles_are_released_after_each_scenario(isolated, monkeypatch):
+    running = _fake_context(monkeypatch, "running")
+    exited = _fake_context(monkeypatch, "exited")
+    exited.exit()  # a closed connection is no error
+
+    def record(method, _):
+        record_event = importlib.import_module("helpers.EventHelper").record_event
+        record_event("request", method)
+
+    running.before_request = record
+    try:
+        code, reporter = _run(tags=["~@skip"])
+    finally:
+        running.close()
+    assert code == 1  # the crash, nothing else
+    assert not [s for s in reporter.steps("error") if "crash" not in s[3]]
+    events = [e[:2] for e in _events(isolated)]
+    ends = [i for i, e in enumerate(events) if e[0] == "OnScenarioEnd:2"]
+    releases = [i for i, e in enumerate(events) if e == ["request", "release"]]
+    assert len(releases) == len(ends) == 4
+    # each right after the scenario's last OnScenarioEnd hook
+    assert releases == [i + 1 for i in ends]
+    assert not aut.applicationContextList()  # detached after the test case
+
+
+@pytest.mark.usefixtures("isolated")
+def test_failing_release_is_an_error_of_the_scenario(monkeypatch):
+    probe = _fake_context(monkeypatch, "broken")
+
+    def refuse(method, _):
+        if method == "release":
+            raise FakeError("Internal", "cannot release")
+
+    probe.before_request = refuse
+    try:
+        code, reporter = _run(tags=["~@skip", "@smokeTest"])
+    finally:
+        probe.close()
+    assert code == 1
+    errors = reporter.steps("error")
+    assert [e[2] for e in errors] == ["release handles"]
+    assert "cannot release" in errors[0][3]
+    assert ("scenario_end", "tables, doc strings and user data", True) in (
+        reporter.calls
+    )

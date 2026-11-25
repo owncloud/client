@@ -59,6 +59,9 @@ class Suite:
         self.conf = read_key_values(conf) if conf.is_file() else {}
         self.scripts_dir = self.dir / "shared" / "scripts"
         self.runner = runner
+        # Without releasing, an application keeps every object it handed
+        # out, as each model index, until the harness disconnects.
+        self.runner.after_scenario = aut.release_all
         self.testcase_dir = None
 
     def testcases(self, names=None):

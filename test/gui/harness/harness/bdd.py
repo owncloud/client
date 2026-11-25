@@ -5,7 +5,9 @@
 Steps match by their text alone, whatever the keyword. Hooks run in the
 order Squish runs them: OnFeatureStart, then per scenario OnScenarioStart,
 OnStepStart and OnStepEnd around every step, OnScenarioEnd; OnFeatureEnd
-last. Hooks of one kind run in the order they were defined.
+last. Hooks of one kind run in the order they were defined. After a
+scenario's OnScenarioEnd hooks the runner's ``after_scenario`` runs; the
+suite lets the applications release their handles there.
 """
 
 import re
@@ -35,6 +37,8 @@ HOOK_NAMES = (
     "OnStepEnd",
 )
 STEP_KEYWORDS = ("Given", "When", "Then", "Step")
+# The step a failing Runner.after_scenario is reported as.
+AFTER_SCENARIO_STEP = "release handles"
 
 # Placeholder name -> (regex group, converter for the argument).
 _PLACEHOLDERS = {  # pylint: disable=consider-using-namedtuple-or-dataclass
@@ -251,6 +255,9 @@ class Runner:
         self.tag_filter = tag_filter or TagFilter([])
         self.reporter = reporter or Reporter()
         self.abort_on_fail = abort_on_fail
+        # Called after each scenario's OnScenarioEnd hooks; an exception is
+        # an error of the scenario.
+        self.after_scenario = None
         self.aborted = False
         self.registry = StepRegistry()
         self.hooks = {name: [] for name in HOOK_NAMES}
@@ -381,8 +388,22 @@ class Runner:
             "OnScenarioEnd",
             self._run_hooks("OnScenarioEnd", context, stop_on_error=False),
         )
+        self._run_after_scenario()
         self.reporter.scenario_end(record)
         return record.failed
+
+    def _run_after_scenario(self):
+        if self.after_scenario is None:
+            return
+        start = time.monotonic()
+        fails_before = results.run_count("fails")
+        try:
+            self.after_scenario()
+        except Exception as exc:  # pylint: disable=broad-exception-caught
+            result, message = outcome(exc, fails_before)
+            self.reporter.step(
+                result, AFTER_SCENARIO_STEP, message, time.monotonic() - start
+            )
 
     def _run_step(self, step, text, context):
         """Run one step and its step hooks; returns whether the next step runs."""

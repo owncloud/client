@@ -208,6 +208,19 @@ def currentApplicationContext():
     return _CURRENT
 
 
+def release_all():
+    """Let every application drop the handles it gave out.
+
+    Objects are found anew afterwards. An application that closed its
+    connection or stopped answering has nothing to release.
+    """
+    for ctx in list(_CONTEXTS):
+        try:
+            ctx.client.request("release")
+        except (ConnectionError, TimeoutError):
+            pass
+
+
 def detach_all():
     """Detach every application; also run at exit so none is left behind."""
     for ctx in list(_CONTEXTS):
