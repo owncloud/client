@@ -77,14 +77,16 @@ def _split_table_row(row):
 
     A backslash is literal, except that ``\\|`` is a pipe inside a cell. That
     is an assumption: Squish's handling of ``\\|`` was not observed, but it
-    is the only way to write a pipe into a cell. Text before the first and
-    after the last pipe is not a cell.
+    is the only way to write a pipe into a cell. Read left to right, ``\\\\``
+    is a pair of literal backslashes (kept as both), so ``C:\\\\|`` ends the
+    cell after ``C:\\\\``. Text before the first and after the last pipe is
+    not a cell.
     """
     cell, start, index = "", None, 0
     while index < len(row):
         char = row[index]
-        if char == "\\" and row[index + 1 : index + 2] == "|":
-            cell += "|"
+        if char == "\\" and (escaped := row[index + 1 : index + 2]) in ("\\", "|"):
+            cell += "\\\\" if escaped == "\\" else "|"
             index += 2
             continue
         if char == "|":

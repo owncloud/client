@@ -527,3 +527,19 @@ def test_doc_strings_are_unchanged(tmp_path):
 def test_examples_cells_keep_backslashes(tmp_path):
     seen = _run_backslash_feature(tmp_path)
     assert seen[2] == ("file", "dir\\\\f.txt", [["name"], ["dir\\\\f.txt"]])
+
+
+@pytest.mark.parametrize(
+    "row, cells",
+    [
+        # a literal pair of backslashes, then the cell's closing pipe
+        (r"|C:\\|next|", [r"C:\\", "next"]),
+        (r"|a\|b|", ["a|b"]),
+        # a pair, then an escaped pipe
+        (r"|a\\\|b|", [r"a\\|b"]),
+        (r"|a\nb|", [r"a\nb"]),
+    ],
+)
+def test_backslash_pairs_and_escaped_pipes_in_table_rows(row, cells):
+    # pylint: disable-next=protected-access
+    assert [cell for cell, _ in bdd._split_table_row(row)] == cells
