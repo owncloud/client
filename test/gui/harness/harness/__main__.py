@@ -157,7 +157,8 @@ def main(argv=None):
         junit_paths=[path for kind, path in args.reportgen if kind == "junitxml"],
         base=base,
     )
-    reporter = bdd.Reporters([files, *filter(None, [_console(args.console, base)])])
+    console = _console(args.console, base)
+    reporter = bdd.Reporters([files, console] if console else [files])
     try:
         return suite.run_suite(
             args.testsuite,
