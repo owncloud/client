@@ -70,6 +70,7 @@ class Suite:
         self.conf = read_key_values(conf) if conf.is_file() else {}
         self.scripts_dir = self.dir / "shared" / "scripts"
         self.runner = runner
+        self.runner.before_scenario = self._before_scenario
         self.runner.after_scenario = self._after_scenario
         self.testcase_dir = None
 
@@ -155,7 +156,6 @@ class Suite:
         """
         self.testcase_dir = self.dir / name
         _squishinfo().testCase = str(self.testcase_dir)
-        aut.take_new_logs()  # launches after the last scenario stay unlinked
         results.begin_test_case()
         start = time.monotonic()
         fails_before = results.run_count("fails")
@@ -178,16 +178,27 @@ class Suite:
             os.chdir(cwd)
             self._detach_all(name)
 
+    @staticmethod
+    def _before_scenario():
+        """Forget the logs of earlier launches, as in feature hooks.
+
+        A scenario links only the logs of the applications started in it.
+        The reports have no place for the others; they stay in the log dir.
+        """
+        aut.take_new_logs()
+
     def _after_scenario(self):
         """Link the scenario's application logs, and let the applications
-        release their handles.
+        release their handles, also when linking failed.
 
         Without releasing, an application keeps every object it handed out,
         as each model index, until the harness disconnects.
         """
-        for path in aut.take_new_logs():
-            self.runner.reporter.attach(path)
-        aut.release_all()
+        try:
+            for path in aut.take_new_logs():
+                self.runner.reporter.attach(path)
+        finally:
+            aut.release_all()
 
     def _detach_all(self, name):
         start = time.monotonic()

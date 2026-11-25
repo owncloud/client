@@ -5,10 +5,11 @@
 Steps match by their text alone, whatever the keyword. Hooks run in the
 order Squish runs them: OnFeatureStart, then per scenario OnScenarioStart,
 OnStepStart and OnStepEnd around every step, OnScenarioEnd; OnFeatureEnd
-last. Hooks of one kind run in the order they were defined. After a
-scenario's OnScenarioEnd hooks the runner's ``after_scenario`` runs; the
-suite links the logs of the applications started in the scenario there and
-lets the applications release their handles.
+last. Hooks of one kind run in the order they were defined. Before a
+scenario's OnScenarioStart hooks the runner's ``before_scenario`` runs, and
+after its OnScenarioEnd hooks ``after_scenario``; the suite links the logs
+of the applications started in the scenario there and lets the
+applications release their handles.
 """
 
 import re
@@ -256,13 +257,15 @@ def outcome(exc, fails_before):
     return ERROR, message
 
 
-class Runner:
+class Runner:  # pylint: disable=too-many-instance-attributes
     """Runs feature files against the step definitions and hooks of a test case."""
 
     def __init__(self, tag_filter=None, reporter=None, abort_on_fail=False):
         self.tag_filter = tag_filter or TagFilter([])
         self.reporter = reporter or Reporter()
         self.abort_on_fail = abort_on_fail
+        # Called before each scenario's OnScenarioStart hooks; must not raise.
+        self.before_scenario = _nothing
         # Called after each scenario's OnScenarioEnd hooks; an exception is
         # an error of the scenario.
         self.after_scenario = _nothing
@@ -380,6 +383,7 @@ class Runner:
         title = pickle["name"]
         record = results.begin_scenario(title)
         self.reporter.scenario_start(title, tags)
+        self.before_scenario()
         context = Context(title)
         problems = self._run_hooks("OnScenarioStart", context, stop_on_error=True)
         self._report_hooks("OnScenarioStart", problems)

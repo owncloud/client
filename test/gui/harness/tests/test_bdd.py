@@ -726,3 +726,93 @@ def test_failing_after_scenario_is_an_error_of_the_scenario(monkeypatch):
     assert ("scenario_end", "tables, doc strings and user data", True) in (
         reporter.calls
     )
+
+
+# --- application logs -----------------------------------------------------------
+
+LAUNCHING_FEATURE_HOOKS = """
+
+@OnFeatureStart
+def hook(context):
+    squish.startApplication('in-feature-start')
+
+
+@OnFeatureEnd
+def hook(context):
+    squish.startApplication('in-feature-end')
+"""
+
+TWO_SCENARIOS = (
+    "Feature: logs\n\n"
+    "    Scenario: first\n"
+    "        Given the user remembers \"x\"\n\n"
+    "    Scenario: second\n"
+    '        When the application "in-scenario" is started\n'
+)
+
+
+def _fake_launches(monkeypatch):
+    """startApplication only adds the log a launch would write."""
+
+    def launch(cmdline):
+        aut._NEW_LOGS.append(f"/logs/{cmdline}.log")  # pylint: disable=protected-access
+
+    monkeypatch.setattr(aut, "startApplication", launch)
+
+
+def _attachments(reporter):
+    """The attached paths, per scenario started."""
+    attached, scenario = {}, None
+    for call in reporter.calls:
+        if call[0] == "scenario_start":
+            scenario = call[1]
+            attached[scenario] = []
+        elif call[0] == "scenario_end":
+            scenario = None
+        elif call[0] == "attach":
+            attached.setdefault(scenario, []).append(call[1])
+    return attached
+
+
+@pytest.mark.usefixtures("isolated")
+def test_a_scenario_links_only_the_logs_of_its_own_launches(tmp_path, monkeypatch):
+    _fake_launches(monkeypatch)
+    suite_dir = copy_suite(tmp_path, TWO_SCENARIOS)
+    hooks = suite_dir / "shared" / "scripts" / "bdd_hooks.py"
+    hooks.write_text(
+        "import squish\n" + hooks.read_text("utf-8") + LAUNCHING_FEATURE_HOOKS,
+        "utf-8",
+    )
+    code, reporter = _run(suite_dir, testcases=["tst_b"])
+    assert not code
+    assert _attachments(reporter) == {
+        "first": [],
+        "second": ["/logs/in-scenario.log"],
+    }
+
+
+class _FailingAttach(RecordingReporter):
+    def attach(self, path):
+        super().attach(path)
+        raise OSError(f"cannot link {path}")
+
+
+@pytest.mark.usefixtures("isolated")
+def test_a_failing_attach_still_releases_the_handles(tmp_path, monkeypatch):
+    _fake_launches(monkeypatch)
+    probe = _fake_context(monkeypatch, "running")
+    requests = []
+    probe.before_request = lambda method, _: requests.append(method)
+    suite_dir = copy_suite(tmp_path, TWO_SCENARIOS)
+    reporter = _FailingAttach()
+    try:
+        code = suite.run_suite(
+            str(suite_dir), ["tst_b"], TagFilter([]), False, reporter
+        )
+    finally:
+        probe.close()
+    assert code == 1
+    assert requests.count("release") == 2  # after each scenario
+    errors = reporter.steps("error")
+    assert [e[2] for e in errors] == ["release handles"]
+    assert "cannot link /logs/in-scenario.log" in errors[0][3]
