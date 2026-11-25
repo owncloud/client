@@ -306,9 +306,7 @@ QByteArray ComputeChecksum::computeNow(QIODevice *device, CheckSums::Algorithm a
         [[fallthrough]];
     case CheckSums::Algorithm::SHA256:
         [[fallthrough]];
-    case CheckSums::Algorithm::SHA1:
-        [[fallthrough]];
-    case CheckSums::Algorithm::MD5: {
+    case CheckSums::Algorithm::SHA1: {
         QCryptographicHash crypto(static_cast<QCryptographicHash::Algorithm>(algorithm));
         if (crypto.addData(device)) {
             return crypto.result().toHex();
