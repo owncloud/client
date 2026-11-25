@@ -40,6 +40,13 @@ FEATURE_PATH = "suite/tst_b/test.feature"
 BREAKING_STEP = 'When the step breaks with "100% broken\\n::error::injected"'
 
 
+@pytest.fixture(autouse=True)
+def fresh_results():
+    """Forget the results a test records, also when it fails."""
+    yield
+    results.reset()
+
+
 def _suite(tmp_path, end_hooks=False):
     suite_dir = copy_suite(tmp_path, FEATURE, end_hooks)
     (suite_dir / "shared" / "steps" / "console.py").write_text(STEPS, "utf-8")
@@ -196,7 +203,6 @@ def test_interrupted_scenario_closes_its_group_and_the_run_is_summed_up():
     assert _index(lines, r"^✗ stopped  \(error, ")
     assert "    interrupted: SIGTERM" in lines
     assert _index(lines, r"^1 scenarios: 0 passed, 0 failed, 1 errors")
-    results.reset()
 
 
 # --- marks and colour -------------------------------------------------------------
@@ -212,7 +218,6 @@ def _one_of_each(reporter):
     results.record("fails", "no")
     reporter.scenario_end(record)
     reporter.finish()
-    results.reset()
 
 
 def test_ascii_marks_where_the_stream_cannot_encode_others():
@@ -266,7 +271,6 @@ def test_failing_scenario_lists_its_new_screenshots_and_logs(tmp_path, monkeypat
     assert f"    attachment: {tmp_path / 'client.log'}" in lines
     assert f"    attachment: {shots / 'broken.png'}" in lines
     assert not any("old.png" in line for line in lines)
-    results.reset()
 
 
 def test_scenario_left_open_is_unfinished_not_the_next_record(tmp_path):
@@ -288,4 +292,3 @@ def test_scenario_left_open_is_unfinished_not_the_next_record(tmp_path):
         "    the scenario did not finish",
     ]
     assert not any("end hook broke" in line for line in lines)
-    results.reset()

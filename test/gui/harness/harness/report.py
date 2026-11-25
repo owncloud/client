@@ -146,13 +146,14 @@ def count_statuses(scenarios):
 def display_path(path, base=None, line=None):
     """A path relative to ``base`` if it is inside, else absolute; with a line.
 
-    Without ``base`` the path is absolute.
+    Both are resolved first, so that a symlink on the way does not put the
+    path outside. Without ``base`` the path is absolute.
     """
-    path = os.path.abspath(path)
+    path = os.path.realpath(path)
     shown = path
     if base:
         try:
-            shown = os.path.relpath(path, base)
+            shown = os.path.relpath(path, os.path.realpath(base))
         except ValueError:  # another drive
             shown = path
         if shown == os.pardir or shown.startswith(os.pardir + os.sep):

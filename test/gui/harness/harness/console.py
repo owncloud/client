@@ -63,7 +63,7 @@ class ConsoleReporter(bdd.Reporter):  # pylint: disable=too-many-instance-attrib
             raise ValueError(f"unknown console mode {mode!r}, expected one of {MODES}")
         self.stream = stream
         self.github = mode == GITHUB
-        self.workspace = os.path.abspath(workspace or os.getcwd())
+        self.workspace = os.path.realpath(workspace or os.getcwd())
         self.step_summary = step_summary
         self.color = _use_color(stream, self.github) if color is None else color
         encoding = getattr(stream, "encoding", None)

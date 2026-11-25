@@ -115,6 +115,13 @@ def parser():
     return result
 
 
+def _base():
+    """What reports show paths relative to: the repository in GitHub Actions,
+    as annotations need, else the working directory, so that the paths
+    resolve from the shell. Resolved, as the suite's paths are."""
+    return os.path.realpath(os.environ.get("GITHUB_WORKSPACE") or os.getcwd())
+
+
 def _console(mode, base):
     """The console reporter for a --console mode, or None for quiet."""
     if mode == "auto":
@@ -144,9 +151,7 @@ def main(argv=None):
         log_dir=args.aut_log_dir,
     )
     html_dirs = [path for kind, path in args.reportgen if kind == "html"]
-    # what paths are shown relative to: the repository in GitHub Actions, as
-    # annotations need, else the suite; resolved, as the suite's paths are
-    base = os.environ.get("GITHUB_WORKSPACE") or os.path.realpath(args.testsuite)
+    base = _base()
     files = report.Report(
         html_dirs=html_dirs,
         junit_paths=[path for kind, path in args.reportgen if kind == "junitxml"],

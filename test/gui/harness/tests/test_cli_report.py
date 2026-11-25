@@ -93,8 +93,9 @@ def test_failing_scenario_exits_with_1_and_reports_every_scenario(tmp_path, caps
 
 
 @pytest.mark.usefixtures("isolated", "configured")
-def test_failure_messages_and_escaping(tmp_path):
+def test_failure_messages_and_escaping(tmp_path, monkeypatch):
     junit, html_dir = tmp_path / "junit.xml", tmp_path / "html"
+    monkeypatch.chdir(tmp_path)
     code = _main(
         "--testsuite",
         _suite(tmp_path),
@@ -110,8 +111,9 @@ def test_failure_messages_and_escaping(tmp_path):
     assert list(cases) == ['a <b>bold</b> & "quoted" title', "a failed verification"]
     failure = cases["a failed verification"].find("failure")
     assert "remembered value" in failure.get("message")
-    # relative to the suite, so that the reports read the same on every machine
-    feature = "tst_b/test.feature"
+    # relative to the working directory, so that the reports read the same
+    # on every machine
+    feature = "suite/tst_b/test.feature"
     assert f'Then the remembered value should be "that" ({feature}:9)' in failure.text
     page = (html_dir / "index.html").read_text("utf-8")
     assert "a &lt;b&gt;bold&lt;/b&gt; &amp; &quot;quoted&quot; title" in page
@@ -220,6 +222,33 @@ def test_github_actions_get_the_github_console(tmp_path, capsys, monkeypatch, co
     assert ("::group::the application crashes" in out) == github
     assert ("::error file=suite_min/tst_a/test.feature,line=28," in out) == github
     assert summary.exists() == github
+
+
+@pytest.mark.usefixtures("isolated", "configured")
+def test_paths_resolve_from_the_working_directory(capsys, monkeypatch):
+    monkeypatch.chdir(SUITE_MIN.parent.parent)  # tests/
+    _main("--testsuite", SUITE_MIN, "--tags", "~@skip", "--console", "pretty")
+    out = capsys.readouterr().out
+    assert "Feature: minimal suite  (data/suite_min/tst_a/test.feature)" in out
+    assert "(data/suite_min/tst_a/test.feature:28)" in out
+    assert os.path.isfile("data/suite_min/tst_a/test.feature")
+
+
+@pytest.mark.usefixtures("isolated", "configured")
+@pytest.mark.parametrize("workspace", [None, "link"])
+def test_github_annotations_are_relative_to_the_workspace(
+    tmp_path, capsys, monkeypatch, workspace
+):
+    monkeypatch.setenv("GITHUB_ACTIONS", "true")
+    if workspace:  # a workspace reached through a symlink
+        (tmp_path / "link").symlink_to(SUITE_MIN.parent, target_is_directory=True)
+        monkeypatch.setenv("GITHUB_WORKSPACE", str(tmp_path / "link"))
+        monkeypatch.chdir(tmp_path)
+    else:  # without one, the working directory
+        monkeypatch.chdir(SUITE_MIN.parent)
+    _main("--testsuite", SUITE_MIN, "--tags", "~@skip")
+    out = capsys.readouterr().out
+    assert "::error file=suite_min/tst_a/test.feature,line=28," in out
 
 
 def test_reports_print_nothing(tmp_path, capsys):
