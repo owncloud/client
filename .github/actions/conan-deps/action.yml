@@ -42,7 +42,6 @@ runs:
         version: 1.3.6
 
     - uses: $/.github/actions/setup-conan
-      id: conan
       with:
         python: ${{ inputs.python }}
 
@@ -74,9 +73,7 @@ runs:
         PYTHON: ${{ inputs.python }}
         GENERATORS_FOLDER: ${{ inputs.generators-folder }}
         CMAKE_GENERATOR: ${{ inputs.cmake-generator }}
-        CONAN_BIN_DIR: ${{ steps.conan.outputs.bin-dir }}
       run: |
-        conan="$CONAN_BIN_DIR/conan"
         generators=()
         if [ -n "$GENERATORS_FOLDER" ]; then
           generators=(-g CMakeDeps -g CMakeToolchain --output-folder "$GENERATORS_FOLDER")
@@ -89,8 +86,8 @@ runs:
             generators+=(-c tools.env.virtualenv:powershell=pwsh)
           fi
         fi
-        "$conan" remote remove "*"
-        "$conan" cache restore "$RUNNER_TEMP/deps/cache.tgz"
+        conan remote remove "*"
+        conan cache restore "$RUNNER_TEMP/deps/cache.tgz"
         # As the dependency builder built it: a cross-built profile (macos-x86_64) with its build
         # profile as -pr:b, so the build-context binaries are the archive's.
         build_profile="$("$PYTHON" conan/fingerprint.py --profile "$PROFILE" --print-build-profile)"
@@ -108,4 +105,4 @@ runs:
                        -c "&:tools.cmake.cmaketoolchain:system_name=")
           fi
         fi
-        "$conan" install . --lockfile=conan.lock "${profiles[@]}" --build=never "${generators[@]}"
+        conan install . --lockfile=conan.lock "${profiles[@]}" --build=never "${generators[@]}"
