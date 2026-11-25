@@ -190,9 +190,10 @@ public:
         auto r = request;
         // don't follow the redirect to owncloud://success
         r.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::ManualRedirectPolicy);
-        // OAuth listens on IPv4 loopback only. On macOS, QNAM resolves "localhost" to ::1 first and
-        // never falls back to 127.0.0.1, so the request hangs. Real browsers do fall back, so only
-        // the fake browser connects to the IPv4 address directly.
+        // OAuth listens on IPv4 loopback only. With Qt 6.8.3 on the GitHub macOS 15 and 26 runners,
+        // a QNAM request to "localhost" (resolved as ::1 first) was observed to hang instead of
+        // falling back to 127.0.0.1; QTcpSocket and Linux are not affected. Real browsers fall back,
+        // so only the fake browser connects to the IPv4 address directly.
         if (r.url().host() == QLatin1String("localhost")) {
             QUrl url = r.url();
             url.setHost(QStringLiteral("127.0.0.1"));
