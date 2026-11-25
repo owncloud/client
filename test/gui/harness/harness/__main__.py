@@ -110,14 +110,20 @@ def main(argv=None):
         {name: os.path.abspath(directory) for name, directory in args.aut},
         dict(args.envvar),
     )
+    html_dirs = [path for kind, path in args.reportgen if kind == "html"]
     reporter = report.Report(
-        html_dirs=[path for kind, path in args.reportgen if kind == "html"],
+        html_dirs=html_dirs,
         junit_paths=[path for kind, path in args.reportgen if kind == "junitxml"],
         stream=sys.stdout,
     )
     try:
         return suite.run_suite(
-            args.testsuite, args.testcase, tag_filter, args.abortOnFail, reporter
+            args.testsuite,
+            args.testcase,
+            tag_filter,
+            args.abortOnFail,
+            reporter,
+            result_dir=html_dirs[0] if html_dirs else "",
         )
     except ValueError as exc:  # the suite's configuration, as an unknown test case
         print(f"{arg_parser.prog}: error: {exc}", file=sys.stderr)

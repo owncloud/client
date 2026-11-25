@@ -6,6 +6,9 @@
 # itself shadows the standard library's ``test`` package.
 # pylint: disable=invalid-name
 
+import os
+
+import squishinfo
 from harness import results
 from harness.results import Results
 from harness.settings import test_settings
@@ -74,6 +77,21 @@ def resultCount(kind):
 
 
 def startVideoCapture():
+    """Record nothing, but create the attachments directory a recording goes to.
+
+    Squish keeps a test case's attachments in ``<resultDir>/<suite>/<test
+    case>/attachments``, or ``<testCase>/attachments`` without a result
+    directory; a suite may remove that directory after the scenario.
+    """
+    if squishinfo.testCase:
+        if squishinfo.resultDir:
+            suite_dir, testcase = os.path.split(squishinfo.testCase)
+            base = os.path.join(
+                squishinfo.resultDir, os.path.basename(suite_dir), testcase
+            )
+        else:
+            base = squishinfo.testCase
+        os.makedirs(os.path.join(base, "attachments"), exist_ok=True)
     log("video capture is not supported; not recording")
 
 

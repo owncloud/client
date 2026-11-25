@@ -5,6 +5,7 @@ import builtins
 import importlib
 import json
 import os
+import shutil
 import sys
 import types
 
@@ -543,3 +544,54 @@ def test_examples_cells_keep_backslashes(tmp_path):
 def test_backslash_pairs_and_escaped_pipes_in_table_rows(row, cells):
     # pylint: disable-next=protected-access
     assert [cell for cell, _ in bdd._split_table_row(row)] == cells
+
+
+# --- squishinfo -----------------------------------------------------------------
+
+SQUISHINFO = """\
+Feature: squishinfo
+
+    Scenario: squishinfo is recorded
+        Given squishinfo is recorded
+"""
+
+SQUISHINFO_STEP = """\
+import squishinfo
+from helpers.EventHelper import record_event
+
+
+@Given('squishinfo is recorded')
+def step(context):
+    record_event('squishinfo', squishinfo.testCase, squishinfo.resultDir)
+"""
+
+
+def _squishinfo_suite(tmp_path):
+    """Test cases tst_b and tst_c that record squishinfo in a step."""
+    suite_dir = copy_suite(tmp_path, SQUISHINFO)
+    (suite_dir / "shared" / "steps" / "info.py").write_text(SQUISHINFO_STEP, "utf-8")
+    shutil.copytree(suite_dir / "tst_b", suite_dir / "tst_c")
+    return suite_dir
+
+
+def test_squishinfo_names_each_test_case_and_the_result_dir(isolated, tmp_path):
+    suite_dir = _squishinfo_suite(tmp_path)
+    result_dir = str(tmp_path / "results")
+    reporter = RecordingReporter()
+    code = suite.run_suite(
+        str(suite_dir), ["tst_b", "tst_c"], reporter=reporter, result_dir=result_dir
+    )
+    assert not code
+    assert [e for e in _events(isolated) if e[0] == "squishinfo"] == [
+        ["squishinfo", str(suite_dir.resolve() / name), result_dir]
+        for name in ("tst_b", "tst_c")
+    ]
+
+
+def test_squishinfo_result_dir_is_empty_without_a_report(isolated, tmp_path):
+    suite_dir = _squishinfo_suite(tmp_path)
+    code, _ = _run(suite_dir, testcases=["tst_b"])
+    assert not code
+    assert [e for e in _events(isolated) if e[0] == "squishinfo"] == [
+        ["squishinfo", str(suite_dir.resolve() / "tst_b"), ""]
+    ]

@@ -32,22 +32,29 @@ def read_key_values(path):
     return values
 
 
-def run_suite(
-    suite_dir, testcases=None, tag_filter=None, abort_on_fail=False, reporter=None
+def run_suite(  # pylint: disable=too-many-arguments,too-many-positional-arguments
+    suite_dir,
+    testcases=None,
+    tag_filter=None,
+    abort_on_fail=False,
+    reporter=None,
+    result_dir="",
 ):
     """Run test cases of a suite (all ``tst_*`` by default).
 
+    ``result_dir`` is where the reports go, as ``squishinfo.resultDir``.
     Returns the exit code: 0 only if nothing failed or errored.
     """
     runner = bdd.Runner(tag_filter, reporter, abort_on_fail)
-    return Suite(suite_dir, runner).run(testcases)
+    return Suite(suite_dir, runner, result_dir).run(testcases)
 
 
 class Suite:
     """One suite run, and the Squish functions its ``test.py`` files call."""
 
-    def __init__(self, suite_dir, runner):
+    def __init__(self, suite_dir, runner, result_dir=""):
         self.dir = Path(suite_dir).resolve()
+        self.result_dir = result_dir
         conf = self.dir / "suite.conf"
         self.conf = read_key_values(conf) if conf.is_file() else {}
         self.scripts_dir = self.dir / "shared" / "scripts"
@@ -80,6 +87,7 @@ class Suite:
             sys.path.insert(0, path)
         builtins_setup.install()
         builtins_setup.install_names(self.builtins())
+        _squishinfo().resultDir = self.result_dir
         results.reset()
         for name in names:
             self._run_testcase(name)
@@ -107,6 +115,7 @@ class Suite:
         code, is an error of that test case; the next one still runs.
         """
         self.testcase_dir = self.dir / name
+        _squishinfo().testCase = str(self.testcase_dir)
         results.begin_test_case()
         start = time.monotonic()
         fails_before = results.run_count("fails")
@@ -219,6 +228,11 @@ class Suite:
 
     def run_feature_file(self, path):
         self.runner.run_feature_file(str(self._resolve(path)))
+
+
+def _squishinfo():
+    """The shim's ``squishinfo``, which the suite imports by that name."""
+    return importlib.import_module("squishinfo")
 
 
 def _namespace(path, name):

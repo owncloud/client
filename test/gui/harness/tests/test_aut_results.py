@@ -202,3 +202,20 @@ def test_install_puts_squish_globals_into_builtins(monkeypatch):
     assert builtins.squishinfo is squishinfo
     # Squish's ``object`` module must never shadow the builtin.
     assert builtins.object is not sys.modules.get("object")
+
+
+@pytest.mark.parametrize("with_result_dir", [False, True])
+def test_video_capture_creates_the_attachments_directory(
+    tmp_path, monkeypatch, with_result_dir
+):
+    # Squish records into the test case's attachments directory, which the
+    # suite removes after the scenario.
+    testcase = tmp_path / "suite" / "tst_a"
+    monkeypatch.setattr(squishinfo, "testCase", str(testcase))
+    result_dir = tmp_path / "results"
+    monkeypatch.setattr(
+        squishinfo, "resultDir", str(result_dir) if with_result_dir else ""
+    )
+    test.startVideoCapture()
+    expected = (result_dir / "suite" / "tst_a") if with_result_dir else testcase
+    assert (expected / "attachments").is_dir()

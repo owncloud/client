@@ -7,6 +7,7 @@ import os
 import sys
 
 import pytest
+import squishinfo
 
 from harness import results
 
@@ -32,3 +33,4 @@ def isolated(tmp_path):
     for name in set(sys.modules) - modules:
         del sys.modules[name]
     results.reset()
+    squishinfo.testCase = squishinfo.resultDir = ""

@@ -254,3 +254,21 @@ def test_control_characters_do_not_break_junit(tmp_path):
     error = ET.parse(junit).getroot().find(".//error")
     assert error.get("message") == "[31mred[0m"
     results.reset()
+
+
+@pytest.mark.usefixtures("isolated", "configured")
+def test_html_report_dir_is_squishinfo_result_dir(tmp_path, monkeypatch):
+    seen = []
+    run_suite = cli.suite.run_suite
+
+    def recording_run_suite(*args, **kwargs):
+        seen.append(kwargs.get("result_dir"))
+        return run_suite(*args, **kwargs)
+
+    monkeypatch.setattr(cli.suite, "run_suite", recording_run_suite)
+    monkeypatch.chdir(tmp_path)
+    junit = tmp_path / "junit.xml"
+    args = ["--testsuite", SUITE_MIN, "--testcase", "tst_a", "--tags", "@smokeTest"]
+    assert _main(*args, "--reportgen", f"junitxml,{junit}") == 0
+    assert _main(*args, "--reportgen", "html,first", "--reportgen", "html,second") == 0
+    assert seen == ["", str(tmp_path / "first")]
