@@ -64,7 +64,9 @@ public:
     /// Runs `input` (a click, key strokes, an activation) from the event loop instead of inside the request, so the
     /// request is answered even if the input opens a modal dialog. Inputs run in order. Requests the client sends
     /// after one wait until all posted input has run or is running in a nested event loop (a modal dialog), so a
-    /// later request sees the input's effects.
+    /// later request sees the input's effects. The request that posted it has been answered already: a failure
+    /// inside `input` (its target gone, no widget, an exception, which is caught) is only logged, to the
+    /// application's log, and the client notices it only as a later timeout.
     void postInput(std::function<void()> input);
 
     /// Adds or replaces a protocol method.
