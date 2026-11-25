@@ -9,40 +9,35 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos-15, macos-26, ubuntu-latest]
+        pyside: ["==6.8.3", "~=6.9.0", "~=6.10.0", ""]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
-      - name: Environment
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - name: Plain sockets (blocking and non-blocking)
         run: |
-          echo "ImageVersion=$ImageVersion"; uname -a
-          echo "--- /etc/hosts"; cat /etc/hosts
-          if command -v dscacheutil >/dev/null; then echo "--- dscacheutil"; dscacheutil -q host -a name localhost; fi
-          if command -v scutil >/dev/null; then echo "--- scutil --proxy"; scutil --proxy; echo "--- scutil --dns"; scutil --dns | head -40; fi
-          echo "--- ifconfig lo0"; ifconfig lo0 2>/dev/null || ip addr show lo
-          env | grep -i proxy || echo "no proxy env"
-      - name: Plain sockets
-        run: |
+          echo "macOS $(sw_vers -productVersion 2>/dev/null) image $ImageVersion"
           python3 - <<'PY'
-          import socket, time, threading
+          import socket, time, threading, selectors, errno
           s = socket.socket(); s.bind(("127.0.0.1", 0)); s.listen(); port = s.getsockname()[1]
-          threading.Thread(target=lambda: [s.accept() for _ in range(4)], daemon=True).start()
-          print("getaddrinfo(localhost):", sorted({a[4][0] for a in socket.getaddrinfo("localhost", port, proto=socket.IPPROTO_TCP)}))
+          threading.Thread(target=lambda: [s.accept() for _ in range(8)], daemon=True).start()
           for fam, addr in ((socket.AF_INET6, "::1"), (socket.AF_INET, "127.0.0.1")):
               c = socket.socket(fam); c.settimeout(10); t = time.monotonic()
               try: c.connect((addr, port)); r = "connected"
               except Exception as e: r = repr(e)
-              print(f"connect {addr}: {r} {time.monotonic()-t:.2f}s")
+              print(f"blocking connect {addr}: {r} {time.monotonic()-t:.3f}s")
+              c = socket.socket(fam); c.setblocking(False); t = time.monotonic()
+              rc = c.connect_ex((addr, port))
+              sel = selectors.DefaultSelector(); sel.register(c, selectors.EVENT_WRITE)
+              ev = sel.select(10)
+              err = c.getsockopt(socket.SOL_SOCKET, socket.SO_ERROR)
+              print(f"non-blocking connect {addr}: connect_ex={errno.errorcode.get(rc, rc)} writable={bool(ev)} SO_ERROR={errno.errorcode.get(err, err)} {time.monotonic()-t:.3f}s")
           PY
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
-        with:
-          python-version: "3.12"
-      - name: Qt 6.8.3 QNAM repro
-        env:
-          QT_LOGGING_RULES: "qt.network.*=true"
+      - name: Qt probe
         run: |
-          pip install -q PySide6-Essentials==6.8.3
+          pip install -q "PySide6-Essentials${{ matrix.pyside }}"
           python -I scripts/repro.py
-          echo "=== with system proxy configuration"
-          python -I -c "from PySide6.QtNetwork import QNetworkProxyFactory as F; F.setUseSystemConfiguration(True); import runpy; runpy.run_path('scripts/repro.py', run_name='__main__')"
