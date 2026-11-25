@@ -22,16 +22,19 @@ from harness.tags import TagFilter
 class RecordingReporter:
     def __init__(self):
         self.calls = []
+        self.locations = []  # (title or step text, location) in call order
 
     def feature_start(self, title, path):
         self.calls.append(("feature_start", title, path))
 
-    def scenario_start(self, title, tags):
+    def scenario_start(self, title, tags, location=None):
         self.calls.append(("scenario_start", title, tags))
+        self.locations.append((title, location))
 
-    def step(self, result, text, message, duration):
+    def step(self, result, text, message, duration, location=None):
         assert duration >= 0
         self.calls.append(("step", result, text, message))
+        self.locations.append((text, location))
 
     def scenario_end(self, record):
         self.calls.append(("scenario_end", record.title, record.failed))
@@ -465,6 +468,102 @@ def test_failing_test_py_is_a_feature_of_its_own(tmp_path):
         str((suite_dir / "tst_b" / "test.py").resolve()),
     )
     assert reporter.calls[1] == ("scenario_start", "tst_b/test.py", [])
+
+
+# --- locations ----------------------------------------------------------------
+
+
+@pytest.mark.usefixtures("isolated")
+def test_scenarios_and_steps_have_their_feature_lines():
+    _, reporter = _run(tags=["~@skip"])
+    feature = str(SUITE_MIN / "tst_a" / "test.feature")
+    located = [(text, loc) for text, loc in reporter.locations if loc]
+    assert all(loc.path == feature for _, loc in located)
+    lines = [(text, loc.line) for text, loc in located]
+    assert lines[:3] == [
+        ("tables, doc strings and user data", 12),
+        ('Given user "Alice" has been created', 9),  # the Background's step
+        ("Given the user has set up the following accounts:", 13),
+    ]
+    assert str(located[0][1]) == f"{feature}:12"
+    # an outline's scenario is its Examples row, its steps are the outline's
+    outline = [i for i, (text, _) in enumerate(lines) if text.startswith("syncing")]
+    assert [lines[i][1] for i in outline] == [37, 38]
+    second = lines[outline[1] :]
+    assert second[2:4] == [
+        ('When the user waits for folder "two" to be synced', 33),
+        ("Then nothing should be remembered", 34),
+    ]
+    # skipped steps keep theirs
+    assert ('Then the remembered value should be "never"', 29) in lines
+
+
+@pytest.mark.usefixtures("isolated")
+def test_hook_steps_and_hook_scenarios_have_no_location(tmp_path):
+    suite_dir = copy_suite(tmp_path, PASSING, end_hooks=True)
+    _, reporter = _run(suite_dir, testcases=["tst_b"])
+    title = "passing feature: OnFeatureEnd"
+    assert [loc for text, loc in reporter.locations if text == title] == [None] * 3
+
+
+# --- several reporters -----------------------------------------------------------
+
+
+class _Broken(bdd.Reporter):
+    def __init__(self, error):
+        self.error = error
+
+    def _raise(self, *_args, **_kwargs):
+        raise self.error
+
+    feature_start = scenario_start = step = scenario_end = _raise
+    attach = interrupted = finish = _raise
+
+
+def test_reporters_forward_every_call_to_each():
+    first, second = RecordingReporter(), RecordingReporter()
+    both = bdd.Reporters([first, second])
+    location = bdd.Location("f.feature", 3)
+    both.feature_start("feature", "f.feature")
+    both.scenario_start("scenario", ["@a"], location)
+    both.step(bdd.PASSED, "Given x", "", 0.1, location=location)
+    both.attach("log.txt")
+    both.scenario_end(results.Results("scenario"))
+    both.interrupted("interrupted: SIGTERM")
+    both.finish()
+    assert first.calls == second.calls
+    assert [c[0] for c in first.calls] == [
+        "feature_start",
+        "scenario_start",
+        "step",
+        "attach",
+        "scenario_end",
+        "interrupted",
+        "finish",
+    ]
+    assert first.locations == [("scenario", location), ("Given x", location)]
+
+
+@pytest.mark.parametrize("error", [RuntimeError("broken"), KeyboardInterrupt()])
+def test_a_failing_reporter_does_not_stop_the_others(error, capsys):
+    after = RecordingReporter()
+    both = bdd.Reporters([_Broken(error), after])
+    with pytest.raises(type(error)):
+        both.step(bdd.FAILED, "Then y", "no", 0.2)
+    with pytest.raises(type(error)):
+        both.finish()
+    assert after.calls == [("step", bdd.FAILED, "Then y", "no"), ("finish",)]
+    err = capsys.readouterr().err
+    if isinstance(error, Exception):
+        assert "[ERROR] reporter _Broken.step failed: RuntimeError: broken" in err
+    else:
+        assert not err
+
+
+def test_reporters_raise_the_first_failure():
+    both = bdd.Reporters([_Broken(ValueError("one")), _Broken(KeyError("two"))])
+    with pytest.raises(ValueError, match="one"):
+        both.finish()
 
 
 # --- backslashes in tables, as Squish passes them -------------------------------

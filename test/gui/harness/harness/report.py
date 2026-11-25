@@ -35,12 +35,14 @@ class Step:
     text: str
     message: str
     duration: float
+    location: object = None  # a bdd.Location, None for a hook
 
 
 @dataclass
 class Scenario:  # pylint: disable=too-many-instance-attributes
     title: str
     tags: list
+    location: object = None  # a bdd.Location, None for a hook's failures
     steps: list = field(default_factory=list)
     attachments: list = field(default_factory=list)
     record: object = None  # the scenario's results.Results
@@ -120,17 +122,17 @@ class Report(bdd.Reporter):
     def feature_start(self, title, path):
         self.features.append(Feature(title, path))
 
-    def scenario_start(self, title, tags):
+    def scenario_start(self, title, tags, location=None):
         if not self.features:
             self.features.append(Feature("", ""))
-        scenario = Scenario(title, list(tags), started=time.monotonic())
+        scenario = Scenario(title, list(tags), location, started=time.monotonic())
         scenario.screenshots_before = _listing(_screenshots_dir())
         self.features[-1].scenarios.append(scenario)
         self._current = self._last = scenario
 
-    def step(self, result, text, message, duration):
+    def step(self, result, text, message, duration, location=None):
         if self._current:
-            self._current.steps.append(Step(result, text, message, duration))
+            self._current.steps.append(Step(result, text, message, duration, location))
 
     def scenario_end(self, record):
         if not (scenario := self._current):

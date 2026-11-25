@@ -13,9 +13,11 @@ applications release their handles.
 """
 
 import re
+import sys
 import time
 import traceback
 from dataclasses import dataclass
+from typing import NamedTuple
 
 from gherkin.parser import Parser
 from gherkin.pickles.compiler import Compiler
@@ -181,6 +183,16 @@ class StepRegistry:
         return definition.fn, definition.args(match)
 
 
+class Location(NamedTuple):
+    """Where a scenario or step is written: a feature file and a 1-based line."""
+
+    path: str
+    line: int
+
+    def __str__(self):
+        return f"{self.path}:{self.line}"
+
+
 class Context:  # pylint: disable=too-few-public-methods
     """The ``context`` that steps and hooks get.
 
@@ -204,14 +216,17 @@ class Reporter:
     """What the runner tells reports about; every method does nothing here.
 
     ``feature_start(title, path)``, then per scenario ``scenario_start(title,
-    tags)``, one ``step(result, text, message, duration)`` per step and
-    ``scenario_end(record)`` with the scenario's ``results.Results``;
-    ``finish()`` once at the end. ``result`` is one of PASSED, FAILED,
-    ERROR or SKIPPED, ``text`` starts with the keyword, ``duration`` is in
-    seconds. A failing hook is reported as a step named after the hook.
-    Failing feature hooks of one kind are reported as one scenario of their
-    own, with a step per failure; a failing ``test.py`` as a feature named
-    after its test case, with one such scenario.
+    tags, location)``, one ``step(result, text, message, duration,
+    location)`` per step and ``scenario_end(record)`` with the scenario's
+    ``results.Results``; ``finish()`` once at the end. ``result`` is one of
+    PASSED, FAILED, ERROR or SKIPPED, ``text`` starts with the keyword,
+    ``duration`` is in seconds. ``location`` is a ``Location``: the
+    scenario's line, or for a Scenario Outline the line of its Examples row,
+    and the step's line. A failing hook is reported as a step named after
+    the hook. Failing feature hooks of one kind are reported as one scenario
+    of their own, with a step per failure; a failing ``test.py`` as a
+    feature named after its test case, with one such scenario. Those have no
+    location: it is None.
     ``attach(path)`` links a file to the running scenario; the suite calls it
     from ``after_scenario`` for the logs of the applications started in it.
     ``interrupted(message)`` comes before ``finish()`` when the run stops
@@ -222,10 +237,10 @@ class Reporter:
     def feature_start(self, title, path):
         pass
 
-    def scenario_start(self, title, tags):
+    def scenario_start(self, title, tags, location=None):
         pass
 
-    def step(self, result, text, message, duration):
+    def step(self, result, text, message, duration, location=None):
         pass
 
     def scenario_end(self, record):
@@ -239,6 +254,57 @@ class Reporter:
 
     def finish(self):
         pass
+
+
+class Reporters(Reporter):
+    """Several reporters as one: each call goes to every one of them, in order.
+
+    A reporter that raises does not keep the others from getting the call.
+    Its exception is reported on stderr, unless it is an interruption such
+    as KeyboardInterrupt, and once all have been called the first exception
+    is raised again.
+    """
+
+    def __init__(self, reporters):
+        self.reporters = list(reporters)
+
+    def _forward(self, method, *args, **kwargs):
+        first = None
+        for reporter in self.reporters:
+            try:
+                getattr(reporter, method)(*args, **kwargs)
+            except BaseException as exc:  # pylint: disable=broad-exception-caught
+                if isinstance(exc, Exception):
+                    print(
+                        f"[ERROR] reporter {type(reporter).__name__}.{method} failed: "
+                        f"{type(exc).__name__}: {exc}",
+                        file=sys.stderr,
+                        flush=True,
+                    )
+                first = first or exc
+        if first is not None:
+            raise first
+
+    def feature_start(self, title, path):
+        self._forward("feature_start", title, path)
+
+    def scenario_start(self, title, tags, location=None):
+        self._forward("scenario_start", title, tags, location)
+
+    def step(self, result, text, message, duration, location=None):
+        self._forward("step", result, text, message, duration, location)
+
+    def scenario_end(self, record):
+        self._forward("scenario_end", record)
+
+    def attach(self, path):
+        self._forward("attach", path)
+
+    def interrupted(self, message):
+        self._forward("interrupted", message)
+
+    def finish(self):
+        self._forward("finish")
 
 
 def outcome(exc, fails_before):
@@ -330,13 +396,13 @@ class Runner:  # pylint: disable=too-many-instance-attributes
                 scenarios.append((pickle, tags))
         if not scenarios:
             return
-        keywords = _step_keywords(feature)
+        nodes = _ast_nodes(feature)
         title = feature["name"]
         context = Context(title)
         self.reporter.feature_start(title, path)
         if self._run_feature_hooks("OnFeatureStart", context):
             for pickle, tags in scenarios:
-                failed = self._run_scenario(pickle, tags, keywords)
+                failed = self._run_scenario(pickle, tags, _Lines(path, nodes))
                 if failed and self.abort_on_fail:
                     self.aborted = True
                     break
@@ -374,7 +440,7 @@ class Runner:  # pylint: disable=too-many-instance-attributes
         for result, message, duration in problems:
             self.reporter.step(result, f"{name} hook", message, duration)
 
-    def _run_scenario(self, pickle, tags, keywords):
+    def _run_scenario(self, pickle, tags, lines):
         """Run one scenario; returns whether it failed.
 
         After a step that raised (an error, or a fail with throwOnFailure)
@@ -382,19 +448,22 @@ class Runner:  # pylint: disable=too-many-instance-attributes
         """
         title = pickle["name"]
         record = results.begin_scenario(title)
-        self.reporter.scenario_start(title, tags)
+        # an outline's pickle names the Examples row last
+        self.reporter.scenario_start(title, tags, lines.at(pickle["astNodeIds"][-1]))
         self.before_scenario()
         context = Context(title)
         problems = self._run_hooks("OnScenarioStart", context, stop_on_error=True)
         self._report_hooks("OnScenarioStart", problems)
         proceed = not problems
         for step in pickle["steps"]:
-            keyword = keywords.get(step["astNodeIds"][0], "")
+            node_id = step["astNodeIds"][0]  # the step; an Examples row follows
+            keyword = lines.keyword(node_id)
             text = f"{keyword} {step['text']}" if keyword else step["text"]
+            location = lines.at(node_id)
             if proceed:
-                proceed = self._run_step(step, text, context)
+                proceed = self._run_step(step, text, context, location)
             else:
-                self.reporter.step(SKIPPED, text, "", 0.0)
+                self.reporter.step(SKIPPED, text, "", 0.0, location)
         context.table = context.multiLineText = None
         self._report_hooks(
             "OnScenarioEnd",
@@ -415,7 +484,7 @@ class Runner:  # pylint: disable=too-many-instance-attributes
                 result, AFTER_SCENARIO_STEP, message, time.monotonic() - start
             )
 
-    def _run_step(self, step, text, context):
+    def _run_step(self, step, text, context, location):
         """Run one step and its step hooks; returns whether the next step runs."""
         argument = step.get("argument", {})
         context.table = None
@@ -430,11 +499,11 @@ class Runner:  # pylint: disable=too-many-instance-attributes
         problems = self._run_hooks("OnStepStart", context, stop_on_error=True)
         self._report_hooks("OnStepStart", problems)
         if problems:
-            self.reporter.step(SKIPPED, text, "", 0.0)
+            self.reporter.step(SKIPPED, text, "", 0.0, location)
             return False
         start = time.monotonic()
         result, message, proceed = self._execute(step["text"], context)
-        self.reporter.step(result, text, message, time.monotonic() - start)
+        self.reporter.step(result, text, message, time.monotonic() - start, location)
         problems = self._run_hooks("OnStepEnd", context, stop_on_error=False)
         self._report_hooks("OnStepEnd", problems)
         return proceed and not problems
@@ -468,13 +537,35 @@ def _nothing():
     pass
 
 
-def _step_keywords(node):
-    """Map the id of each step in a feature (or rule) to its keyword."""
-    keywords = {}
+class _Lines:
+    """The AST nodes of one feature file, looked up by the ids pickles carry."""
+
+    def __init__(self, path, nodes):
+        self.path = path
+        self.nodes = nodes
+
+    def at(self, node_id):
+        node = self.nodes.get(node_id)
+        return Location(self.path, node["location"]["line"]) if node else None
+
+    def keyword(self, node_id):
+        return self.nodes.get(node_id, {}).get("keyword", "").strip()
+
+
+def _ast_nodes(node):
+    """Map the ids of a feature's (or rule's) scenarios, steps and Examples
+    rows to their AST nodes."""
+    nodes = {}
     for child in node.get("children", []):
         for part in (child.get("background"), child.get("scenario")):
-            for step in (part or {}).get("steps", []):
-                keywords[step["id"]] = step["keyword"].strip()
+            if not part:
+                continue
+            nodes[part["id"]] = part
+            for step in part.get("steps", []):
+                nodes[step["id"]] = step
+            for examples in part.get("examples", []):
+                for row in examples.get("tableBody", []):
+                    nodes[row["id"]] = row
         if "rule" in child:
-            keywords.update(_step_keywords(child["rule"]))
-    return keywords
+            nodes.update(_ast_nodes(child["rule"]))
+    return nodes
