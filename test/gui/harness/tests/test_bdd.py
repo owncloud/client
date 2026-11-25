@@ -14,6 +14,7 @@ import pytest
 from suite_copy import SUITE_MIN, copy_suite
 
 from fake_probe import FakeError, FakeProbe
+from harness import __main__ as cli
 from harness import aut, bdd, results, suite
 from harness.tags import TagFilter
 
@@ -588,6 +589,30 @@ def test_squishinfo_names_each_test_case_and_the_result_dir(isolated, tmp_path):
         ["squishinfo", str(suite_dir.resolve() / name), result_dir]
         for name in ("tst_b", "tst_c")
     ]
+
+
+def test_relative_result_dir_is_absolute_in_squishinfo(isolated, tmp_path):
+    suite_dir = _squishinfo_suite(tmp_path)
+    os.chdir(tmp_path)  # isolated changes back
+    code = suite.run_suite(
+        str(suite_dir), ["tst_b"], reporter=RecordingReporter(), result_dir="out/html"
+    )
+    assert not code
+    assert [e[2] for e in _events(isolated) if e[0] == "squishinfo"] == [
+        str(tmp_path / "out" / "html")
+    ]
+
+
+def test_relative_html_report_dir_is_absolute_in_squishinfo(isolated, tmp_path):
+    suite_dir = _squishinfo_suite(tmp_path)
+    os.chdir(tmp_path)  # isolated changes back
+    args = ["--testsuite", str(suite_dir), "--testcase", "tst_b"]
+    assert not cli.main([*args, "--reportgen", "html,test/gui/guiReportUpload"])
+    report_dir = tmp_path / "test" / "gui" / "guiReportUpload"
+    assert [e[2] for e in _events(isolated) if e[0] == "squishinfo"] == [
+        str(report_dir)
+    ]
+    assert (report_dir / "index.html").is_file()
 
 
 def test_squishinfo_result_dir_is_empty_without_a_report(isolated, tmp_path):

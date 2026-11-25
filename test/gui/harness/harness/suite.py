@@ -42,7 +42,8 @@ def run_suite(
 ):
     """Run test cases of a suite (all ``tst_*`` by default).
 
-    ``result_dir`` is where the reports go, as ``squishinfo.resultDir``.
+    ``result_dir`` is where the reports go, as ``squishinfo.resultDir``;
+    a relative one is taken from the current directory.
     Returns the exit code: 0 only if nothing failed or errored.
     """
     runner = bdd.Runner(tag_filter, reporter, abort_on_fail)
@@ -54,7 +55,8 @@ class Suite:
 
     def __init__(self, suite_dir, runner, result_dir=""):
         self.dir = Path(suite_dir).resolve()
-        self.result_dir = result_dir
+        # absolute: test cases run in their own directories
+        self.result_dir = os.path.abspath(result_dir) if result_dir else ""
         conf = self.dir / "suite.conf"
         self.conf = read_key_values(conf) if conf.is_file() else {}
         self.scripts_dir = self.dir / "shared" / "scripts"
