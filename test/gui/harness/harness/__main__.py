@@ -115,20 +115,16 @@ def parser():
     return result
 
 
-def _console(mode):
+def _console(mode, base):
     """The console reporter for a --console mode, or None for quiet."""
     if mode == "auto":
         github = os.environ.get("GITHUB_ACTIONS") == "true"
         mode = console.GITHUB if github else console.PRETTY
     if mode == "quiet":
         return None
-    if mode == console.PRETTY:
-        return console.ConsoleReporter(sys.stdout, mode)
+    summary = os.environ.get("GITHUB_STEP_SUMMARY") if mode == console.GITHUB else None
     return console.ConsoleReporter(
-        sys.stdout,
-        mode,
-        workspace=os.environ.get("GITHUB_WORKSPACE"),
-        step_summary=os.environ.get("GITHUB_STEP_SUMMARY"),
+        sys.stdout, mode, workspace=base, step_summary=summary
     )
 
 
@@ -148,11 +144,15 @@ def main(argv=None):
         log_dir=args.aut_log_dir,
     )
     html_dirs = [path for kind, path in args.reportgen if kind == "html"]
+    # what paths are shown relative to: the repository in GitHub Actions, as
+    # annotations need, else the suite; resolved, as the suite's paths are
+    base = os.environ.get("GITHUB_WORKSPACE") or os.path.realpath(args.testsuite)
     files = report.Report(
         html_dirs=html_dirs,
         junit_paths=[path for kind, path in args.reportgen if kind == "junitxml"],
+        base=base,
     )
-    reporter = bdd.Reporters([files, *filter(None, [_console(args.console)])])
+    reporter = bdd.Reporters([files, *filter(None, [_console(args.console, base)])])
     try:
         return suite.run_suite(
             args.testsuite,

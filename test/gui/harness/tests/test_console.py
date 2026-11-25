@@ -241,3 +241,51 @@ def test_colour_follows_force_color_and_no_color(env, colored, monkeypatch):
     stream = io.StringIO()
     _one_of_each(ConsoleReporter(stream, "pretty"))
     assert ("\x1b[" in stream.getvalue()) == colored
+
+
+# --- what a failing scenario lists --------------------------------------------
+
+
+def test_failing_scenario_lists_its_new_screenshots_and_logs(tmp_path, monkeypatch):
+    shots = tmp_path / "reports" / "screenshots"
+    shots.mkdir(parents=True)
+    (shots / "old.png").write_bytes(b"old")
+    monkeypatch.setenv("GUI_TEST_REPORT_DIR", str(tmp_path / "reports"))
+    monkeypatch.chdir(tmp_path)
+    stream = io.StringIO()
+    reporter = ConsoleReporter(stream, color=False)
+    reporter.feature_start("feature", "/x/test.feature")
+    record = results.begin_scenario("broken")
+    reporter.scenario_start("broken", [])
+    (shots / "broken.png").write_bytes(b"png")
+    reporter.step(bdd.ERROR, "Then it breaks", "RuntimeError: no", 0.1)
+    reporter.attach("client.log")  # relative, as given
+    results.record("errors", "RuntimeError: no")
+    reporter.scenario_end(record)
+    lines = stream.getvalue().splitlines()
+    assert f"    attachment: {tmp_path / 'client.log'}" in lines
+    assert f"    attachment: {shots / 'broken.png'}" in lines
+    assert not any("old.png" in line for line in lines)
+    results.reset()
+
+
+def test_scenario_left_open_is_unfinished_not_the_next_record(tmp_path):
+    stream = io.StringIO()
+    reporter = ConsoleReporter(stream, workspace=str(tmp_path), color=False)
+    reporter.feature_start("feature", str(tmp_path / "test.feature"))
+    results.begin_scenario("left open")
+    reporter.scenario_start("left open", [])
+    reporter.step(bdd.PASSED, "Given a step", "", 0.1)
+    # the runner has moved on, as to a feature hook's record
+    results.begin_scenario("feature: OnFeatureEnd")
+    results.record("errors", "RuntimeError: the end hook broke")
+    reporter.feature_start("next", str(tmp_path / "next.feature"))
+    reporter.finish()
+    lines = stream.getvalue().splitlines()
+    result = _index(lines, r"^✗ left open  \(error, ")
+    assert lines[result + 1 : result + 3] == [
+        "    unfinished",
+        "    the scenario did not finish",
+    ]
+    assert not any("end hook broke" in line for line in lines)
+    results.reset()

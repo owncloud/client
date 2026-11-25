@@ -110,7 +110,8 @@ def test_failure_messages_and_escaping(tmp_path):
     assert list(cases) == ['a <b>bold</b> & "quoted" title', "a failed verification"]
     failure = cases["a failed verification"].find("failure")
     assert "remembered value" in failure.get("message")
-    feature = (tmp_path / "suite" / "tst_b" / "test.feature").resolve()
+    # relative to the suite, so that the reports read the same on every machine
+    feature = "tst_b/test.feature"
     assert f'Then the remembered value should be "that" ({feature}:9)' in failure.text
     page = (html_dir / "index.html").read_text("utf-8")
     assert "a &lt;b&gt;bold&lt;/b&gt; &amp; &quot;quoted&quot; title" in page
@@ -472,7 +473,9 @@ def test_scenario_that_never_ended_is_not_passed():
     rep.step(bdd.PASSED, "Given a step", "", 0.1)
     scenario = rep.scenarios()[0]
     assert scenario.status == report.ERROR
-    assert scenario.problems() == [("unfinished", "the scenario did not finish", "")]
+    assert scenario.problems() == [
+        ("unfinished", None, "the scenario did not finish", "")
+    ]
     assert rep.totals() == {report.PASSED: 0, report.FAILED: 0, report.ERROR: 1}
 
 

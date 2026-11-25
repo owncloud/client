@@ -15,6 +15,7 @@ import sys
 import time
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
+from typing import NamedTuple
 from urllib.parse import quote
 
 from harness import bdd, results
@@ -37,14 +38,24 @@ class Step:
     duration: float
     location: object = None  # a bdd.Location, None for a hook
 
-    @property
-    def title(self):
-        """The step's text, and where it is written."""
-        return f"{self.text} ({self.location})" if self.location else self.text
+
+class Problem(NamedTuple):
+    """What went wrong in a scenario: a failing step, or a failed result."""
+
+    text: str  # the step's text, or what failed
+    location: object  # the step's bdd.Location, or None
+    message: str
+    detail: str
 
 
 @dataclass
 class Scenario:  # pylint: disable=too-many-instance-attributes
+    """One scenario of a run, as reporters collect it.
+
+    ``start`` creates one when the scenario starts, ``end`` completes it;
+    one that never ended has no record and is an error.
+    """
+
     title: str
     tags: list
     location: object = None  # a bdd.Location, None for a hook's failures
@@ -54,6 +65,25 @@ class Scenario:  # pylint: disable=too-many-instance-attributes
     duration: float = 0.0
     started: float = 0.0
     screenshots_before: dict = None
+
+    @classmethod
+    def start(cls, title, tags, location=None):
+        scenario = cls(title, list(tags), location, started=time.monotonic())
+        scenario.screenshots_before = _listing(_screenshots_dir())
+        return scenario
+
+    def end(self, record):
+        """Complete the scenario with its ``results.Results``, None if it did
+        not finish, and attach the screenshots saved since it started."""
+        self.record = record
+        self.duration = time.monotonic() - self.started
+        directory = _screenshots_dir()
+        for name, mtime in sorted(_listing(directory).items()):
+            if (self.screenshots_before or {}).get(name) != mtime:
+                self.attachments.append(os.path.join(directory, name))
+
+    def attach(self, path):
+        self.attachments.append(os.path.abspath(path))
 
     @property
     def status(self):
@@ -69,7 +99,7 @@ class Scenario:  # pylint: disable=too-many-instance-attributes
         return PASSED
 
     def problems(self):
-        """What went wrong, as (title, message, detail) per failing step.
+        """What went wrong, as a Problem per failing step.
 
         A scenario that failed without a failing step, as by ``test.fail``
         in a hook, reports the failed results instead.
@@ -80,18 +110,18 @@ class Scenario:  # pylint: disable=too-many-instance-attributes
                 if entry.kind in ("fails", "errors") and entry.detail:
                     details.setdefault(entry.message, entry.detail)
         problems = [
-            (s.title, s.message, details.get(s.message, ""))
+            Problem(s.text, s.location, s.message, details.get(s.message, ""))
             for s in self.steps
             if s.result in (bdd.FAILED, bdd.ERROR)
         ]
         if not problems and self.record:
             problems = [
-                (e.kind, e.message, e.detail)
+                Problem(e.kind, None, e.message, e.detail)
                 for e in self.record.entries
                 if e.kind in ("fails", "errors")
             ]
         if not problems and self.record is None:
-            problems = [("unfinished", "the scenario did not finish", "")]
+            problems = [Problem("unfinished", None, "the scenario did not finish", "")]
         return problems
 
 
@@ -105,16 +135,52 @@ class Feature:
         return sum(1 for s in self.scenarios if s.status == status)
 
 
+def count_statuses(scenarios):
+    """Scenarios by status."""
+    return {
+        status: sum(1 for s in scenarios if s.status == status)
+        for status in (PASSED, FAILED, ERROR)
+    }
+
+
+def display_path(path, base=None, line=None):
+    """A path relative to ``base`` if it is inside, else absolute; with a line.
+
+    Without ``base`` the path is absolute.
+    """
+    path = os.path.abspath(path)
+    shown = path
+    if base:
+        try:
+            shown = os.path.relpath(path, base)
+        except ValueError:  # another drive
+            shown = path
+        if shown == os.pardir or shown.startswith(os.pardir + os.sep):
+            shown = path
+        shown = shown.replace(os.sep, "/")
+    return f"{shown}:{line}" if line else shown
+
+
+def _titled(problem, base):
+    """A problem's text, and where it is written."""
+    if not problem.location:
+        return problem.text
+    path, line = problem.location
+    return f"{problem.text} ({display_path(path, base, line)})"
+
+
 class Report(bdd.Reporter):
     """Collects a run and writes its reports when it finishes.
 
     ``html_dirs`` each receive an ``index.html``, ``junit_paths`` a JUnit
-    XML file. The console is ``console.ConsoleReporter``'s.
+    XML file. Failing steps name their feature file relative to ``base``,
+    absolute without it. The console is ``console.ConsoleReporter``'s.
     """
 
-    def __init__(self, html_dirs=(), junit_paths=()):
+    def __init__(self, html_dirs=(), junit_paths=(), base=None):
         self.html_dirs = list(html_dirs)
         self.junit_paths = list(junit_paths)
+        self.base = base
         self.features = []
         self._current = None  # the running scenario
         self._last = None  # the scenario attach() adds to outside of one
@@ -127,8 +193,7 @@ class Report(bdd.Reporter):
     def scenario_start(self, title, tags, location=None):
         if not self.features:
             self.features.append(Feature("", ""))
-        scenario = Scenario(title, list(tags), location, started=time.monotonic())
-        scenario.screenshots_before = _listing(_screenshots_dir())
+        scenario = Scenario.start(title, tags, location)
         self.features[-1].scenarios.append(scenario)
         self._current = self._last = scenario
 
@@ -139,12 +204,7 @@ class Report(bdd.Reporter):
     def scenario_end(self, record):
         if not (scenario := self._current):
             return
-        scenario.record = record
-        scenario.duration = time.monotonic() - scenario.started
-        directory = _screenshots_dir()
-        for name, mtime in sorted(_listing(directory).items()):
-            if scenario.screenshots_before.get(name) != mtime:
-                scenario.attachments.append(os.path.join(directory, name))
+        scenario.end(record)
         self._current = None
 
     def interrupted(self, message):
@@ -156,7 +216,7 @@ class Report(bdd.Reporter):
     def attach(self, path):
         """Link a file from the running scenario, or else the last one."""
         if scenario := self._current or self._last:
-            scenario.attachments.append(os.path.abspath(path))
+            scenario.attach(path)
 
     def finish(self):
         """Write every report.
@@ -193,11 +253,7 @@ class Report(bdd.Reporter):
         return [s for f in self.features for s in f.scenarios]
 
     def totals(self):
-        scenarios = self.scenarios()
-        return {
-            status: sum(1 for s in scenarios if s.status == status)
-            for status in (PASSED, FAILED, ERROR)
-        }
+        return count_statuses(self.scenarios())
 
     def junit(self):
         """The run as a JUnit XML element tree: a testsuite per feature."""
@@ -216,7 +272,7 @@ class Report(bdd.Reporter):
             suite.set("time", _seconds(sum(s.duration for s in feature.scenarios)))
             suite.set("file", _xml(feature.path))
             for scenario in feature.scenarios:
-                _junit_testcase(suite, feature, scenario)
+                _junit_testcase(suite, feature, scenario, self.base)
         return root
 
     def html(self, directory):
@@ -236,7 +292,7 @@ class Report(bdd.Reporter):
                 "<tr><th>Status</th><th>Scenario</th><th>Time</th></tr>"
             )
             for scenario in feature.scenarios:
-                parts.append(_html_scenario(scenario, directory))
+                parts.append(_html_scenario(scenario, directory, self.base))
             parts.append("</table></section>")
         parts.append("</body></html>\n")
         return "\n".join(parts)
@@ -312,7 +368,7 @@ def _counts(element, tests, failures, errors):
     element.set("skipped", "0")
 
 
-def _junit_testcase(suite, feature, scenario):
+def _junit_testcase(suite, feature, scenario, base):
     case = ET.SubElement(
         suite,
         "testcase",
@@ -323,12 +379,14 @@ def _junit_testcase(suite, feature, scenario):
     if scenario.status != PASSED:
         problems = scenario.problems()
         tag = "error" if scenario.status == ERROR else "failure"
-        first = problems[0][1] if problems else scenario.status
+        first = problems[0].message if problems else scenario.status
         element = ET.SubElement(case, tag, message=_xml(first), type=scenario.status)
         element.text = _xml(
             "\n\n".join(
                 "\n".join(part for part in (f"{title}: {message}", detail) if part)
-                for title, message, detail in problems
+                for title, message, detail in (
+                    (_titled(p, base), p.message, p.detail) for p in problems
+                )
             )
         )
     lines = [f"{s.result.upper():7} {s.text}" for s in scenario.steps]
@@ -356,7 +414,7 @@ def _link(path, directory):
     return _h(quote(target.replace(os.sep, "/")))
 
 
-def _html_scenario(scenario, directory):
+def _html_scenario(scenario, directory, base):
     status = scenario.status
     tags = " ".join(scenario.tags)
     cells = [
@@ -365,7 +423,8 @@ def _html_scenario(scenario, directory):
     ]
     if tags:
         cells.append(f" <span class=tags>{_h(tags)}</span>")
-    for title, message, detail in scenario.problems():
+    for problem in scenario.problems():
+        title, message, detail = _titled(problem, base), problem.message, problem.detail
         cells.append(f"<div class=problem>{_h(title)}<pre>{_h(message)}</pre>")
         if detail:
             cells.append(

@@ -26,9 +26,8 @@ import re
 import secrets
 import sys
 import time
-from dataclasses import dataclass, field
 
-from harness import bdd, results
+from harness import bdd, report, results
 
 PRETTY = "pretty"
 GITHUB = "github"
@@ -45,37 +44,6 @@ SUMMARY_MESSAGE = 2000
 _MARKS = {PASSED: "✓", FAILED: "✗", ERROR: "✗", bdd.SKIPPED: "-"}
 _ASCII_MARKS = {PASSED: "+", FAILED: "x", ERROR: "x", bdd.SKIPPED: "-"}
 _COLORS = {PASSED: "32", FAILED: "31", ERROR: "33", bdd.SKIPPED: "90", "bold": "1"}
-
-
-@dataclass
-class _Step:
-    result: str
-    text: str
-    message: str
-    location: object
-
-
-@dataclass
-class _Scenario:  # pylint: disable=too-many-instance-attributes
-    title: str
-    location: object
-    feature: object
-    started: float
-    steps: list = field(default_factory=list)
-    attachments: list = field(default_factory=list)
-    status: str = ERROR
-    duration: float = 0.0
-    problems: list = field(default_factory=list)  # _Step per failure
-
-
-@dataclass
-class _Feature:
-    title: str
-    path: str
-    scenarios: list = field(default_factory=list)
-
-    def count(self, status):
-        return sum(1 for s in self.scenarios if s.status == status)
 
 
 class ConsoleReporter(bdd.Reporter):  # pylint: disable=too-many-instance-attributes
@@ -114,7 +82,7 @@ class ConsoleReporter(bdd.Reporter):  # pylint: disable=too-many-instance-attrib
     def feature_start(self, title, path):
         self._stop_commands()
         self._close()
-        self.features.append(_Feature(title, path))
+        self.features.append(report.Feature(title, path))
         heading = f"Feature: {title}  ({self._path(path)})"
         self._write("", self._paint("bold", heading))
 
@@ -122,12 +90,9 @@ class ConsoleReporter(bdd.Reporter):  # pylint: disable=too-many-instance-attrib
         self._stop_commands()
         self._close()
         if not self.features:
-            self.features.append(_Feature("", ""))
-        feature = self.features[-1]
-        self._current = self._last = _Scenario(
-            title, location, feature, time.monotonic()
-        )
-        feature.scenarios.append(self._current)
+            self.features.append(report.Feature("", ""))
+        self._current = self._last = report.Scenario.start(title, tags, location)
+        self.features[-1].scenarios.append(self._current)
         if self.github:
             self._command(f"::group::{escape_data(title)}")
         else:
@@ -136,7 +101,9 @@ class ConsoleReporter(bdd.Reporter):  # pylint: disable=too-many-instance-attrib
     def step(self, result, text, message, duration, location=None):
         self.steps[result] = self.steps.get(result, 0) + 1
         if self._current:
-            self._current.steps.append(_Step(result, text, message, location))
+            self._current.steps.append(
+                report.Step(result, text, message, duration, location)
+            )
         timing = "skipped" if result == bdd.SKIPPED else f"{duration:.1f} s"
         line = f"  {self.marks.get(result, '?')} {text}".ljust(STEP_WIDTH)
         self._write(self._paint(result, f"{line}  {timing}"))
@@ -145,15 +112,13 @@ class ConsoleReporter(bdd.Reporter):  # pylint: disable=too-many-instance-attrib
 
     def attach(self, path):
         if scenario := self._current or self._last:
-            scenario.attachments.append(path)
+            scenario.attach(path)
 
     def scenario_end(self, record):
         if not (scenario := self._current):
             return
         self._current = None
-        scenario.duration = time.monotonic() - scenario.started
-        scenario.status = _status(scenario, record)
-        scenario.problems = _problems(scenario, record)
+        scenario.end(record)
         if self.github:
             self._command("::endgroup::")
         mark = self.marks[scenario.status]
@@ -165,7 +130,8 @@ class ConsoleReporter(bdd.Reporter):  # pylint: disable=too-many-instance-attrib
         )
         if scenario.status == PASSED:
             return
-        for problem in scenario.problems:
+        problems = scenario.problems()
+        for problem in problems:
             where = f"  ({self._path(*problem.location)})" if problem.location else ""
             self._write(f"    {problem.text}{where}")
             if problem.message:
@@ -173,7 +139,7 @@ class ConsoleReporter(bdd.Reporter):  # pylint: disable=too-many-instance-attrib
         for path in scenario.attachments:
             self._write(f"    attachment: {path}")
         if self.github:
-            self._annotate(scenario)
+            self._annotate(scenario, problems)
 
     def interrupted(self, message):
         """End the running scenario as an error: the run stopped in it."""
@@ -185,7 +151,7 @@ class ConsoleReporter(bdd.Reporter):  # pylint: disable=too-many-instance-attrib
         """Print the summary, append the job summary, let commands run again."""
         self._close()
         scenarios = [s for f in self.features for s in f.scenarios]
-        totals = _totals(scenarios)
+        totals = report.count_statuses(scenarios)
         elapsed = time.monotonic() - self._started
         self._write(
             "",
@@ -195,14 +161,10 @@ class ConsoleReporter(bdd.Reporter):  # pylint: disable=too-many-instance-attrib
             f"{self.steps[FAILED]} failed, {self.steps[ERROR]} errors, "
             f"{self.steps[bdd.SKIPPED]} skipped",
         )
-        if failing := [s for s in scenarios if s.status != PASSED]:
+        if failing := self._failing():
             self._write("", "Failing scenarios:")
-            for scenario in failing:
-                where = (
-                    self._path(*scenario.location)
-                    if scenario.location
-                    else self._path(scenario.feature.path)
-                )
+            for feature, scenario in failing:
+                where = self._path(*(scenario.location or (feature.path,)))
                 self._write(
                     self._paint(scenario.status, f"  {where}  {scenario.title}")
                 )
@@ -214,10 +176,19 @@ class ConsoleReporter(bdd.Reporter):  # pylint: disable=too-many-instance-attrib
 
     # -- output ------------------------------------------------------------------
 
+    def _failing(self):
+        """(feature, scenario) for each scenario that did not pass."""
+        return [
+            (f, s) for f in self.features for s in f.scenarios if s.status != PASSED
+        ]
+
     def _close(self):
-        """End a scenario that is still open, so that its group closes."""
+        """End a scenario that is still open, so that its group closes.
+
+        It did not finish: the results the runner records by now are not its.
+        """
         if self._current:
-            self.scenario_end(results.current())
+            self.scenario_end(None)
 
     def _stop_commands(self):
         """Stop workflow commands for the run, once, in github mode."""
@@ -234,11 +205,12 @@ class ConsoleReporter(bdd.Reporter):  # pylint: disable=too-many-instance-attrib
         else:
             self._write(*commands)
 
-    def _annotate(self, scenario):
-        problem = scenario.problems[0] if scenario.problems else None
+    def _annotate(self, scenario, problems):
+        """An error annotation at the first problem, in the current feature."""
+        problem = problems[0] if problems else None
         location = (problem and problem.location) or scenario.location
         properties = {
-            "file": self._path(location.path if location else scenario.feature.path)
+            "file": self._path(location.path if location else self.features[-1].path)
         }
         if location:
             properties["line"] = str(location.line)
@@ -260,15 +232,15 @@ class ConsoleReporter(bdd.Reporter):  # pylint: disable=too-many-instance-attrib
                 f"| {_md(feature.title)} | {feature.count(PASSED)} | "
                 f"{feature.count(FAILED)} | {feature.count(ERROR)} | {duration:.1f} s |"
             )
-        if failing := [s for s in scenarios if s.status != PASSED]:
+        if failing := self._failing():
             lines += ["", "#### Failing scenarios"]
-        for scenario in failing:
+        for feature, scenario in failing:
             lines += [
                 "",
-                f"**{_md(scenario.feature.title)}: {_md(scenario.title)}** "
+                f"**{_md(feature.title)}: {_md(scenario.title)}** "
                 f"({scenario.status})",
             ]
-            for problem in scenario.problems:
+            for problem in scenario.problems():
                 where = (
                     f" <code>{html.escape(self._path(*problem.location))}</code>"
                     if problem.location
@@ -295,15 +267,7 @@ class ConsoleReporter(bdd.Reporter):  # pylint: disable=too-many-instance-attrib
 
     def _path(self, path, line=None):
         """A path relative to the workspace if it is inside, with a line."""
-        path = os.path.abspath(path)
-        try:
-            relative = os.path.relpath(path, self.workspace)
-        except ValueError:  # another drive
-            relative = path
-        if relative == os.pardir or relative.startswith(os.pardir + os.sep):
-            relative = path
-        relative = relative.replace(os.sep, "/")
-        return f"{relative}:{line}" if line else relative
+        return report.display_path(path, self.workspace, line)
 
     def _paint(self, kind, text):
         if not self.color or kind not in _COLORS:
@@ -332,36 +296,6 @@ def _properties(properties):
     return ",".join(
         f"{key}={escape_property(value)}" for key, value in properties.items()
     )
-
-
-def _status(scenario, record):
-    """As in the reports: an error over a failure, from steps and results."""
-    kinds = {e.kind for e in record.entries} if record else {"errors"}
-    step_results = {s.result for s in scenario.steps}
-    if ERROR in step_results or "errors" in kinds:
-        return ERROR
-    if FAILED in step_results or "fails" in kinds:
-        return FAILED
-    return PASSED
-
-
-def _problems(scenario, record):
-    """The failing steps; else the failed results, as of a hook's test.fail."""
-    problems = [s for s in scenario.steps if s.result in (FAILED, ERROR)]
-    if not problems and record:
-        problems = [
-            _Step(e.kind, e.kind, e.message, None)
-            for e in record.entries
-            if e.kind in ("fails", "errors")
-        ]
-    return problems
-
-
-def _totals(scenarios):
-    return {
-        status: sum(1 for s in scenarios if s.status == status)
-        for status in (PASSED, FAILED, ERROR)
-    }
 
 
 def _indent(text, width):
