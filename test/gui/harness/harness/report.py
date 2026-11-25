@@ -3,7 +3,7 @@
 """Reports of a run: progress and a summary as text, HTML and JUnit XML.
 
 ``Report`` is a ``bdd.Reporter``. It collects features, scenarios and their
-steps while the suite runs and writes the files when the run finishes.
+steps while the suite runs and writes the files when the run finishes, or stops.
 Screenshots that hooks save under ``$GUI_TEST_REPORT_DIR/screenshots``
 while a scenario runs are attached to that scenario.
 """
@@ -11,6 +11,7 @@ while a scenario runs are attached to that scenario.
 import html
 import os
 import re
+import sys
 import time
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
@@ -146,17 +147,35 @@ class Report(bdd.Reporter):
             scenario.attachments.append(os.path.abspath(path))
 
     def finish(self):
+        """Write every report, and the summary to the stream.
+
+        Each file is written whole or not at all. A report that cannot be
+        written is reported on stderr and does not keep the others from
+        being written; RuntimeError names them all at the end.
+        """
+        failed = []
         for directory in self.html_dirs:
-            os.makedirs(directory, exist_ok=True)
             path = os.path.join(directory, "index.html")
-            with open(path, "w", encoding="utf-8") as stream:
-                stream.write(self.html(directory))
+            if not _write_file(path, self._html_writer(directory)):
+                failed.append(path)
         for path in self.junit_paths:
-            if parent := os.path.dirname(path):
-                os.makedirs(parent, exist_ok=True)
-            ET.ElementTree(self.junit()).write(path, "utf-8", xml_declaration=True)
+            if not _write_file(path, self._junit_writer):
+                failed.append(path)
         if self.stream:
             self._write(self.summary())
+        if failed:
+            raise RuntimeError(
+                f"{len(failed)} reports could not be written: {', '.join(failed)}"
+            )
+
+    def _html_writer(self, directory):
+        def write(stream):
+            stream.write(self.html(directory).encode("utf-8"))
+
+        return write
+
+    def _junit_writer(self, stream):
+        ET.ElementTree(self.junit()).write(stream, "utf-8", xml_declaration=True)
 
     # -- outputs -----------------------------------------------------------------
 
@@ -236,6 +255,37 @@ class Report(bdd.Reporter):
 
     def _write(self, text):
         print(text, file=self.stream, flush=True)
+
+
+def _write_file(path, write):
+    """Write a file through a temporary one beside it; False if that failed.
+
+    ``write`` gets the binary stream. The file is replaced only once it is
+    complete, so an interrupted or failed write leaves the previous one.
+    """
+    # beside the file, so that os.replace does not cross file systems; opened
+    # as usual, so that it gets the permissions a new report file would
+    temp = f"{path}.{os.getpid()}.tmp"
+    created = False
+    try:
+        os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
+        with open(temp, "wb") as stream:
+            created = True
+            write(stream)
+        os.replace(temp, path)
+        return True
+    except Exception as exc:  # pylint: disable=broad-exception-caught
+        print(
+            f"[ERROR] cannot write report {path}: {type(exc).__name__}: {exc}",
+            file=sys.stderr,
+            flush=True,
+        )
+        if created:
+            try:
+                os.unlink(temp)
+            except OSError:
+                pass
+        return False
 
 
 def _screenshots_dir():

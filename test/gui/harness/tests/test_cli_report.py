@@ -2,13 +2,15 @@
 # SPDX-License-Identifier: MIT
 
 import os
+import sys
 import xml.etree.ElementTree as ET
 
 import pytest
 from suite_copy import SUITE_MIN, copy_suite
 
 from harness import __main__ as cli
-from harness import aut, bdd, report, results
+from harness import aut, bdd, report, results, suite
+from harness.tags import TagFilter
 
 ENVVAR = "QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false"
 
@@ -272,3 +274,72 @@ def test_html_report_dir_is_squishinfo_result_dir(tmp_path, monkeypatch):
     assert _main(*args, "--reportgen", f"junitxml,{junit}") == 0
     assert _main(*args, "--reportgen", "html,first", "--reportgen", "html,second") == 0
     assert seen == ["", str(tmp_path / "first")]
+
+
+# --- writing reports when the run does not finish -------------------------------
+
+
+class _InterruptedAfterFirstScenario(report.Report):
+    def scenario_end(self, record):
+        super().scenario_end(record)
+        raise KeyboardInterrupt
+
+
+@pytest.mark.usefixtures("isolated", "configured")
+def test_interrupted_run_still_writes_its_reports(tmp_path, capsys):
+    junit, html_dir = tmp_path / "junit.xml", tmp_path / "html"
+    rep = _InterruptedAfterFirstScenario(
+        html_dirs=[str(html_dir)], junit_paths=[str(junit)], stream=sys.stdout
+    )
+    with pytest.raises(KeyboardInterrupt):
+        suite.run_suite(str(SUITE_MIN), tag_filter=TagFilter(["~@skip"]), reporter=rep)
+    assert [t.get("name") for t in _testcases(junit)] == SUITE_MIN_TITLES[:1]
+    assert SUITE_MIN_TITLES[0] in (html_dir / "index.html").read_text("utf-8")
+    assert "1 scenarios: 1 passed" in capsys.readouterr().out
+
+
+def test_failing_writer_does_not_skip_the_others(tmp_path, capsys):
+    blocked = tmp_path / "blocked"
+    blocked.write_text("a file where a directory should be", "utf-8")
+    junit, html_dir = tmp_path / "junit.xml", tmp_path / "html"
+    rep = report.Report(
+        html_dirs=[str(blocked), str(html_dir)],
+        junit_paths=[str(blocked / "junit.xml"), str(junit)],
+        stream=None,
+    )
+    rep.feature_start("feature", "/x/test.feature")
+    for _ in _scenario(rep, "fine", bdd.PASSED):
+        pass
+    with pytest.raises(RuntimeError, match="2 reports could not be written"):
+        rep.finish()
+    assert (html_dir / "index.html").is_file()
+    assert [t.get("name") for t in _testcases(junit)] == ["fine"]
+    err = capsys.readouterr().err.splitlines()
+    assert [line.split(":")[0] for line in err] == [
+        f"[ERROR] cannot write report {blocked / name}"
+        for name in ("index.html", "junit.xml")
+    ]
+    results.reset()
+
+
+def test_report_files_are_replaced_whole(tmp_path, monkeypatch):
+    junit, html_dir = tmp_path / "junit.xml", tmp_path / "html"
+    html_dir.mkdir()
+    (html_dir / "index.html").write_text("previous run", "utf-8")
+    junit.write_text("previous run", "utf-8")
+    rep = report.Report(html_dirs=[str(html_dir)], junit_paths=[str(junit)])
+
+    def broken(*_):
+        raise RuntimeError("cannot render")
+
+    monkeypatch.setattr(rep, "html", broken)
+    monkeypatch.setattr(ET.ElementTree, "write", broken)
+    with pytest.raises(RuntimeError, match="2 reports could not be written"):
+        rep.finish()
+    assert (html_dir / "index.html").read_text("utf-8") == "previous run"
+    assert junit.read_text("utf-8") == "previous run"
+    assert sorted(p.name for p in tmp_path.rglob("*")) == [
+        "html",
+        "index.html",
+        "junit.xml",
+    ]

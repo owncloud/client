@@ -92,13 +92,29 @@ class Suite:
         builtins_setup.install_names(self.builtins())
         _squishinfo().resultDir = self.result_dir
         results.reset()
-        for name in names:
-            self._run_testcase(name)
-            if self.runner.aborted:
-                break
+        try:
+            for name in names:
+                self._run_testcase(name)
+                if self.runner.aborted:
+                    break
+        except BaseException:
+            # interrupted, or the reporter failed: report what ran so far
+            self._finish_reports()
+            raise
         self.runner.reporter.finish()
         failed = results.run_count("fails") + results.run_count("errors")
         return 1 if failed else 0
+
+    def _finish_reports(self):
+        """Finish the reports without hiding the exception that stopped the run."""
+        try:
+            self.runner.reporter.finish()
+        except Exception as exc:  # pylint: disable=broad-exception-caught
+            print(
+                f"[ERROR] finishing the reports failed: {type(exc).__name__}: {exc}",
+                file=sys.stderr,
+                flush=True,
+            )
 
     def builtins(self):
         """Squish's BDD entry points, by their Squish names."""
