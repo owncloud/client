@@ -39,6 +39,8 @@ jobs:
         with:
           python-version: "3.12"
       - name: Qt 6.8.3 QNAM repro
+        env:
+          QT_LOGGING_RULES: "qt.network.*=true"
         run: |
           pip install -q PySide6-Essentials==6.8.3
           python -I scripts/repro.py
