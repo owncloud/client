@@ -67,6 +67,14 @@ and an unlocked Secret Service keyring (gnome-keyring), since the client keeps i
    environment (e.g. `--envvar QT_LOGGING_RULES=sync.httplogger=true`), and `--reportgen html,DIR` or
    `--reportgen junitxml,FILE`. `python3.10 -m harness --help` lists them all.
 
+   The console shows each feature, scenario and step as it finishes, with the failing steps' lines and
+   messages after each scenario that did not pass, and a summary at the end. `--console quiet` prints
+   none of it, and in GitHub Actions (`GITHUB_ACTIONS=true`) `--console` defaults to `github`: each
+   scenario is a collapsed group with its result after it, a failing scenario gets an error annotation at
+   its step, and the job summary gets a table per feature. While the run lasts, only the harness's own
+   workflow commands take effect, not ones the tests or the client print. `--console pretty` prints the
+   plain form there too.
+
    The client writes its log to its standard output (`--logfile -`), so by default it shows up between
    the test results. `--aut-log-dir DIR` writes the standard output and error of each client launch to
    `DIR/<test case>/<NN>-<name>.log` instead (`NN` counts the launches in that test case), and the HTML

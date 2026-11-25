@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 ownCloud GmbH - A Kiteworks Company and ownCloud contributors
 # SPDX-License-Identifier: MIT
-"""Reports of a run: progress and a summary as text, HTML and JUnit XML.
+"""Reports of a run as files: HTML and JUnit XML.
 
 ``Report`` is a ``bdd.Reporter``. It collects features, scenarios and their
 steps while the suite runs and writes the files when the run finishes, or stops.
@@ -36,6 +36,11 @@ class Step:
     message: str
     duration: float
     location: object = None  # a bdd.Location, None for a hook
+
+    @property
+    def title(self):
+        """The step's text, and where it is written."""
+        return f"{self.text} ({self.location})" if self.location else self.text
 
 
 @dataclass
@@ -75,7 +80,7 @@ class Scenario:  # pylint: disable=too-many-instance-attributes
                 if entry.kind in ("fails", "errors") and entry.detail:
                     details.setdefault(entry.message, entry.detail)
         problems = [
-            (s.text, s.message, details.get(s.message, ""))
+            (s.title, s.message, details.get(s.message, ""))
             for s in self.steps
             if s.result in (bdd.FAILED, bdd.ERROR)
         ]
@@ -104,18 +109,15 @@ class Report(bdd.Reporter):
     """Collects a run and writes its reports when it finishes.
 
     ``html_dirs`` each receive an ``index.html``, ``junit_paths`` a JUnit
-    XML file. ``stream`` gets a line per scenario and a summary at the end;
-    None keeps it quiet.
+    XML file. The console is ``console.ConsoleReporter``'s.
     """
 
-    def __init__(self, html_dirs=(), junit_paths=(), stream=None):
+    def __init__(self, html_dirs=(), junit_paths=()):
         self.html_dirs = list(html_dirs)
         self.junit_paths = list(junit_paths)
-        self.stream = stream
         self.features = []
         self._current = None  # the running scenario
         self._last = None  # the scenario attach() adds to outside of one
-        self._started = time.monotonic()
 
     # -- bdd.Reporter ------------------------------------------------------------
 
@@ -144,11 +146,6 @@ class Report(bdd.Reporter):
             if scenario.screenshots_before.get(name) != mtime:
                 scenario.attachments.append(os.path.join(directory, name))
         self._current = None
-        if self.stream:
-            self._write(
-                f"{scenario.status.upper():7} {scenario.title} "
-                f"({scenario.duration:.1f} s)"
-            )
 
     def interrupted(self, message):
         """End the running scenario, if any, as an error: the run stopped in it."""
@@ -162,7 +159,7 @@ class Report(bdd.Reporter):
             scenario.attachments.append(os.path.abspath(path))
 
     def finish(self):
-        """Write every report, and the summary to the stream.
+        """Write every report.
 
         Each file is written whole or not at all. A report that cannot be
         written is reported on stderr and does not keep the others from
@@ -176,8 +173,6 @@ class Report(bdd.Reporter):
         for path in self.junit_paths:
             if not _write_file(path, self._junit_writer):
                 failed.append(path)
-        if self.stream:
-            self._write(self.summary())
         if failed:
             raise RuntimeError(
                 f"{len(failed)} reports could not be written: {', '.join(failed)}"
@@ -203,28 +198,6 @@ class Report(bdd.Reporter):
             status: sum(1 for s in scenarios if s.status == status)
             for status in (PASSED, FAILED, ERROR)
         }
-
-    def summary(self):
-        """The text summary: totals, then each scenario that did not pass."""
-        totals = self.totals()
-        lines = [
-            "",
-            f"{len(self.scenarios())} scenarios: {totals[PASSED]} passed, "
-            f"{totals[FAILED]} failed, {totals[ERROR]} errors "
-            f"in {time.monotonic() - self._started:.1f} s",
-        ]
-        for feature in self.features:
-            for scenario in feature.scenarios:
-                if scenario.status == PASSED:
-                    continue
-                lines.append(
-                    f"{scenario.status.upper():7} {feature.title}: {scenario.title}"
-                )
-                for title, message, _ in scenario.problems():
-                    lines.append(f"    {title}: {message}")
-                for path in scenario.attachments:
-                    lines.append(f"    attachment: {path}")
-        return "\n".join(lines)
 
     def junit(self):
         """The run as a JUnit XML element tree: a testsuite per feature."""
@@ -267,9 +240,6 @@ class Report(bdd.Reporter):
             parts.append("</table></section>")
         parts.append("</body></html>\n")
         return "\n".join(parts)
-
-    def _write(self, text):
-        print(text, file=self.stream, flush=True)
 
 
 def _write_file(path, write):

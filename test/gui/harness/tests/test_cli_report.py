@@ -12,6 +12,7 @@ from suite_copy import SUITE_MIN, copy_suite
 
 from harness import __main__ as cli
 from harness import aut, bdd, report, results, suite
+from harness.console import ConsoleReporter
 from harness.tags import TagFilter
 
 HARNESS_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -109,12 +110,14 @@ def test_failure_messages_and_escaping(tmp_path):
     assert list(cases) == ['a <b>bold</b> & "quoted" title', "a failed verification"]
     failure = cases["a failed verification"].find("failure")
     assert "remembered value" in failure.get("message")
-    assert 'Then the remembered value should be "that"' in failure.text
+    feature = (tmp_path / "suite" / "tst_b" / "test.feature").resolve()
+    assert f'Then the remembered value should be "that" ({feature}:9)' in failure.text
     page = (html_dir / "index.html").read_text("utf-8")
     assert "a &lt;b&gt;bold&lt;/b&gt; &amp; &quot;quoted&quot; title" in page
     assert "second &lt;feature&gt; &amp; co" in page
     assert "<b>bold" not in page
     assert "remembered value" in page
+    assert f"{feature}:9" in page
 
 
 @pytest.mark.usefixtures("isolated", "configured")
@@ -183,9 +186,49 @@ def test_without_reports_a_summary_goes_to_stdout(tmp_path, capsys, monkeypatch)
     code = _main("--testsuite", SUITE_MIN, "--tags", "~@skip")
     assert code == 1
     out = capsys.readouterr().out
-    assert "4 scenarios: 3 passed, 0 failed, 1 errors" in out
+    assert "4 scenarios: 3 passed, 0 failed, 1 errors (" in out
+    assert "16 steps: 14 passed, 0 failed, 1 errors, 1 skipped" in out
+    assert "Feature: minimal suite  (" in out
     assert "the application under test crashed" in out
+    assert "::" not in out
     assert [p.name for p in tmp_path.iterdir()] == ["events.jsonl"]
+
+
+@pytest.mark.usefixtures("isolated", "configured")
+def test_quiet_console_prints_nothing_and_writes_the_reports(tmp_path, capsys):
+    junit = tmp_path / "junit.xml"
+    args = ["--testsuite", SUITE_MIN, "--tags", "~@skip", "--console", "quiet"]
+    assert _main(*args, "--reportgen", f"junitxml,{junit}") == 1
+    out = capsys.readouterr().out
+    assert "Feature:" not in out and "scenarios:" not in out
+    assert [c.get("name") for c in _testcases(junit)] == SUITE_MIN_TITLES
+
+
+@pytest.mark.usefixtures("isolated", "configured")
+@pytest.mark.parametrize(
+    "console", [[], ["--console", "github"], ["--console", "pretty"]]
+)
+def test_github_actions_get_the_github_console(tmp_path, capsys, monkeypatch, console):
+    summary = tmp_path / "summary.md"
+    monkeypatch.setenv("GITHUB_ACTIONS", "true")
+    monkeypatch.setenv("GITHUB_WORKSPACE", str(SUITE_MIN.parent))
+    monkeypatch.setenv("GITHUB_STEP_SUMMARY", str(summary))
+    _main("--testsuite", SUITE_MIN, "--tags", "~@skip", *console)
+    out = capsys.readouterr().out
+    github = console != ["--console", "pretty"]
+    assert ("::group::the application crashes" in out) == github
+    assert ("::error file=suite_min/tst_a/test.feature,line=28," in out) == github
+    assert summary.exists() == github
+
+
+def test_reports_print_nothing(tmp_path, capsys):
+    rep = report.Report(junit_paths=[str(tmp_path / "junit.xml")])
+    rep.feature_start("feature", "/x/test.feature")
+    for _ in _scenario(rep, "broken", bdd.FAILED, "it broke"):
+        pass
+    rep.finish()
+    assert not capsys.readouterr().out
+    results.reset()
 
 
 @pytest.mark.parametrize(
@@ -196,6 +239,7 @@ def test_without_reports_a_summary_goes_to_stdout(tmp_path, capsys, monkeypatch)
         ["--reportgen", "xml3.4,out"],
         ["--reportgen", "html"],
         ["--tags", "skip"],
+        ["--console", "loud"],
     ],
 )
 def test_bad_arguments_exit_with_2(args, capsys):
@@ -238,7 +282,7 @@ def test_new_screenshots_are_linked_from_their_scenario(tmp_path, monkeypatch):
     shots.mkdir(parents=True)
     (shots / "old.png").write_bytes(b"old")
     monkeypatch.setenv("GUI_TEST_REPORT_DIR", str(report_dir))
-    rep = report.Report(html_dirs=[str(report_dir)], stream=None)
+    rep = report.Report(html_dirs=[str(report_dir)])
     rep.feature_start("feature", "/x/test.feature")
     for _ in _scenario(rep, "broken", bdd.FAILED, "it <broke>"):
         (shots / "broken.png").write_bytes(b"png")
@@ -258,7 +302,7 @@ def test_new_screenshots_are_linked_from_their_scenario(tmp_path, monkeypatch):
 
 def test_control_characters_do_not_break_junit(tmp_path):
     junit = tmp_path / "j.xml"
-    rep = report.Report(junit_paths=[str(junit)], stream=None)
+    rep = report.Report(junit_paths=[str(junit)])
     rep.feature_start("feature", "/x/test.feature")
     for _ in _scenario(rep, "ansi", bdd.ERROR, "\x1b[31mred\x1b[0m\x00"):
         pass
@@ -299,10 +343,13 @@ class _InterruptedAfterFirstScenario(report.Report):
 def test_interrupted_run_still_writes_its_reports(tmp_path, capsys):
     junit, html_dir = tmp_path / "junit.xml", tmp_path / "html"
     rep = _InterruptedAfterFirstScenario(
-        html_dirs=[str(html_dir)], junit_paths=[str(junit)], stream=sys.stdout
+        html_dirs=[str(html_dir)], junit_paths=[str(junit)]
     )
+    reporters = bdd.Reporters([rep, ConsoleReporter(sys.stdout)])
     with pytest.raises(KeyboardInterrupt):
-        suite.run_suite(str(SUITE_MIN), tag_filter=TagFilter(["~@skip"]), reporter=rep)
+        suite.run_suite(
+            str(SUITE_MIN), tag_filter=TagFilter(["~@skip"]), reporter=reporters
+        )
     assert [t.get("name") for t in _testcases(junit)] == SUITE_MIN_TITLES[:1]
     assert SUITE_MIN_TITLES[0] in (html_dir / "index.html").read_text("utf-8")
     assert "1 scenarios: 1 passed" in capsys.readouterr().out
@@ -363,7 +410,13 @@ def _assert_reports_of_interrupted_run(tmp_path, out, how):
         "the run stops here" in page
     )
     assert "2 scenarios: 1 passed, 0 failed, 1 errors" in out
-    assert "ERROR   interrupted: the run stops here" in out
+    lines = out.splitlines()
+    result = next(i for i, line in enumerate(lines) if "✗ the run stops here" in line)
+    assert lines[result].startswith("✗ the run stops here  (error, ")
+    assert lines[result + 1 : result + 3] == [
+        "    interrupted",
+        f"    interrupted: {how}",
+    ]
 
 
 @pytest.mark.usefixtures("isolated", "configured")
@@ -430,7 +483,6 @@ def test_failing_writer_does_not_skip_the_others(tmp_path, capsys):
     rep = report.Report(
         html_dirs=[str(blocked), str(html_dir)],
         junit_paths=[str(blocked / "junit.xml"), str(junit)],
-        stream=None,
     )
     rep.feature_start("feature", "/x/test.feature")
     for _ in _scenario(rep, "fine", bdd.PASSED):

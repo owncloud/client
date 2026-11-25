@@ -4,19 +4,20 @@
 
 Run a suite with ``python -m harness --testsuite DIR`` and optionally
 ``--testcase NAME``, ``--tags EXPR``, ``--abortOnFail``, ``--envvar K=V``,
-``--aut NAME=DIR``, ``--aut-log-dir DIR`` and ``--reportgen html,DIR`` or
-``--reportgen junitxml,FILE``. The exit code is 0 only if nothing failed or
-errored.
+``--aut NAME=DIR``, ``--aut-log-dir DIR``, ``--reportgen html,DIR`` or
+``--reportgen junitxml,FILE`` and ``--console MODE``. The exit code is 0 only
+if nothing failed or errored.
 """
 
 import argparse
 import os
 import sys
 
-from harness import aut, report, suite
+from harness import aut, bdd, console, report, suite
 from harness.tags import TagFilter
 
 REPORT_FORMATS = ("html", "junitxml")
+CONSOLE_MODES = ("auto", console.PRETTY, console.GITHUB, "quiet")
 
 
 def _key_value(what):
@@ -102,7 +103,33 @@ def parser():
         help="html,DIR writes DIR/index.html; junitxml,FILE writes JUnit XML "
         "(repeatable)",
     )
+    add(
+        "--console",
+        choices=CONSOLE_MODES,
+        default="auto",
+        help="the run on the console: pretty prints features, scenarios and steps; "
+        "github adds groups, annotations and a job summary for GitHub Actions; "
+        "quiet prints nothing; auto (default) is github where GITHUB_ACTIONS is "
+        "true, else pretty",
+    )
     return result
+
+
+def _console(mode):
+    """The console reporter for a --console mode, or None for quiet."""
+    if mode == "auto":
+        github = os.environ.get("GITHUB_ACTIONS") == "true"
+        mode = console.GITHUB if github else console.PRETTY
+    if mode == "quiet":
+        return None
+    if mode == console.PRETTY:
+        return console.ConsoleReporter(sys.stdout, mode)
+    return console.ConsoleReporter(
+        sys.stdout,
+        mode,
+        workspace=os.environ.get("GITHUB_WORKSPACE"),
+        step_summary=os.environ.get("GITHUB_STEP_SUMMARY"),
+    )
 
 
 def main(argv=None):
@@ -121,11 +148,11 @@ def main(argv=None):
         log_dir=args.aut_log_dir,
     )
     html_dirs = [path for kind, path in args.reportgen if kind == "html"]
-    reporter = report.Report(
+    files = report.Report(
         html_dirs=html_dirs,
         junit_paths=[path for kind, path in args.reportgen if kind == "junitxml"],
-        stream=sys.stdout,
     )
+    reporter = bdd.Reporters([files, *filter(None, [_console(args.console)])])
     try:
         return suite.run_suite(
             args.testsuite,
