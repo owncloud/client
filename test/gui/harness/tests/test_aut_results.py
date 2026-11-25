@@ -8,6 +8,7 @@ import os
 import stat
 import sys
 import test  # the shim's, first on sys.path
+import threading
 import time
 from pathlib import Path
 
@@ -203,6 +204,42 @@ def test_a_launch_that_cannot_start_leaves_no_log(auts, log_dir):
     ctx = squish.startApplication("fakeaut")
     ctx.detach()
     assert ctx.log_path == str(case_dir / "01-fakeaut.log")
+
+
+@pytest.fixture
+def forking_aut(auts):
+    """fakeaut, started by a shell that leaves a child holding its stderr."""
+    bin_dir, _, paths, env = auts
+    _script(bin_dir, "forkingaut", f'sleep 3 &\nexec "{sys.executable}" "{FAKE_AUT}"')
+    return {**paths, "forkingaut": str(bin_dir)}, env
+
+
+@pytest.mark.parametrize("logged", [False, True], ids=["no log dir", "log dir"])
+def test_detach_does_not_wait_for_a_child_holding_stderr(forking_aut, log_dir, logged):
+    paths, env = forking_aut
+    aut.configure(paths, env, log_dir=str(log_dir) if logged else None)
+    ctx = squish.startApplication("forkingaut")
+    start = time.monotonic()
+    ctx.detach()
+    assert time.monotonic() - start < 1.0
+
+
+def test_a_log_closed_by_detach_takes_no_more_output(monkeypatch):
+    raised = []
+    monkeypatch.setattr(threading, "excepthook", raised.append)
+    read, write = os.pipe()
+    sink = open(os.devnull, "wb", buffering=0)  # pylint: disable=consider-using-with
+    # the reader closes the stream at its end
+    # pylint: disable-next=protected-access
+    tail = aut._StderrTail(os.fdopen(read, "rb"), sink=sink)
+    try:
+        tail.close_sink()
+        assert sink.closed
+        os.write(write, b"late line\n")
+    finally:
+        os.close(write)
+    assert tail.text() == "late line"  # still read
+    assert not raised
 
 
 @pytest.mark.usefixtures("isolated")

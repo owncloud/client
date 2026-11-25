@@ -25,6 +25,9 @@ DEFAULT_START_TIMEOUT_MS = 15000
 _TERMINATE_TIMEOUT = 10
 _STDERR_TAIL_LINES = 20
 _RETRY_INTERVAL = 0.05
+# how long detach() waits for the rest of a logged stderr; a child process
+# that inherited it may hold it open for much longer
+_LOG_DRAIN_TIMEOUT = 0.5
 
 _AUT_PATHS = {}
 _ENV = {}
@@ -66,14 +69,17 @@ def configure(
 class _StderrTail:
     """Copies the application's stderr through and keeps its last lines.
 
-    The lines go to ``sink``, a binary file it closes at the end of the
-    stream, or else to the harness's stderr.
+    The lines go to ``sink``, a binary file closed at the end of the stream
+    or by ``close_sink()``, or else to the harness's stderr. Once the sink
+    is closed, the lines are only kept in the tail.
     """
 
     def __init__(self, stream, sink=None):
         self.lines = collections.deque(maxlen=_STDERR_TAIL_LINES)
         self._stream = stream
+        self._logged = sink is not None
         self._sink = sink
+        self._lock = threading.Lock()  # the sink, between reader and close_sink
         self._thread = threading.Thread(target=self._run, daemon=True)
         self._thread.start()
 
@@ -85,19 +91,31 @@ class _StderrTail:
                     self.lines.append(line.rstrip("\n"))
                     self._write(raw, line)
         finally:
-            if self._sink:
-                self._sink.close()
+            self.close_sink()
 
     def _write(self, raw, line):
-        if self._sink:
+        if not self._logged:
+            sys.stderr.write(line)
+            return
+        with self._lock:
+            if not self._sink:
+                return
             try:
                 self._sink.write(raw)
                 return
             except OSError as exc:  # as a full disk: keep reading, or it blocks
                 self._sink.close()
                 self._sink = None
+                self._logged = False
                 sys.stderr.write(f"[WARNING] cannot write the log: {exc}\n")
         sys.stderr.write(line)
+
+    def close_sink(self):
+        """Close the sink; the reader goes on, keeping only the tail."""
+        with self._lock:
+            if self._sink:
+                self._sink.close()
+                self._sink = None
 
     def wait(self, timeout):
         """Wait for the end of the stream, at most ``timeout`` seconds."""
@@ -135,9 +153,11 @@ class ApplicationContext:
         except OSError:
             pass
         _stop(self._process)
-        if self._stderr:
-            # the rest of stderr into the log, which is then closed
-            self._stderr.wait(2.0)
+        if self._stderr and self.log_path:
+            # the rest of stderr into the log, which is closed even if a
+            # child process still holds stderr open
+            self._stderr.wait(_LOG_DRAIN_TIMEOUT)
+            self._stderr.close_sink()
         _remove(self._socket_path)
         _forget(self)
 
