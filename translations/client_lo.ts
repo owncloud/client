@@ -3194,48 +3194,48 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::VfsWinPrivate</name>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="582"/>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="585"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="595"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="598"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
     </message>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="619"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="632"/>
         <source>Could not find StorageProviderState property %1</source>
         <translation>ບໍ່ພົບຄຸນສົມບັດ StorageProviderState %1</translation>
     </message>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="633"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="646"/>
         <source>Could not find StorageFolder for %1 error: %2</source>
         <translation>ບໍ່ພົບ StorageFolder ສຳລັບ %1 ຂໍ້ຜິດພາດ: %2</translation>
     </message>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="643"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="656"/>
         <source>Could not retrieve StorageFolder for %1 %2 (0x%3)</source>
         <translation>ບໍ່ສາມາດດຶງຂໍ້ມູນ StorageFolder ສຳລັບ %1 %2 (0x%3)</translation>
     </message>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="677"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="690"/>
         <source>The folder is used by a different client: %1</source>
         <translation>ໂຟນເດີນີ້ຖືກໃຊ້ໂດຍໂປຣແກຣມອື່ນ: %1</translation>
     </message>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="700"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="713"/>
         <source>Error registering StorageProvider for %1: %2 (0x%3)</source>
         <translation>ເກີດຂໍ້ຜິດພາດໃນການລົງທະບຽນ StorageProvider ສຳລັບ %1: %2 (0x%3)</translation>
     </message>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="735"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="748"/>
         <source>Unable to connect sync root: %1 error: %2</source>
         <translation>ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບໂຟນເດີຫຼັກການຊິງ: %1 ຂໍ້ຜິດພາດ: %2</translation>
     </message>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="672"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="685"/>
         <source>%1 is managed by another sync client</source>
         <translation>%1 ຖືກຈັດການໂດຍໂປຣແກຣມຊິງອື່ນ</translation>
     </message>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="687"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="700"/>
         <source>Downgrading the folder from %1 to %2 is not supported</source>
         <translation>ບໍ່ຮອງຮັບການປ່ຽນລຸ້ນ (downgrade) ໂຟນເດີຈາກ %1 ໄປຫາ %2</translation>
     </message>
