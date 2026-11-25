@@ -48,3 +48,17 @@ def aut_unconfigured():
     # pylint: disable=protected-access
     leftover = {"log dir": aut._LOG_DIR, "applications": aut._AUT_PATHS}
     assert not any(leftover.values()), f"aut still configured: {leftover}"
+
+
+@pytest.fixture(autouse=True)
+def plain_console(monkeypatch):
+    """Run the tests as outside GitHub Actions and without colour settings,
+    also when they run in a workflow."""
+    for name in (
+        "GITHUB_ACTIONS",
+        "GITHUB_STEP_SUMMARY",
+        "GITHUB_WORKSPACE",
+        "NO_COLOR",
+        "FORCE_COLOR",
+    ):
+        monkeypatch.delenv(name, raising=False)
