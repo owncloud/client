@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: MIT
 
 import os
+import signal
+import subprocess
 import sys
 import xml.etree.ElementTree as ET
 
@@ -12,6 +14,7 @@ from harness import __main__ as cli
 from harness import aut, bdd, report, results, suite
 from harness.tags import TagFilter
 
+HARNESS_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ENVVAR = "QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false"
 
 SECOND = """\
@@ -298,6 +301,121 @@ def test_interrupted_run_still_writes_its_reports(tmp_path, capsys):
     assert "1 scenarios: 1 passed" in capsys.readouterr().out
 
 
+INTERRUPTED = """\
+Feature: interrupted
+
+    Scenario: before the interruption
+        Given user "Bob" has been created
+
+    Scenario: the run stops here
+        Given user "Carol" has been created
+        When the run is interrupted by <how>
+        Then the remembered value should be "never"
+"""
+
+INTERRUPTING_STEP = """\
+import os
+import signal
+import time
+
+
+@When('the run is interrupted by |word|')
+def step(context, how):
+    if how == 'KeyboardInterrupt':
+        raise KeyboardInterrupt
+    os.kill(os.getpid(), signal.SIGTERM)
+    time.sleep(5)  # the signal arrives during the step
+    raise AssertionError('SIGTERM did not stop the step')
+"""
+
+
+def _interrupted_suite(tmp_path, how):
+    suite_dir = copy_suite(tmp_path, INTERRUPTED.replace("<how>", how))
+    steps = suite_dir / "shared" / "steps" / "interrupt.py"
+    steps.write_text(INTERRUPTING_STEP, "utf-8")
+    return suite_dir
+
+
+def _run_interrupted(tmp_path, suite_dir):
+    junit, html_dir = tmp_path / "junit.xml", tmp_path / "html"
+    args = ["--testsuite", suite_dir, "--testcase", "tst_b"]
+    _main(*args, "--reportgen", f"junitxml,{junit}", "--reportgen", f"html,{html_dir}")
+
+
+def _assert_reports_of_interrupted_run(tmp_path, out, how):
+    titles = ["before the interruption", "the run stops here"]
+    cases = list(_testcases(tmp_path / "junit.xml"))
+    assert [t.get("name") for t in cases] == titles
+    assert cases[0].find("error") is None
+    error = cases[1].find("error")
+    assert error is not None
+    assert error.get("message") == f"interrupted: {how}"
+    page = (tmp_path / "html" / "index.html").read_text("utf-8")
+    assert (
+        "<tr class=error><td class=status>error</td><td><span class=title>"
+        "the run stops here" in page
+    )
+    assert "2 scenarios: 1 passed, 0 failed, 1 errors" in out
+    assert "ERROR   interrupted: the run stops here" in out
+
+
+@pytest.mark.usefixtures("isolated", "configured")
+def test_interrupted_scenario_is_an_error_in_every_report(tmp_path, capsys):
+    suite_dir = _interrupted_suite(tmp_path, "KeyboardInterrupt")
+    with pytest.raises(KeyboardInterrupt):  # the process exits non-zero
+        _run_interrupted(tmp_path, suite_dir)
+    _assert_reports_of_interrupted_run(
+        tmp_path, capsys.readouterr().out, "KeyboardInterrupt"
+    )
+
+
+@pytest.mark.usefixtures("isolated", "configured")
+def test_sigterm_writes_the_reports_and_exits_with_143(tmp_path, capsys):
+    suite_dir = _interrupted_suite(tmp_path, "SIGTERM")
+    before = signal.getsignal(signal.SIGTERM)
+    with pytest.raises(SystemExit) as stopped:
+        _run_interrupted(tmp_path, suite_dir)
+    assert stopped.value.code == 143
+    assert signal.getsignal(signal.SIGTERM) is before
+    _assert_reports_of_interrupted_run(tmp_path, capsys.readouterr().out, "SIGTERM")
+
+
+def test_sigterm_ends_the_process_with_143(tmp_path):
+    suite_dir = _interrupted_suite(tmp_path, "SIGTERM")
+    junit = tmp_path / "junit.xml"
+    run = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "harness",
+            "--testsuite",
+            str(suite_dir),
+            "--testcase",
+            "tst_b",
+            "--reportgen",
+            f"junitxml,{junit}",
+        ],
+        cwd=HARNESS_DIR,
+        env={**os.environ, "SUITE_MIN_EVENTS": str(tmp_path / "events.jsonl")},
+        capture_output=True,
+        text=True,
+        timeout=60,
+        check=False,
+    )
+    assert run.returncode == 143, run.stderr
+    assert [t.find("error") is not None for t in _testcases(junit)] == [False, True]
+
+
+def test_scenario_that_never_ended_is_not_passed():
+    rep = report.Report()
+    rep.scenario_start("unfinished", [])
+    rep.step(bdd.PASSED, "Given a step", "", 0.1)
+    scenario = rep.scenarios()[0]
+    assert scenario.status == report.ERROR
+    assert scenario.problems() == [("unfinished", "the scenario did not finish", "")]
+    assert rep.totals() == {report.PASSED: 0, report.FAILED: 0, report.ERROR: 1}
+
+
 def test_failing_writer_does_not_skip_the_others(tmp_path, capsys):
     blocked = tmp_path / "blocked"
     blocked.write_text("a file where a directory should be", "utf-8")
@@ -366,3 +484,13 @@ def test_interrupted_report_write_leaves_no_temporary_file(
         report._write_file(str(path), write)  # pylint: disable=protected-access
     assert path.read_text("utf-8") == "previous run"
     assert sorted(p.name for p in tmp_path.iterdir()) == ["junit.xml"]
+
+
+def test_ignored_sigterm_stays_ignored():
+    before = signal.signal(signal.SIGTERM, signal.SIG_IGN)
+    try:
+        # pylint: disable-next=protected-access
+        assert suite._raise_on_sigterm() is None
+        assert signal.getsignal(signal.SIGTERM) == signal.SIG_IGN
+    finally:
+        signal.signal(signal.SIGTERM, before)

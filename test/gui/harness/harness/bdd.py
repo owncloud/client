@@ -211,6 +211,9 @@ class Reporter:
     own, with a step per failure; a failing ``test.py`` as a feature named
     after its test case, with one such scenario.
     ``attach(path)`` is for reports' own use; the runner does not call it.
+    ``interrupted(message)`` comes before ``finish()`` when the run stops
+    in the middle, as on KeyboardInterrupt or SIGTERM; a running scenario
+    then ends as an error.
     """
 
     def feature_start(self, title, path):
@@ -226,6 +229,9 @@ class Reporter:
         pass
 
     def attach(self, path):
+        pass
+
+    def interrupted(self, message):
         pass
 
     def finish(self):

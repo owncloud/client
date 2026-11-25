@@ -39,6 +39,9 @@ class RecordingReporter:
     def attach(self, path):
         self.calls.append(("attach", path))
 
+    def interrupted(self, message):
+        self.calls.append(("interrupted", message))
+
     def finish(self):
         self.calls.append(("finish",))
 

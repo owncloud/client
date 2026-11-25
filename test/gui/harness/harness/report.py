@@ -17,11 +17,13 @@ import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 from urllib.parse import quote
 
-from harness import bdd
+from harness import bdd, results
 
 PASSED = "passed"
 FAILED = "failed"
 ERROR = "error"
+# The step an interrupted scenario ends with.
+INTERRUPTED = "interrupted"
 
 # Characters XML 1.0 does not allow, e.g. the ESC of colour codes in a log.
 _INVALID_XML = re.compile("[^\t\n\r\x20-\ud7ff\ue000-\ufffd\U00010000-\U0010ffff]")
@@ -48,11 +50,14 @@ class Scenario:  # pylint: disable=too-many-instance-attributes
 
     @property
     def status(self):
-        kinds = {e.kind for e in self.record.entries} if self.record else set()
-        results = {s.result for s in self.steps}
-        if bdd.ERROR in results or "errors" in kinds:
+        """A scenario that never ended (it has no record) is an error."""
+        if self.record is None:
             return ERROR
-        if bdd.FAILED in results or "fails" in kinds:
+        kinds = {e.kind for e in self.record.entries}
+        step_results = {s.result for s in self.steps}
+        if bdd.ERROR in step_results or "errors" in kinds:
+            return ERROR
+        if bdd.FAILED in step_results or "fails" in kinds:
             return FAILED
         return PASSED
 
@@ -78,6 +83,8 @@ class Scenario:  # pylint: disable=too-many-instance-attributes
                 for e in self.record.entries
                 if e.kind in ("fails", "errors")
             ]
+        if not problems and self.record is None:
+            problems = [("unfinished", "the scenario did not finish", "")]
         return problems
 
 
@@ -140,6 +147,12 @@ class Report(bdd.Reporter):
                 f"{scenario.status.upper():7} {scenario.title} "
                 f"({scenario.duration:.1f} s)"
             )
+
+    def interrupted(self, message):
+        """End the running scenario, if any, as an error: the run stopped in it."""
+        if self._current:
+            self._current.steps.append(Step(bdd.ERROR, INTERRUPTED, message, 0.0))
+            self.scenario_end(results.current())
 
     def attach(self, path):
         """Link a file from the running scenario, or else the last one."""

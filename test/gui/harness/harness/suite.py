@@ -6,7 +6,9 @@ import builtins
 import importlib
 import inspect
 import os
+import signal
 import sys
+import threading
 import time
 from pathlib import Path
 
@@ -30,6 +32,13 @@ def read_key_values(path):
                 raise ValueError(f"{path}: expected KEY=VALUE, got {line!r}")
             values[key.strip()] = value.strip()
     return values
+
+
+class Terminated(SystemExit):
+    """The run received SIGTERM; as an exit, the process ends with 143."""
+
+    def __init__(self):
+        super().__init__(128 + signal.SIGTERM)
 
 
 def run_suite(
@@ -94,29 +103,40 @@ class Suite:
         builtins_setup.install_names(self.builtins())
         _squishinfo().resultDir = self.result_dir
         results.reset()
+        previous = _raise_on_sigterm()
         try:
-            for name in names:
-                self._run_testcase(name)
-                if self.runner.aborted:
-                    break
-        except BaseException:
-            # interrupted, or the reporter failed: report what ran so far
-            self._finish_reports()
-            raise
-        self.runner.reporter.finish()
+            try:
+                for name in names:
+                    self._run_testcase(name)
+                    if self.runner.aborted:
+                        break
+            except BaseException as exc:
+                # interrupted, or the reporter failed: report what ran so far
+                self._finish_reports(exc)
+                raise
+            self.runner.reporter.finish()
+        finally:
+            _restore_sigterm(previous)
         failed = results.run_count("fails") + results.run_count("errors")
         return 1 if failed else 0
 
-    def _finish_reports(self):
-        """Finish the reports without hiding the exception that stopped the run."""
+    def _finish_reports(self, exc):
+        """Finish the reports without hiding the exception that stopped the run.
+
+        The scenario that was running ends as an error.
+        """
+        cause = "SIGTERM" if isinstance(exc, Terminated) else type(exc).__name__
+        message = f"interrupted: {cause}"
+        print(f"[ERROR] {message}", file=sys.stderr, flush=True)
+        reporter = self.runner.reporter
         try:
-            self.runner.reporter.finish()
-        except Exception as exc:  # pylint: disable=broad-exception-caught
-            print(
-                f"[ERROR] finishing the reports failed: {type(exc).__name__}: {exc}",
-                file=sys.stderr,
-                flush=True,
-            )
+            reporter.interrupted(message)
+        except Exception as err:  # pylint: disable=broad-exception-caught
+            _print_failure("ending the interrupted scenario", err)
+        try:
+            reporter.finish()
+        except Exception as err:  # pylint: disable=broad-exception-caught
+            _print_failure("finishing the reports", err)
 
     def builtins(self):
         """Squish's BDD entry points, by their Squish names."""
@@ -249,6 +269,39 @@ class Suite:
 
     def run_feature_file(self, path):
         self.runner.run_feature_file(str(self._resolve(path)))
+
+
+def _print_failure(what, err):
+    print(
+        f"[ERROR] {what} failed: {type(err).__name__}: {err}",
+        file=sys.stderr,
+        flush=True,
+    )
+
+
+def _terminate(_signum, _frame):
+    raise Terminated()
+
+
+def _raise_on_sigterm():
+    """Let SIGTERM raise Terminated, so an interrupted run writes its reports.
+
+    Returns what restores the previous handler: None where Python cannot
+    install a handler, as outside the main thread, or where SIGTERM is
+    ignored and stays so.
+    """
+    if threading.current_thread() is not threading.main_thread():
+        return None
+    if (previous := signal.getsignal(signal.SIGTERM)) == signal.SIG_IGN:
+        return None
+    signal.signal(signal.SIGTERM, _terminate)
+    # a handler not installed from Python is reported as None
+    return signal.SIG_DFL if previous is None else previous
+
+
+def _restore_sigterm(previous):
+    if previous is not None:
+        signal.signal(signal.SIGTERM, previous)
 
 
 def _squishinfo():
