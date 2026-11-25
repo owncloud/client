@@ -199,6 +199,36 @@ def test_equality_and_hash_by_handle(fake):
     assert len({first, same, other}) == 2
 
 
+def test_same_handle_from_another_application_is_not_equal(fake):
+    other = FakeProbe()
+    try:
+        here = RemoteObject(fake.client, 5)
+        there = RemoteObject(other.client, 5)
+        assert here != there
+        assert len({here, there}) == 2
+    finally:
+        other.close()
+
+
+@pytest.mark.parametrize("error", [ConnectionError, TimeoutError])
+def test_object_of_a_closed_or_unresponsive_application_is_null(error):
+    class Gone:  # pylint: disable=too-few-public-methods
+        def request(self, method, **_):
+            raise error(f"no answer to {method!r}")
+
+    proxy = RemoteObject(Gone(), 5, "QLabel")
+    assert proxy.is_alive() is False
+    assert str(proxy) == "<null>"
+
+
+def test_object_of_an_exited_application_is_null(fake):
+    proxy = RemoteObject(fake.client, fake.add("QLabel").handle, "QLabel")
+    assert str(proxy) != "<null>"
+    fake.exit()
+    assert str(proxy) == "<null>"
+    assert not proxy.is_alive()
+
+
 def test_mouse_click_argument_order(fake):
     obj = fake.add("QTreeView")
     proxy = RemoteObject(fake.client, obj.handle)

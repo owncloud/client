@@ -108,12 +108,16 @@ class RemoteObject(HandleRef):
         )
 
     def is_alive(self):
-        """Whether the handle still refers to a live object (one round trip)."""
+        """Whether the handle still refers to a live object (one round trip).
+
+        An application that closed its connection, exited or stopped
+        answering has no live objects.
+        """
         if self.is_null():
             return False
         try:
             request(self._client, "get", handle=self._handle, name="objectName")
-        except RuntimeError:
+        except (RuntimeError, ConnectionError, TimeoutError):
             return False
         except ProbeError:
             pass
@@ -131,10 +135,11 @@ class RemoteObject(HandleRef):
     def __bool__(self):
         return not self.is_null()
 
+    # Handles are numbered per application: equal only within one connection.
     def __eq__(self, other):
         if not isinstance(other, RemoteObject):
             return NotImplemented
-        return self._handle == other.handle
+        return self._client is other.client and self._handle == other.handle
 
     def __hash__(self):
-        return hash(self._handle)
+        return hash((id(self._client), self._handle))

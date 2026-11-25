@@ -92,6 +92,12 @@ class FakeProbe:  # pylint: disable=too-many-instance-attributes
     def kill(obj):
         obj.alive = False
 
+    def exit(self):
+        """Close the probe's end, as an application that exits does."""
+        self._server.shutdown(socket.SHUT_RDWR)
+        self._server.close()
+        self._thread.join(timeout=2)
+
     def close(self):
         if self.client is not None:
             self.client.close()
