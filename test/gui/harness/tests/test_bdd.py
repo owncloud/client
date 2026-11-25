@@ -698,7 +698,7 @@ def test_release_that_fails_leaves_the_scenario_passed(monkeypatch, capsys, caus
         code, reporter = _run(tags=["~@skip", "@smokeTest"])
     finally:
         probe.close()
-    assert code == 0
+    assert not code
     assert not reporter.steps("error")
     assert ("scenario_end", "tables, doc strings and user data", False) in (
         reporter.calls
