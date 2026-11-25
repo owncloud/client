@@ -11,21 +11,43 @@ result line follows its steps, and for a scenario that did not pass the
 failing steps with their locations and messages. A summary of scenarios and
 steps ends the run.
 
-``github`` mode prints the same for GitHub Actions: each scenario is a
-collapsed group, its result line and failures follow the group, and every
-scenario that did not pass gets an ``::error`` annotation at its failing
-step. While the run lasts, workflow commands are stopped except for the
-reporter's own, so that nothing the suite or the application prints is run
-as one. ``step_summary`` is a file the run's summary is appended to as
-markdown, as ``$GITHUB_STEP_SUMMARY``.
+``github`` mode prints for GitHub Actions, and prints each scenario when it
+has ended, as one block. While the run lasts the reporter captures
+``sys.stdout`` and ``sys.stderr``, from its first feature on, so that what
+the suite prints stays with the scenario it belongs to, in its order among
+the step lines. A scenario that passed is one collapsed group whose title has
+its mark and time; one that did not pass is not grouped, so that it shows,
+and gets an ``::error`` annotation at its failing step. Output between
+scenarios, as a test case's own at its start or a feature hook's, is a
+``setup output`` group before the next scenario; what follows the last one
+is printed as it is before the summary, and what precedes the first feature
+is not captured. Step times line up within a scenario. Output that does not
+go through ``sys.stdout`` or ``sys.stderr``, as a child process writing to
+the inherited file descriptors, is not captured and shows where it happens.
+When a reporter method raises, or the run is interrupted, the capture ends
+and what it held is printed.
+
+Workflow-command neutralisation: GitHub runs a line as a workflow command if
+it starts with ``::``, or with ``##[`` in the older form, after whitespace.
+In ``github`` mode every line the reporter prints, the captured output
+included, that starts so after leading blanks, control and format
+characters (as a byte order mark or a CR) and colour codes gets a space
+inside that start, ``: :`` or ``# #[``, so that it shows as text and does not
+run. The reporter's own ``::group::``, ``::endgroup::`` and ``::error`` are
+the only commands it prints; their data is escaped. ``step_summary`` is a
+file the run's summary is appended to as markdown, as ``$GITHUB_STEP_SUMMARY``.
 """
 
+import contextlib
+import functools
 import html
+import io
 import os
 import re
-import secrets
 import sys
+import threading
 import time
+import unicodedata
 
 from harness import bdd, report, results
 
@@ -36,7 +58,7 @@ MODES = (PRETTY, GITHUB)
 PASSED, FAILED, ERROR = bdd.PASSED, bdd.FAILED, bdd.ERROR
 # The step an interrupted scenario ends with.
 INTERRUPTED = "interrupted"
-# A step's text is padded to this width before its time.
+# A step's text is padded to this width before its time, in pretty mode.
 STEP_WIDTH = 72
 # The longest message the job summary quotes.
 SUMMARY_MESSAGE = 2000
@@ -46,8 +68,58 @@ _ASCII_MARKS = {PASSED: "+", FAILED: "x", ERROR: "x", bdd.SKIPPED: "-"}
 _COLORS = {PASSED: "32", FAILED: "31", ERROR: "33", bdd.SKIPPED: "90", "bold": "1"}
 
 
+def _releasing(method):
+    """End the capture when a reporter method raises, and print what it held.
+
+    A reporter that fails, or is interrupted, must neither keep the streams
+    swapped nor lose the output.
+    """
+
+    @functools.wraps(method)
+    def call(self, *args, **kwargs):
+        try:
+            return method(self, *args, **kwargs)
+        except BaseException:
+            self._release()  # pylint: disable=protected-access
+            raise
+
+    return call
+
+
+class _Capture(io.TextIOBase):
+    """Stands in for sys.stdout or sys.stderr: what is written to either goes
+    to one list, in order. ``fileno`` is the original's, so a child process
+    given it writes there, past the capture."""
+
+    def __init__(self, entries, lock, original):
+        super().__init__()
+        self._entries = entries
+        self._lock = lock
+        self._original = original
+
+    @property
+    def encoding(self):
+        return getattr(self._original, "encoding", None) or "utf-8"
+
+    def writable(self):
+        return True
+
+    def write(self, text):
+        if not isinstance(text, str):
+            raise TypeError(f"write() argument must be str, not {type(text).__name__}")
+        with self._lock:  # the reader threads of applications write too
+            self._entries.append(text)
+        return len(text)
+
+    def isatty(self):
+        return False
+
+    def fileno(self):
+        return self._original.fileno()
+
+
 class ConsoleReporter(bdd.Reporter):  # pylint: disable=too-many-instance-attributes
-    """Prints the run to ``stream`` as it goes; see the module.
+    """Prints the run to ``stream``; see the module.
 
     ``workspace`` is the directory paths are shown relative to, by default
     the current one; GitHub wants annotation files relative to the
@@ -74,53 +146,62 @@ class ConsoleReporter(bdd.Reporter):  # pylint: disable=too-many-instance-attrib
         self.steps = dict.fromkeys(_MARKS, 0)
         self._current = None
         self._last = None
-        self._token = None  # while workflow commands are stopped
         self._started = time.monotonic()
+        # github mode: what the suite printed and the steps, in order
+        self._entries = []
+        self._lock = threading.Lock()
+        self._originals = None  # (stdout, stderr) while capturing
+        self._interrupting = False
 
     # -- bdd.Reporter ------------------------------------------------------------
 
+    @_releasing
     def feature_start(self, title, path):
-        self._stop_commands()
+        self._capture()
         self._close()
         self.features.append(report.Feature(title, path))
         heading = f"Feature: {title}  ({self._path(path)})"
         self._write("", self._paint("bold", heading))
 
+    @_releasing
     def scenario_start(self, title, tags, location=None):
-        self._stop_commands()
+        self._capture()
         self._close()
         if not self.features:
             self.features.append(report.Feature("", ""))
         self._current = self._last = report.Scenario.start(title, tags, location)
         self.features[-1].scenarios.append(self._current)
         if self.github:
-            self._command(f"::group::{escape_data(title)}")
+            self._print_setup_output()
         else:
             self._write(f"Scenario: {title}")
 
+    @_releasing
     def step(self, result, text, message, duration, location=None):
         self.steps[result] = self.steps.get(result, 0) + 1
+        step = report.Step(result, text, message, duration, location)
         if self._current:
-            self._current.steps.append(
-                report.Step(result, text, message, duration, location)
-            )
-        timing = "skipped" if result == bdd.SKIPPED else f"{duration:.1f} s"
-        line = f"  {self.marks.get(result, '?')} {text}".ljust(STEP_WIDTH)
-        self._write(self._paint(result, f"{line}  {timing}"))
-        if message and result in (FAILED, ERROR):
-            self._write(_indent(message, 6))
+            self._current.steps.append(step)
+        if self._originals:
+            with self._lock:
+                self._entries.append(step)
+        else:
+            self._write(*self._step_lines(step, STEP_WIDTH))
 
     def attach(self, path):
         if scenario := self._current or self._last:
             scenario.attach(path)
 
+    @_releasing
     def scenario_end(self, record):
         if not (scenario := self._current):
             return
         self._current = None
         scenario.end(record)
         if self.github:
-            self._command("::endgroup::")
+            with self._taking() as entries:
+                self._block(scenario, entries)
+            return
         mark = self.marks[scenario.status]
         timing = f"{scenario.duration:.1f} s"
         if scenario.status != PASSED:
@@ -130,25 +211,33 @@ class ConsoleReporter(bdd.Reporter):  # pylint: disable=too-many-instance-attrib
         )
         if scenario.status == PASSED:
             return
-        problems = scenario.problems()
-        for problem in problems:
+        for problem in scenario.problems():
             self._write(f"    {report.titled(problem, self.workspace)}")
             if problem.message:
                 self._write(_indent(problem.message, 4))
         for path in scenario.attachments:
             self._write(f"    attachment: {path}")
-        if self.github:
-            self._annotate(scenario, problems)
 
+    @_releasing
     def interrupted(self, message):
-        """End the running scenario as an error: the run stopped in it."""
-        if self._current:
-            self.step(ERROR, INTERRUPTED, message, 0.0)
-            self.scenario_end(results.current())
+        """End the running scenario as an error: the run stopped in it.
 
+        Nothing is captured after: only ``finish`` follows.
+        """
+        try:
+            if self._current:
+                self._interrupting = True
+                self.step(ERROR, INTERRUPTED, message, 0.0)
+                self.scenario_end(results.current())
+        finally:
+            self._interrupting = False
+            self._release()
+
+    @_releasing
     def finish(self):
-        """Print the summary, append the job summary, let commands run again."""
+        """Print the summary and append the job summary."""
         self._close()
+        self._release()
         scenarios = [s for f in self.features for s in f.scenarios]
         totals = report.count_statuses(scenarios)
         elapsed = time.monotonic() - self._started
@@ -169,9 +258,40 @@ class ConsoleReporter(bdd.Reporter):  # pylint: disable=too-many-instance-attrib
                 )
         if self.step_summary:
             self._append_summary(scenarios, totals, elapsed)
-        if self._token:
-            self._write(f"::{self._token}::")
-            self._token = None
+
+    # -- capture -----------------------------------------------------------------
+
+    def _capture(self):
+        """Capture sys.stdout and sys.stderr from now on, in github mode."""
+        if self.github and not self._originals:
+            self._originals = sys.stdout, sys.stderr
+            sys.stdout = _Capture(self._entries, self._lock, sys.stdout)
+            sys.stderr = _Capture(self._entries, self._lock, sys.stderr)
+
+    @contextlib.contextmanager
+    def _taking(self):
+        """What was captured so far, dropped once printed: if printing
+        fails, ``_release`` prints it."""
+        with self._lock:
+            entries = list(self._entries)
+        yield entries
+        with self._lock:
+            del self._entries[: len(entries)]
+
+    def _take(self):
+        """What was captured so far, emptied."""
+        with self._lock:
+            entries = list(self._entries)
+            self._entries.clear()
+        return entries
+
+    def _release(self):
+        """Put the streams back and print what is still captured, as it is."""
+        if self._originals:
+            sys.stdout, sys.stderr = self._originals
+            self._originals = None
+        if entries := self._take():
+            self._write(*self._body(entries, ""))
 
     # -- output ------------------------------------------------------------------
 
@@ -182,27 +302,85 @@ class ConsoleReporter(bdd.Reporter):  # pylint: disable=too-many-instance-attrib
         ]
 
     def _close(self):
-        """End a scenario that is still open, so that its group closes.
+        """End a scenario that is still open, so that it is printed.
 
         It did not finish: the results the runner records by now are not its.
         """
         if self._current:
             self.scenario_end(None)
 
-    def _stop_commands(self):
-        """Stop workflow commands for the run, once, in github mode."""
-        if self.github and self._token is None:
-            self._token = secrets.token_hex(16)
-            self._write(f"::stop-commands::{self._token}")
+    def _print_setup_output(self):
+        """What was printed since the last scenario, as a collapsed group."""
+        with self._taking() as entries:
+            lines = self._body(entries, "")
+            if any(line.strip() for line in lines):
+                count = f"{len(lines)} line{'' if len(lines) == 1 else 's'}"
+                self._command(f"::group::setup output ({count})")
+                self._write(*lines)
+                self._command("::endgroup::")
+
+    def _block(self, scenario, entries):
+        """A scenario that ended, in github mode: a group if it passed, else
+        its result, steps, output and failure, and an error annotation."""
+        mark = self.marks[scenario.status]
+        timing = f"{scenario.duration:.1f} s"
+        body = self._body(entries, "  ", located=True)
+        if scenario.status == PASSED:
+            title = escape_data(f"{mark} {scenario.title}  ({timing})")
+            self._command(f"::group::{title}")
+            if body:
+                self._write(*body)
+            self._command("::endgroup::")
+            return
+        status = INTERRUPTED if self._interrupting else scenario.status
+        title = f"{mark} {scenario.title}  ({status}, {timing})"
+        self._write(self._paint(scenario.status, title), *body)
+        problems = scenario.problems()
+        if not any(s.result in (FAILED, ERROR) for s in scenario.steps):
+            # failed without a failing step: what failed is not shown yet
+            for problem in problems:
+                self._write(f"  {report.titled(problem, self.workspace)}")
+                if problem.message:
+                    self._write(_indent(problem.message, 4))
+        for path in scenario.attachments:
+            self._write(f"  attachment: {path}")
+        self._annotate(scenario, problems)
+
+    def _body(self, entries, indent, located=False):
+        """Captured text and step lines, in order; steps' times line up."""
+        steps = [e for e in entries if isinstance(e, report.Step)]
+        width = max((len(self._step_head(s)) for s in steps), default=0)
+        lines, text = [], []
+        for entry in entries + [None]:
+            if isinstance(entry, str):
+                text.append(entry)
+                continue
+            lines += [indent + line for line in "".join(text).splitlines()]
+            text = []
+            if entry:
+                lines += self._step_lines(entry, width, located)
+        return lines
+
+    def _step_head(self, step):
+        return f"  {self.marks.get(step.result, '?')} {step.text}"
+
+    def _step_lines(self, step, width, located=False):
+        """A step's line, its text padded to ``width`` before its time, and
+        its message if it failed; ``located``, with where it is written."""
+        timing = "skipped" if step.result == bdd.SKIPPED else f"{step.duration:.1f} s"
+        lines = [
+            self._paint(step.result, f"{self._step_head(step).ljust(width)}  {timing}")
+        ]
+        if step.result in (FAILED, ERROR):
+            if step.message:
+                lines.append(_indent(step.message, 6))
+            if located and step.location:
+                lines.append(f"      ({self._path(*step.location)})")
+        return lines
 
     def _command(self, *commands):
-        """Run workflow commands of the reporter's own, between stops."""
-        if self._token:
-            self._write(
-                f"::{self._token}::", *commands, f"::stop-commands::{self._token}"
-            )
-        else:
-            self._write(*commands)
+        """The reporter's own workflow commands, as they are."""
+        self._emit("\n".join(commands) + "\n")
 
     def _annotate(self, scenario, problems):
         """An error annotation at the first problem, in the current feature."""
@@ -274,11 +452,42 @@ class ConsoleReporter(bdd.Reporter):  # pylint: disable=too-many-instance-attrib
         return f"\x1b[{_COLORS[kind]}m{text}\x1b[0m"
 
     def _write(self, *lines):
-        text = "\n".join(lines) + "\n"
+        """Lines of text; in github mode none of them runs as a command."""
+        text = "\n".join(lines)
+        if self.github:
+            text = "\n".join(neutralise(line) for line in text.splitlines())
+        self._emit(text + "\n")
+
+    def _emit(self, text):
         if self.narrow:
             text = text.encode(self.narrow, "replace").decode(self.narrow)
         self.stream.write(text)
         self.stream.flush()
+
+
+_ANSI = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
+_COMMAND_STARTS = ("::", "##[")
+
+
+def neutralise(line):
+    """A line that does not run as a workflow command; see the module.
+
+    Leading whitespace, control and format characters (CR, a byte order
+    mark, zero-width spaces) and colour codes are skipped; if ``::`` or
+    ``##[`` follows, a space goes after its first character.
+    """
+    start = 0
+    while start < len(line):
+        if match := _ANSI.match(line, start):
+            start = match.end()
+        elif line[start].isspace() or unicodedata.category(line[start])[0] in "CZ":
+            start += 1
+        else:
+            break
+    for command in _COMMAND_STARTS:
+        if line.startswith(command, start):
+            return f"{line[:start]}{command[0]} {line[start + 1:]}"
+    return line
 
 
 def escape_data(text):

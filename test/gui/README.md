@@ -69,11 +69,12 @@ and an unlocked Secret Service keyring (gnome-keyring), since the client keeps i
 
    The console shows each feature, scenario and step as it finishes, with the failing steps' lines and
    messages after each scenario that did not pass, and a summary at the end. `--console quiet` prints
-   none of it, and in GitHub Actions (`GITHUB_ACTIONS=true`) `--console` defaults to `github`: each
-   scenario is a collapsed group with its result after it, a failing scenario gets an error annotation at
-   its step, and the job summary gets a table per feature. While the run lasts, only the harness's own
-   workflow commands take effect, not ones the tests or the client print. `--console pretty` prints the
-   plain form there too.
+   none of it, and in GitHub Actions (`GITHUB_ACTIONS=true`) `--console` defaults to `github`, which
+   prints each scenario when it ends, together with what the tests printed while it ran: a passing
+   scenario is one collapsed group with its result in the title, a failing one is shown open with an
+   error annotation at its step, output between scenarios is a collapsed `setup output` group, and the
+   job summary gets a table per feature. Lines the tests or the client print never take effect as
+   workflow commands. `--console pretty` prints the plain form there too.
 
    The client writes its log to its standard output (`--logfile -`), so by default it shows up between
    the test results. `--aut-log-dir DIR` writes the standard output and error of each client launch to

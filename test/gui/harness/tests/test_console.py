@@ -109,60 +109,91 @@ def test_pretty_shows_features_scenarios_steps_and_failures(tmp_path, capsys):
 def _commands(lines):
     """The workflow commands GitHub runs: (line index, name, properties, data).
 
-    Like the runner, it ignores leading whitespace and runs nothing between
-    ``::stop-commands::TOKEN`` and ``::TOKEN::``.
+    Like the runner, it splits lines at CR too and ignores what surrounds a
+    line: whitespace, a byte order mark. It knows both forms, ``::name::``
+    and the older ``##[name]``.
     """
-    commands, token = [], None
+    commands = []
     for index, line in enumerate(lines):
-        line = line.lstrip()
-        if token:
-            if line == f"::{token}::":
-                token = None
-            continue
-        if not line.startswith("::") or "::" not in line[2:]:
-            continue
-        head, _, data = line[2:].partition("::")
-        name, _, properties = head.partition(" ")
-        if name == "stop-commands":
-            token = data
-            continue
-        commands.append((index, name, properties, data))
-    return commands, token
+        for part in re.split("\r\n|\r|\n", line):
+            part = part.strip().lstrip("\ufeff")
+            if part.startswith("##["):
+                commands.append((index, "legacy", "", part))
+            if not part.startswith("::") or "::" not in part[2:]:
+                continue
+            head, _, data = part[2:].partition("::")
+            name, _, properties = head.partition(" ")
+            commands.append((index, name, properties, data))
+    return commands
 
 
 def _groups_balanced(lines, commands):
-    """Each group closes before the next opens; returns the lines in groups."""
-    inside, open_at = set(), None
+    """Each group closes before the next opens; returns {group index: lines}."""
+    groups, open_at = {}, None
     for index, name, _, _ in commands:
         if name == "group":
             assert open_at is None, lines[index]
             open_at = index
         elif name == "endgroup":
             assert open_at is not None, lines[index]
-            inside.update(range(open_at, index))
+            groups[open_at] = lines[open_at + 1 : index]
             open_at = None
     assert open_at is None
-    return inside
+    return groups
+
+
+def _swapped():
+    """Whether sys.stdout or sys.stderr is the reporter's capture."""
+    return any(
+        type(stream).__module__ == "harness.console"
+        for stream in (sys.stdout, sys.stderr)
+    )
+
+
+@pytest.fixture(autouse=True)
+def real_streams():
+    """Fails a test that leaves the streams swapped, and puts them back."""
+    yield
+    if swapped := _swapped():
+        sys.stdout, sys.stderr = sys.__stdout__, sys.__stderr__
+    assert not swapped, "the reporter left sys.stdout or sys.stderr swapped"
 
 
 @pytest.mark.usefixtures("isolated")
-def test_github_groups_annotations_and_escaping(tmp_path, capsys):
+def test_github_prints_each_scenario_as_one_block(tmp_path, capsys):
     _run(tmp_path, "github", end_hooks=True)
+    assert not _swapped()  # also after the failing hooks
     out = capsys.readouterr().out
     lines = out.splitlines()
-    commands, token = _commands(lines)
-    assert token is None  # commands run again after the run
-    inside = _groups_balanced(lines, commands)
-    names = [c[1] for c in commands]
-    assert names.count("group") == 3  # two scenarios and the failing end hooks
-    assert set(names) == {"group", "endgroup", "error"}
-    # the suite's output cannot run commands, whatever it prints
-    assert "::warning::from the log" in out
-    assert "::error::injected" in out
-    results_at = [i for i, line in enumerate(lines) if line[:1] in ("✓", "✗")]
-    assert len(results_at) == 3
-    assert not inside.intersection(results_at)
-    assert lines.index("[LOG] hello from the step") in inside
+    assert "stop-commands" not in out
+    commands = _commands(lines)
+    groups = _groups_balanced(lines, commands)
+    assert {c[1] for c in commands} == {"group", "endgroup", "error"}
+    # the passing scenario: one group, its result in the title
+    # the failing end hooks' tracebacks are setup output before their block
+    passed, setup = [c for c in commands if c[1] == "group"]
+    assert setup[3] == f"setup output ({len(groups[setup[0]])} lines)"
+    assert "RuntimeError: second end hook broke" in groups[setup[0]]
+    assert re.fullmatch(r"✓ a passing scenario  \(\d+\.\d s\)", passed[3])
+    inside = groups[passed[0]]
+    assert inside[0].startswith('  ✓ Given user "Bob" has been created')
+    assert "  [LOG] hello from the step" in inside
+    assert not any(line.startswith("✓") for line in lines)
+    # the breaking scenario: not grouped, its steps, output and failure
+    title = _index(lines, r"^✗ a breaking scenario  \(error, \d+\.\d s\)$")
+    broken = _index(lines, r"^  ✗ When the step breaks with")
+    # a command only at the start of a line
+    assert title < lines.index("  [LOG] ::warning::from the log") < broken
+    assert lines[broken + 1 : broken + 4] == [
+        "      RuntimeError: 100% broken",
+        "      : :error::injected",
+        f"      ({FEATURE_PATH}:9)",
+    ]
+    assert re.match(
+        r'^  - Then the remembered value should be "never" +skipped$', lines[broken + 4]
+    )
+    # the traceback the runner printed, among the scenario's output
+    assert "  : :error::injected" in lines[title:broken]
     errors = [c for c in commands if c[1] == "error"]
     assert [e[2] for e in errors] == [
         f"file={FEATURE_PATH},line=9,title=a breaking scenario",
@@ -170,7 +201,162 @@ def test_github_groups_annotations_and_escaping(tmp_path, capsys):
     ]
     assert errors[0][3] == "RuntimeError: 100%25 broken%0A::error::injected"
     assert errors[1][3] == "RuntimeError: first end hook broke"
-    assert not inside.intersection(e[0] for e in errors)
+    assert broken < errors[0][0] < _index(lines, r"^✗ console output: OnFeatureEnd ")
+    assert not any(
+        e[0] in range(g, g + len(v) + 2) for e in errors for g, v in groups.items()
+    )
+
+
+def _github(stream=None, **kwargs):
+    return ConsoleReporter(stream or io.StringIO(), "github", color=False, **kwargs)
+
+
+def test_github_aligns_step_times_within_a_scenario():
+    reporter = _github()
+    reporter.feature_start("feature", "/x/test.feature")
+    reporter.scenario_start("aligned", [])
+    reporter.step(bdd.PASSED, "Given a", "", 0.1)
+    reporter.step(bdd.PASSED, ("When a step with a longer text " * 3).strip(), "", 12.3)
+    reporter.step(bdd.SKIPPED, "Then b", "", 0.0)
+    reporter.scenario_end(results.begin_scenario("aligned"))
+    reporter.finish()
+    lines = reporter.stream.getvalue().splitlines()
+    steps = [line for line in lines if line.startswith("  ")][:3]
+    columns = {re.search(r"(?<=  )\S+ s$|(?<=  )skipped$", s).start() for s in steps}
+    assert len(columns) == 1
+    assert re.search(r"text  12\.3 s$", steps[1])  # the longest: two spaces
+
+
+def test_github_neutralises_workflow_commands_in_the_output():
+    reporter = _github()
+    reporter.feature_start("feature", "/x/test.feature")
+    reporter.scenario_start("printing", [])
+    printed = [
+        "::warning::x",
+        "  ::warning::indented",
+        "\t::warning::tab",
+        "\ufeff::warning::bom",
+        "\x1b[31m::warning::colour",
+        "progress\r::warning::after cr",
+        "##[warning]legacy",
+        "\u00a0\u200b::warning::other blanks",
+    ]
+    for text in printed:
+        print(text)
+    print("::error::on stderr", file=sys.stderr)
+    sys.stdout.write("::warning::no newline")
+    reporter.step(bdd.FAILED, "Then it fails", "::error::in a message", 0.1)
+    record = results.begin_scenario("printing")
+    results.record("fails", "::error::in a message")
+    reporter.scenario_end(record)
+    reporter.finish()
+    lines = reporter.stream.getvalue().splitlines()
+    assert [c[1] for c in _commands(lines)] == ["error"]
+    assert lines[_index(lines, "warning::x$") :][:10] == [
+        "  : :warning::x",
+        "    : :warning::indented",
+        "  \t: :warning::tab",
+        "  \ufeff: :warning::bom",
+        "  \x1b[31m: :warning::colour",
+        "  progress",
+        "  : :warning::after cr",
+        "  # #[warning]legacy",
+        "  \u00a0\u200b: :warning::other blanks",
+        "  : :error::on stderr",
+    ]
+    assert "  : :warning::no newline" in lines
+    assert "      : :error::in a message" in lines
+
+
+@pytest.mark.usefixtures("isolated")
+def test_github_setup_output_is_a_group_under_the_feature(tmp_path, capsys):
+    suite_dir = _suite(tmp_path)
+    test_py = suite_dir / "tst_b" / "test.py"
+    test_py.write_text('print("setting up tst_b")\n' + test_py.read_text("utf-8"))
+    reporter = _github(sys.stdout, workspace=str(tmp_path.resolve()))
+    suite.run_suite(
+        str(suite_dir), ["tst_a", "tst_b"], TagFilter([]), reporter=reporter
+    )
+    lines = capsys.readouterr().out.splitlines()
+    heading = lines.index(f"Feature: console output  ({FEATURE_PATH})")
+    assert lines[heading + 1 : heading + 4] == [
+        "::group::setup output (1 line)",
+        "setting up tst_b",
+        "::endgroup::",
+    ]
+    assert lines.count("setting up tst_b") == 1
+
+
+def test_github_interrupted_scenario_prints_its_output():
+    reporter = _github()
+    reporter.feature_start("feature", "/x/test.feature")
+    reporter.scenario_start("stopped", [], bdd.Location("/x/test.feature", 3))
+    reporter.step(bdd.PASSED, "Given a step", "", 0.1, bdd.Location("/x/a", 4))
+    print("[LOG] before the stop")
+    reporter.interrupted("interrupted: SIGTERM")
+    assert not _swapped()
+    reporter.finish()
+    lines = reporter.stream.getvalue().splitlines()
+    _groups_balanced(lines, _commands(lines))
+    title = _index(lines, r"^✗ stopped  \(interrupted, ")
+    assert lines.index("  [LOG] before the stop") > title
+    assert "      interrupted: SIGTERM" in lines
+    assert _index(lines, r"^::error .*::interrupted: SIGTERM$")
+    assert _index(lines, r"^1 scenarios: 0 passed, 0 failed, 1 errors")
+
+
+INTERRUPTED_FEATURE = """\
+Feature: console output
+
+    Scenario: an interrupted scenario
+        Given the step logs "before the interruption"
+        When the step is interrupted
+"""
+
+INTERRUPTING_STEP = """
+
+@When('the step is interrupted')
+def step(context):
+    raise KeyboardInterrupt
+"""
+
+
+@pytest.mark.usefixtures("isolated")
+def test_github_run_interrupted_mid_scenario(tmp_path, capsys):
+    suite_dir = copy_suite(tmp_path, INTERRUPTED_FEATURE)
+    (suite_dir / "shared" / "steps" / "console.py").write_text(
+        STEPS + INTERRUPTING_STEP, "utf-8"
+    )
+    reporter = _github(sys.stdout, workspace=str(tmp_path.resolve()))
+    with pytest.raises(KeyboardInterrupt):
+        suite.run_suite(str(suite_dir), ["tst_b"], TagFilter([]), reporter=reporter)
+    assert not _swapped()
+    captured = capsys.readouterr()
+    lines = captured.out.splitlines()
+    title = _index(lines, r"^✗ an interrupted scenario  \(interrupted, ")
+    assert lines.index("  [LOG] before the interruption") > title
+    assert "  [ERROR] interrupted: KeyboardInterrupt" in lines
+    assert not captured.err
+
+
+@pytest.mark.usefixtures("isolated")
+def test_github_reporter_failure_restores_the_streams(tmp_path, capsys):
+    def broken(*_args):
+        raise RuntimeError("the reporter broke")
+
+    reporter = _github(sys.stdout, workspace=str(tmp_path.resolve()))
+    reporter._block = broken  # pylint: disable=protected-access
+    with pytest.raises(RuntimeError, match="the reporter broke"):
+        suite.run_suite(
+            str(_suite(tmp_path)),
+            ["tst_b"],
+            TagFilter([]),
+            reporter=bdd.Reporters([reporter]),
+        )
+    assert not _swapped()
+    captured = capsys.readouterr()
+    assert "[LOG] hello from the step" in captured.out
+    assert "the reporter broke" in captured.err
 
 
 @pytest.mark.usefixtures("isolated")
@@ -188,21 +374,13 @@ def test_github_job_summary(tmp_path, capsys):
     assert "RuntimeError: 100% broken\n::error::injected" in text
 
 
-def test_interrupted_scenario_closes_its_group_and_the_run_is_summed_up():
-    stream = io.StringIO()
-    reporter = ConsoleReporter(stream, "github", color=False)
+def test_pretty_does_not_capture():
+    reporter = ConsoleReporter(io.StringIO(), "pretty", color=False)
     reporter.feature_start("feature", "/x/test.feature")
-    reporter.scenario_start("stopped", [], bdd.Location("/x/test.feature", 3))
-    reporter.step(bdd.PASSED, "Given a step", "", 0.1, bdd.Location("/x/a", 4))
-    reporter.interrupted("interrupted: SIGTERM")
+    reporter.scenario_start("live", [])
+    assert not _swapped()
+    reporter.scenario_end(results.begin_scenario("live"))
     reporter.finish()
-    lines = stream.getvalue().splitlines()
-    commands, token = _commands(lines)
-    assert token is None
-    _groups_balanced(lines, commands)
-    assert _index(lines, r"^✗ stopped  \(error, ")
-    assert "    interrupted: SIGTERM" in lines
-    assert _index(lines, r"^1 scenarios: 0 passed, 0 failed, 1 errors")
 
 
 # --- marks and colour -------------------------------------------------------------

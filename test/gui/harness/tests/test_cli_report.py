@@ -219,7 +219,7 @@ def test_github_actions_get_the_github_console(tmp_path, capsys, monkeypatch, co
     _main("--testsuite", SUITE_MIN, "--tags", "~@skip", *console)
     out = capsys.readouterr().out
     github = console != ["--console", "pretty"]
-    assert ("::group::the application crashes" in out) == github
+    assert ("::group::✓ tables, doc strings and user data  (" in out) == github
     assert ("::error file=suite_min/tst_a/test.feature,line=28," in out) == github
     assert summary.exists() == github
 
