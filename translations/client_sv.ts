@@ -3196,48 +3196,48 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::VfsWinPrivate</name>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="582"/>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="585"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="595"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="598"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
     </message>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="619"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="632"/>
         <source>Could not find StorageProviderState property %1</source>
         <translation>Det gick inte att hitta egenskapen StorageProviderState %1</translation>
     </message>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="633"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="646"/>
         <source>Could not find StorageFolder for %1 error: %2</source>
         <translation>Det gick inte att hitta StorageFolder för %1, fel: %2</translation>
     </message>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="643"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="656"/>
         <source>Could not retrieve StorageFolder for %1 %2 (0x%3)</source>
         <translation>Det gick inte att hämta StorageFolder för %1 %2 (0x%3)</translation>
     </message>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="677"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="690"/>
         <source>The folder is used by a different client: %1</source>
         <translation>Mappen används av en annan klient: %1</translation>
     </message>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="700"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="713"/>
         <source>Error registering StorageProvider for %1: %2 (0x%3)</source>
         <translation>Fel vid registrering av StorageProvider för %1: %2 (0x%3)</translation>
     </message>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="735"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="748"/>
         <source>Unable to connect sync root: %1 error: %2</source>
         <translation>Det gick inte att ansluta synkroniseringsroten: %1, fel: %2</translation>
     </message>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="672"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="685"/>
         <source>%1 is managed by another sync client</source>
         <translation>%1 hanteras av en annan synkroniseringsklient</translation>
     </message>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="687"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="700"/>
         <source>Downgrading the folder from %1 to %2 is not supported</source>
         <translation>Det går inte att nedgradera mappen från %1 till %2</translation>
     </message>
