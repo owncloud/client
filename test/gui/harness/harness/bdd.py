@@ -257,7 +257,7 @@ class Runner:
         self.abort_on_fail = abort_on_fail
         # Called after each scenario's OnScenarioEnd hooks; an exception is
         # an error of the scenario.
-        self.after_scenario = None
+        self.after_scenario = _nothing
         self.aborted = False
         self.registry = StepRegistry()
         self.hooks = {name: [] for name in HOOK_NAMES}
@@ -393,8 +393,6 @@ class Runner:
         return record.failed
 
     def _run_after_scenario(self):
-        if self.after_scenario is None:
-            return
         start = time.monotonic()
         fails_before = results.run_count("fails")
         try:
@@ -452,6 +450,10 @@ class Runner:
             )
             return FAILED, message, True
         return PASSED, "", True
+
+
+def _nothing():
+    pass
 
 
 def _step_keywords(node):

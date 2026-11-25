@@ -271,8 +271,8 @@ def test_html_report_dir_is_squishinfo_result_dir(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     junit = tmp_path / "junit.xml"
     args = ["--testsuite", SUITE_MIN, "--testcase", "tst_a", "--tags", "@smokeTest"]
-    assert _main(*args, "--reportgen", f"junitxml,{junit}") == 0
-    assert _main(*args, "--reportgen", "html,first", "--reportgen", "html,second") == 0
+    assert not _main(*args, "--reportgen", f"junitxml,{junit}")
+    assert not _main(*args, "--reportgen", "html,first", "--reportgen", "html,second")
     assert seen == ["", str(tmp_path / "first")]
 
 

@@ -32,7 +32,7 @@ def read_key_values(path):
     return values
 
 
-def run_suite(  # pylint: disable=too-many-arguments,too-many-positional-arguments
+def run_suite(
     suite_dir,
     testcases=None,
     tag_filter=None,
