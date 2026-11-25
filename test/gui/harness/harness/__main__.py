@@ -160,14 +160,18 @@ def main(argv=None):
     console_reporter = _console(args.console, base)
     reporter = bdd.Reporters([files, console_reporter] if console_reporter else [files])
     try:
-        return suite.run_suite(
-            args.testsuite,
-            args.testcase,
-            tag_filter,
-            args.abortOnFail,
-            reporter,
-            result_dir=html_dirs[0] if html_dirs else "",
-        )
+        try:
+            return suite.run_suite(
+                args.testsuite,
+                args.testcase,
+                tag_filter,
+                args.abortOnFail,
+                reporter,
+                result_dir=html_dirs[0] if html_dirs else "",
+            )
+        finally:
+            if console_reporter:  # it captures the output from its start
+                console_reporter.close()
     except ValueError as exc:  # the suite's configuration, as an unknown test case
         print(f"{arg_parser.prog}: error: {exc}", file=sys.stderr)
         return 2

@@ -268,6 +268,34 @@ def test_github_neutralises_workflow_commands_in_the_output():
     assert "      : :error::in a message" in lines
 
 
+def test_github_captures_from_the_start_of_the_run():
+    reporter = _github()
+    print("before any feature")
+    reporter.feature_start("feature", "/x/test.feature")
+    reporter.scenario_start("first", [])
+    reporter.scenario_end(results.begin_scenario("first"))
+    reporter.finish()
+    lines = reporter.stream.getvalue().splitlines()
+    heading = _index(lines, r"^Feature: feature ")
+    assert lines[heading + 1 : heading + 4] == [
+        "::group::setup output (1 line)",
+        "before any feature",
+        "::endgroup::",
+    ]
+
+
+def test_github_output_of_a_run_without_scenarios_is_a_group():
+    reporter = _github()
+    print("::warning::a run without scenarios")
+    reporter.finish()
+    lines = reporter.stream.getvalue().splitlines()
+    assert lines[:3] == [
+        "::group::run output (1 line)",
+        ": :warning::a run without scenarios",
+        "::endgroup::",
+    ]
+
+
 @pytest.mark.usefixtures("isolated")
 def test_github_setup_output_is_a_group_under_the_feature(tmp_path, capsys):
     suite_dir = _suite(tmp_path)

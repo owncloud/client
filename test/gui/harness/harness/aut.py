@@ -133,11 +133,44 @@ class _StderrTail:
         return "\n".join(self.lines)
 
 
-class ApplicationContext:
+class _StdoutCopy:  # pylint: disable=too-few-public-methods
+    """Copies the application's stdout to the harness's ``sys.stdout``, a
+    line at a time, looking it up for each line: so that the console
+    reporter's capture gets it, as it gets the harness's own output."""
+
+    def __init__(self, stream):
+        self._stream = stream
+        self._thread = threading.Thread(target=self._run, daemon=True)
+        self._thread.start()
+
+    def _run(self):
+        with self._stream:
+            for raw in self._stream:
+                try:
+                    sys.stdout.write(raw.decode("utf-8", "replace"))
+                    sys.stdout.flush()
+                except (OSError, ValueError):  # closed: keep reading, or it blocks
+                    pass
+
+    def wait(self, timeout):
+        """Wait for the end of the stream, at most ``timeout`` seconds."""
+        self._thread.join(timeout)
+
+
+class ApplicationContext:  # pylint: disable=too-many-instance-attributes
     """One started application and the connection to its probe."""
 
-    def __init__(
-        self, name, process, client, pid, socket_path, *, stderr=None, log_path=None
+    def __init__(  # pylint: disable=too-many-arguments
+        self,
+        name,
+        process,
+        client,
+        pid,
+        socket_path,
+        *,
+        stderr=None,
+        stdout=None,
+        log_path=None,
     ):
         self.name = name
         self.pid = pid
@@ -146,7 +179,8 @@ class ApplicationContext:
         self.log_path = log_path
         self._process = process
         self._socket_path = socket_path
-        self._stderr = stderr
+        # the _StderrTail, and the _StdoutCopy without a log
+        self._stderr, self._stdout_copy = stderr, stdout
 
     @property
     def isRunning(self):
@@ -159,10 +193,13 @@ class ApplicationContext:
         except OSError:
             pass
         _stop(self._process)
+        # the rest of the output through, but not for as long as a child
+        # process may hold it open; then the log is closed
+        deadline = time.monotonic() + _DRAIN_TIMEOUT
+        for stream in (self._stderr, self._stdout_copy):
+            if stream:
+                stream.wait(max(0.0, deadline - time.monotonic()))
         if self._stderr:
-            # the rest of stderr through, but not for as long as a child
-            # process may hold it open; then the log is closed
-            self._stderr.wait(_DRAIN_TIMEOUT)
             self._stderr.close_sink()
         _remove(self._socket_path)
         _forget(self)
@@ -305,7 +342,8 @@ def startApplication(cmdline):
             [executable, *args[1:]],
             cwd=directory,
             env=env,
-            stdout=log,
+            # without a log, through the harness's sys.stdout, not its fd 1
+            stdout=log or subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
     except BaseException:
@@ -316,6 +354,7 @@ def startApplication(cmdline):
         _NEW_LOGS.append(log.name)
     # from here on, it closes the log
     stderr = _StderrTail(process.stderr, sink=log)
+    stdout = None if log else _StdoutCopy(process.stdout)
     try:
         sock = _connect(name, process, socket_path, stderr)
         client = client_module.ProbeClient(sock, timeout=_REQUEST_TIMEOUT)
@@ -335,6 +374,7 @@ def startApplication(cmdline):
         pid,
         socket_path,
         stderr=stderr,
+        stdout=stdout,
         log_path=log.name if log else None,
     )
     _CONTEXTS.append(ctx)

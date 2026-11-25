@@ -3,6 +3,7 @@
 # pylint: disable=redefined-outer-name
 
 import builtins
+import io
 import json
 import os
 import stat
@@ -18,7 +19,7 @@ from suite_copy import copy_suite
 import squish
 import squishinfo
 from harness import __main__ as cli
-from harness import aut, builtins_setup, results
+from harness import aut, bdd, builtins_setup, console, results
 from harness import client as client_module
 
 FAKE_AUT = Path(__file__).resolve().parent / "fake_aut.py"
@@ -166,6 +167,26 @@ def test_without_a_log_dir_the_output_goes_through(auts, capfd):
     out, err = capfd.readouterr()
     assert "hello on stdout" in out
     assert "hello on stderr" in err
+
+
+def test_without_a_log_dir_stdout_goes_through_the_console_capture(auts):
+    _, _, paths, env = auts
+    aut.configure(paths, {**env, "FAKE_AUT_SAY": "::warning::x"})
+    stream = io.StringIO()
+    reporter = console.ConsoleReporter(stream, console.GITHUB, color=False)
+    try:
+        reporter.feature_start("feature", "/x/test.feature")
+        reporter.scenario_start("launching", [])
+        squish.startApplication("fakeaut").detach()
+        reporter.step(bdd.PASSED, "Given the application said something", "", 0.1)
+        reporter.scenario_end(results.begin_scenario("launching"))
+    finally:
+        reporter.finish()
+    lines = stream.getvalue().splitlines()
+    group = next(i for i, line in enumerate(lines) if line.startswith("::group::"))
+    end = lines.index("::endgroup::")
+    assert "  : :warning::x on stdout" in lines[group:end]
+    assert "  : :warning::x on stderr" in lines[group:end]
 
 
 def test_with_a_log_dir_a_failed_launch_still_quotes_stderr(log_dir, capfd):

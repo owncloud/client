@@ -208,6 +208,15 @@ def test_quiet_console_prints_nothing_and_writes_the_reports(tmp_path, capsys):
 
 
 @pytest.mark.usefixtures("isolated", "configured")
+def test_github_console_lets_go_of_the_streams_on_a_bad_test_case(capsys):
+    streams = sys.stdout, sys.stderr
+    args = ["--testsuite", SUITE_MIN, "--testcase", "tst_nope", "--console", "github"]
+    assert _main(*args) == 2
+    assert (sys.stdout, sys.stderr) == streams
+    assert "no such test case" in capsys.readouterr().err
+
+
+@pytest.mark.usefixtures("isolated", "configured")
 @pytest.mark.parametrize(
     "console", [[], ["--console", "github"], ["--console", "pretty"]]
 )

@@ -13,17 +13,20 @@ steps ends the run.
 
 ``github`` mode prints for GitHub Actions, and prints each scenario when it
 has ended, as one block. While the run lasts the reporter captures
-``sys.stdout`` and ``sys.stderr``, from its first feature on, so that what
-the suite prints stays with the scenario it belongs to, in its order among
-the step lines. A scenario that passed is one collapsed group whose title has
+``sys.stdout`` and ``sys.stderr``, from its construction until ``finish``
+or ``close``, so that what the suite prints stays with the scenario it
+belongs to, in its order among the step lines. A scenario that passed is one collapsed group whose title has
 its mark and time; one that did not pass is not grouped, so that it shows,
 and gets an ``::error`` annotation at its failing step. Output between
 scenarios, as a test case's own at its start or a feature hook's, is a
 ``setup output`` group before the next scenario; what follows the last one
-is printed as it is before the summary, and what precedes the first feature
-is not captured. Step times line up within a scenario. Output that does not
-go through ``sys.stdout`` or ``sys.stderr``, as a child process writing to
-the inherited file descriptors, is not captured and shows where it happens.
+is printed as it is before the summary, or as a ``run output`` group if no
+scenario ran. Step times line up within a scenario. ``harness.aut`` copies
+an application's stdout and stderr through ``sys.stdout`` and ``sys.stderr``
+when they do not go to a log, so they are captured too. The one limit:
+output a child process writes to an inherited file descriptor 1 or 2, as
+one not started through ``harness.aut``, is neither captured nor
+neutralised. The suite's own subprocess calls pipe their output instead.
 When a reporter method raises, or the run is interrupted, the capture ends
 and what it held is printed.
 
@@ -152,6 +155,7 @@ class ConsoleReporter(bdd.Reporter):  # pylint: disable=too-many-instance-attrib
         self._lock = threading.Lock()
         self._originals = None  # (stdout, stderr) while capturing
         self._interrupting = False
+        self._capture()  # as a test case prints before its first feature
 
     # -- bdd.Reporter ------------------------------------------------------------
 
@@ -172,7 +176,7 @@ class ConsoleReporter(bdd.Reporter):  # pylint: disable=too-many-instance-attrib
         self._current = self._last = report.Scenario.start(title, tags, location)
         self.features[-1].scenarios.append(self._current)
         if self.github:
-            self._print_setup_output()
+            self._print_captured("setup output")
         else:
             self._write(f"Scenario: {title}")
 
@@ -237,6 +241,8 @@ class ConsoleReporter(bdd.Reporter):  # pylint: disable=too-many-instance-attrib
     def finish(self):
         """Print the summary and append the job summary."""
         self._close()
+        if not any(f.scenarios for f in self.features):
+            self._print_captured("run output")
         self._release()
         scenarios = [s for f in self.features for s in f.scenarios]
         totals = report.count_statuses(scenarios)
@@ -258,6 +264,11 @@ class ConsoleReporter(bdd.Reporter):  # pylint: disable=too-many-instance-attrib
                 )
         if self.step_summary:
             self._append_summary(scenarios, totals, elapsed)
+
+    def close(self):
+        """End the capture, as for a run that stopped before it began;
+        ``finish`` does too."""
+        self._release()
 
     # -- capture -----------------------------------------------------------------
 
@@ -309,13 +320,13 @@ class ConsoleReporter(bdd.Reporter):  # pylint: disable=too-many-instance-attrib
         if self._current:
             self.scenario_end(None)
 
-    def _print_setup_output(self):
+    def _print_captured(self, what):
         """What was printed since the last scenario, as a collapsed group."""
         with self._taking() as entries:
             lines = self._body(entries, "")
             if any(line.strip() for line in lines):
                 count = f"{len(lines)} line{'' if len(lines) == 1 else 's'}"
-                self._command(f"::group::setup output ({count})")
+                self._command(f"::group::{what} ({count})")
                 self._write(*lines)
                 self._command("::endgroup::")
 
