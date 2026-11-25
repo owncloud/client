@@ -80,3 +80,56 @@ def test_error_without_id_is_raised_not_waited_for(pair):
     _answer(theirs, {"id": None, "error": {"code": "BadRequest", "message": "bad"}})
     with pytest.raises(ProbeError, match="BadRequest"):
         ProbeClient(ours, timeout=2).request("hello")
+
+
+def _answer_raw(sock, *lines):
+    """Read one request, then send the given lines; ``{id}`` is its id."""
+
+    def run():
+        request = json.loads(sock.makefile("rb").readline())
+        for line in lines:
+            sock.sendall(line.replace("{id}", str(request["id"])).encode() + b"\n")
+
+    thread = threading.Thread(target=run, daemon=True)
+    thread.start()
+    return thread
+
+
+def test_answer_without_id_is_not_taken_for_the_request(pair):
+    ours, theirs = pair
+    _answer_raw(
+        theirs,
+        '{"result": "no id"}',
+        '{"id": null, "result": "null id without an error"}',
+        '{"id": {id}, "result": "fresh"}',
+    )
+    assert ProbeClient(ours, timeout=2).request("hello") == "fresh"
+
+
+def test_send_timeout_closes_the_client(pair):
+    ours, theirs = pair
+    ours.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, 4096)
+    client = ProbeClient(ours, timeout=0.2)
+    # Nobody reads: the request cannot be sent completely.
+    with pytest.raises(TimeoutError, match="did not accept 'find'"):
+        client.request("find", selector={"text": "x" * (16 << 20)})
+    with pytest.raises(ConnectionError, match="did not accept 'find'"):
+        client.request("hello")
+    # Nothing more was written after the fragment of the first request.
+    theirs.setblocking(False)
+    received = b""
+    while True:
+        try:
+            if not (chunk := theirs.recv(1 << 20)):
+                break
+        except BlockingIOError:
+            break
+        received += chunk
+    assert b'"hello"' not in received
+
+
+def test_closed_client_raises_connection_error(pair):
+    client = ProbeClient(pair[0], timeout=2)
+    client.close()
+    with pytest.raises(ConnectionError, match="closed"):
+        client.request("hello")

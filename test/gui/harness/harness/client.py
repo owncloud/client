@@ -29,6 +29,9 @@ class ProbeClient:
 
     Each request waits at most ``timeout`` seconds (None: forever) for its
     answer and then raises TimeoutError; the client stays usable afterwards.
+    A request that could not be sent completely leaves part of a line on the
+    stream, so it closes the client: later requests raise ConnectionError
+    naming the cause.
     """
 
     def __init__(self, sock, timeout=30.0):
@@ -36,6 +39,7 @@ class ProbeClient:
         self._buffer = bytearray()
         self._ids = itertools.count(1)
         self._lock = threading.Lock()
+        self._closed = None  # why the client is closed, once it is
         self.timeout = timeout
 
     def _remaining(self, deadline, method):
@@ -63,6 +67,31 @@ class ProbeClient:
         del self._buffer[: end + 1]
         return line
 
+    def _send(self, data, deadline, method):
+        if self._closed is not None:
+            raise ConnectionError(
+                f"cannot send '{method}': the connection to the probe is closed "
+                f"({self._closed})"
+            )
+        self._sock.settimeout(self._remaining(deadline, method))
+        try:
+            self._sock.sendall(data)
+        except socket.timeout as err:
+            cause = f"probe did not accept '{method}' within {self.timeout} s"
+            self._close(cause)
+            raise TimeoutError(cause) from err
+        except ConnectionError as err:
+            self._close(f"probe closed the connection during '{method}'")
+            raise _closed(method) from err
+        except BaseException as err:
+            # interrupted, or failed, with part of the line possibly sent
+            self._close(f"sending '{method}' failed: {type(err).__name__}: {err}")
+            raise
+
+    def _close(self, cause):
+        self._closed = cause
+        self._sock.close()
+
     def request(self, method, **params):
         with self._lock:
             deadline = None
@@ -73,19 +102,10 @@ class ProbeClient:
                 {"id": request_id, "method": method, "params": params},
                 ensure_ascii=False,
             )
-            self._sock.settimeout(self._remaining(deadline, method))
-            try:
-                self._sock.sendall(line.encode("utf-8") + b"\n")
-            except socket.timeout as err:
-                raise TimeoutError(
-                    f"probe did not accept '{method}' within {self.timeout} s"
-                ) from err
-            except ConnectionError as err:
-                raise _closed(method) from err
+            self._send(line.encode("utf-8") + b"\n", deadline, method)
             while True:
                 response = json.loads(self._readline(deadline, method).decode("utf-8"))
-                # A null id answers a request the probe could not parse.
-                if response.get("id") in (request_id, None):
+                if _answers(response, request_id):
                     break
                 # Anything else is a late answer to an abandoned request.
         if "error" in response:
@@ -98,7 +118,22 @@ class ProbeClient:
         return response.get("result")
 
     def close(self):
+        if self._closed is None:
+            self._closed = "closed by the harness"
         self._sock.close()
+
+
+def _answers(response, request_id):
+    """Whether a response answers the request with the given id.
+
+    A null id, explicitly given, with an error answers a request the probe
+    could not parse.
+    """
+    if "id" not in response:
+        return False
+    if response["id"] is None:
+        return "error" in response
+    return response["id"] == request_id
 
 
 _CURRENT = None
