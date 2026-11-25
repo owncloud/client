@@ -44,6 +44,7 @@ def auts(tmp_path):
     aut.configure(paths, env)
     yield bin_dir, argv_file, paths, env
     aut.detach_all()
+    aut.configure({}, {})  # as the log dir, which other tests must not see
 
 
 @pytest.fixture
