@@ -109,6 +109,25 @@ def test_wait_for_object_on_a_dead_remote_object_is_a_lookup_error(fake):
     assert time.monotonic() - start < 1
 
 
+def test_wait_for_an_object_of_an_exited_application_is_a_lookup_error(fake):
+    proxy = RemoteObject(fake.client, fake.add("QTreeView").handle, "QTreeView")
+    fake.exit()
+    with pytest.raises(LookupError, match="cannot wait for") as caught:
+        squish.waitForObject(proxy)
+    assert isinstance(caught.value.__cause__, ConnectionError)
+
+
+@pytest.mark.parametrize("error", [ConnectionError, TimeoutError])
+def test_wait_for_an_object_of_an_unanswering_application_is_a_lookup_error(error):
+    class Gone:  # pylint: disable=too-few-public-methods
+        def request(self, method, **_):
+            raise error(f"no answer to {method!r}")
+
+    with pytest.raises(LookupError, match="no answer") as caught:
+        squish.waitForObject(RemoteObject(Gone(), 5, "QTreeView"))
+    assert isinstance(caught.value.__cause__, error)
+
+
 def test_find_object_raises_immediately(fake):
     with pytest.raises(LookupError):
         squish.findObject(TREE)

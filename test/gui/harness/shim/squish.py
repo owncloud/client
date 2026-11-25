@@ -54,7 +54,8 @@ def _poll_find(sel, ready, timeout):
     while True:
         try:
             found = wrap(client, request(client, "find", selector=encoded, ready=ready))
-        except RuntimeError as err:
+        except (RuntimeError, ConnectionError, TimeoutError) as err:
+            # a dead object, or its application closed or stopped answering
             if not isinstance(sel, RemoteObject):
                 raise
             raise LookupError(f"cannot wait for {sel!r}: {err}") from err
