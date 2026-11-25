@@ -26,9 +26,9 @@ DEFAULT_START_TIMEOUT_MS = 15000
 _TERMINATE_TIMEOUT = 10
 _STDERR_TAIL_LINES = 20
 _RETRY_INTERVAL = 0.05
-# how long detach() waits for the rest of a logged stderr; a child process
-# that inherited it may hold it open for much longer
-_LOG_DRAIN_TIMEOUT = 0.5
+# how long detach() waits for the rest of stderr; a child process that
+# inherited it may hold it open for much longer
+_DRAIN_TIMEOUT = 0.5
 _LOG_NAME = re.compile(r"[0-9]{2,}-.*\.log")  # as _open_log names them
 
 _AUT_PATHS = {}
@@ -72,8 +72,9 @@ class _StderrTail:
     """Copies the application's stderr through and keeps its last lines.
 
     The lines go to ``sink``, a binary file closed at the end of the stream
-    or by ``close_sink()``, or else to the harness's stderr. Once the sink
-    is closed, the lines are only kept in the tail.
+    or by ``close_sink()``, or else to the harness's stderr. Lines after
+    ``close_sink()`` go to the harness's stderr too, marked with the log's
+    name.
     """
 
     def __init__(self, stream, sink=None):
@@ -81,6 +82,7 @@ class _StderrTail:
         self._stream = stream
         self._logged = sink is not None
         self._sink = sink
+        self._label = os.path.basename(sink.name) if sink else ""
         self._lock = threading.Lock()  # the sink, between reader and close_sink
         self._thread = threading.Thread(target=self._run, daemon=True)
         self._thread.start()
@@ -101,6 +103,8 @@ class _StderrTail:
             return
         with self._lock:
             if not self._sink:
+                sys.stderr.write(f"[{self._label} after detach] {line}")
+                sys.stderr.flush()
                 return
             try:
                 self._sink.write(raw)
@@ -113,7 +117,7 @@ class _StderrTail:
         sys.stderr.write(line)
 
     def close_sink(self):
-        """Close the sink; the reader goes on, keeping only the tail."""
+        """Close the sink; the reader goes on with the harness's stderr."""
         with self._lock:
             if self._sink:
                 self._sink.close()
@@ -155,10 +159,10 @@ class ApplicationContext:
         except OSError:
             pass
         _stop(self._process)
-        if self._stderr and self.log_path:
-            # the rest of stderr into the log, which is closed even if a
-            # child process still holds stderr open
-            self._stderr.wait(_LOG_DRAIN_TIMEOUT)
+        if self._stderr:
+            # the rest of stderr through, but not for as long as a child
+            # process may hold it open; then the log is closed
+            self._stderr.wait(_DRAIN_TIMEOUT)
             self._stderr.close_sink()
         _remove(self._socket_path)
         _forget(self)

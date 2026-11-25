@@ -260,6 +260,30 @@ def test_detach_does_not_wait_for_a_child_holding_stderr(forking_aut, log_dir, l
     assert time.monotonic() - start < 1.0
 
 
+def test_stderr_after_detach_goes_to_the_harness_stderr(auts, log_dir, capfd):
+    bin_dir, _, paths, env = auts
+    body = f'(sleep 1.5; echo late line >&2) &\nexec "{sys.executable}" "{FAKE_AUT}"'
+    _script(bin_dir, "lateaut", body)
+    aut.configure({**paths, "lateaut": str(bin_dir)}, env, log_dir=str(log_dir))
+    ctx = squish.startApplication("lateaut")
+    ctx.detach()
+    deadline = time.monotonic() + 5
+    err = ""
+    while "late line" not in err and time.monotonic() < deadline:
+        time.sleep(0.1)
+        err += capfd.readouterr().err
+    assert "[01-lateaut.log after detach] late line" in err
+    assert "late line" not in Path(ctx.log_path).read_text("utf-8")
+
+
+def test_detach_copies_the_rest_of_stderr_without_a_log_dir(auts, capfd):
+    _, _, paths, env = auts
+    aut.configure(paths, {**env, "FAKE_AUT_LAST_WORDS": "last words"})
+    ctx = squish.startApplication("fakeaut")
+    ctx.detach()
+    assert "last words" in capfd.readouterr().err
+
+
 def test_a_log_closed_by_detach_takes_no_more_output(monkeypatch):
     raised = []
     monkeypatch.setattr(threading, "excepthook", raised.append)
