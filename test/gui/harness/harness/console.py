@@ -12,41 +12,45 @@ failing steps with their locations and messages. A summary of scenarios and
 steps ends the run.
 
 ``github`` mode prints for GitHub Actions, and prints each scenario when it
-has ended, as one block. While the run lasts the reporter captures
-``sys.stdout`` and ``sys.stderr``, from its construction until ``finish``
-or ``close``, so that what the suite prints stays with the scenario it
-belongs to, in its order among the step lines. A scenario that passed is one collapsed group whose title has
-its mark and time; one that did not pass is not grouped, so that it shows,
-and gets an ``::error`` annotation at its failing step. Output between
-scenarios, as a test case's own at its start or a feature hook's, is a
-``setup output`` group before the next scenario; what follows the last one
-is printed as it is before the summary, or as a ``run output`` group if no
-scenario ran. Step times line up within a scenario. ``harness.aut`` copies
-an application's stdout and stderr through ``sys.stdout`` and ``sys.stderr``
-when they do not go to a log, so they are captured too. The one limit:
-output a child process writes to an inherited file descriptor 1 or 2, as
-one not started through ``harness.aut``, is neither captured nor
-neutralised. The suite's own subprocess calls pipe their output instead.
-When a reporter method raises, or the run is interrupted, the capture ends
-and what it held is printed.
+has ended, as one block. From its construction until ``finish`` or
+``close`` the reporter captures file descriptors 1 and 2, as one pipe, so
+that everything the process and its children write to either, through
+``sys.stdout``, ``sys.stderr``, a log handler or an inherited descriptor,
+stays with the scenario it belongs to, in its order among the step lines;
+before printing anything, the reporter waits until what was written so far
+has arrived. Its own lines go to ``stream``, past the capture. A scenario
+that passed is one collapsed group whose title has its mark and time; one
+that did not pass is not grouped, so that it shows, and gets an ``::error``
+annotation at its failing step. Output between scenarios, as a test case's
+own at its start or a feature hook's, is a ``setup output`` group before the
+next scenario; what follows the last one is printed as it is before the
+summary, or as a ``run output`` group if no scenario ran. Step times line up
+within a scenario. When a reporter method raises, or the run is
+interrupted, the descriptors are put back and what was captured is printed.
+Nothing shows while a scenario runs; a run killed with SIGKILL loses the
+running scenario's output (the reports and application logs keep theirs).
+A process that still holds the pipe after the capture ended, as a child left
+running, gets EPIPE when it writes.
 
 Workflow-command neutralisation: GitHub runs a line as a workflow command if
-it starts with ``::``, or with ``##[`` in the older form, after whitespace.
-In ``github`` mode every line the reporter prints, the captured output
-included, that starts so after leading blanks, control and format
-characters (as a byte order mark or a CR) and colour codes gets a space
-inside that start, ``: :`` or ``# #[``, so that it shows as text and does not
-run. The reporter's own ``::group::``, ``::endgroup::`` and ``::error`` are
-the only commands it prints; their data is escaped. ``step_summary`` is a
-file the run's summary is appended to as markdown, as ``$GITHUB_STEP_SUMMARY``.
+it starts with ``::`` after whitespace, and takes the older ``##[name]``
+form anywhere in a line. In ``github`` mode every line the reporter prints,
+the captured output included, gets ``: :`` for a ``::`` it starts with after
+leading blanks, control and format characters (as a byte order mark or a
+CR) and colour codes, and ``# #[`` for every ``##[``, so that it shows as
+text and does not run. The reporter's own ``::group::``, ``::endgroup::``
+and ``::error`` are the only commands it prints; their data is escaped.
+``step_summary`` is a file the run's summary is appended to as markdown, as
+``$GITHUB_STEP_SUMMARY``.
 """
 
+import atexit
 import contextlib
 import functools
 import html
-import io
 import os
 import re
+import secrets
 import sys
 import threading
 import time
@@ -63,6 +67,8 @@ PASSED, FAILED, ERROR = bdd.PASSED, bdd.FAILED, bdd.ERROR
 INTERRUPTED = "interrupted"
 # A step's text is padded to this width before its time, in pretty mode.
 STEP_WIDTH = 72
+# How long, in seconds, the github console waits for captured output.
+SYNC_TIMEOUT = 5.0
 # The longest message the job summary quotes.
 SUMMARY_MESSAGE = 2000
 
@@ -89,36 +95,166 @@ def _releasing(method):
     return call
 
 
-class _Capture(io.TextIOBase):
-    """Stands in for sys.stdout or sys.stderr: what is written to either goes
-    to one list, in order. ``fileno`` is the original's, so a child process
-    given it writes there, past the capture."""
+class _FdCapture:  # pylint: disable=too-many-instance-attributes
+    """Captures file descriptors 1 and 2, as one pipe, until ``stop``.
 
-    def __init__(self, entries, lock, original):
-        super().__init__()
+    What the process and its children write to either arrives in
+    ``entries``, a line at a time, in the order it was written. ``sync``
+    waits until everything written so far has arrived. ``sys.stdout`` and
+    ``sys.stderr`` are made to write to the descriptors: line-buffered, or,
+    where they are no streams over them, replaced by ones that are.
+    ``output(fd)`` writes to what the descriptor was before.
+    """
+
+    def __init__(self, entries, condition):
         self._entries = entries
-        self._lock = lock
-        self._original = original
+        self._condition = condition
+        self._prefix = f"\0console-sync-{secrets.token_hex(8)}-".encode()
+        self._sent = self._seen = 0
+        self._streams = []  # (name, original, its line_buffering, replacement)
+        self._outputs = []
+        _flush(sys.stdout, sys.stderr)
+        self.saved = {fd: os.dup(fd) for fd in (1, 2)}
+        self._read_fd, self._write_fd = os.pipe()
+        try:
+            for fd in (1, 2):
+                os.dup2(self._write_fd, fd)
+            self._point_streams()
+        except BaseException:
+            self._restore()
+            self._close_fds(self._read_fd, *self.saved.values())
+            raise
+        self._thread = threading.Thread(
+            target=self._read, name="console capture", daemon=True
+        )
+        self._thread.start()
 
-    @property
-    def encoding(self):
-        return getattr(self._original, "encoding", None) or "utf-8"
+    def output(self, fd, encoding):
+        """A text stream to what ``fd`` was before the capture."""
+        # pylint: disable-next=consider-using-with
+        stream = open(
+            self.saved[fd],
+            "w",
+            encoding=encoding or "utf-8",
+            errors="replace",
+            closefd=False,
+        )
+        self._outputs.append(stream)
+        return stream
 
-    def writable(self):
-        return True
+    def sync(self):
+        """Wait until what was written so far has arrived, at most
+        ``SYNC_TIMEOUT``; after that, a line says that some may follow."""
+        _flush(sys.stdout, sys.stderr)
+        self._sent += 1
+        number = self._sent
+        os.write(self._write_fd, self._prefix + str(number).encode() + b"\n")
+        with self._condition:
+            if not self._condition.wait_for(lambda: self._seen >= number, SYNC_TIMEOUT):
+                self._entries.append(
+                    f"[WARNING] the console capture is {SYNC_TIMEOUT:.0f} s behind; "
+                    "what is missing follows later\n"
+                )
 
-    def write(self, text):
-        if not isinstance(text, str):
-            raise TypeError(f"write() argument must be str, not {type(text).__name__}")
-        with self._lock:  # the reader threads of applications write too
-            self._entries.append(text)
-        return len(text)
+    def stop(self):
+        """Sync, put the descriptors and streams back and end the reader."""
+        try:
+            self.sync()
+        finally:
+            self._restore()
+            try:
+                os.write(self._write_fd, self._prefix + b"stop\n")
+                self._thread.join(SYNC_TIMEOUT)
+            finally:
+                for stream in self._outputs:
+                    stream.close()
+                self._close_fds(*self.saved.values())
 
-    def isatty(self):
+    def _point_streams(self):
+        for name, fd in (("stdout", 1), ("stderr", 2)):
+            stream = getattr(sys, name)
+            if _fileno(stream) == fd and hasattr(stream, "reconfigure"):
+                self._streams.append((name, stream, stream.line_buffering, None))
+                stream.reconfigure(line_buffering=True)
+            elif _fileno(stream) != fd:
+                # pylint: disable-next=consider-using-with
+                replacement = open(
+                    fd,
+                    "w",
+                    encoding=getattr(stream, "encoding", None) or "utf-8",
+                    errors="backslashreplace",
+                    buffering=1,
+                    closefd=False,
+                )
+                self._streams.append((name, stream, None, replacement))
+                setattr(sys, name, replacement)
+
+    def _restore(self):
+        """The descriptors and streams as before; the write end stays open."""
+        _flush(sys.stdout, sys.stderr)
+        for fd, saved in self.saved.items():
+            os.dup2(saved, fd)
+        for name, original, line_buffering, replacement in self._streams:
+            if replacement:
+                # left open: a log handler may hold it, and fd 2 is real again
+                setattr(sys, name, original)
+            else:
+                original.reconfigure(line_buffering=line_buffering)
+        self._streams.clear()
+
+    def _close_fds(self, *fds):
+        for fd in (self._write_fd, *fds):
+            try:
+                os.close(fd)
+            except OSError:
+                pass
+
+    def _read(self):
+        pending, stop = b"", False
+        try:
+            while not stop:
+                if not (chunk := os.read(self._read_fd, 65536)):
+                    break
+                *lines, pending = (pending + chunk).split(b"\n")
+                for line in lines:
+                    stop = self._line(line) or stop
+        finally:
+            with self._condition:
+                if pending:
+                    self._entries.append(pending.decode("utf-8", "replace") + "\n")
+                self._seen = self._sent
+                self._condition.notify_all()
+            os.close(self._read_fd)
+
+    def _line(self, line):
+        """Take a line; returns whether it was the last."""
+        at = line.find(self._prefix)
+        text = line if at < 0 else line[:at]
+        with self._condition:
+            if at < 0 or text:
+                self._entries.append(text.decode("utf-8", "replace") + "\n")
+            if at < 0:
+                return False
+            if (tag := line[at + len(self._prefix) :]) == b"stop":
+                return True
+            self._seen = int(tag)
+            self._condition.notify_all()
         return False
 
-    def fileno(self):
-        return self._original.fileno()
+
+def _fileno(stream):
+    try:
+        return stream.fileno()
+    except (AttributeError, OSError, ValueError):  # io.UnsupportedOperation too
+        return None
+
+
+def _flush(*streams):
+    for stream in streams:
+        try:
+            stream.flush()
+        except (AttributeError, OSError, ValueError):
+            pass
 
 
 class ConsoleReporter(bdd.Reporter):  # pylint: disable=too-many-instance-attributes
@@ -152,8 +288,9 @@ class ConsoleReporter(bdd.Reporter):  # pylint: disable=too-many-instance-attrib
         self._started = time.monotonic()
         # github mode: what the suite printed and the steps, in order
         self._entries = []
-        self._lock = threading.Lock()
-        self._originals = None  # (stdout, stderr) while capturing
+        self._condition = threading.Condition()
+        self._fd_capture = None
+        self._out = stream  # where the reporter's own lines go
         self._interrupting = False
         self._capture()  # as a test case prints before its first feature
 
@@ -186,8 +323,9 @@ class ConsoleReporter(bdd.Reporter):  # pylint: disable=too-many-instance-attrib
         step = report.Step(result, text, message, duration, location)
         if self._current:
             self._current.steps.append(step)
-        if self._originals:
-            with self._lock:
+        if self._fd_capture:
+            self._fd_capture.sync()  # what the step printed comes first
+            with self._condition:
                 self._entries.append(step)
         else:
             self._write(*self._step_lines(step, STEP_WIDTH))
@@ -273,34 +411,42 @@ class ConsoleReporter(bdd.Reporter):  # pylint: disable=too-many-instance-attrib
     # -- capture -----------------------------------------------------------------
 
     def _capture(self):
-        """Capture sys.stdout and sys.stderr from now on, in github mode."""
-        if self.github and not self._originals:
-            self._originals = sys.stdout, sys.stderr
-            sys.stdout = _Capture(self._entries, self._lock, sys.stdout)
-            sys.stderr = _Capture(self._entries, self._lock, sys.stderr)
+        """Capture file descriptors 1 and 2 from now on, in github mode."""
+        if self.github and not self._fd_capture:
+            self._fd_capture = _FdCapture(self._entries, self._condition)
+            atexit.register(self.close)
+            if (fd := _fileno(self.stream)) in (1, 2):
+                self.stream.flush()
+                self._out = self._fd_capture.output(fd, self.stream.encoding)
 
     @contextlib.contextmanager
     def _taking(self):
         """What was captured so far, dropped once printed: if printing
         fails, ``_release`` prints it."""
-        with self._lock:
+        if self._fd_capture:
+            self._fd_capture.sync()
+        with self._condition:
             entries = list(self._entries)
         yield entries
-        with self._lock:
+        with self._condition:
             del self._entries[: len(entries)]
 
     def _take(self):
         """What was captured so far, emptied."""
-        with self._lock:
+        with self._condition:
             entries = list(self._entries)
             self._entries.clear()
         return entries
 
     def _release(self):
         """Put the streams back and print what is still captured, as it is."""
-        if self._originals:
-            sys.stdout, sys.stderr = self._originals
-            self._originals = None
+        if capture := self._fd_capture:
+            self._fd_capture = None
+            atexit.unregister(self.close)
+            try:
+                capture.stop()
+            finally:
+                self._out = self.stream
         if entries := self._take():
             self._write(*self._body(entries, ""))
 
@@ -323,7 +469,7 @@ class ConsoleReporter(bdd.Reporter):  # pylint: disable=too-many-instance-attrib
     def _print_captured(self, what):
         """What was printed since the last scenario, as a collapsed group."""
         with self._taking() as entries:
-            lines = self._body(entries, "")
+            lines = "\n".join(self._body(entries, "")).splitlines()
             if any(line.strip() for line in lines):
                 count = f"{len(lines)} line{'' if len(lines) == 1 else 's'}"
                 self._command(f"::group::{what} ({count})")
@@ -472,21 +618,22 @@ class ConsoleReporter(bdd.Reporter):  # pylint: disable=too-many-instance-attrib
     def _emit(self, text):
         if self.narrow:
             text = text.encode(self.narrow, "replace").decode(self.narrow)
-        self.stream.write(text)
-        self.stream.flush()
+        self._out.write(text)
+        self._out.flush()
 
 
 _ANSI = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
-_COMMAND_STARTS = ("::", "##[")
 
 
 def neutralise(line):
     """A line that does not run as a workflow command; see the module.
 
     Leading whitespace, control and format characters (CR, a byte order
-    mark, zero-width spaces) and colour codes are skipped; if ``::`` or
-    ``##[`` follows, a space goes after its first character.
+    mark, zero-width spaces) and colour codes are skipped; if ``::``
+    follows, a space goes between its colons. Every ``##[``, which GitHub
+    takes anywhere in a line, becomes ``# #[``.
     """
+    line = line.replace("##[", "# #[")
     start = 0
     while start < len(line):
         if match := _ANSI.match(line, start):
@@ -495,9 +642,8 @@ def neutralise(line):
             start += 1
         else:
             break
-    for command in _COMMAND_STARTS:
-        if line.startswith(command, start):
-            return f"{line[:start]}{command[0]} {line[start + 1:]}"
+    if line.startswith("::", start):
+        return f"{line[:start]}: {line[start + 1:]}"
     return line
 
 

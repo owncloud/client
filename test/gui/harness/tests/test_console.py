@@ -2,7 +2,10 @@
 # SPDX-License-Identifier: MIT
 
 import io
+import logging
+import os
 import re
+import subprocess
 import sys
 
 import pytest
@@ -142,27 +145,29 @@ def _groups_balanced(lines, commands):
     return groups
 
 
-def _swapped():
-    """Whether sys.stdout or sys.stderr is the reporter's capture."""
-    return any(
-        type(stream).__module__ == "harness.console"
-        for stream in (sys.stdout, sys.stderr)
-    )
+def _fds():
+    """What file descriptors 1 and 2 are."""
+    return tuple((os.fstat(fd).st_dev, os.fstat(fd).st_ino) for fd in (1, 2))
+
+
+def _streams():
+    """File descriptors 1 and 2, and sys.stdout and sys.stderr."""
+    return _fds(), sys.stdout, sys.stderr
 
 
 @pytest.fixture(autouse=True)
 def real_streams():
-    """Fails a test that leaves the streams swapped, and puts them back."""
+    """Fails a test that leaves fd 1 or 2 redirected."""
+    before = _fds()
     yield
-    if swapped := _swapped():
-        sys.stdout, sys.stderr = sys.__stdout__, sys.__stderr__
-    assert not swapped, "the reporter left sys.stdout or sys.stderr swapped"
+    assert _fds() == before, "the reporter left fd 1 or 2 redirected"
 
 
 @pytest.mark.usefixtures("isolated")
 def test_github_prints_each_scenario_as_one_block(tmp_path, capsys):
+    before = _streams()
     _run(tmp_path, "github", end_hooks=True)
-    assert not _swapped()  # also after the failing hooks
+    assert _streams() == before  # also after the failing hooks
     out = capsys.readouterr().out
     lines = out.splitlines()
     assert "stop-commands" not in out
@@ -296,6 +301,99 @@ def test_github_output_of_a_run_without_scenarios_is_a_group():
     ]
 
 
+def test_github_captures_child_processes_and_bytes():
+    before = _streams()
+    reporter = _github()
+    reporter.feature_start("feature", "/x/test.feature")
+    reporter.scenario_start("children", [])
+    child = "import sys; print('::warning::x', flush=True); print('##[error]y', file=sys.stderr)"
+    subprocess.run([sys.executable, "-c", child], check=True)
+    sys.stdout.buffer.write(b"bytes\n")
+    reporter.step(bdd.FAILED, "Then it fails", "no", 0.1)
+    record = results.begin_scenario("children")
+    results.record("fails", "no")
+    reporter.scenario_end(record)
+    reporter.finish()
+    assert _streams() == before
+    lines = reporter.stream.getvalue().splitlines()
+    title = _index(lines, r"^✗ children ")
+    assert lines[title + 1 : title + 4] == [
+        "  : :warning::x",
+        "  # #[error]y",
+        "  bytes",
+    ]
+    assert [c[1] for c in _commands(lines)] == ["error"]
+
+
+def test_github_captures_a_log_handler_made_during_the_run():
+    reporter = _github()
+    reporter.feature_start("feature", "/x/test.feature")
+    logger = logging.getLogger("console-test")
+    handler = logging.StreamHandler(sys.stderr)
+    logger.addHandler(handler)
+    try:
+        for title in ("first", "second", "third"):
+            reporter.scenario_start(title, [])
+            logger.warning("logged in %s", title)
+            reporter.step(bdd.PASSED, "Given a step", "", 0.1)
+            reporter.scenario_end(results.begin_scenario(title))
+    finally:
+        logger.removeHandler(handler)
+        reporter.finish()
+    groups = _groups_balanced(
+        lines := reporter.stream.getvalue().splitlines(), _commands(lines)
+    )
+    assert [v[0] for v in groups.values()] == [
+        "  logged in first",
+        "  logged in second",
+        "  logged in third",
+    ]
+
+
+def test_github_sync_loses_nothing_written_right_before_a_step_ends():
+    reporter = _github()
+    reporter.feature_start("feature", "/x/test.feature")
+    reporter.scenario_start("chatty", [])
+    for number in range(20000):
+        print(f"line {number}")
+    os.write(1, b"straight to the fd\n")
+    reporter.step(bdd.PASSED, "Given a chatty step", "", 0.1)
+    reporter.scenario_end(results.begin_scenario("chatty"))
+    reporter.finish()
+    lines = reporter.stream.getvalue().splitlines()
+    first = lines.index("  line 0")
+    assert lines[first : first + 20002] == [
+        *(f"  line {number}" for number in range(20000)),
+        "  straight to the fd",
+        lines[first + 20001],
+    ]
+    assert lines[first + 20001].startswith("  ✓ Given a chatty step")
+
+
+def test_github_neutralises_the_legacy_form_anywhere_in_a_line():
+    reporter = _github()
+    reporter.feature_start("feature", "/x/test.feature")
+    reporter.scenario_start("legacy", [])
+    print("foo ##[error]x and ##[warning]y")
+    reporter.scenario_end(results.begin_scenario("legacy"))
+    reporter.finish()
+    lines = reporter.stream.getvalue().splitlines()
+    assert "  foo # #[error]x and # #[warning]y" in lines
+
+
+def test_github_setup_output_counts_the_printed_lines():
+    reporter = _github()
+    reporter.feature_start("feature", "/x/test.feature")
+    reporter.step(bdd.ERROR, "OnFeatureStart hook", "first\nsecond", 0.1)
+    reporter.scenario_start("after", [])
+    reporter.scenario_end(results.begin_scenario("after"))
+    reporter.finish()
+    lines = reporter.stream.getvalue().splitlines()
+    group = _index(lines, r"^::group::setup output")
+    assert lines[group] == "::group::setup output (3 lines)"
+    assert lines[group + 4] == "::endgroup::"
+
+
 @pytest.mark.usefixtures("isolated")
 def test_github_setup_output_is_a_group_under_the_feature(tmp_path, capsys):
     suite_dir = _suite(tmp_path)
@@ -316,13 +414,14 @@ def test_github_setup_output_is_a_group_under_the_feature(tmp_path, capsys):
 
 
 def test_github_interrupted_scenario_prints_its_output():
+    before = _streams()
     reporter = _github()
     reporter.feature_start("feature", "/x/test.feature")
     reporter.scenario_start("stopped", [], bdd.Location("/x/test.feature", 3))
     reporter.step(bdd.PASSED, "Given a step", "", 0.1, bdd.Location("/x/a", 4))
     print("[LOG] before the stop")
     reporter.interrupted("interrupted: SIGTERM")
-    assert not _swapped()
+    assert _streams() == before
     reporter.finish()
     lines = reporter.stream.getvalue().splitlines()
     _groups_balanced(lines, _commands(lines))
@@ -351,6 +450,7 @@ def step(context):
 
 @pytest.mark.usefixtures("isolated")
 def test_github_run_interrupted_mid_scenario(tmp_path, capsys):
+    before = _streams()
     suite_dir = copy_suite(tmp_path, INTERRUPTED_FEATURE)
     (suite_dir / "shared" / "steps" / "console.py").write_text(
         STEPS + INTERRUPTING_STEP, "utf-8"
@@ -358,7 +458,7 @@ def test_github_run_interrupted_mid_scenario(tmp_path, capsys):
     reporter = _github(sys.stdout, workspace=str(tmp_path.resolve()))
     with pytest.raises(KeyboardInterrupt):
         suite.run_suite(str(suite_dir), ["tst_b"], TagFilter([]), reporter=reporter)
-    assert not _swapped()
+    assert _streams() == before
     captured = capsys.readouterr()
     lines = captured.out.splitlines()
     title = _index(lines, r"^✗ an interrupted scenario  \(interrupted, ")
@@ -369,6 +469,8 @@ def test_github_run_interrupted_mid_scenario(tmp_path, capsys):
 
 @pytest.mark.usefixtures("isolated")
 def test_github_reporter_failure_restores_the_streams(tmp_path, capsys):
+    before = _streams()
+
     def broken(*_args):
         raise RuntimeError("the reporter broke")
 
@@ -381,7 +483,7 @@ def test_github_reporter_failure_restores_the_streams(tmp_path, capsys):
             TagFilter([]),
             reporter=bdd.Reporters([reporter]),
         )
-    assert not _swapped()
+    assert _streams() == before
     captured = capsys.readouterr()
     assert "[LOG] hello from the step" in captured.out
     assert "the reporter broke" in captured.err
@@ -402,11 +504,14 @@ def test_github_job_summary(tmp_path, capsys):
     assert "RuntimeError: 100% broken\n::error::injected" in text
 
 
-def test_pretty_does_not_capture():
+def test_pretty_does_not_capture(capfd):
+    before = _streams()
     reporter = ConsoleReporter(io.StringIO(), "pretty", color=False)
     reporter.feature_start("feature", "/x/test.feature")
     reporter.scenario_start("live", [])
-    assert not _swapped()
+    assert _streams() == before
+    os.write(1, b"live on fd 1\n")
+    assert capfd.readouterr().out == "live on fd 1\n"
     reporter.scenario_end(results.begin_scenario("live"))
     reporter.finish()
 
