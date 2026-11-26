@@ -9,7 +9,7 @@
     <message>
         <location filename="../src/gui/qml/AccountBar.qml" line="114"/>
         <source>Add Account</source>
-        <translation>Добавить аккаунт</translation>
+        <translation>Добавить учётную запись</translation>
     </message>
     <message>
         <location filename="../src/gui/qml/AccountBar.qml" line="141"/>
@@ -313,12 +313,12 @@ File synchronization desktop utility.</source>
     <message numerus="yes">
         <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
         <source>You are synchronizing %1 out of %n folder(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Вы синхронизируете %1 из %n каталога</numerusform><numerusform>Вы синхронизируете %1 из %n каталогов</numerusform><numerusform>Вы синхронизируете %1 из %n каталогов</numerusform><numerusform>Вы синхронизируете %1 из %n каталогов</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/qml/FolderDelegate.qml" line="259"/>
         <source>You are synchronizing %1 out of %n space(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Вы синхронизируете %1 из %n пространства</numerusform><numerusform>Вы синхронизируете %1 из %n пространств</numerusform><numerusform>Вы синхронизируете %1 из %n пространств</numerusform><numerusform>Вы синхронизируете %1 из %n пространств</numerusform></translation>
     </message>
 </context>
 <context>
@@ -744,7 +744,7 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="558"/>
         <source>Server is currently in maintenance mode</source>
-        <translation type="unfinished"/>
+        <translation>В текущий момент сервер в режиме обслуживания</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="561"/>
@@ -754,7 +754,7 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="564"/>
         <source>Updating credentials...</source>
-        <translation type="unfinished"/>
+        <translation>Учётные данные обновляются...</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="569"/>
@@ -764,7 +764,7 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="571"/>
         <source>Sync is paused due to metered internet connection</source>
-        <translation type="unfinished"/>
+        <translation>Синхронизация остановлена из-за подключения по каналу с тарификацией</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="573"/>
@@ -774,7 +774,7 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="577"/>
         <source>Server configuration error</source>
-        <translation type="unfinished"/>
+        <translation>Ошибка конфигурации сервера</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsettings.cpp" line="583"/>
@@ -837,7 +837,7 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location filename="../src/gui/models/activitylistmodel.cpp" line="115"/>
         <source>Account</source>
-        <translation>Уч.запись</translation>
+        <translation>Учётная запись</translation>
     </message>
     <message>
         <location filename="../src/gui/models/activitylistmodel.cpp" line="117"/>
@@ -1091,7 +1091,7 @@ The update will be performed in the background, and overwrite the current AppIma
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="500"/>
         <source>%1 and %n other file(s) have been removed.</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Были удалены %1 и %n другой файл.</numerusform><numerusform>Были удалены %1 и %n других файла.</numerusform><numerusform>Были удалены %1 и %n других файлов.</numerusform><numerusform>Были удалены %1 и %n других файлов.</numerusform></translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="186"/>
@@ -1111,7 +1111,7 @@ The update will be performed in the background, and overwrite the current AppIma
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="507"/>
         <source>%1 and %n other file(s) have been added.</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Были добавлены %1 и %n другой файл.</numerusform><numerusform>Были добавлены %1 и %n других файла.</numerusform><numerusform>Были добавлены %1 и %n других файлов.</numerusform><numerusform>Были добавлены %1 и %n других файлов.</numerusform></translation>
     </message>
     <message>
         <location filename="../src/gui/folder.cpp" line="509"/>
@@ -1327,7 +1327,7 @@ You are going to lose access to your sync folder if you do not do so!</source>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="314"/>
         <source>%1 of %2 used</source>
-        <translation type="unfinished"/>
+        <translation>Использовано %1 из %2</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="394"/>
@@ -1856,7 +1856,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/networksettings.ui" line="130"/>
         <source>Proxy Hostname</source>
-        <translation type="unfinished"/>
+        <translation>Имя хоста прокси</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="140"/>
@@ -1866,7 +1866,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/networksettings.ui" line="153"/>
         <source>Proxy Port Number</source>
-        <translation type="unfinished"/>
+        <translation>Номер порта прокси</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="174"/>
@@ -1908,7 +1908,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/networksettings.ui" line="80"/>
         <source>Proxy type</source>
-        <translation type="unfinished"/>
+        <translation>Тип прокси</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.ui" line="270"/>
@@ -3590,7 +3590,7 @@ Note that using any logging command line options will override the settings.</so
         <location filename="../src/gui/newwizard/pages/serverurlsetupwizardpage.cpp" line="36"/>
         <source>%1 logo</source>
         <extracomment>This is the accessibility text for the logo in the setup wizard page. The parameter is the name for the (branded) application.</extracomment>
-        <translation type="unfinished"/>
+        <translation>Лого %1</translation>
     </message>
 </context>
 <context>
@@ -4138,12 +4138,12 @@ Are you sure you want to proceed?</source>
     <message numerus="yes">
         <location filename="../src/common/utility.cpp" line="208"/>
         <source>%n year(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n год</numerusform><numerusform>%n года</numerusform><numerusform>%n лет</numerusform><numerusform>%n лет</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/common/utility.cpp" line="209"/>
         <source>%n month(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n месяц</numerusform><numerusform>%n месяца</numerusform><numerusform>%n месяцев</numerusform><numerusform>%n месяцев</numerusform></translation>
     </message>
     <message numerus="yes">
         <location filename="../src/common/utility.cpp" line="210"/>
@@ -4163,7 +4163,7 @@ Are you sure you want to proceed?</source>
     <message numerus="yes">
         <location filename="../src/common/utility.cpp" line="213"/>
         <source>%n second(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n секунда</numerusform><numerusform>%n секунды</numerusform><numerusform>%n секунд</numerusform><numerusform>%n секунд</numerusform></translation>
     </message>
     <message>
         <location filename="../src/common/utility.cpp" line="237"/>
