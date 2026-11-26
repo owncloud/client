@@ -150,7 +150,7 @@ apply_common_target_settings(owncloud)
 target_link_libraries(owncloud PUBLIC owncloudGui owncloudResources KDAB::kdsingleapplication )
 target_link_libraries(owncloud PRIVATE Qt6::Core)
 if(WITH_GUI_TEST_PROBE)
-    target_link_libraries(owncloud PRIVATE qtguiprobe)
+    target_link_libraries(owncloud PRIVATE cutecumber::probe)
 endif()
 
 MESSAGE(STATUS "OWNCLOUD_SIDEBAR_ICONS: ${APPLICATION_ICON_NAME}: ${OWNCLOUD_SIDEBAR_ICONS}")

@@ -2,19 +2,19 @@
 # SPDX-FileCopyrightText: 2026 ownCloud GmbH - A Kiteworks Company and ownCloud contributors
 # SPDX-License-Identifier: GPL-2.0-or-later
 #
-# Runs the GUI tests with the in-repo harness in the owncloudci/squish image, without Squish.
+# Runs the GUI tests with CuteCumber in the owncloudci/squish image, without Squish.
 # It sets up what the image's startup scripts did for the Squish runner: an X display,
 # a D-Bus session bus and an unlocked gnome-keyring (the client stores its credentials there).
 #
 # Environment:
-#   GUI_TEST_PARAMETERS  harness arguments (the tokens Squish used to get), split on whitespace
+#   GUI_TEST_PARAMETERS  CuteCumber arguments (the tokens Squish used to get), split on whitespace
 #   AUT_NAME, AUT_DIR    the application under test, passed as --aut AUT_NAME=AUT_DIR
 #   VNC_PW               the keyring password; the image sets it
 #   DISPLAY              defaults to :1
 
 set -euo pipefail
 
-: "${GUI_TEST_PARAMETERS:?GUI_TEST_PARAMETERS must hold the harness arguments}"
+: "${GUI_TEST_PARAMETERS:?GUI_TEST_PARAMETERS must hold the CuteCumber arguments}"
 : "${AUT_NAME:?AUT_NAME must name the application under test}"
 : "${AUT_DIR:?AUT_DIR must be the directory of the application under test}"
 : "${VNC_PW:?VNC_PW must hold the keyring password}"
@@ -61,7 +61,7 @@ keyring_unlocked() {
     return 1
 }
 
-run_harness() {
+run_cutecumber() {
     wait_for "the keyring" 30 keyring_unlocked
     echo "[INFO] Keyring is ready and unlocked"
 
@@ -71,13 +71,13 @@ run_harness() {
     # plain word splitting, no globbing: GUI_TEST_PARAMETERS holds ~@skip and a ';' that stay literal
     set -f
     # shellcheck disable=SC2086
-    exec python3.10 -m harness --aut "${AUT_NAME}=${AUT_DIR}" ${GUI_TEST_PARAMETERS}
+    exec python3.10 -m cutecumber --aut "${AUT_NAME}=${AUT_DIR}" ${GUI_TEST_PARAMETERS}
 }
 
 if [[ "${1:-}" == --in-session ]]; then
     # inside dbus-run-session: start the keyring on this bus, as the image's VNC session does
     gnome-keyring-daemon --start --components=secrets >/dev/null
-    run_harness
+    run_cutecumber
 fi
 
 if command -v Xvfb >/dev/null; then
@@ -102,4 +102,4 @@ wait_for "the VNC display" 60 display_ready
 # shellcheck source=/dev/null
 source "${DBUS_ENV_FILE}"
 export DBUS_SESSION_BUS_ADDRESS
-run_harness
+run_cutecumber

@@ -1,3 +1,0 @@
-# SPDX-FileCopyrightText: 2026 ownCloud GmbH - A Kiteworks Company and ownCloud contributors
-# SPDX-License-Identifier: MIT
-SUITE_MIN_GREETING=hello from envs.txt

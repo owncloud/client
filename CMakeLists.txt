@@ -140,9 +140,15 @@ if (NOT OWNCLOUD_ICONS)
 endif()
 MESSAGE(STATUS "OWNCLOUD_ICONS: ${APPLICATION_ICON_NAME}: ${OWNCLOUD_ICONS}")
 
-# before src, so that the qtguiprobe target exists when src/gui links it
+# before src, so that the cutecumber::probe target exists when src/gui links it
 if(WITH_GUI_TEST_PROBE)
-    add_subdirectory(test/gui/probe)
+    include(FetchContent)
+    FetchContent_Declare(cutecumber
+        GIT_REPOSITORY https://github.com/owncloud/cutecumber.git
+        GIT_TAG d14e87d19dc39ea7489c8d8f6cf73fac0689e613 # v0.1.0
+        SOURCE_SUBDIR probe
+    )
+    FetchContent_MakeAvailable(cutecumber)
 endif()
 add_subdirectory(src)
 if(IS_DIRECTORY ${CMAKE_SOURCE_DIR}/admin)

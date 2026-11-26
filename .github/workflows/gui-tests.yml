@@ -38,9 +38,6 @@ jobs:
           make -C test/gui install
           make -C test/gui python-lint
 
-      - name: Harness tests
-        run: make -C test/gui harness-test
-
       - name: Gherkin lint
         run: |
           npm install -g ${{ env.NPM_GHERLINT }}
@@ -107,11 +104,8 @@ jobs:
         run: |
           mkdir -p build
           cd build
-          cmake -G"Ninja" -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=OFF -DWITH_GUI_TEST_PROBE=ON -DWITH_GUI_TEST_PROBE_TESTS=ON -S ..
+          cmake -G"Ninja" -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=OFF -DWITH_GUI_TEST_PROBE=ON -S ..
           ninja
-
-      - name: Run probe tests
-        run: ctest --test-dir build/test/gui/probe -R tst_ --output-on-failure
 
       - name: Install Python Modules
         run: |
@@ -159,7 +153,7 @@ jobs:
               !contains(github.event.pull_request.title, 'full-ci') 
               && '--abortOnFail' || '' 
             }}
-          # absolute: the harness runs each test case in its own directory
+          # absolute: CuteCumber runs each test case in its own directory
           STACKTRACE_FILE: /__w/client/client/test/gui/guiReportUpload/stacktrace.log
           OWNCLOUD_CORE_DUMP: 1
           RECORD_VIDEO_ON_FAILURE: false
