@@ -98,6 +98,10 @@ option(WITH_AUTO_UPDATER "WITH_AUTO_UPDATER" OFF)
 option(FORCE_ASSERTS "FORCE_ASSERTS" OFF)
 
 option(WITH_GUI_TEST_PROBE "Build the GUI test probe into the client (never for releases)" OFF)
+add_feature_info(GuiTestProbe WITH_GUI_TEST_PROBE "CuteCumber GUI test probe, for GUI tests only")
+if(WITH_GUI_TEST_PROBE AND CMAKE_BUILD_TYPE MATCHES "^(Release|RelWithDebInfo|MinSizeRel)$")
+    message(WARNING "WITH_GUI_TEST_PROBE is meant for test builds; do not ship a ${CMAKE_BUILD_TYPE} build with it")
+endif()
 
 option(WITH_APPIMAGEUPDATER OFF "Enable built-in libappimageupdate based updater on Linux")
 add_feature_info(AppImageUpdate WITH_APPIMAGEUPDATER "Built-in libappimageupdate based updater")
