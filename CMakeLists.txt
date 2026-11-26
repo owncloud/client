@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Set this before the first project definition
-set(CMAKE_OSX_DEPLOYMENT_TARGET "13.0" CACHE STRING "Minimum macOS deployment version" FORCE)
+set(CMAKE_OSX_DEPLOYMENT_TARGET "14.4" CACHE STRING "Minimum macOS deployment version" FORCE)
 
 include(VERSION.cmake)
 project(owncloud-client LANGUAGES CXX C VERSION ${MIRALL_VERSION_MAJOR}.${MIRALL_VERSION_MINOR}.${MIRALL_VERSION_PATCH})
@@ -24,12 +24,6 @@ set(APPLE_SUPPRESS_X11_WARNING ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 find_package(QT 6.8 NAMES Qt6 COMPONENTS Core REQUIRED)
-
-# Qt 6.12 supports macOS 14.4 and newer (the Conan build); Qt 6.8 (Craft) still supports 13.0.
-# Still in time for the targets: CMake reads the deployment target when it generates.
-if(APPLE AND QT_VERSION VERSION_GREATER_EQUAL 6.12)
-    set(CMAKE_OSX_DEPLOYMENT_TARGET "14.4" CACHE STRING "Minimum macOS deployment version" FORCE)
-endif()
 
 find_package(Qt6 COMPONENTS Core Concurrent Network Widgets Xml Quick QuickWidgets QuickControls2 REQUIRED)
 find_package(Qt6 COMPONENTS LinguistTools REQUIRED)
