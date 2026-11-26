@@ -101,7 +101,7 @@ option(WITH_GUI_TEST_PROBE "Build the GUI test probe into the client (never for 
 add_feature_info(GuiTestProbe WITH_GUI_TEST_PROBE "CuteCumber GUI test probe, for GUI tests only")
 include(CMakeDependentOption)
 cmake_dependent_option(WITH_GUI_TEST_PROBE_IN_RELEASE
-    "Allow WITH_GUI_TEST_PROBE in a build type other than Debug (never for shipped builds)" OFF
+    "Allow WITH_GUI_TEST_PROBE with a CMAKE_BUILD_TYPE other than Debug; single-configuration generators only (never for shipped builds)" OFF
     "WITH_GUI_TEST_PROBE" OFF)
 if(WITH_GUI_TEST_PROBE)
     get_property(_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
@@ -117,7 +117,6 @@ if(WITH_GUI_TEST_PROBE)
                 "use CMAKE_BUILD_TYPE=Debug, or set WITH_GUI_TEST_PROBE_IN_RELEASE=ON if you really need it")
         endif()
     endif()
-endif()
 endif()
 
 option(WITH_APPIMAGEUPDATER OFF "Enable built-in libappimageupdate based updater on Linux")
