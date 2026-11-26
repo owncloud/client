@@ -99,11 +99,13 @@ option(FORCE_ASSERTS "FORCE_ASSERTS" OFF)
 
 option(WITH_GUI_TEST_PROBE "Build the GUI test probe into the client (never for releases)" OFF)
 add_feature_info(GuiTestProbe WITH_GUI_TEST_PROBE "CuteCumber GUI test probe, for GUI tests only")
+option(WITH_GUI_TEST_PROBE_IN_RELEASE "Allow WITH_GUI_TEST_PROBE in release build types (never for shipped builds)" OFF)
 if(WITH_GUI_TEST_PROBE)
     get_property(_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
     string(TOUPPER "${CMAKE_BUILD_TYPE}" _build_type)
-    if(_multi_config OR _build_type MATCHES "^(RELEASE|RELWITHDEBINFO|MINSIZEREL)$")
-        message(WARNING "WITH_GUI_TEST_PROBE is meant for test builds; do not ship a release build with it")
+    if((_multi_config OR _build_type MATCHES "^(RELEASE|RELWITHDEBINFO|MINSIZEREL)$") AND NOT WITH_GUI_TEST_PROBE_IN_RELEASE)
+        message(FATAL_ERROR "WITH_GUI_TEST_PROBE is for test builds only and must not be shipped; "
+            "use a Debug build, or set WITH_GUI_TEST_PROBE_IN_RELEASE=ON if you really need it here")
     endif()
 endif()
 
