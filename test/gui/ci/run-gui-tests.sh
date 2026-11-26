@@ -44,10 +44,8 @@ dbus_env_ready() {
         [[ -z "$(tail -c 1 "${DBUS_ENV_FILE}")" ]]
 }
 
-# the socket alone may be left over from an earlier X server; when we started Xvfb, it must still run
 display_ready() {
-    [[ -S "/tmp/.X11-unix/X${DISPLAY#:}" ]] || return 1
-    [[ -z "${XVFB_PID:-}" ]] || kill -0 "${XVFB_PID}" 2>/dev/null
+    [[ -S "/tmp/.X11-unix/X${DISPLAY#:}" ]]
 }
 
 # after wait_for_keyring in the image's startup scripts
@@ -56,13 +54,15 @@ keyring_locked() {
         org.freedesktop.Secret.Collection Locked 2>/dev/null || true
 }
 
-# replacing the daemon restarts its registration on the bus, so retry the unlock only every 5 s
-KEYRING_POLLS=0
+# replacing the daemon restarts its registration on the bus, so give a running daemon 5 s to come up
+# and retry the unlock at most every 5 s
+LAST_UNLOCK=${SECONDS}
 keyring_unlocked() {
     [[ "$(keyring_locked)" == *false ]] && return 0
-    if (( KEYRING_POLLS++ % 5 == 0 )); then
+    if (( SECONDS - LAST_UNLOCK >= 5 )); then
         echo "[INFO] Waiting for the keyring to unlock..."
         echo -n "${VNC_PW}" | gnome-keyring-daemon -r --unlock >/dev/null
+        LAST_UNLOCK=${SECONDS}
     fi
     return 1
 }
@@ -89,7 +89,6 @@ fi
 if command -v Xvfb >/dev/null; then
     echo "[INFO] Starting Xvfb on ${DISPLAY}"
     Xvfb "${DISPLAY}" -screen 0 1920x1080x24 &
-    XVFB_PID=$!
     wait_for "Xvfb" 30 display_ready
     exec dbus-run-session -- bash "$0" --in-session
 fi
