@@ -6,9 +6,11 @@ SPDX-License-Identifier: GPL-2.0-or-later
 # GUI tests
 
 The GUI tests are Gherkin features (`tst_*/test.feature`) with Python steps (`shared/`). They run with
-the harness in `harness/`, which starts the client and drives it through the probe in `probe/`, a
-small server that the client loads when built with `-DWITH_GUI_TEST_PROBE=ON`. No Squish installation
-is needed. CI runs them in `.github/workflows/gui-tests.yml` via `ci/run-gui-tests.sh`.
+[CuteCumber](https://github.com/owncloud/cutecumber), which starts the client and drives it through
+CuteCumber's probe, a small server that the client links when built with `-DWITH_GUI_TEST_PROBE=ON`.
+No Squish installation is needed. CuteCumber's README documents the tool itself: its options, console
+output, reports and the Squish API it provides. CI runs the tests in `.github/workflows/gui-tests.yml`
+via `ci/run-gui-tests.sh`.
 
 ## Running locally
 
@@ -22,11 +24,11 @@ and an unlocked Secret Service keyring (gnome-keyring), since the client keeps i
    ninja -C build
    ```
 
-   Never ship a client built with `WITH_GUI_TEST_PROBE`. The probe stays inactive unless the harness
-   sets `QT_GUI_TEST_PROBE`. To build and run the probe's own tests as well, add
-   `-DWITH_GUI_TEST_PROBE_TESTS=ON` and run `ctest --test-dir build/test/gui/probe --output-on-failure`.
+   The configure step fetches CuteCumber's probe from GitHub, at the commit pinned in the top-level
+   `CMakeLists.txt`; a build without `WITH_GUI_TEST_PROBE` fetches nothing. Never ship a client built
+   with `WITH_GUI_TEST_PROBE`. The probe stays inactive unless CuteCumber sets `CUTECUMBER_PROBE`.
 
-2. Install the Python modules (this includes the harness, installed editable from `harness/`):
+2. Install the Python modules (this includes CuteCumber, at the commit pinned in `requirements.txt`):
 
    ```sh
    python3.10 -m pip install -r test/gui/requirements.txt
@@ -52,20 +54,20 @@ and an unlocked Secret Service keyring (gnome-keyring), since the client keeps i
    mkdir -p "$GUI_TEST_REPORT_DIR/screenshots"
    ```
 
-   Use absolute paths: the harness runs each test case in its own directory. CI also sets `HOME` to the
+   Use absolute paths: CuteCumber runs each test case in its own directory. CI also sets `HOME` to the
    image's user home. Some steps create folders below `HOME`; the client's configuration and sync folders
    go to `/tmp/owncloudtest` (`XDG_CONFIG_HOME` in `envs.txt`).
 
 4. Run a test case, from the repository root:
 
    ```sh
-   PYTHONPATH=test/gui/harness python3.10 -m harness --testsuite test/gui --aut owncloud=build/bin --tags ~@skip --testcase tst_syncing
+   python3.10 -m cutecumber --testsuite test/gui --aut owncloud=build/bin --tags ~@skip --testcase tst_syncing
    ```
 
    Leave out `--testcase` to run every `tst_*`. Further options, all as in CI:
    `--tags ~@skipOnLinux` (repeatable, ANDed), `--abortOnFail`, `--envvar KEY=VALUE` for the client's
    environment (e.g. `--envvar QT_LOGGING_RULES=sync.httplogger=true`), and `--reportgen html,DIR` or
-   `--reportgen junitxml,FILE`. `python3.10 -m harness --help` lists them all.
+   `--reportgen junitxml,FILE`. `python3.10 -m cutecumber --help` lists them all.
 
    The console shows each feature, scenario and step as it finishes, with the failing steps' lines and
    messages after each scenario that did not pass, and a summary at the end. `--console quiet` prints
@@ -85,7 +87,6 @@ and an unlocked Secret Service keyring (gnome-keyring), since the client keeps i
 ## Checks
 
 ```sh
-make -C test/gui python-lint    # black and pylint over the suite and the harness
-make -C test/gui harness-test   # the harness's own tests
+make -C test/gui python-lint    # black and pylint over the suite
 make -C test/gui gherkin-lint
 ```
