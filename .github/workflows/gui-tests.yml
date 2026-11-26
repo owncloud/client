@@ -14,9 +14,10 @@ env:
 permissions:
   contents: read
 
-# a new push to a pull request replaces its running GUI tests; master, tags and the nightly run finish
+# a new push to a pull request cancels that pull request's running GUI tests; every other run (master,
+# tags, the nightly run) gets a group of its own, so none of them waits for or cancels another
 concurrency:
-  group: gui-tests-${{ github.event_name }}-${{ github.ref }}
+  group: gui-tests-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
