@@ -27,6 +27,10 @@ and an unlocked Secret Service keyring (gnome-keyring), since the client keeps i
    The configure step fetches CuteCumber's probe from GitHub, at the commit pinned in the top-level
    `CMakeLists.txt`; a build without `WITH_GUI_TEST_PROBE` fetches nothing. Never ship a client built
    with `WITH_GUI_TEST_PROBE`. The probe stays inactive unless CuteCumber sets `CUTECUMBER_PROBE`.
+   With a single-configuration generator, `WITH_GUI_TEST_PROBE` requires `CMAKE_BUILD_TYPE=Debug` and
+   stops the configure step otherwise; `-DWITH_GUI_TEST_PROBE_IN_RELEASE=ON` lets another build type
+   through on purpose, with a warning. With a multi-configuration generator (Visual Studio, Xcode,
+   Ninja Multi-Config), the probe is linked into the Debug configuration only.
 
 2. Install the Python modules (this includes CuteCumber, at the commit pinned in `requirements.txt`):
 

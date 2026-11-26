@@ -99,14 +99,25 @@ option(FORCE_ASSERTS "FORCE_ASSERTS" OFF)
 
 option(WITH_GUI_TEST_PROBE "Build the GUI test probe into the client (never for releases)" OFF)
 add_feature_info(GuiTestProbe WITH_GUI_TEST_PROBE "CuteCumber GUI test probe, for GUI tests only")
-option(WITH_GUI_TEST_PROBE_IN_RELEASE "Allow WITH_GUI_TEST_PROBE in release build types (never for shipped builds)" OFF)
+include(CMakeDependentOption)
+cmake_dependent_option(WITH_GUI_TEST_PROBE_IN_RELEASE
+    "Allow WITH_GUI_TEST_PROBE in a build type other than Debug (never for shipped builds)" OFF
+    "WITH_GUI_TEST_PROBE" OFF)
 if(WITH_GUI_TEST_PROBE)
     get_property(_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
     string(TOUPPER "${CMAKE_BUILD_TYPE}" _build_type)
-    if((_multi_config OR _build_type MATCHES "^(RELEASE|RELWITHDEBINFO|MINSIZEREL)$") AND NOT WITH_GUI_TEST_PROBE_IN_RELEASE)
-        message(FATAL_ERROR "WITH_GUI_TEST_PROBE is for test builds only and must not be shipped; "
-            "use a Debug build, or set WITH_GUI_TEST_PROBE_IN_RELEASE=ON if you really need it here")
+    if(_multi_config)
+        # the configuration is chosen at build time: src/gui links the probe into Debug only
+        message(STATUS "WITH_GUI_TEST_PROBE: the probe is linked into the Debug configuration only")
+    elseif(NOT _build_type STREQUAL "DEBUG")
+        if(WITH_GUI_TEST_PROBE_IN_RELEASE)
+            message(WARNING "WITH_GUI_TEST_PROBE in a '${CMAKE_BUILD_TYPE}' build; never ship this client")
+        else()
+            message(FATAL_ERROR "WITH_GUI_TEST_PROBE is for Debug builds only and must not be shipped; "
+                "use CMAKE_BUILD_TYPE=Debug, or set WITH_GUI_TEST_PROBE_IN_RELEASE=ON if you really need it")
+        endif()
     endif()
+endif()
 endif()
 
 option(WITH_APPIMAGEUPDATER OFF "Enable built-in libappimageupdate based updater on Linux")
