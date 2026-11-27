@@ -29,12 +29,24 @@ concurrency:
 
 jobs:
   linux:
-    name: Build and test linux-x86_64
+    name: Build and test linux-x86_64${{ matrix.variant }}
     # The packages were built in the GitLab builder image (AlmaLinux 8, gcc-toolset-13); the client is
     # compiled here with the runner's gcc 13, and the archive's tool binaries (cmake, Qt host tools) run
     # on the runner: they need glibc >= 2.28 and gcc 8's libstdc++ (GLIBCXX_3.4.25) or newer, AlmaLinux
     # 8's own; gcc-toolset-13 links its newer libstdc++ parts statically, so it raises neither floor.
     runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - variant: ''
+            sanitizers: ''
+          # The client's own code with AddressSanitizer and UBSan, against the same Conan packages,
+          # which are not instrumented. Linux, not macOS: there the ASan runtime crashes now and then
+          # in the child of the fork() with which QProcess starts test_helper.
+          - variant: '-asan'
+            sanitizers: 'address;undefined'
     steps:
       # GitHub's merge commit, as in main.yml, so a PR is tested with its base. Its fingerprint inputs
       # (see conan/fingerprint.py) match the PR head's or the base's, which both have archives, unless
@@ -123,16 +135,41 @@ jobs:
           python: ${{ steps.python.outputs.python-path }}
           generators-folder: build
           cmake-generator: Ninja
+      - name: Set up the sanitizers
+        if: ${{ matrix.sanitizers }}
+        run: |
+          # gcc 13's ASan runtime crashes at start with the 32 bits of mmap randomization newer kernels use.
+          sudo sysctl vm.mmap_rnd_bits=28
+          # For everything built with the sanitizers, in the build too. The reports go to files, also
+          # those of child processes such as test_helper, whose output the tests don't show. Leaks
+          # aren't checked yet: the tests leak objects, e.g. TestOAuth its accounts.
+          mkdir -p "$RUNNER_TEMP/sanitizers"
+          {
+            echo "ASAN_OPTIONS=detect_leaks=0:halt_on_error=1:log_path=$RUNNER_TEMP/sanitizers/report"
+            echo "UBSAN_OPTIONS=print_stacktrace=1:halt_on_error=1:log_path=$RUNNER_TEMP/sanitizers/report"
+          } >> "$GITHUB_ENV"
       - name: Build
+        env:
+          SANITIZERS: ${{ matrix.sanitizers }}
         run: |
           # conanbuild.sh puts the locked cmake on PATH; the compiler is the runner's gcc 13,
           # which conan/profiles/linux-x86_64 names. WITH_AUTO_UPDATER: Craft's Linux job builds
           # and tests the updater too (enableAutoUpdater).
           source build/conanbuild.sh
-          cmake --preset conan-release -DBUILD_TESTING=ON -DFORCE_ASSERTS=ON -DWITH_AUTO_UPDATER=ON
+          sanitizer_args=()
+          if [ -n "$SANITIZERS" ]; then
+            # -g for file and line in the reports. Not CMAKE_CXX_FLAGS: that would replace the
+            # Conan toolchain's flags.
+            sanitizer_args=("-DECM_ENABLE_SANITIZERS=$SANITIZERS"
+              "-DCMAKE_C_FLAGS_RELEASE=-O3 -g -DNDEBUG" "-DCMAKE_CXX_FLAGS_RELEASE=-O3 -g -DNDEBUG")
+          fi
+          cmake --preset conan-release -DBUILD_TESTING=ON -DFORCE_ASSERTS=ON -DWITH_AUTO_UPDATER=ON \
+            "${sanitizer_args[@]}"
           cmake --build --preset conan-release
       - name: Test
         id: test
+        # Below the job's timeout, so that a hanging test run still gets its logs uploaded.
+        timeout-minutes: 90
         run: |
           # AppConfigTest writes the system config /etc/ownCloud/ownCloud.ini; Craft's job runs as root.
           sudo install -d -o "$(id -u)" -g "$(id -g)" /etc/ownCloud
@@ -143,11 +180,16 @@ jobs:
           # conanrun.sh: the shared Qt, glib and libsecret from the Conan cache.
           source build/conanbuild.sh
           source build/conanrun.sh
-          ctest --preset conan-release --output-on-failure
+          ctest --preset conan-release --output-on-failure --timeout 900 || {
+            status=$?
+            # The sanitizer build's reports, written to files rather than to the tests' output.
+            [ -d "$RUNNER_TEMP/sanitizers" ] && tail -n +1 "$RUNNER_TEMP"/sanitizers/*
+            exit "$status"
+          }
       - name: QML format lint
         # Here rather than in format-lint.yml: qmlformat has to be the one of the Qt the client builds
         # against, which only conan-deps installs. Runs even if the build or the tests failed.
-        if: ${{ !cancelled() && steps.deps.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.deps.outcome == 'success' && !matrix.sanitizers }}
         run: |
           # conanrun.sh: the Conan Qt's bin on PATH and its libraries on LD_LIBRARY_PATH.
           source build/conanrun.sh
@@ -159,8 +201,15 @@ jobs:
         if: ${{ failure() && steps.test.outcome == 'failure' }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: conan-build-linux-x86_64-test-log
+          name: conan-build-linux-x86_64${{ matrix.variant }}-test-log
           path: build/Testing/Temporary/LastTest.log
+          if-no-files-found: ignore
+      - name: Upload the sanitizer reports
+        if: ${{ failure() && matrix.sanitizers }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: conan-build-linux-x86_64${{ matrix.variant }}-sanitizer-reports
+          path: ${{ runner.temp }}/sanitizers/
           if-no-files-found: ignore
 
   macos:
