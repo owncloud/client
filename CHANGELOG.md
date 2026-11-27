@@ -53,9 +53,17 @@ ownCloud admins and users.
 ## Summary
 
 * Bugfix - Ensure changes to selective sync always triggers remote discovery: [#12645](https://github.com/owncloud/client/pull/12645)
+* Bugfix - Build the macOS Finder extension with Xcode 27: [#12705](https://github.com/owncloud/client/pull/12705)
+* Bugfix - Fix a crash when Windows virtual files are hydrated or validated: [#12707](https://github.com/owncloud/client/pull/12707)
+* Bugfix - Install the application icons of themes with legacy icon names on Linux: [#12711](https://github.com/owncloud/client/pull/12711)
+* Bugfix - Don't leave a Windows on-demand download unanswered: [#12713](https://github.com/owncloud/client/pull/12713)
 * Change - Eliminated excessive server checks: [#12619](https://github.com/owncloud/client/pull/12619)
 * Change - We ended support for OWNCLOUD_FORCE_DARK_MODE environment variable: [#12625](https://github.com/owncloud/client/pull/12625)
 * Change - Introduce a user editable account alias: [#12639](https://github.com/owncloud/client/pull/12639)
+* Change - Update dependencies of the Conan build: [#12710](https://github.com/owncloud/client/pull/12710)
+* Change - Remove the unused Remix Icon space icon: [#12718](https://github.com/owncloud/client/pull/12718)
+* Change - Update Qt to 6.12.1 and require macOS 14.4: [#12724](https://github.com/owncloud/client/pull/12724)
+* Enhancement - Add the Conan dependency configuration: [#12689](https://github.com/owncloud/client/pull/12689)
 
 ## Details
 
@@ -70,6 +78,43 @@ ownCloud admins and users.
    subfolders will be downloaded, as expected.
 
    https://github.com/owncloud/client/pull/12645
+
+* Bugfix - Build the macOS Finder extension with Xcode 27: [#12705](https://github.com/owncloud/client/pull/12705)
+
+   The Finder Sync extension's Xcode project still targeted macOS 10.15, which
+   Xcode 27 no longer accepts, so the macOS build failed there. The extension now
+   has the client's minimum macOS.
+
+   https://github.com/owncloud/client/pull/12705
+
+* Bugfix - Fix a crash when Windows virtual files are hydrated or validated: [#12707](https://github.com/owncloud/client/pull/12707)
+
+   The Windows virtual files plugin passed Windows a pointer from a hydration or
+   validation request after that request had returned, and Windows could then crash
+   the client while it downloaded or checked a file on demand. This was most likely
+   when the file had changed on the server. The plugin now keeps only the request's
+   keys.
+
+   https://github.com/owncloud/client/pull/12707
+
+* Bugfix - Install the application icons of themes with legacy icon names on Linux: [#12711](https://github.com/owncloud/client/pull/12711)
+
+   Themes that name their icons `<name>-icon-<size>.png` got their application icon
+   built in, but on Linux no icon was installed into the hicolor theme, so the
+   desktop file and an AppImage had no icon. The icons are now installed for both
+   naming schemes.
+
+   https://github.com/owncloud/client/pull/12711
+
+* Bugfix - Don't leave a Windows on-demand download unanswered: [#12713](https://github.com/owncloud/client/pull/12713)
+
+   The Windows virtual files plugin gave Windows no answer to a download request
+   when it found no record of the file, or when the file had changed size on the
+   server and the plugin could not restart the download. The application that
+   opened the file then hung until Windows timed out the request. The plugin now
+   fails the request instead.
+
+   https://github.com/owncloud/client/pull/12713
 
 * Change - Eliminated excessive server checks: [#12619](https://github.com/owncloud/client/pull/12619)
 
@@ -105,6 +150,42 @@ ownCloud admins and users.
    and selecting "Change alias..." which will pop a simple input dialog.
 
    https://github.com/owncloud/client/pull/12639
+
+* Change - Update dependencies of the Conan build: [#12710](https://github.com/owncloud/client/pull/12710)
+
+   The Conan dependency configuration now uses brotli 1.2.1, expat 2.10.0, freetype
+   2.15.0, glib 2.90.1, harfbuzz 15.0.0, libmount 2.42.4, libpng 1.6.59, md4c
+   0.5.3, pcre2 10.49, Sparkle 2.9.6, sqlite3 3.54.1 and zlib 1.4.
+
+   https://github.com/owncloud/client/pull/12710
+
+* Change - Remove the unused Remix Icon space icon: [#12718](https://github.com/owncloud/client/pull/12718)
+
+   The space icon from Remix Icon has not been used since 7.1.0, so we removed it
+   together with its license file. Newer Remix Icon releases come under a more
+   restrictive license.
+
+   https://github.com/owncloud/client/pull/12718
+
+* Change - Update Qt to 6.12.1 and require macOS 14.4: [#12724](https://github.com/owncloud/client/pull/12724)
+
+   The Conan dependency configuration now uses Qt 6.12.1. Qt 6.12 supports macOS
+   14.4 and newer, so the client's minimum macOS is now 14.4: macOS 13 and 14.0 to
+   14.3 are no longer supported.
+
+   https://github.com/owncloud/client/pull/12724
+
+* Enhancement - Add the Conan dependency configuration: [#12689](https://github.com/owncloud/client/pull/12689)
+
+   The client's dependencies are now described for Conan 2: `conanfile.py` with an
+   exact Conan pin, profiles for the four release platforms, one `conan.lock`
+   covering all of them, and `conan/update-lock.sh`, which regenerates the lock and
+   checks it for drift. A new CI workflow builds and tests the client on Linux,
+   macOS arm64 and Windows x86_64 with these dependencies, next to the Craft build.
+   This prepares the move of the build from KDE Craft to Conan and does not change
+   the current build.
+
+   https://github.com/owncloud/client/pull/12689
 
 # Changelog for ownCloud Desktop Client [7.1.1] (2026-08-27)
 
