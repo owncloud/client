@@ -81,7 +81,7 @@ class OwncloudClientConan(ConanFile):
         # 3.4.8: the 3.4 patch the pinned openssl recipe offers. (The recipes'
         # former root conanfile.py named 3.4.7, which the recipe no longer has.)
         self.requires("openssl/3.4.8")
-        self.requires("qt/6.10.3")
+        self.requires("qt/6.8.5")
         self.requires("qtkeychain/0.15.0")
         self.requires("sqlite3/3.54.1")
         self.requires("zlib/1.4")
