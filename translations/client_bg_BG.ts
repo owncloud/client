@@ -3196,48 +3196,48 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::VfsWinPrivate</name>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="582"/>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="585"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="595"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="598"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
     </message>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="619"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="632"/>
         <source>Could not find StorageProviderState property %1</source>
         <translation>Свойството StorageProviderState %1 не бе намерено</translation>
     </message>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="633"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="646"/>
         <source>Could not find StorageFolder for %1 error: %2</source>
         <translation>StorageFolder за %1 не бе намерен, грешка: %2</translation>
     </message>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="643"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="656"/>
         <source>Could not retrieve StorageFolder for %1 %2 (0x%3)</source>
         <translation>StorageFolder за %1 %2 не можа да бъде изтеглен (0x%3)</translation>
     </message>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="677"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="690"/>
         <source>The folder is used by a different client: %1</source>
         <translation>Папката се използва от друг клиент: %1</translation>
     </message>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="700"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="713"/>
         <source>Error registering StorageProvider for %1: %2 (0x%3)</source>
         <translation>Грешка при регистриране на StorageProvider за %1: %2 (0x%3)</translation>
     </message>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="735"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="748"/>
         <source>Unable to connect sync root: %1 error: %2</source>
         <translation>Неуспешно свързване с корена за синхронизиране: %1 грешка: %2</translation>
     </message>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="672"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="685"/>
         <source>%1 is managed by another sync client</source>
         <translation>%1 се управлява от друг клиент за синхронизация</translation>
     </message>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="687"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="700"/>
         <source>Downgrading the folder from %1 to %2 is not supported</source>
         <translation>Понижаването на папката от %1 до %2 не се поддържа</translation>
     </message>
