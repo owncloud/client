@@ -8,7 +8,7 @@
 
 # don't grep in one line, to avaoid grepping the grep process...
 PROCESSES=$(ps aux)
-OC_INSTANCE=$(echo "${PROCESSES}" | grep "/Applications/@APPLICATION_EXECUTABLE@.app/Contents/MacOS/@APPLICATION_EXECUTABLE@")
+OC_INSTANCE=$(echo "${PROCESSES}" | grep "/Applications/@APPLICATION_NAME@.app/Contents/MacOS/@APPLICATION_EXECUTABLE@")
 
 if [[ "${OC_INSTANCE}" != "" ]]; then
    kill $(echo "${OC_INSTANCE}" | awk '{print $2}')
