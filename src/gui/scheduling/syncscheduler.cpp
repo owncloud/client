@@ -125,7 +125,7 @@ SyncScheduler::SyncScheduler(FolderMan *parent)
     // a complete local discovery is performed.
     // This timer here triggers a sync independent of etag changes on the server.
     auto *fullLocalDiscoveryTimer = new QTimer(this);
-    fullLocalDiscoveryTimer->setInterval(ConfigFile().fullLocalDiscoveryInterval() + 2min);
+    fullLocalDiscoveryTimer->setInterval(Folder::FullLocalDiscoveryInterval + 2min);
     connect(fullLocalDiscoveryTimer, &QTimer::timeout, this, [parent, this] {
         // I'm doing it this way as std::as_const won't compile as it's "deleted" (no idea)
         // and if I just hit folders() we get clazy complaining that it might detach :/

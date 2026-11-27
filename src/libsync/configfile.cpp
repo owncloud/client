@@ -47,7 +47,6 @@ Q_LOGGING_CATEGORY(lcConfigFile, "sync.configfile", QtInfoMsg)
 namespace  {
 const QString logHttpC() { return QStringLiteral("logHttp"); }
 const QString remotePollIntervalC() { return QStringLiteral("remotePollInterval"); }
-const QString fullLocalDiscoveryIntervalC() { return QStringLiteral("fullLocalDiscoveryInterval"); }
 const QString monoIconsC() { return QStringLiteral("monoIcons"); }
 const QString promptDeleteC() { return QStringLiteral("promptDeleteAllFiles"); }
 const QString crashReporterC() { return QStringLiteral("crashReporter"); }
@@ -63,6 +62,11 @@ const QString automaticLogDirC() { return QStringLiteral("logToTemporaryLogDir")
 const QString numberOfLogsToKeepC()
 {
     return QStringLiteral("numberOfLogsToKeep");
+}
+
+const QString updateCheckIntervalC()
+{
+    return QStringLiteral("updateCheckInterval");
 }
 
 // The key `clientVersion` stores the version *with* build number of the config file. It is named
@@ -320,14 +324,8 @@ chrono::milliseconds ConfigFile::remotePollInterval(std::chrono::seconds default
     return remoteInterval;
 }
 
-chrono::milliseconds OCC::ConfigFile::fullLocalDiscoveryInterval() const
-{
-    auto settings = makeQSettings();
-    settings.beginGroup(defaultConnection());
-    return millisecondsValue(settings, fullLocalDiscoveryIntervalC(), 1h);
-}
-
-/*chrono::milliseconds ConfigFile::updateCheckInterval(const QString &connection) const
+// get rid of this too, but need to move default val to the updater
+chrono::milliseconds ConfigFile::updateCheckInterval(const QString &connection) const
 {
     QString con(connection);
     if (connection.isEmpty())
@@ -344,7 +342,7 @@ chrono::milliseconds OCC::ConfigFile::fullLocalDiscoveryInterval() const
         interval = minInterval;
     }
     return interval;
-}*/
+}
 
 QString ConfigFile::uiLanguage() const
 {

@@ -69,16 +69,6 @@ public:
     /* Server poll interval in milliseconds */
     std::chrono::milliseconds remotePollInterval(std::chrono::seconds defaultVal, const QString &connection = QString()) const;
 
-    /**
-     * Interval in milliseconds within which full local discovery is required
-     *
-     * Use -1 to disable regular full local discoveries.
-     */
-    // todo: there is no setter for this so it needs to go. the default value returned is 1h so move it somehwere that it makes more sense
-    // note a very suspicious split use of this value in both Folder::startSync AND SyncScheduler::SyncScheduler (where it sets the repeat interval
-    // on a timer)
-    std::chrono::milliseconds fullLocalDiscoveryInterval() const;
-
     bool monoIcons() const;
     void setMonoIcons(bool);
 
@@ -146,8 +136,8 @@ public:
     bool restoreGeometryHeader(QHeaderView *header);
 
     // how often the check about new versions runs
-    // todo: move this. No setter means it's not actually in the config file :/
-    // std::chrono::milliseconds updateCheckInterval(const QString &connection = QString()) const;
+    // todo: move default value to updater. No setter means it's not actually in the config file unless hand edited = this must go :/
+    std::chrono::milliseconds updateCheckInterval(const QString &connection = QString()) const;
 
     QString uiLanguage() const;
     void setUiLanguage(const QString &uiLanguage);

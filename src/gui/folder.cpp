@@ -849,11 +849,12 @@ void Folder::startSync()
     // this will enqueue this folder again, it doesn't matter
     slotWatchedPathsChanged(_folderWatcher->popChangeSet(), Folder::ChangeReason::Other);
 
-    const std::chrono::milliseconds fullLocalDiscoveryInterval = ConfigFile().fullLocalDiscoveryInterval();
     const bool hasDoneFullLocalDiscovery = _timeSinceLastFullLocalDiscovery.isValid();
-    // negative fullLocalDiscoveryInterval means we don't require periodic full runs
+    // negative fullLocalDiscoveryInterval means we don't require periodic full runs.
+    // todo: the config "setting" is being removed so need to review how this might ever end up at < 0. In general I think periodic full discoveries
+    // should never be required but needs more input.
     const bool periodicFullLocalDiscoveryNow =
-        fullLocalDiscoveryInterval.count() >= 0 && _timeSinceLastFullLocalDiscovery.hasExpired(fullLocalDiscoveryInterval.count());
+        FullLocalDiscoveryInterval.count() >= 0 && _timeSinceLastFullLocalDiscovery.hasExpired(FullLocalDiscoveryInterval.count());
     if (_folderWatcher && _folderWatcher->isReliable()
         && hasDoneFullLocalDiscovery
         && !periodicFullLocalDiscoveryNow) {
