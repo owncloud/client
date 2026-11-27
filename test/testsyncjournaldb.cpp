@@ -59,7 +59,7 @@ private Q_SLOTS:
         record._fileId = "abcd";
         record._remotePerm = RemotePermissions::fromDbValue("RW");
         record._fileSize = 213089055;
-        record._checksumHeader = "MD5:mychecksum";
+        record._checksumHeader = "SHA1:mychecksum";
         QVERIFY(_db.setFileRecord(record));
 
         SyncJournalFileRecord storedRecord;
@@ -97,7 +97,7 @@ private Q_SLOTS:
             SyncJournalFileRecord record;
             record._path = "foo-checksum";
             record._remotePerm = RemotePermissions::fromDbValue(" ");
-            record._checksumHeader = "MD5:mychecksum";
+            record._checksumHeader = "SHA1:mychecksum";
             record._modtime = Utility::qDateTimeToTime_t(QDateTime::currentDateTimeUtc());
             QVERIFY(_db.setFileRecord(record));
 

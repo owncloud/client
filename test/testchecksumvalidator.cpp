@@ -73,26 +73,6 @@ private Q_SLOTS:
         TestUtils::writeRandomFile(_testfile);
     }
 
-    void testMd5Calc()
-    {
-        QString file(_root.path() + QStringLiteral("/file_a.bin"));
-        QVERIFY(TestUtils::writeRandomFile(file));
-        QFileInfo fi(file);
-        QVERIFY(fi.exists());
-
-        QFile fileDevice(file);
-        fileDevice.open(QIODevice::ReadOnly);
-        QByteArray sum = ComputeChecksum::computeNow(&fileDevice, CheckSums::Algorithm::MD5);
-        fileDevice.close();
-
-        QByteArray sSum = shellSum("md5sum", file);
-        if (sSum.isEmpty())
-            QSKIP("Couldn't execute md5sum to calculate checksum, executable missing?", SkipSingle);
-
-        QVERIFY(!sum.isEmpty());
-        QCOMPARE(sSum, sum);
-    }
-
     void testSha1Calc()
     {
         QString file(_root.path() + QStringLiteral("/file_b.bin"));
@@ -124,25 +104,6 @@ private Q_SLOTS:
         file.open(QIODevice::ReadOnly);
         _expected = ComputeChecksum::computeNow(&file, CheckSums::Algorithm::ADLER32);
         qDebug() << "XX Expected Checksum: " << _expected;
-        vali->start(_testfile);
-
-        QEventLoop loop;
-        connect(vali, &ComputeChecksum::done, &loop, &QEventLoop::quit, Qt::QueuedConnection);
-        loop.exec();
-
-        delete vali;
-    }
-
-    void testUploadChecksummingMd5() {
-
-        ComputeChecksum *vali = new ComputeChecksum(this);
-        _expectedType = OCC::CheckSums::Algorithm::MD5;
-        vali->setChecksumType(_expectedType);
-        connect(vali, &ComputeChecksum::done, this, &TestChecksumValidator::slotUpValidated);
-
-        auto file = QFile(_testfile);
-        file.open(QIODevice::ReadOnly);
-        _expected = ComputeChecksum::computeNow(&file, CheckSums::Algorithm::MD5);
         vali->start(_testfile);
 
         QEventLoop loop;

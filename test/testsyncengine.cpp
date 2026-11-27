@@ -633,38 +633,24 @@ private Q_SLOTS:
         checksumValue = QByteArray();
 
         // Bad Content-MD5
+        // This should always succeed. MD5 is NOT used anymore, so this field is ignored.
         contentMd5Value = "bad";
         fakeFolder.remoteModifier().create(QStringLiteral("A/a5"), 16, 'A');
         syncSucceeded = fakeFolder.applyLocalModificationsAndSync();
-        if (filesAreDehydrated) {
-            // In the dehydrated case, files are never downloaded, so checksums are not computed. Only placeholders are created.
-            QVERIFY(syncSucceeded);
-        } else {
-            // Any case where files are actually downloaded (no vfs, local files are hydrated, etc), the checksum calculation should fail.
-            QVERIFY(!syncSucceeded);
-        }
-
-        // Good Content-MD5
-        contentMd5Value = "d8a73157ce10cd94a91c2079fc9a92c8"; // printf 'A%.0s' {1..16} | md5sum -
-        fakeFolder.syncJournal()->wipeErrorBlacklist();
-        QVERIFY(fakeFolder.applyLocalModificationsAndSync());
+        QVERIFY(syncSucceeded);
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
 
         // Invalid OC-Checksum is ignored
         checksumValue = "garbage";
-        // contentMd5Value is still good
         fakeFolder.remoteModifier().create(QStringLiteral("A/a6"), 16, 'A');
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
+        // contentMd5Value is ignored, even with an invalid OC-Checksum
         contentMd5Value = "bad";
         fakeFolder.remoteModifier().create(QStringLiteral("A/a7"), 16, 'A');
         syncSucceeded = fakeFolder.applyLocalModificationsAndSync();
-        if (filesAreDehydrated) {
-            // In the dehydrated case, files are never downloaded, so checksums are not computed. Only placeholders are created.
-            QVERIFY(syncSucceeded);
-        } else {
-            // Any case where files are actually downloaded (no vfs, local files are hydrated, etc), the checksum calculation should fail.
-            QVERIFY(!syncSucceeded);
-        }
+        // verify that both header fields containing garbage are ignored, meaning the sync succeeds
+        QVERIFY(syncSucceeded);
+
         contentMd5Value.clear();
         fakeFolder.syncJournal()->wipeErrorBlacklist();
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());

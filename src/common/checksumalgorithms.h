@@ -34,7 +34,6 @@ namespace CheckSums {
         SHA3_256 = QCryptographicHash::Sha3_256,
         SHA256 = QCryptographicHash::Sha256,
         SHA1 = QCryptographicHash::Sha1,
-        MD5 = QCryptographicHash::Md5,
         ADLER32 = 100,
         DUMMY_FOR_TESTS,
         PARSE_ERROR
@@ -50,8 +49,6 @@ namespace CheckSums {
             return "SHA256";
         case Algorithm::SHA1:
             return "SHA1";
-        case Algorithm::MD5:
-            return "MD5";
         case Algorithm::ADLER32:
             return "ADLER32";
         case Algorithm::DUMMY_FOR_TESTS:
@@ -82,7 +79,6 @@ namespace CheckSums {
         pair(Algorithm::SHA3_256),
         pair(Algorithm::SHA256),
         pair(Algorithm::SHA1),
-        pair(Algorithm::MD5),
         pair(Algorithm::ADLER32),
         pair(Algorithm::DUMMY_FOR_TESTS)
     };
@@ -96,7 +92,6 @@ namespace CheckSums {
         pair(Algorithm::SHA3_256),
         pair(Algorithm::SHA256),
         pair(Algorithm::SHA1),
-        pair(Algorithm::MD5)
     };
 
     inline Algorithm fromName(std::string_view s)
