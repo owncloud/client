@@ -46,7 +46,7 @@ namespace chrono = std::chrono;
 Q_LOGGING_CATEGORY(lcConfigFile, "sync.configfile", QtInfoMsg)
 namespace  {
 const QString logHttpC() { return QStringLiteral("logHttp"); }
-const QString remotePollIntervalC() { return QStringLiteral("remotePollInterval"); }
+// const QString remotePollIntervalC() { return QStringLiteral("remotePollInterval"); }
 const QString monoIconsC() { return QStringLiteral("monoIcons"); }
 const QString promptDeleteC() { return QStringLiteral("promptDeleteAllFiles"); }
 const QString crashReporterC() { return QStringLiteral("crashReporter"); }
@@ -54,7 +54,7 @@ const QString optionalDesktopNotificationsC()
 {
     return QStringLiteral("optionalDesktopNotifications");
 }
-// const QString updateCheckIntervalC() { return QStringLiteral("updateCheckInterval"); }
+
 const QString uiLanguageC() { return QStringLiteral("uiLanguage"); }
 const QString geometryC() { return QStringLiteral("geometry"); }
 const QString timeoutC() { return QStringLiteral("timeout"); }
@@ -100,7 +100,6 @@ QString excludeFileNameC()
 } // anonymous namespace
 
 QString ConfigFile::_confDir = QString();
-const std::chrono::seconds DefaultRemotePollInterval { 30 };
 
 static chrono::milliseconds millisecondsValue(const QSettings &setting, const QString &key,
     chrono::milliseconds defaultValue)
@@ -295,33 +294,6 @@ bool ConfigFile::exists()
 QString ConfigFile::defaultConnection() const
 {
     return Theme::instance()->appName();
-}
-
-chrono::milliseconds ConfigFile::remotePollInterval(std::chrono::seconds defaultVal, const QString &connection) const
-{
-    QString con(connection);
-    if (connection.isEmpty())
-        con = defaultConnection();
-
-    auto settings = makeQSettings();
-    settings.beginGroup(con);
-
-    auto defaultPollInterval { DefaultRemotePollInterval };
-
-    // The server default-capabilities was set to 60 in some server releases,
-    // which, if interpreted in milliseconds, is pretty small.
-    // If the value is above 5 seconds, it was set intentionally.
-    // Server admins have to set the value in Milliseconds!
-    // i.e. set to greater than 5000 milliseconds on the server to be effective.
-    if (defaultVal > chrono::seconds(5)) {
-        defaultPollInterval = defaultVal;
-    }
-    auto remoteInterval = millisecondsValue(settings, remotePollIntervalC(), defaultPollInterval);
-    if (remoteInterval < chrono::seconds(5)) {
-        remoteInterval = defaultPollInterval;
-        qCWarning(lcConfigFile) << "Remote Interval is less than 5 seconds, reverting to" << remoteInterval.count();
-    }
-    return remoteInterval;
 }
 
 // get rid of this too, but need to move default val to the updater

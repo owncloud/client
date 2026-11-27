@@ -66,9 +66,6 @@ public:
 
     QString defaultConnection() const;
 
-    /* Server poll interval in milliseconds */
-    std::chrono::milliseconds remotePollInterval(std::chrono::seconds defaultVal, const QString &connection = QString()) const;
-
     bool monoIcons() const;
     void setMonoIcons(bool);
 
