@@ -47,7 +47,7 @@ Q_LOGGING_CATEGORY(lcConfigFile, "sync.configfile", QtInfoMsg)
 namespace  {
 const QString logHttpC() { return QStringLiteral("logHttp"); }
 const QString monoIconsC() { return QStringLiteral("monoIcons"); }
-const QString promptDeleteC() { return QStringLiteral("promptDeleteAllFiles"); }
+// const QString promptDeleteC() { return QStringLiteral("promptDeleteAllFiles"); }
 const QString crashReporterC() { return QStringLiteral("crashReporter"); }
 const QString optionalDesktopNotificationsC()
 {
@@ -136,6 +136,13 @@ bool ConfigFile::optionalDesktopNotifications() const
     return settings.value(optionalDesktopNotificationsC(), true).toBool();
 }
 
+void ConfigFile::setOptionalDesktopNotifications(bool show)
+{
+    auto settings = makeQSettings();
+    settings.setValue(optionalDesktopNotificationsC(), show);
+    settings.sync();
+}
+
 std::optional<QStringList> ConfigFile::issuesWidgetFilter() const
 {
     auto settings = makeQSettings();
@@ -150,13 +157,6 @@ void ConfigFile::setIssuesWidgetFilter(const QStringList &checked)
 {
     auto settings = makeQSettings();
     settings.setValue(issuesWidgetFilterC(), checked);
-    settings.sync();
-}
-
-void ConfigFile::setOptionalDesktopNotifications(bool show)
-{
-    auto settings = makeQSettings();
-    settings.setValue(optionalDesktopNotificationsC(), show);
     settings.sync();
 }
 
@@ -389,7 +389,7 @@ void ConfigFile::setPauseSyncWhenMetered(bool isChecked)
     setValue(pauseSyncWhenMeteredC(), isChecked);
 }
 
-bool ConfigFile::promptDeleteFiles() const
+/*bool ConfigFile::promptDeleteFiles() const
 {
     auto settings = makeQSettings();
     return settings.value(promptDeleteC(), true).toBool();
@@ -399,7 +399,7 @@ void ConfigFile::setPromptDeleteFiles(bool promptDeleteFiles)
 {
     auto settings = makeQSettings();
     settings.setValue(promptDeleteC(), promptDeleteFiles);
-}
+}*/
 
 bool ConfigFile::monoIcons() const
 {

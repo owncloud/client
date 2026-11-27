@@ -69,8 +69,8 @@ public:
     bool monoIcons() const;
     void setMonoIcons(bool);
 
-    bool promptDeleteFiles() const;
-    void setPromptDeleteFiles(bool promptDeleteFiles);
+    //  bool promptDeleteFiles() const;
+    // void setPromptDeleteFiles(bool promptDeleteFiles);
 
     bool crashReporter() const;
     void setCrashReporter(bool enabled);
