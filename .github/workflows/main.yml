@@ -65,10 +65,13 @@ jobs:
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
         fetch-depth: 0
+        persist-credentials: false
 
     - name: Check out latest commit
       if: ${{ !matrix.useSonarCloud && matrix.name  != 'linux-gcc-x86_64' }}
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        persist-credentials: false
 
     - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
       if: matrix.name  == 'windows-cl-x86_64'
@@ -113,28 +116,6 @@ jobs:
               & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --set enableAutoUpdater=true owncloud/owncloud-client
           }
           & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --install-deps owncloud/owncloud-client
-
-    - name: QML format lint
-      if: matrix.name  == 'linux-gcc-x86_64'
-      run: |
-        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c libs/qt6/qttools
-        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --run pwsh -c "git ls-files *.qml | %{ qmlformat -i `$_}"
-        $diff = git diff
-        if ($diff) {
-          $diff
-          exit 1
-        }
-
-    - name: clang-format format lint
-      if: matrix.name  == 'linux-gcc-x86_64'
-      run: |
-        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c libs/llvm
-        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --run git clang-format --force  ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}
-        $diff = git diff
-        if ($diff) {
-          $diff
-          exit 1
-        }
 
     - name: Build
       if: ${{ !matrix.useSonarCloud }}

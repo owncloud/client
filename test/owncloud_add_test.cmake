@@ -24,6 +24,12 @@ function(owncloud_add_test test_class)
     if (UNIX AND NOT APPLE)
         set_property(TEST ${OWNCLOUD_TEST_CLASS}Test PROPERTY ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
     endif()
+    if (WIN32)
+        # Without a console window, as on CI, QtTest on Windows sends its results to
+        # OutputDebugString and ctest captures none of them. Despite its name, the variable keeps
+        # them on stdout, as on the other platforms.
+        set_property(TEST ${OWNCLOUD_TEST_CLASS}Test APPEND PROPERTY ENVIRONMENT "QT_FORCE_STDERR_LOGGING=1")
+    endif()
 
     foreach(arg IN LISTS ARGN)
         target_sources(${OWNCLOUD_TEST_CLASS}Test PRIVATE ${arg})
