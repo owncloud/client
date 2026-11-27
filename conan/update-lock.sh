@@ -24,7 +24,7 @@
 #                   three rules described below and reports every violation.
 #   --base GIT-REF  With --check: the commit whose conan.lock the change
 #                   starts from, read with `git show GIT-REF:conan.lock`.
-#                   Default: origin/master. CI (.github/workflows/conan-lock.yml)
+#                   Default: origin/7.2. CI (.github/workflows/conan-lock.yml)
 #                   passes the base a pull request is merged onto, or the
 #                   commit a push started from; a manual run or a branch's
 #                   first push passes HEAD, so only rule 1 applies there.
@@ -129,7 +129,7 @@ fi
 if [ "$check" = 0 ] && [ -n "$base_ref" ]; then
     die "--base is only valid with --check"
 fi
-[ -n "$base_ref" ] || base_ref=origin/master
+[ -n "$base_ref" ] || base_ref=origin/7.2
 
 command -v conan >/dev/null || die "conan not found on PATH"
 command -v git >/dev/null || die "git not found on PATH"
