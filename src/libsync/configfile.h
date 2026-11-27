@@ -124,10 +124,6 @@ public:
     void saveGeometryHeader(QHeaderView *header);
     bool restoreGeometryHeader(QHeaderView *header);
 
-    // how often the check about new versions runs
-    // todo: move default value to updater. No setter means it's not actually in the config file unless hand edited = this must go :/
-    // std::chrono::milliseconds updateCheckInterval(const QString &connection = QString()) const;
-
     QString uiLanguage() const;
     void setUiLanguage(const QString &uiLanguage);
 

@@ -61,11 +61,6 @@ const QString numberOfLogsToKeepC()
     return QStringLiteral("numberOfLogsToKeep");
 }
 
-/*const QString updateCheckIntervalC()
-{
-    return QStringLiteral("updateCheckInterval");
-}*/
-
 // The key `clientVersion` stores the version *with* build number of the config file. It is named
 // this way, because before 5.0, only the version *without* build number was stored.
 const QString clientVersionC() { return QStringLiteral("clientVersion"); }
@@ -97,12 +92,6 @@ QString excludeFileNameC()
 } // anonymous namespace
 
 QString ConfigFile::_confDir = QString();
-
-/*static chrono::milliseconds millisecondsValue(const QSettings &setting, const QString &key,
-    chrono::milliseconds defaultValue)
-{
-    return chrono::milliseconds(setting.value(key, qlonglong(defaultValue.count())).toLongLong());
-}*/
 
 ConfigFile::ConfigFile()
 {
@@ -285,26 +274,6 @@ QString ConfigFile::defaultConnection() const
 {
     return Theme::instance()->appName();
 }
-
-// get rid of this too, but need to move default val to the updater
-/*chrono::milliseconds ConfigFile::updateCheckInterval(const QString &connection) const
-{
-    QString con(connection);
-    if (connection.isEmpty())
-        con = defaultConnection();
-    auto settings = makeQSettings();
-    settings.beginGroup(con);
-
-    auto defaultInterval = chrono::hours(10);
-    auto interval = millisecondsValue(settings, updateCheckIntervalC(), defaultInterval);
-
-    auto minInterval = chrono::minutes(5);
-    if (interval < minInterval) {
-        qCWarning(lcConfigFile) << "Update check interval less than five minutes, resetting to 5 minutes";
-        interval = minInterval;
-    }
-    return interval;
-}*/
 
 QString ConfigFile::uiLanguage() const
 {
