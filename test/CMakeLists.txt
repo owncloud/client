@@ -62,6 +62,7 @@ if( UNIX AND NOT APPLE )
 endif(UNIX AND NOT APPLE)
 
 owncloud_add_test(FileSystem)
+owncloud_add_test(SocketApi)
 
 owncloud_add_test(FolderMan)
 
