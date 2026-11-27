@@ -5,6 +5,8 @@
 CMakeLists.txt.user*
 .vs/
 CMakeSettings.json
+# Written into the source tree by conan install (see BUILDING.md).
+CMakeUserPresets.json
 *~
 *.autosave
 doc/_build/*
@@ -170,10 +172,11 @@ UpgradeLog*.htm
 # Microsoft Fakes
 FakesAssemblies/
 
-# Allow building.adoc to be tracked.
+# Allow building.adoc and BUILDING.md to be tracked.
 # This exclusion needs to be added at the end, after any previous
 # reference to "build"
 !building.adoc
+!BUILDING.md
 
 # squish test
 test/gui/config.ini
