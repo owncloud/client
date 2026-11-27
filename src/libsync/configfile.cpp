@@ -46,7 +46,6 @@ namespace chrono = std::chrono;
 Q_LOGGING_CATEGORY(lcConfigFile, "sync.configfile", QtInfoMsg)
 namespace  {
 const QString logHttpC() { return QStringLiteral("logHttp"); }
-// const QString remotePollIntervalC() { return QStringLiteral("remotePollInterval"); }
 const QString monoIconsC() { return QStringLiteral("monoIcons"); }
 const QString promptDeleteC() { return QStringLiteral("promptDeleteAllFiles"); }
 const QString crashReporterC() { return QStringLiteral("crashReporter"); }
@@ -57,7 +56,6 @@ const QString optionalDesktopNotificationsC()
 
 const QString uiLanguageC() { return QStringLiteral("uiLanguage"); }
 const QString geometryC() { return QStringLiteral("geometry"); }
-const QString timeoutC() { return QStringLiteral("timeout"); }
 const QString automaticLogDirC() { return QStringLiteral("logToTemporaryLogDir"); }
 const QString numberOfLogsToKeepC()
 {
@@ -153,13 +151,6 @@ void ConfigFile::setIssuesWidgetFilter(const QStringList &checked)
     auto settings = makeQSettings();
     settings.setValue(issuesWidgetFilterC(), checked);
     settings.sync();
-}
-
-std::chrono::seconds ConfigFile::timeout() const
-{
-    auto settings = makeQSettings();
-    const auto val = settings.value(timeoutC()).toInt(); // default to 5 min
-    return val ? std::chrono::seconds(val) : 5min;
 }
 
 void ConfigFile::setOptionalDesktopNotifications(bool show)

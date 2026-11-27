@@ -119,11 +119,6 @@ public:
     std::optional<QStringList> issuesWidgetFilter() const;
     void setIssuesWidgetFilter(const QStringList &checked);
 
-    // no setter, and the default return value is 5 minutes. This already matches the AbstractNetworkJob::DefaultHttpTimeout
-    // it's completely pointless so needs to die!
-    // note the only possible way to change this (currently) is with env var OWNCLOUD_TIMEOUT which should be int value to represent seconds
-    std::chrono::seconds timeout() const;
-
     // todo: could be moved to main window or main window controller
     void saveGeometry(QWidget *w);
     void restoreGeometry(QWidget *w);
