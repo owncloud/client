@@ -659,6 +659,48 @@ private Q_SLOTS:
         QCOMPARE(counter.nDELETE, 0);
     }
 
+    // A local move whose source the server fails to report must stay a move,
+    // not turn into an upload of the destination plus a delete of the source
+    void testLocalMoveWithFailingSourceCheck()
+    {
+        QFETCH_GLOBAL(Vfs::Mode, vfsMode);
+        QFETCH_GLOBAL(bool, filesAreDehydrated);
+
+        FakeFolder fakeFolder(FileInfo::A12_B12_C12_S12(), vfsMode, filesAreDehydrated);
+
+        // The destination is in the sync root, so discovery reaches it before the
+        // source's directory: it then asks the server whether the source is unchanged.
+        int nSourceChecks = 0;
+        int nPUT = 0;
+        int nMOVE = 0;
+        int nDELETE = 0;
+        fakeFolder.setServerOverride([&](QNetworkAccessManager::Operation op, const QNetworkRequest &request, QIODevice *) -> QNetworkReply * {
+            const auto verb = request.attribute(QNetworkRequest::CustomVerbAttribute).toByteArray();
+            if (op == QNetworkAccessManager::PutOperation) {
+                ++nPUT;
+            } else if (op == QNetworkAccessManager::DeleteOperation) {
+                ++nDELETE;
+            } else if (verb == QByteArrayLiteral("MOVE")) {
+                ++nMOVE;
+            } else if (verb == QByteArrayLiteral("PROPFIND") && request.url().path().endsWith(QLatin1String("/A/a1"))) {
+                ++nSourceChecks;
+                return new FakeErrorReply(op, request, this, 500);
+            }
+            return nullptr;
+        });
+
+        fakeFolder.localModifier().rename(QStringLiteral("A/a1"), QStringLiteral("a1m"));
+        QVERIFY(fakeFolder.applyLocalModificationsAndSync());
+
+        QCOMPARE(nSourceChecks, 1);
+        QCOMPARE(nMOVE, 1);
+        QCOMPARE(nPUT, 0);
+        QCOMPARE(nDELETE, 0);
+        QVERIFY(!fakeFolder.currentRemoteState().find(QStringLiteral("A/a1")));
+        QVERIFY(fakeFolder.currentRemoteState().find(QStringLiteral("a1m")));
+        QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
+    }
+
     // These renames can be troublesome on windows
     void testRenameCaseOnly()
     {
