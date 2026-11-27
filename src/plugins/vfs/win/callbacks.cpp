@@ -58,10 +58,15 @@ void CALLBACK callbackFetchData(const CF_CALLBACK_INFO *info, const CF_CALLBACK_
                   << params->FetchData.OptionalFileOffset.QuadPart << params->FetchData.OptionalLength.QuadPart
                   << "Resume:" << resumeStart << "to" << resumeEnd << "size:" << (resumeEnd - resumeStart);
 
+    const quint64 placeholderSize = info->FileSize.QuadPart;
+
     // Jump to gui thread
-    QMetaObject::invokeMethod(callbackContext, [callbackContext, resumeStart, resumeEnd, path, fileId, opdata]() {
-        callbackContext->startFetchData(opdata, path, resumeStart, resumeEnd, fileId);
-    }, Qt::QueuedConnection);
+    QMetaObject::invokeMethod(
+        callbackContext,
+        [callbackContext, resumeStart, resumeEnd, placeholderSize, path, fileId, opdata]() {
+            callbackContext->startFetchData(opdata, path, resumeStart, resumeEnd, placeholderSize, fileId);
+        },
+        Qt::QueuedConnection);
 }
 
 void CALLBACK callbackCancelFetchData(const CF_CALLBACK_INFO *info, const CF_CALLBACK_PARAMETERS *params)

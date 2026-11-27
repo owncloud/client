@@ -37,6 +37,8 @@ public:
     QString filesystemPath;
     QByteArray transmissionChecksumHeader;
     PlaceholderHydrationDevice *hydrationDevice = nullptr;
+    // Where the fetch_data request starts; hydrationDevice->fileSize() is where it ends
+    quint64 fetchStart = 0;
     QPointer<GETFileJob> downloadJob;
     bool isDownloadDone = false;
     bool isAborted = false;
@@ -121,8 +123,8 @@ public:
     [[nodiscard]] Result<void, QString> createPlaceholderInternal(const SyncFileItem &item, const FILE_BASIC_INFO &basicInfo);
 
     // The following are triggered from callbacks
-    void startFetchData(CfAPIUtil::CfOpdata opdata, const QString &targetPath, quint64 fetchStart, quint64 fetchEnd,
-        const QByteArray &fileId);
+    void startFetchData(
+        CfAPIUtil::CfOpdata opdata, const QString &targetPath, quint64 fetchStart, quint64 fetchEnd, quint64 placeholderSize, const QByteArray &fileId);
     void cancelFetchData(TransferKey transferKey, const QString &path);
     void startValidateData(CfAPIUtil::CfOpdata opdata, const QString &path, quint64 offset, quint64 length,
         quint64 fileSize);
