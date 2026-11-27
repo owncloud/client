@@ -55,7 +55,7 @@ const QString optionalDesktopNotificationsC()
 {
     return QStringLiteral("optionalDesktopNotifications");
 }
-const QString updateCheckIntervalC() { return QStringLiteral("updateCheckInterval"); }
+// const QString updateCheckIntervalC() { return QStringLiteral("updateCheckInterval"); }
 const QString uiLanguageC() { return QStringLiteral("uiLanguage"); }
 const QString geometryC() { return QStringLiteral("geometry"); }
 const QString timeoutC() { return QStringLiteral("timeout"); }
@@ -327,7 +327,7 @@ chrono::milliseconds OCC::ConfigFile::fullLocalDiscoveryInterval() const
     return millisecondsValue(settings, fullLocalDiscoveryIntervalC(), 1h);
 }
 
-chrono::milliseconds ConfigFile::updateCheckInterval(const QString &connection) const
+/*chrono::milliseconds ConfigFile::updateCheckInterval(const QString &connection) const
 {
     QString con(connection);
     if (connection.isEmpty())
@@ -344,7 +344,7 @@ chrono::milliseconds ConfigFile::updateCheckInterval(const QString &connection) 
         interval = minInterval;
     }
     return interval;
-}
+}*/
 
 QString ConfigFile::uiLanguage() const
 {

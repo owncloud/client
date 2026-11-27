@@ -18,7 +18,6 @@
 #include "gui/networkinformation.h"
 #include "gui/scheduling/etagwatcher.h"
 #include "libsync/configfile.h"
-#include "libsync/syncengine.h"
 #include "spacesmanager.h"
 
 using namespace std::chrono_literals;

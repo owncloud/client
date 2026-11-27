@@ -147,7 +147,7 @@ public:
 
     // how often the check about new versions runs
     // todo: move this. No setter means it's not actually in the config file :/
-    std::chrono::milliseconds updateCheckInterval(const QString &connection = QString()) const;
+    // std::chrono::milliseconds updateCheckInterval(const QString &connection = QString()) const;
 
     QString uiLanguage() const;
     void setUiLanguage(const QString &uiLanguage);
