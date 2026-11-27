@@ -127,7 +127,7 @@ private Q_SLOTS:
         });
 
         // So the test that test timeout finishes fast
-        QScopedValueRollback<std::chrono::seconds> setHttpTimeout(AbstractNetworkJob::httpTimeout, errorKind == Timeout ? 1s : 10000s);
+        QScopedValueRollback<std::chrono::seconds> setHttpTimeout(AbstractNetworkJob::testingHttpTimeoutOverride, errorKind == Timeout ? 1s : 10000s);
 
         ItemCompletedSpy completeSpy(fakeFolder);
         QSignalSpy errorSpy(fakeFolder.syncEngine(), &SyncEngine::syncError);

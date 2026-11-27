@@ -181,8 +181,17 @@ private:
     ConnectionStatus _connectionStatus;
     QStringList _connectionErrors;
     bool _waitingForNewCredentials;
-    QDateTime _timeOfLastETagCheck;
+
     bool _settingUp = false;
+
+    QDateTime _timeOfLastETagCheck;
+
+    inline static const std::chrono::seconds DefaultPollInterval{30};
+
+    // the effective poll interval is potentially updated in slotFetchServerSettingsResult and should not be changed elsewhere
+    // unless/until we add a legit local setting to influence this, the poll interval comes from the capabilites OR it is the default
+    // of 30 seconds
+    std::chrono::seconds _effectivePollInterval = DefaultPollInterval;
 
     ConnectionValidator *_connectionValidator;
     void resetConnectionValidator();

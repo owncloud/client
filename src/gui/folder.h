@@ -187,6 +187,9 @@ public:
     Folder(const FolderDefinition &definition, AccountState *accountState, SyncJournalDb *journal, Vfs *vfs, SyncEngine *engine, QObject *parent);
 
     ~Folder() override;
+
+    inline static const std::chrono::milliseconds FullLocalDiscoveryInterval = std::chrono::hours(1);
+
     /**
      * The account the folder is configured on.
      */

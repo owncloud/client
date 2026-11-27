@@ -13,7 +13,6 @@
  */
 #include "gui/connectionvalidator.h"
 #include "gui/clientproxy.h"
-#include "gui/fetchserversettings.h"
 #include "gui/networkinformation.h"
 #include "libsync/account.h"
 #include "libsync/creds/abstractcredentials.h"
@@ -36,7 +35,7 @@ Q_LOGGING_CATEGORY(lcConnectionValidator, "sync.connectionvalidator", QtInfoMsg)
 namespace {
     auto timeoutToUse()
     {
-        return std::min(ConnectionValidator::DefaultCallingInterval - 5s, AbstractNetworkJob::httpTimeout);
+        return std::min(ConnectionValidator::DefaultCallingInterval - 5s, AbstractNetworkJob::httpTimeout());
     };
 }
 
@@ -283,38 +282,7 @@ void ConnectionValidator::slotAuthSuccess()
     }
 
     _errors.clear();
-    /* if (_mode != ConnectionValidator::ValidationMode::ValidateAuth) {
-         auto *fetchSetting = new FetchServerSettingsJob(_account, this);
-         const auto unsupportedServerError = [this] {
-             _errors.append({tr("The configured server for this client is too old."), tr("Please update to the latest server and restart the client.")});
-         };
-         connect(fetchSetting, &FetchServerSettingsJob::finishedSignal, this, [unsupportedServerError, this](FetchServerSettingsJob::Result result) {
-             switch (result) {
-             case FetchServerSettingsJob::Result::UnsupportedServer:
-                 unsupportedServerError();
-                 reportResult(ServerVersionMismatch);
-                 break;
-             case FetchServerSettingsJob::Result::InvalidCredentials:
-                 reportResult(CredentialsWrong);
-                 break;
-             case FetchServerSettingsJob::Result::TimeOut:
-                 reportResult(Timeout);
-                 break;
-             case FetchServerSettingsJob::Result::Success:
-                 if (_account->serverSupportLevel() == Account::ServerSupportLevel::Unknown) {
-                     unsupportedServerError();
-                 }
-                 reportResult(Connected);
-                 break;
-             case FetchServerSettingsJob::Result::Undefined:
-                 reportResult(Undefined);
-                 break;
-             }
-         });
 
-         fetchSetting->start();
-         return;
-     }*/
     reportResult(Connected);
 }
 

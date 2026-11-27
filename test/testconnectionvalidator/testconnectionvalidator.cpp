@@ -48,8 +48,7 @@ class TestConnectionValidator : public QObject
 
 private Q_SLOTS:
 
-
-    void initTestCase() { AbstractNetworkJob::httpTimeout = 1s; }
+    void initTestCase() { AbstractNetworkJob::testingHttpTimeoutOverride = 1s; }
 
     void testStatusPhp_data()
     {

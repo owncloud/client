@@ -274,6 +274,17 @@ void AccountState::slotFetchServerSettingsResult(FetchServerSettingsRunner::Resu
         return;
     }
 
+    Q_ASSERT(_account->hasCapabilities());
+
+    // update the pollinterval if it changed in the caps
+    std::chrono::seconds pollinterval = _account->capabilities().remotePollInterval();
+    // preserve the original restriction that server must set poll interval >= 5 seconds
+    if (pollinterval.count() >= 5 && _effectivePollInterval != pollinterval)
+        _effectivePollInterval = pollinterval;
+    else if (pollinterval.count() < 5)
+        qCWarning(lcAccountState) << "Capabilities provided pollinterval of less than 5 seconds. The effective poll interval remains unchanged at "
+                                  << _effectivePollInterval.count() << " seconds.";
+
     // these are both self deleting.
     // they can finish whenever, everything else can carry on.
     if (_account->capabilities().avatarsAvailable()) {
@@ -377,16 +388,11 @@ void AccountState::checkConnectivity(bool blockJobs)
         return;
     }
     if (account()->hasCapabilities()) {
-        // IF the account is connected the connection check can be skipped
-        // if the last successful etag check job is not so long ago.
-        // TODO: https://github.com/owncloud/client/issues/10935
-        const auto pta = account()->capabilities().remotePollInterval();
-        const auto polltime = duration_cast<seconds>(ConfigFile().remotePollInterval(pta));
+        // IF the account is connected the connection check can be skipped if the last successful etag check job is not so long ago.
         const auto elapsed = _timeOfLastETagCheck.secsTo(QDateTime::currentDateTimeUtc());
-        if (!blockJobs && isConnected() && _timeOfLastETagCheck.isValid()
-            && elapsed <= polltime.count()) {
-            qCDebug(lcAccountState) << account()->displayNameWithHost() << "The last ETag check succeeded within the last " << polltime.count() << "s ("
-                                    << elapsed << "s). No connection check needed!";
+        if (!blockJobs && isConnected() && _timeOfLastETagCheck.isValid() && elapsed <= _effectivePollInterval.count()) {
+            qCDebug(lcAccountState) << account()->displayNameWithHost() << "The last ETag check succeeded within the last " << _effectivePollInterval.count()
+                                    << "s (" << elapsed << "s). No connection check needed!";
             return;
         }
     }

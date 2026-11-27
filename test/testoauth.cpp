@@ -486,10 +486,11 @@ private Q_SLOTS:
             QScopedValueRollback<std::chrono::seconds> rollback;
 
             Test()
-                : rollback(AbstractNetworkJob::httpTimeout, 1s)
+                : rollback(AbstractNetworkJob::testingHttpTimeoutOverride, 1s)
             {
                 localHost = QStringLiteral("127.0.0.1");
             }
+
 
             QNetworkReply *statusPhpReply(QNetworkAccessManager::Operation op, const QNetworkRequest &req) override
             {

@@ -80,11 +80,6 @@ Application::Application(Platform *platform, const QString &displayLanguage, boo
     // this should be called once during application startup to make sure we don't miss any messages
     cfg.configureHttpLogging();
 
-    // The timeout is initialized with an environment variable, if not, override with the value from the config
-    if (AbstractNetworkJob::httpTimeout == AbstractNetworkJob::DefaultHttpTimeout) {
-        AbstractNetworkJob::httpTimeout = cfg.timeout();
-    }
-
     qApp->setQuitOnLastWindowClosed(false);
 
 #ifdef WITH_AUTO_UPDATER
