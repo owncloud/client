@@ -135,7 +135,9 @@ protected:
     OwncloudPropagator *propagator() const;
 
 private:
-    OwncloudPropagator *_propagator;
+    // The jobs are children of the propagator. ~OwncloudPropagator deletes the root job while all members still
+    // exist, ~QObject the other jobs after the members are gone: a QPointer is null by then, so they don't touch them.
+    QPointer<OwncloudPropagator> _propagator;
     QString _path;
     JobState _jobState;
 };
@@ -381,6 +383,7 @@ public:
     {
         qRegisterMetaType<PropagatorJob::AbortType>("PropagatorJob::AbortType");
     }
+    ~OwncloudPropagator() override;
 
     void start(SyncFileItemSet &&_syncedItems);
 
