@@ -71,22 +71,11 @@ UpdaterScheduler::UpdaterScheduler(Application *app, QObject *parent)
     // at startup, do a check in any case.
     QTimer::singleShot(3s, this, &UpdaterScheduler::slotTimerFired);
 
-    ConfigFile cfg;
-    auto checkInterval = cfg.updateCheckInterval();
-    _updateCheckTimer.start(std::chrono::milliseconds(checkInterval).count());
+    _updateCheckTimer.start(UpdateInterval);
 }
 
 void UpdaterScheduler::slotTimerFired()
 {
-    ConfigFile cfg;
-
-    // re-set the check interval if it changed in the config file meanwhile
-    auto checkInterval = std::chrono::milliseconds(cfg.updateCheckInterval()).count();
-    if (checkInterval != _updateCheckTimer.interval()) {
-        _updateCheckTimer.setInterval(checkInterval);
-        qCInfo(lcUpdater) << "Setting new update check interval " << checkInterval;
-    }
-
     // consider the skipUpdateCheck flag in the config.
     if (_skipUpdateCheck) {
         qCInfo(lcUpdater) << "Skipping update check because of system config";

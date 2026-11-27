@@ -36,7 +36,7 @@
 #include <QOperatingSystemVersion>
 #include <QStandardPaths>
 
-#include <chrono>
+// #include <chrono>
 using namespace std::chrono_literals;
 
 namespace OCC {
@@ -61,10 +61,10 @@ const QString numberOfLogsToKeepC()
     return QStringLiteral("numberOfLogsToKeep");
 }
 
-const QString updateCheckIntervalC()
+/*const QString updateCheckIntervalC()
 {
     return QStringLiteral("updateCheckInterval");
-}
+}*/
 
 // The key `clientVersion` stores the version *with* build number of the config file. It is named
 // this way, because before 5.0, only the version *without* build number was stored.
@@ -98,11 +98,11 @@ QString excludeFileNameC()
 
 QString ConfigFile::_confDir = QString();
 
-static chrono::milliseconds millisecondsValue(const QSettings &setting, const QString &key,
+/*static chrono::milliseconds millisecondsValue(const QSettings &setting, const QString &key,
     chrono::milliseconds defaultValue)
 {
     return chrono::milliseconds(setting.value(key, qlonglong(defaultValue.count())).toLongLong());
-}
+}*/
 
 ConfigFile::ConfigFile()
 {
@@ -287,7 +287,7 @@ QString ConfigFile::defaultConnection() const
 }
 
 // get rid of this too, but need to move default val to the updater
-chrono::milliseconds ConfigFile::updateCheckInterval(const QString &connection) const
+/*chrono::milliseconds ConfigFile::updateCheckInterval(const QString &connection) const
 {
     QString con(connection);
     if (connection.isEmpty())
@@ -304,7 +304,7 @@ chrono::milliseconds ConfigFile::updateCheckInterval(const QString &connection) 
         interval = minInterval;
     }
     return interval;
-}
+}*/
 
 QString ConfigFile::uiLanguage() const
 {

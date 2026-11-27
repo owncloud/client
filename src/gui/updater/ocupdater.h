@@ -191,6 +191,12 @@ private:
     QScopedPointer<QTemporaryFile> _file;
     QString _targetFile;
 
+    // this used to be taken from the config which is not kosher because there is no legit way to set the value
+    // without direct editing the file. Default there was 10 hours so that is what we go with here.
+    // if some need is identified to allow changing this value it should be implemented correctly, not as a
+    // "secret setting" in the config.
+    inline static const std::chrono::milliseconds UpdateInterval = std::chrono::hours(10);
+
     friend class TestUpdater;
 };
 
