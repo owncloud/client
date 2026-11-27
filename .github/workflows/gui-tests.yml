@@ -1,0 +1,198 @@
+name: GUI Tests
+
+on:
+  pull_request:
+  push:
+    branches: [ master ]
+    tags: [ "*" ]
+  schedule:
+    - cron: "0 0 * * *"
+
+env:
+  NPM_GHERLINT: "@gherlint/gherlint@1.1.0"
+
+permissions:
+  contents: read
+
+# a new push to a pull request cancels that pull request's running GUI tests; every other run (master,
+# tags, the nightly run) gets a group of its own, so none of them waits for or cancels another
+concurrency:
+  group: gui-tests-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  lint-gui-test:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    container:
+      image: owncloudci/squish:fedora-42-8.1.0-qt68x-linux64
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup NodeJs
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 18
+          package-manager-cache: false
+
+      - name: Python lint
+        run: |
+          export PATH=$PATH:/github/home/.local/bin
+          make -C test/gui install
+          make -C test/gui python-lint
+
+      - name: Gherkin lint
+        run: |
+          npm install -g ${{ env.NPM_GHERLINT }}
+          make -C test/gui gherkin-lint
+
+  gui-tests:
+    runs-on: ubuntu-latest
+    container:
+      image: owncloudci/squish:fedora-42-8.1.0-qt68x-linux64
+      env:
+        PLAYWRIGHT_BROWSERS_PATH: /__w/client/client/test/gui/.playwright
+        GITHUB_REPO: ${{ github.repository }}
+        GITHUB_RUN_NUMBER: ${{ github.run_number }}
+      # the server's log, written by the ocis service below
+      volumes:
+        - /home/runner/work/_temp/ocis-logs:/ocis-logs
+    services:
+      ocis:
+        image: owncloud/ocis-rolling:20260610
+        ports:
+          - 9200:9200
+        # Docker creates the missing log directory as root; the image's own user could not write to it
+        options: --user 0:0
+        volumes:
+          - /home/runner/work/_temp/ocis-logs:/ocis-logs
+        env:
+          OCIS_URL: https://ocis:9200
+          # to a file, not to the job's output
+          OCIS_LOG_FILE: /ocis-logs/ocis.log
+          OCIS_LOG_LEVEL: "error"
+          OCIS_LOG_PRETTY: "false"
+          OCIS_LOG_COLOR: "false"
+          OCIS_INSECURE: "true"
+          PROXY_ENABLE_BASIC_AUTH: "true"
+          OCIS_ADMIN_USER_ID: "some-admin-user-id-0000-000000000000"
+          IDM_ADMIN_PASSWORD: "admin"
+          OCIS_SYSTEM_USER_ID: "some-system-user-id-000-000000000000"
+          OCIS_SYSTEM_USER_API_KEY: "some-system-user-machine-auth-api-key"
+          OCIS_JWT_SECRET: "some-ocis-jwt-secret"
+          OCIS_MACHINE_AUTH_API_KEY: "some-ocis-machine-auth-api-key"
+          OCIS_TRANSFER_SECRET: "some-ocis-transfer-secret"
+          COLLABORATION_WOPIAPP_SECRET: "some-wopi-secret"
+          IDM_SVC_PASSWORD: "some-ldap-idm-password"
+          GRAPH_LDAP_BIND_PASSWORD: "some-ldap-idm-password"
+          IDM_REVASVC_PASSWORD: "some-ldap-reva-password"
+          GROUPS_LDAP_BIND_PASSWORD: "some-ldap-reva-password"
+          USERS_LDAP_BIND_PASSWORD: "some-ldap-reva-password"
+          AUTH_BASIC_LDAP_BIND_PASSWORD: "some-ldap-reva-password"
+          IDM_IDPSVC_PASSWORD: "some-ldap-idp-password"
+          IDP_LDAP_BIND_PASSWORD: "some-ldap-idp-password"
+          GATEWAY_STORAGE_USERS_MOUNT_ID: "storage-users-1"
+          STORAGE_USERS_MOUNT_ID: "storage-users-1"
+          GRAPH_APPLICATION_ID: "application-1"
+          OCIS_SERVICE_ACCOUNT_ID: "service-account-id"
+          OCIS_SERVICE_ACCOUNT_SECRET: "service-account-secret"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Build client
+        run: |
+          mkdir -p build
+          cd build
+          cmake -G"Ninja" -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=OFF -DWITH_GUI_TEST_PROBE=ON -S ..
+          ninja
+
+      - name: Install Python Modules
+        run: |
+          export PATH=$PATH:/github/home/.local/bin
+          make -C test/gui install
+          python3.10 -m pip list -v
+
+      - name: Create GUI test report directory
+        run: |
+          mkdir test/gui/guiReportUpload/screenshots -p
+          chmod 777 test/gui -R
+
+      - name: Wait for ocis service
+        run: |
+          echo "Waiting for ocis"
+          # 150s timeout
+          for i in {1..30}; do
+            if curl -kfsSL https://ocis:9200 > /dev/null; then
+              echo "ocis is up ✅"
+              exit 0
+            fi
+            echo "Retrying in 5s..."
+            sleep 5
+          done
+          echo "❌ ocis failed to start" && exit 1
+
+      - name: Run GUI test
+        id: run_gui_test
+        env:
+          GUI_TEST_REPORT_DIR: /__w/client/client/test/gui/guiReportUpload
+          CLIENT_REPO: .
+          OCIS_URL: https://ocis:9200
+          BACKEND_HOST: https://ocis:9200
+          SECURE_BACKEND_HOST: https://ocis:9200
+          OCIS: true
+          AUT_NAME: owncloud
+          AUT_DIR: /__w/client/client/build/bin
+          GUI_TEST_PARAMETERS: >
+            --testsuite test/gui
+            --reportgen html,test/gui/guiReportUpload
+            --aut-log-dir /__w/client/client/test/gui/guiReportUpload/client-logs
+            --envvar QT_LOGGING_RULES=sync.httplogger=true;gui.socketapi=false
+            --tags ~@skip --tags ~@skipOnLinux
+            ${{ 
+              !contains(github.event.pull_request.title, 'full-ci') 
+              && '--abortOnFail' || '' 
+            }}
+          # absolute: CuteCumber runs each test case in its own directory
+          STACKTRACE_FILE: /__w/client/client/test/gui/guiReportUpload/stacktrace.log
+          OWNCLOUD_CORE_DUMP: 1
+          RECORD_VIDEO_ON_FAILURE: false
+          COREPACK_ENABLE_STRICT: 0
+          HOME: /home/headless
+          # where a user install by pip in the steps above went (HOME was /github/home there)
+          PYTHONUSERBASE: /github/home/.local
+        run: bash test/gui/ci/run-gui-tests.sh
+
+      - name: Upload GUI test result
+        if: ${{ failure() && steps.run_gui_test.outcome == 'failure' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: gui-report-ocis-${{ github.run_number }}
+          path: test/gui/guiReportUpload
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Upload client logs
+        # on failure the report artifact already holds client-logs/, next to the HTML that links them
+        if: ${{ always() && steps.run_gui_test.outcome != 'skipped' && steps.run_gui_test.outcome != 'failure' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: gui-client-logs-${{ github.run_number }}
+          path: test/gui/guiReportUpload/client-logs
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Upload server logs
+        if: ${{ always() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: gui-server-logs-${{ github.run_number }}
+          path: /ocis-logs
+          if-no-files-found: warn
+          retention-days: 7

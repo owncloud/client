@@ -149,6 +149,14 @@ set_target_properties(owncloud PROPERTIES
 apply_common_target_settings(owncloud)
 target_link_libraries(owncloud PUBLIC owncloudGui owncloudResources KDAB::kdsingleapplication )
 target_link_libraries(owncloud PRIVATE Qt6::Core)
+if(WITH_GUI_TEST_PROBE)
+    get_property(_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+    if(_multi_config)
+        target_link_libraries(owncloud PRIVATE $<$<CONFIG:Debug>:cutecumber::probe>)
+    else()
+        target_link_libraries(owncloud PRIVATE cutecumber::probe)
+    endif()
+endif()
 
 MESSAGE(STATUS "OWNCLOUD_SIDEBAR_ICONS: ${APPLICATION_ICON_NAME}: ${OWNCLOUD_SIDEBAR_ICONS}")
 

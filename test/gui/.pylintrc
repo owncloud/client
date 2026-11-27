@@ -62,6 +62,8 @@ additional-builtins=
     OnFeatureEnd,
     OnScenarioStart,
     OnScenarioEnd,
+    OnStepStart,
+    OnStepEnd,
     QApplication,
     Given,
     When,
