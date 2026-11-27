@@ -30,6 +30,11 @@ Q_DECLARE_LOGGING_CATEGORY(lcVfs)
 namespace OCC::CfAPIUtil {
 
 /// Holds data that callbacks provide and that needs to be passed into CfExecute
+///
+/// CfOpdata outlives the callback, so it must hold no pointer into CF_CALLBACK_INFO: those, such
+/// as CorrelationVector, FileIdentity or ProcessInfo, are valid only while the callback runs. It
+/// keeps only the keys, which is what Microsoft's CloudMirror sample passes when it completes a
+/// transfer asynchronously. A reply sent from within the callback may set the pointers itself.
 struct CfOpdata
 {
     CfOpdata();
@@ -38,10 +43,11 @@ struct CfOpdata
 
     CF_OPERATION_INFO toOpinfo() const;
 
-    CF_CONNECTION_KEY connectionKey;
-    LARGE_INTEGER transferKey;
-    PCORRELATION_VECTOR correlationVector;
+    CF_CONNECTION_KEY connectionKey = {};
+    LARGE_INTEGER transferKey = {};
 };
+// A new member must not be a pointer into CF_CALLBACK_INFO, see above.
+static_assert(sizeof(CfOpdata) == sizeof(CF_CONNECTION_KEY) + sizeof(LARGE_INTEGER), "CfOpdata may hold only the keys");
 
 inline QString hstringToQString(const winrt::hstring &str)
 {
